@@ -13,7 +13,8 @@ Part II: Single-agent RL
    1.1 Definition
    1.2 Policies
    1.3 Bellman equations
-   1.3 POMPDPs
+   1.4 Policy extraction
+   1.5 POMDPs
  2. Value-based methods
    2.1 Model-based vs model free
    2.2 Value iteration

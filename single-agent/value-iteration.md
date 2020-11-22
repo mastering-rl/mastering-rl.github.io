@@ -172,23 +172,6 @@ Value iteration demo
 
 <http://www.cs.ubc.ca/~poole/demos/mdp/vi.html>
 
-Deciding How to Act
--------------------
-
-Given a policy that is (close to) optimal, how should we then select the
-action to play in a given state? It is reasonably straightforward:
-select the action that maximises our expected utility. So, given a value
-function $V$, we can select the action with the highest expected reward
-using:
-$$\argmax_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]$$
-This is known as *policy extraction*, because it extracts a policy for a
-value function (or Q-function). This can be calculated 'on the fly' at
-runtime.
-
-Alternatively, given a Q-function instead of a value function, we can
-use: $$\argmax_{a \in A(s)} Q(s,a)$$ This is simple to decide than using
-the value functions because we do not need to sum over the set of
-possible output states.
 
 Policy Iteration
 ----------------
@@ -271,53 +254,6 @@ $|2^N|$.
 Answer: Yes! Using function approximation, which we will see in a couple
 of weeks
 
-Partially-observable MDPs
-=========================
-
-Partially Observable MDPs
--------------------------
-
-MDPs assume that the agent always knows exactly what state it is in ---
-the problem is fully-observable. However, this is not valid for many
-tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone
-for survivors will by definition not know the location of survivors; a
-card-player agent will not know the cards its opponent holds; etc.
-
-Partially-observable MDPs (POMDPs) relax the assumption of
-full-observability. A POMDP is defined as:
-
--   states $s \in S$
-
--   set of goal states $G \subseteq S$
-
--   actions $A(s) \subseteq A$
-
--   transition probabilities $P_a(s'|s)$ for $s \in S$ and $a \in A(s)$
-
--   initial **belief state** $b_0$
-
--   reward function $r(s,a,s')$
-
--   a **sensor model** given by probabilities $P_a(o|s)$, $o \in Obs$
-
-Solving POMDPs (an intuitive overview)
---------------------------------------
-
-Solving POMDPs is very similar to solving MDPs. In fact, the same
-algorithms apply. The only difference is that we case the POMDP problem
-as a standard MDP problem with a new state space: each state is a
-**probability distribution** over the set $S$. Thus, each state of the
-POMDP is a **belief state**, which defined the probability of being in
-each state $S$.
-
-Like MDPs, solutions are policies that map belief states into actions.
-
-Optimal policies minimise the expected reward to go from $b_0$ to $G$.
-
-We will not cover this in detail in these notes. However, POMDPs are
-clearly a generalisation of MDPs, and they have had a much larger impact
-on planning for autonomy than standard MDPs.
-
 Summary: MDPs
 -------------
 
@@ -334,9 +270,6 @@ Heuristic search can also be used, but does not produce solutions that
 are as general -- the work only for states that are reachable from the
 initial state of the search.
 
-Partially-observable MDPs generalise MDPs by admitting descriptions in
-which the environment is not fully observable. Techniques for solving
-these are the same as MDPs, but just over a larger search space.
 
 **What's next?** How to *learn* the probabilities over the action
 outcomes using *reinforcement learning*.

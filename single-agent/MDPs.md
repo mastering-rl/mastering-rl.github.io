@@ -190,7 +190,7 @@ $$\begin{array}{|c|c|c|c|}
 \end{array}$$
 
 So, in the initial state (bottom left cell), following this policy the
-agent should go up.
+agent should go up. If it accidently slips right, it should go left again to return to the initial state.
 
 
 Of course, agents do not work with graphical policies. The output from
@@ -214,18 +214,18 @@ is in, looking up the action for that state, and executing the action.
 Then repeat.
 
 
-A stochastic policy $\pi : S \times A \rightarrow \mathbb{R}$
+A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$
 specifies the *probability distribution* from which an agent should
 select an action. Intuitively, $\pi(s,a)$ specifies the probability that
 action $a$ should be executed in state $s$.
 
 To execute a stochastic policy, we could just take the action with the
-maximum $\pi(s,a)$. However, in many domains, it is better to select an
+maximum $\pi(s,a)$. However, in some domains, it is better to select an
 action based on the probability distribution; that is, choose the action
 probablistically such that actions with higher probability are chosen
 proportionally to their relative probabilities.
 
-In this subject, we will focus only on deterministic policies, but
+In this book, we will focus only on deterministic policies, but
 stochastic policies have their place.
 
 ## Solving MDPs
@@ -234,16 +234,18 @@ For discounted-reward MDPs, optimal solutions maximise the *expected
 discounted accumulated reward* from the initial state $s_0$. But what is
 the expected discounted accumulated reward?
 
-In Discounted Reward MDPs, the **expected discounted reward from $s$** is
+:::{admonition} Definition
+The **expected discounted reward from $s$** for a policy $\pi$ is:
 
 $$
 V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(a_i,s_i) \ | \ s_0 = s, a_i = \pi(s_i)]\,
 $$
 
-Thus, $V^{\pi}(s)$ defines the expected value of following the policy
+Sp, $V^{\pi}(s)$ defines the expected value of following the policy
 $\pi$ from state $s$.
+:::
 
-So for our Grid World example, assuming only the -1 and +1 states have
+For our Grid World example, assuming only the -1 and +1 states have
 rewards, the expected value is:
 
 $$
@@ -255,41 +257,127 @@ $$
 $$
 
 
-Bellman equations (Discounted-Reward MDPs)
-------------------------------------------
-
-The *Bellman equations*, identified by Richard Bellman, describe the
-condition that must hold for a policy to be optimal. It generalises to
-problems other than MDPs, but we consider only MDPs here.
-
-For discounted-reward MDPs the Bellman equation is defined recursively
+:::{admonition} Definition
+The *Bellman equation*, identified by Richard Bellman, describes the
+condition that must hold for a policy to be optimal. The Bellman equation is defined recursively
 as:
-$$V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]$$
-Thus, $V$ is optimal **if** for all states $s$, $V(s)$ describes the
+
+$$
+V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]$$
+$$
+:::
+
+
+Therefore, $V$ is optimal **if** for all states $s$, $V(s)$ describes the
 total discounted reward for taking the action with the highest reward
 over an indefinite/infinite horizon.
 
-The reward of an action is: the sum of the immediate reward for all
-states possibly resulting from that action plus the discounted future
-reward of those states; times the probability of that action occurring.
+Let's break this down:
 
-Bellman equations -- An Alternate Formulation
----------------------------------------------
+$$
+V(s) = \overbrace{\max_{a \in A(s)}}^{\text{best action from $s$}} \overbrace{\underbrace{\sum_{s' \in S}}_{\text{for every state}} P_a(s' \mid s) [\underbrace{r(s,a,s')}_{\text{immediate reward}} + \underbrace{\gamma}_{\text{discount factor}} \cdot  \underbrace{V(s')}_{\text{value of } s'}]}^{\text{expected reward of executing action $a$ in state $s$}}
+$$
 
-Sometimes, Bellman equations are described slightly differently, using
-what is known as $Q$-functions.
+First, we calculate the expected reward for each action. The reward of an action is: the sum of the immediate reward for all
+states possibly resulting from that action plus the discounted  future
+reward of those states. The discounted future reward is the $\gamma$ (discount reward) times the value of $s'$, where $s'$ is the state that we end up in. However, because we can end up in multiple states, we must multiple the reward by the probability of it happening: $P_a(s' \mid s)$.
+
+Second, the value $V(s)$ is the value of the action with the maximum the expected reward. This is because the Bellman equation assumes that once we know the best states, we will always take the action that leads to the best state.
+
+---
+
+Bellman equations can be described slightly differently, using
+what are known as *$Q$-functions*.
 
 If $V(s)$ is the expected value of being in state $s$ and acting
 optimally according to our policy, then we can also describe the
 *Q-value* of being in a state $s$, choosing action $a$ and then acting
 optimally according to our policy as:
 
-For discounted-reward MDPs the Bellman equation is defined recursively
+:::{admonition} Definition
+The *Q-value* for action $a$ in state $s$ is defined recursively
 as:
-$$Q(s,a) = \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]$$
+
+$$
+Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
+$$
+:::
 This is just the expression inside the $\max$ expression in the Bellman
-equation. Using this, sometimes you may see the Bellman equation then
-defined as: $$V(s) = \max_{a \in A(s)} Q(s,a)$$ The two definitions are
-equivalent, but you may seem them defined in both ways. However, when we
-move onto reinforcement learning later, we will use $Q$ functions more
-explicitly.
+equation. Using this, we can then Bellman equation then
+defined as: 
+
+$$
+V(s) = \max_{a \in A(s)} Q(s,a)
+$$ 
+
+The two definitions are equivalent, and you may seem them defined in both ways. However, when we
+move onto Q-learning later, we will use $Q$ functions more explicitly.
+
+
+## Policy extraction
+
+Given a value function $V$, how should we then select the
+action to play in a given state? It is reasonably straightforward:
+select the action that maximises our expected utility!
+
+So, given $V$, we can select the action with the highest expected reward
+using:
+
+$$\text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
+
+This is known as *policy extraction*, because it extracts a policy for a
+value function (or Q-function). This can be calculated 'on the fly' at
+runtime, or we can extract a policy beforehand and use this.
+
+Alternatively, given a Q-function instead of a value function, we can
+use: 
+
+$$\text{argmax}_{a \in A(s)} Q(s,a)$$ 
+
+This is simpler than using the value functions because we do not need to sum over the set of
+possible output states, but we need to store $|A| \times |S|$ values in a Q-function, but just $|S|$ values in a value function.
+
+
+
+## Partially Observable MDPs
+
+MDPs assume that the agent always knows exactly what state it is in ---
+the problem is fully-observable. However, this is not valid for many
+tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone
+for survivors will by definition not know the location of survivors; a
+card-player agent will not know the cards its opponent holds; etc.
+
+:::{admonition} Definition
+*Partially-observable MDPs* (POMDPs) relax the assumption of
+full-observability. A POMDP is defined as:
+
+-   states $s \in S$
+
+-   set of goal states $G \subseteq S$
+
+-   actions $A(s) \subseteq A$
+
+-   transition probabilities $P_a(s' \mid s)$ for $s \in S$ and $a \in A(s)$
+
+-   initial **belief state** $b_0$
+
+-   reward function $r(s,a,s')$
+
+-   a **sensor model** given by probabilities $O_a(o \mid s)$, $o \in Obs$
+:::
+
+The sensor model allows the agent to observe the environment. If an agent executes an action $a$, it has probability $O_a(o \mid s')$ of observing state $s'$.
+
+
+Solving POMDPs is very similar to solving MDPs. In fact, the same
+algorithms apply. The only difference is that we case the POMDP problem
+as a standard MDP problem with a new state space: each state is a
+**probability distribution** over the set $S$. Thus, each state of the
+POMDP is a **belief state**, which defined the probability of being in
+each state $S$.
+
+Like MDPs, solutions are policies that map belief states into actions. Optimal policies minimise the expected reward.
+
+We will not cover this in detail in these notes. However, POMDPs are
+clearly a generalisation of MDPs, and they have had a much larger impact
+on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which one is acting.
