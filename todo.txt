@@ -1,0 +1,42 @@
+
+- If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
+
+
+
+Part I: Introduction
+ - Overview
+ - Why I wrote this
+ - If you use, let me know
+
+Part II: Single-agent RL
+ 1. MDPs
+   1.1 Definition
+   1.2 Policies
+   1.3 Bellman equations
+   1.3 POMPDPs
+ 2. Value-based methods
+   2.1 Model-based vs model free
+   2.2 Value iteration
+   2.3 Q-learning
+   2.4 SARSA
+   2.5 Off-policy vs on-policy RL
+   2.6 Function approximation
+   2.7 Monte-carlo tree search
+ 3. Policy-based methods
+   3.1 Policy iteration
+   3.2 Generalised policy iteration **
+   3.3 Policy gradients **
+ 4. Architectures **
+   3.1 Actor critic methods **
+
+Part III: Multi-agent RL
+ 1. Normal-form games
+   1.1 Equilibria
+   1.2 Analytical solutions
+   1.3 Multi-armed bandits **
+ 2. Extensive-form games
+   2.1 Backward induction
+   2.2 Multi-agent value-based methods *
+   2.3 Multi-agent MCTS *
+   2.4 Multi-agent policy gradients *
+   2.5 AlphaZero *
