@@ -323,7 +323,7 @@ select the action that maximises our expected utility!
 So, given $V$, we can select the action with the highest expected reward
 using:
 
-$$\text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
+$$\pi(s) = \text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
 
 This is known as *policy extraction*, because it extracts a policy for a
 value function (or Q-function). This can be calculated 'on the fly' at
@@ -332,7 +332,7 @@ runtime, or we can extract a policy beforehand and use this.
 Alternatively, given a Q-function instead of a value function, we can
 use: 
 
-$$\text{argmax}_{a \in A(s)} Q(s,a)$$ 
+$$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$ 
 
 This is simpler than using the value functions because we do not need to sum over the set of
 possible output states, but we need to store $|A| \times |S|$ values in a Q-function, but just $|S|$ values in a value function.

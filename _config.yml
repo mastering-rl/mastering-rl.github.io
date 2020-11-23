@@ -6,6 +6,7 @@ author: Tim Miller
 logo: uom.png
 header-includes: 
   - \usepackage{tikz}
+  - \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
@@ -14,6 +15,7 @@ execute:
 
 # Define the name of the latex output file for PDF builds
 latex:
+  latex_engine              : pdflatex  # one of 'pdflatex', 'xelatex' (recommended for unicode), 'luatex', 'platex', 'uplatex
   latex_documents:
     targetname: book.tex
 
@@ -32,3 +34,4 @@ html:
 # Enable extended syntax
 parse:
   myst_extended_syntax: true
+

@@ -1,8 +1,8 @@
-# Model-based
+# Model-based methods
 
-## Learning Outcomes
+**Chapter learning outcomes**
 
-
+The learning outcomes of this chapter are:
 
 1.  Apply value iteration to solve small-scale MDP problems manually and
     program value iteration algorithms to solve medium-scale MDP
@@ -15,7 +15,7 @@
 4.  Discuss the strengths and weaknesses of value iterapdflatextion and
     policy iteration algorithms
 
-## Relevant Reading
+**Relevant Reading**
 
 -   *Any* introduction to probability theory --- see the related reading
     on the LMS if you are unfamiliar.
@@ -30,23 +30,31 @@
 
 
 
-Using the Bellman Equations: Value Iteration
---------------------------------------------
+## Value Iteration
 
-**Value Iteration** finds the optimal value function $V^*$ solving the
-Bellman equations iteratively, using the following algorithm:
 
--   Set $V_0$ to arbitrary value function; e.g., $V_0(s)=0$ for all $s$.
+**Value Iteration** is a method for finding the optimal value function $V^*$ by solving the
+Bellman equations iteratively.
 
--   Set $V_{i+1}$ to result of Bellman's **right hand side** using $V_i$
-    in place of $V$:
-    $$V_{i+1}(s) := \max_{a \in A(s)} \sum_{s' \in S}  P_a(s'|s)\ [r(s,a,s') +  \gamma\ V_i(s') ]$$
+Once we understand the Bellman equation, the value iteration algorithm is straightforward:
 
-This converges exponentially fast to the optimal policy as iterations
-continue.
+:::{admonition} Algorithm -- Value Iteration
 
-$V_i \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite
-amount of iterations, it will be optimal.
+**Input:** MDP\
+**Output:** Value function $V$
+
+Set $V_0$ to arbitrary value function; e.g., $V_0(s)=0$ for all $s$
+
+$\text{Repeat}$\
+$\quad\quad \Delta \leftarrow 0$\
+$\quad\quad \text{For each}~ s \in S$\
+$\quad\quad\quad\quad v \leftarrow V(s)$\
+$\quad\quad\quad\quad \underbrace{V(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}}$\
+$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |v - V(S)|)$\
+$\text{Until}~ \Delta \leq \theta$
+:::
+
+This converges exponentially fast to the optimal policy as iterations continue. $V \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite amount of iterations, it will be optimal.
 
 The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration,
 we iterate in an outer loop over all states in $S$, and in each outer
@@ -54,37 +62,39 @@ loop iteration, we need to iterate over all states ($\sum_{s' \in S}$),
 meaning $|S|^2$ iterations. But also within each outer loop iteration,
 we need to calculate the value for every action to find the maximum.
 
-Value Iteration in Practice
----------------------------
-
-Value Iteration converges to the optimal value function $V^*$
+Value iteration converges to the optimal value function $V^*$
 asymptotically, but in practice, the algorithm is stopped when the
-**residual** $R = \max_s|V_{i+1}(s)-V_i(s)|$ reaches some pre-determined
-threshold $\epsilon$ -- that is, when the largest change in the values
+**residual**  $\Delta$ reaches some pre-determined
+threshold $\theta$ -- that is, when the largest change in the values
 between iterations is "small enough".
 
+A policy can now be easily defined: in a state $s$, given $V$, choose
+the action with the highest expected reward using policy extraction.
 The resulting greedy policy $\pi_V$ has it's **loss** bounded by
-$2 \gamma  R / 1-\gamma$.
+$2 \gamma  \Delta / 1-\gamma$.
 
 It is clear to see that the value iteration can be easily parallelised
 by updating the value of many states at once: the values of states at
 step $t + 1$ are dependent only on the value of other states at step
 $t$.
 
-A policy can now be easily defined: in a state $s$, given $V$, choose
-the action with the highest expected reward.
+
 
 Value iteration example: Grid World.
 ------------------------------------
 
 Assuming $\gamma = 0.9$.
 
-$$\begin{array}{|c|c|c|c|}
-\multicolumn{4}{c}{\textrm{After 1 iteration}}\\
+After 1 iteration
+
+$$
+\text{After 1 iteration}
+
+\begin{array}{|c|c|c|c|}
 \hline
 0.00 & 0.00 & 0.00 & +1\\
 \hline
-0.00 & \cellcolor{gray!25}  & 0.00  & -1\\
+0.00 & --  & 0.00  & -1\\
 \hline
 0.00 & 0.00 & 0.00  & 0.00\\
 \hline
