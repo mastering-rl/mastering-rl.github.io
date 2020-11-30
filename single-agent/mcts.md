@@ -92,10 +92,10 @@ online are often called *Monte Carlo* methods, because they use
 To get the idea of MCTS, we note that MDPs can be represented as trees
 (or graphs), called *ExpectiMax* trees:
 
-```{figure} ./latex/mcts_tree_probabilistic-1.png
-:name: label
+```{figure} ./latex/mcts_expectimax.png
+:name: expectimax
 
-caption
+Abstract example of an ExpectiMax Tree
 ```
 
 The letters a-e represent actions, and letters $s$-$x$ represent states.
@@ -162,6 +162,12 @@ Monte Carlo Tree Search: Selection
 
 Start at the root node, and successively select a child until we reach a
 node that is not fully expanded.
+
+```{figure} ./latex/mcts_selection.png 
+:name: mcts_selection
+
+caption
+```
 
 Monte Carlo Tree Search: Expansion
 

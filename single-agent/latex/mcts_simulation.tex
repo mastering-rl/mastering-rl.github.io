@@ -1,7 +1,6 @@
-\input{tikz-macros}
+\input{../../latex/tikz-macros}
 
 \begin{document}
-
 \begin{tikzpicture}[->,>=stealth',level/.style={sibling distance = 9.5cm/#1,
 	level distance = 1.6cm},scale=0.7] 
 
@@ -12,7 +11,7 @@
 \tikzstyle{level 3}=[sibling distance=3cm]
 \tikzstyle{level 4}=[sibling distance=1.5cm]
 \tikzstyle{level 5}=[sibling distance=1cm]
-\node [updated_n] {$s_0$}
+\node [reg_n] {$s_0$}
 child{ node [prob_reg_n] {} 
 	child{ node [idle] {$t$} 
 		child{ node [prob_n] {}	
@@ -26,25 +25,25 @@ child{ node [prob_reg_n] {}
 		}
 		edge from parent [draw,black,thin]   node[sloped, anchor=south] {\prob{a}{t}{s_0}}
 	}
-	child{ node [updated_n] {$t'$}
+	child{ node [reg_n] {$t'$}
 		child{ node [prob_gen_n] {}	
 			child{ node [gen_n] {$y$} 
-				edge from parent [draw,thick,blue] node[sloped, anchor=south] {\prob{c}{y}{t'}}
+				edge from parent node[sloped, anchor=south] {\prob{c}{y}{t'}}
 			} 
 			child{ node [gen_n] {$y'$}         
-				edge from parent[draw,thick,blue]  node[sloped, anchor=south] {\prob{c}{y'}{t'}}    
+				edge from parent node[sloped, anchor=south] {\prob{c}{y'}{t'}}    
 			}
-			child{ node [updated_n] {$y''$}
+			child{ node [sim_n] {$y''$}
 				child{ node [sim_n,very thick] {$T$}
-					edge from parent [draw,thick,green,decorate] node {}
+					edge from parent [draw,thick,pink,decorate] node {}
 				}     
 				edge from parent node[sloped, anchor=south] {\prob{c}{y''}{t'}}    
 			}
-			edge from parent node[left] {f}
+			edge from parent [draw,thick,blue] node[left] {f}
 		}
 		edge from parent node[sloped, anchor=south] {\prob{a}{t'}{s_0}}
 	}                            
-	edge from parent [draw,green,thick] node[above left] {a} 
+	edge from parent [draw,red,thick] node[above left] {a} 
 }   
 child{ node [prob_n] {}
 	child{ node [idle] {$u$} 

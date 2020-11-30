@@ -1,4 +1,4 @@
-\input{tikz-macros}
+\input{../../latex/tikz-macros}
 
 \begin{document}
 
@@ -10,24 +10,24 @@
 \tikzstyle{level 3}=[sibling distance=3cm]
 \tikzstyle{level 4}=[sibling distance=1.5cm]
 \tikzstyle{level 5}=[sibling distance=1cm]
-\node [reg_n] {$s_0$}
-child{ node [prob_reg_n] {} 
+\node [idle] {$s_0$}
+child{ node [prob_n] {} 
 	child{ node [idle] {$t$} 
 		child{ node [prob_n] {}	
 				child{ node [idle] {$v$} 
 				edge from parent node[sloped, anchor=south] {\prob{c}{v}{t}}
 			} 
 			child{ node [idle] {$v'$}         
-				edge from parent [draw,black,thin]  node[sloped, anchor=south] {\prob{c}{v'}{t}}    
+				edge from parent node[sloped, anchor=south] {\prob{c}{v'}{t}}    
 			}
-			edge from parent   node[left] {c}
+			edge from parent node[left] {c}
 		}
-		edge from parent [draw,black,thin]   node[sloped, anchor=south] {\prob{a}{t}{s_0}}
+		edge from parent node[sloped, anchor=south] {\prob{a}{t}{s_0}}
 	}
-	child{ node [reg_n] {$t'$}
+	child{ node [idle] {$t'$}
 		edge from parent node[sloped, anchor=south] {\prob{a}{t'}{s_0}}
 	}                            
-	edge from parent [draw,red,thick] node[above left] {a} 
+	edge from parent node[above left] {a} 
 }   
 child{ node [prob_n] {}
 	child{ node [idle] {$u$} 
