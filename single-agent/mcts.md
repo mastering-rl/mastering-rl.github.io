@@ -38,12 +38,12 @@
     -   All you want to know about regret analysis and multi-armed
         bandits
 
-## Offline Planning & Online Planning over MDPs
+## Offline Planning & Online Planning forMDPs
 
-We saw value iteration in the previous chapter.
+We saw value iteration in the previous section.
 This is an *offline* planning method because we solve the problem
 offline for all possible states, and then use the solution (a policy)
-online to act. These offline planning policies $\pi$ such that:
+online to act. These offline planning methods derive a policy $\pi$ such that:
 
 -   We can define policies that work from any state in a convenient
     manner.
@@ -54,10 +54,10 @@ online to act. These offline planning policies $\pi$ such that:
 -   There are methods to approximate the MDP by reducing the
     dimensionality of $S$, but we will not discuss these until later.
 
-In online planning, planning is undertaken immediately before executing
+In *online* planning, planning is undertaken immediately before executing
 an action. Once an action (or perhaps a sequence of actions) is
-executed, we start planning from the current state. As such, planning
-and execution are interleaved.
+executed, we start planning again from the new state. As such, planning
+and execution are interleaved such that:
 
 -   For each state $s$ visited, many policies $\pi$ are partially evaluated
 
@@ -68,17 +68,17 @@ and execution are interleaved.
 -   The chosen policy $\hat{\pi}$ is selected and the action
     $\hat{\pi}(s)$ executed.
 
-The question is: how to we do the repeated simuations? Monte Carlo
+The question is: how to we do the repeated simuations? *Monte Carlo*
 methods are by far the most widely-used approach.
 
-# Monte Carlo Tree Search --- The Basics
-======================================
-
-Monte Carlo
+## Overview
 
 Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all
 based around the same idea. Here, we will focus on using an algorithm
-for solving single-agent MDPs in a model-based manner. Later, we look at solving single-agent MDPs in a model-free manner and multi-agent MDPs using MCTS.
+for solving single-agent MDPs in a model-based manner. 
+
+Later, we look at solving single-agent MDPs in a model-free manner and 
+multi-agent MDPs using MCTS.
 
 *Monte Carlo* is an area within Monaco (small principality on the French
 riviera), which is best known for its extravagent casinos. As gambling
@@ -87,12 +87,16 @@ online are often called *Monte Carlo* methods, because they use
 *randomness* to search the action space.
 
 
-Foundation: MDPs as ExpectiMax Trees
+## Foundation: MDPs as ExpectiMax Trees
 
 To get the idea of MCTS, we note that MDPs can be represented as trees
 (or graphs), called *ExpectiMax* trees:
 
+```{figure} ./latex/mcts_tree_probabilistic-1.png
+:name: label
 
+caption
+```
 
 The letters a-e represent actions, and letters $s$-$x$ represent states.
 White nodes are state nodes, and the small black nodes represent the

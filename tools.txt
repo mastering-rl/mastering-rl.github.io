@@ -8,3 +8,8 @@ pandoc for converting tex to markdown:
 
 Tikz magic (not currently used): 
 - https://github.com/mkrphys/ipython-tikzmagic
+
+
+Convert PDF to PNG:
+- pdftoppm -png input.pdf output  (don't add extension -- auto-generated)
+- convert input.pdf -quality 300 -colorspace RGB output.png  (blurry result) 
