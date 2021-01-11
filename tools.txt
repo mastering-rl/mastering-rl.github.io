@@ -1,5 +1,5 @@
 Jupyter book
-- jupyterbook build rl-notes
+- jupyter-book build rl-notes
 
 pandoc for converting tex to markdown:
 

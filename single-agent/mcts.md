@@ -103,7 +103,7 @@ White nodes are state nodes, and the small black nodes represent the
 probabilistic uncertainty: the 'environment' choosing which outcome from
 an action happens, based on the transition function.
 
-Monte Carlo Tree Search -- Overview
+## Monte Carlo Tree Search -- Overview
 
 The algorithm is online, which means the action selection is interleaved
 with action execution. Thus, MCTS is invoked every time an agent visits
@@ -129,7 +129,7 @@ Fundamental features:
     unusual -- if the problem is that small we should just use
     value/policy iteration).
 
-The Framework: Monte Carlo Tree Search (MCTS)
+## The Framework: Monte Carlo Tree Search (MCTS)
 
 Build up an MDP tree using simulation. The evaluated states are stored
 in a search tree. The set of evaluated states is *incrementally* built
@@ -152,13 +152,12 @@ be iterating over the following four steps:
     to the root node, updating the value of each ancestor node on the
     way using expected value.
 
-The Framework: Monte Carlo Tree Search (MCTS)
 
 From: Chaslot, Guillaume, Sander Bakkes, Istvan Szita, and Pieter
 Spronck. \"Monte-Carlo Tree Search: A New Framework for Game AI.\" In
 *AIIDE*. 2008. <https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf>
 
-Monte Carlo Tree Search: Selection
+### Selection
 
 Start at the root node, and successively select a child until we reach a
 node that is not fully expanded.
@@ -169,27 +168,144 @@ node that is not fully expanded.
 caption
 ```
 
-Monte Carlo Tree Search: Expansion
+### Expansion
 
 Unless the node we end up at is a terminating state, expand the children
 of the selected node by choosing an action and creating new nodes using
 the action outcomes.
 
-Monte Carlo Tree Search: Simulation
+```{figure} ./latex/mcts_expansion.png 
+:name: mcts_expansion
+
+caption
+```
+
+### Simulation
 
 Choose one of the new nodes and perform a random simulation of the MDP
 to the terminating state:
 
-Monte Carlo Tree Search: Backpropagation
+```{figure} ./latex/mcts_simulation.png 
+:name: mcts_simulation
+
+caption
+```
+
+### Backpropagation
 
 Given the reward $r$ at the terminating state, *backpropagate* the
 reward to calculate the value $V(s)$ at each state along the path.
 
-Monte Carlo Tree Search: Algorithm
+```{figure} ./latex/mcts_backpropagation.png 
+:name: mcts_backpropagation
+
+caption
+```
+
+### Algorithm
 
 **Input**: MDP $M$, with initial state $s_0$ and time limit $T$.
 
-Monte Carlo Tree Search: Execution
+:::{admonition} Algorithm -- Monte-Carlo Tree Search
+
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')$, base value function $V$, time limit $T$.\
+**Output:** selected action $a$
+
+**while** $currentTime < T$\
+$\quad\quad expand\_node \leftarrow \textrm{Select}(root)$\
+$\quad\quad children \leftarrow \textrm{Expand}(expand\_node)$\
+$\quad\quad child \leftarrow \textrm{Choose}(children)$ -- choose a child to simulate\
+$\quad\quad reward \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
+$\quad\quad \textrm{Backpropagate}(expand\_node, reward)$\
+**return** $\textrm{argmax}_{a} Q(s_0, a)$
+:::
+
+Each node stores three items:
+
+1.  $V(s)$ (an estimate of the value of the state) for its state;
+
+2. the number of times $N$ the state has been visited; and
+
+3. a pointer to their parent node.
+
+Select($root$)
+
+- Recursively select the next node using some probabilistic policy (we'll see more of this in the Multi-Armed Bandits section later), until we reach a node that is not fullyexpanded
+
+- At each choice point, select one of the edges in the tree. 
+
+- Then, using $P_a(s' \mid s)$, select the outcome for that action. Thus, our simulation follows the probability transitions of the underlying model.
+
+
+Expand($expand\_node$)
+
+- Take the selected node and randomly select an action that can be applied in thatstate and has not been selected previously in that state.
+
+- Expand all possible outcomes nodes for that action.
+
+- Check if the generated nodes are already in tree.  If not in the tree, *add* these nodes to the tree.
+
+:::{note} 
+$P_a(s' \mid s)$ is stochastic, so several visits (in theory an infinite number) may be necessary to generate all successors.
+:::
+
+
+Simulate($child$)
+
+- Perform a random simulation of the MDP until we reach a terminating state.That is, at each choice point, randomly select an enable action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action.
+
+- We can use non-random simulation as well by following some heuristic, but we will not look at this in these notes.
+
+- $reward$ is the reward obtained over the entire simulation.
+
+- To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
+
+Backpropagation($expand\_node$, $reward$)
+
+- The reward from the simulation is backpropagated from the expanded node to its ancestors recursively.
+We must not forget the $discount factor$!
+
+- For each state, get the expected value of all actions from that node:
+
+$$
+V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s′) + \gamma V(s')]
+$$
+
+Does this look familiar?! It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
+
+Example -- Backpropagation
+
+Consider the following ExpectiMax tree that has been expanded several times. In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes.
+
+```{figure} ./latex/mcts_example.png
+:name: mcts_example
+```
+
+The backpropagation step is then calculated for the nodes $y''$, $t'$, and $s$ as follows:
+
+$$
+\begin{array}{lll}
+  V(y'')  & = & \max_{a\in A} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]\\
+          & = & \gamma^{13} \times 100~~\textrm{(simulation is 13 steps long and receives reward of 100)}\\
+          & \approx &   25\\
+  ~~\\
+  V(t')   & = &  max_{a\in \{f\}} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]\\
+          & = &  0.1(0+0) ~+~ 0.1(0+0) ~+~ 0.8(0 + 0.9 \times 25)\\
+          & = &  18\\
+ ~~\\
+  V(s)    & = & \max_{a\in \{a,b\}} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]\\
+          & = & \max(0.8(0 + 0.9 \times 12) + 0.2(7 + 0.9 \times 18),~~ \textrm{(action a)}\\
+          &   & \quad\quad 0.5(0 + 0.9 \times 40) + 0.5(0 + 0.9 \times 20))~~ \textrm{(action b)}\\
+          & = & \max(8.64 + 4.62,~ 18 + 9)\\
+          & = & 27\\
+\end{array}
+$$
+
+The value of $V(s)$ does not
+change because action b still returns the maximum discounted future
+reward.
+
+### Execution
 
 Once we have run out of computational time, we select the action that
 maximises are expected return, which is simply the one with the highest
@@ -212,25 +328,7 @@ state has been visited, and the length of the simulation is 13. After
 the simulation step, but before backpropagation, our tree would look
 like this:
 
-Example (the backpropagation step)
 
-  ---------- ----------- -------------------------------------------------------------------------------------------
-  $V(y'')$   $=$         $\max_{a\in A} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]$
-             $=$         $\gamma^{13} \times 100$ (simulation is 13 steps long and receives reward of 100)
-             $\approx$   25
-  $V(t')$    $=$         $\max_{a\in \{f\}} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]$
-             $=$         $0.1(0+0) ~+~ 0.1(0+0) ~+~ 0.8(0 + 0.9 \times 25)$
-             $=$         $18$
-  $V(s)$     $=$         $\max_{a\in \{a,b\}} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]$
-             $=$         $\max(0.8(0 + 0.9 \times 12) + 0.2(7 + 0.9 \times 18)$, (action [a]{.sans-serif})
-                          $0.5(0 + 0.9 \times 40) + 0.5(0 + 0.9 \times 20)$ (action [b]{.sans-serif})
-             $=$         $\max(8.64 + 4.62,~ 18 + 9)$
-             $=$         $27$
-  ---------- ----------- -------------------------------------------------------------------------------------------
-
-Example (after the backpropagation step) The value of $V(s)$ does not
-change because action b still returns the maximum discounted future
-reward.
 
 Quiz Example
 
@@ -249,22 +347,19 @@ Canvas quiz answer
            $=$   $30.56$ rounded to $30.6$
   -------- ----- -------------------------------------------------------------------------------------------
 
-Multi-arm Bandits
-=================
 
-Informed Search
+## Multi-arm Bandits
 
-There is one key question that we need to answer:
 
-How do we select the next node to expand?
+There is one key question that we need to answer in the MCTS algoritm: How do we select the next node to expand?
 
 It turns out that this selection makes a big difference on the
 performance of MCTS.
 
-Multi-Armed Bandit: Informal Definition
+### Intuition
 
 The selection of nodes can be considered an instance of the *Multi-armed
-bandit* problem. This problem is defined as follows:
+bandit* problem. This problem can be illustrated as follows:
 
 > Imagine that you have $N$ number of slot machines (or poker machines
 > in Australia), which are sometimes called *one-armed bandits*. Over
@@ -273,10 +368,6 @@ bandit* problem. This problem is defined as follows:
 > to maximize the sum of the rewards of a sequence of lever pulls of the
 > machine.
 
-![image](../images/multiarmedbandit.jpg)
-
-Image courtest of Mathworks blog:
-<https://blogs.mathworks.com/loren/2016/10/10/multi-armed-bandit-problem-and-exploration-vs-exploitation-trade-off/>
 
 Multi-Armed Bandit: Formal Definition
 
