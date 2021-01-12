@@ -1,11 +1,6 @@
-Agenda
+## $n$-step Reinforcement Learning: TD($\lambda$)
 
-Motivation
-==========
-
- {#section .unnumbered}
-
-Learning Outcomes
+** Learning Outcomes**
 
 1.  Manually apply n-step reinforcement learning approximation to solve
     small-scale MDP problems given a set of
@@ -15,9 +10,9 @@ Learning Outcomes
 
 3.  Argue the strengths and weaknesses of n-step reinforcement learning
 
-Reinforcement Learning -- Some Weaknesses
+### Motivation
 
-In the previous lecture, we looked at two fundamental temporal
+In the previous sections on of this chapter, we looked at two fundamental temporal
 difference (TD) methods for reinforcement learning: Q-learning and
 SARSA.
 
@@ -46,37 +41,11 @@ These two methods have some weaknesses in this basic format:
     struggle to find good rewards. Remember the Freeway demo from the
     previous lecture?
 
-Reinforcement Learning -- Some Improvements
-
-To get around these limitations, we are going to look at three simple
-approaches that can improve temporal difference methods:
-
-1.  *$n$-step temporal difference learning*: Monte Carlo techniques
+To get around these limitations, we are going to look at *$n$-step temporal difference learning*: Monte Carlo techniques
     execute entire traces and then backpropagate the reward, while basic
     TD methods only look at the reward in the next step, estimating the
     future wards. $n$-step methods instead look $n$ steps ahead for the
     reward before updating the reward, and then estimate the remainder.
-    *This lecture!*
-
-2.  *Approximate methods*: Instead of calculating an exact Q-function,
-    we approximate it using simple methods that both eliminate the need
-    for a large Q-table (therefore the methods scale better), and also
-    allowing use to provide reasonable estimates of $Q(s,a)$ *even if we
-    have not applied action $a$ in state $s$ previously*. *Next
-    lecture!*
-
-3.  *Reward shaping and Value-Function Initialisation*: If rewards are
-    sparse, we can modify/augment our reward function to reward
-    behaviour that we think moves us closer to the solution, or we can
-    guess the optimal Q-function and initial $Q(s,a)$ to be this. *Next
-    lecture!*
-
-$n$-step learning: TD($\lambda$)
-================================
-
- {#section-1 .unnumbered}
-
-Approaches to AI Planning and Learning
 
 $n$-step TD learning comes from the idea used in the image below. Monte
 Carlo methods uses 'deep backups', where entire traces are executed and
@@ -87,7 +56,7 @@ having explored ahead $n$ steps.
 
 ![image](../images/RL_approaches){width="0.8\linewidth"}
 
-TD($\lambda$)
+### TD($\lambda$)
 
 We will look at TD($\lambda$), in which $\lambda$ is the parameter that
 determines $n$: the number of steps that we want to look ahead before
@@ -95,11 +64,11 @@ updating the Q-function. Thus, TD(0) is just 'standard' reinforcement
 learning, and TD(1) looks one step beyond the immediate reward, TD(2)
 looks two steps beyond, etc.
 
-Both Q-learning and SARSA have $n$-step version. We will look at
+Both Q-learning and SARSA have an $n$-step version. We will look at
 TD($\lambda$) more generally, and then show an algorithm for $n$-step
 SARSA. The version for Q-learning is similar.
 
-Discounted Future Rewards (again)
+#### Discounted Future Rewards (again)
 
 When calculating a discounted reward over a trace, we can re-write as:
 
@@ -121,7 +90,7 @@ estimated value of the next action (SARSA).
 
 This is a *one-step return*.
 
-Truncated Discounted Rewards
+####Truncated Discounted Rewards
 
 However, we can estimate a two-step return:
 $$G^2_t = r_t + \gamma r_{t+1} + \gamma^3 V(s_{t+2})$$ or three-step
@@ -141,11 +110,11 @@ In Monte-Carlo methods, we go all the way to the end of an episode.
 Monte-Carlo Tree Search is one such Monte-Carlo method, but there are
 others that we do not cover.
 
-Different Levels Truncated Rewards
+#### Different Levels Truncated Rewards
 
 ![image](../images/n-step-TD-returns)
 
-Updating the Q-function
+### Updating the Q-function
 
 The update rule for the Q-function is then different. First, we need to
 calculate the truncated reward for $n$ steps, in which $\tau$ is the
@@ -183,7 +152,7 @@ Computationally, this is not much worse than 1-step learning. We need to
 store the last $n$ states, but the per-step computation is small and
 uniform for n-step, just as for 1-step.
 
-$n$-step SARSA
+### $n$-step SARSA
 
 ![image](../images/sarsa_lambda_alg){width="0.8\linewidth"}
 
@@ -199,7 +168,6 @@ Assuming $Q(s,a)=0$ for all $s$ and $a$, if we (finally) traverse the
 episode the labelled episode, what will our Q-function look like for a
 5-step update with $\alpha=0.5$ and $\gamma=0.9$?
 
-Exercise (continued)
 
 We only receive a reward in the last action, and all other actions give
 an immediate reward of 0 until then:
@@ -219,7 +187,7 @@ So, we update the Q-value for the state $(0,2)$, which is 5 steps back:
                  $\leftarrow$   $0.2953$
   -------------- -------------- --------------------------------------------
 
-Exercise (continued) The table below compares 1-step vs. 5-step SARSA
+The table below compares 1-step vs. 5-step SARSA
 for the trace above. In 1-step SARSA, reaching the reward only informs
 the state from which it is reached. Whereas for 5-step, it informs the
 previous five steps. Then, in the next episode, there is more chance of
@@ -256,7 +224,7 @@ instead of just one. The rewards 'spread' throughout the Q-table faster.
   ...                                   
   ----------- ------- -------- -------- ------
 
-Simple experiment: Random Walk Consider the following simple
+### Simple experiment: Random Walk Consider the following simple
 deterministic Markov reward process:
 
 ![image](../images/random-walk-mdp)
@@ -269,12 +237,8 @@ $\alpha$ and $n$. The y-axis shows the root mean-squared error:
 $n=1$ is TD(0), while larger $n$ are closer to Monte-Carlo methods. Note
 that the 'in between' parameters perform best in this example.
 
-Combining MCTS and TD (Not examinable, but very interesting!)
-=============================================================
+## Combining MCTS and TD
 
- {#section-2 .unnumbered}
-
-Combining MCTS and Reinforcement Learning: AlphaGo Zero (Not examinable)
 AlphaGo Zero (or more accurately its predecessor AlphaGo) made headlines
 when it beat Go world champion Lee Sodol in 2016. It uses a combination
 of MCTS and (deep) reinforcement learning to learn a policy. A simple

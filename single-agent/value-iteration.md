@@ -1,42 +1,37 @@
-# Model-based methods
+## Value Iteration
 
-**Chapter learning outcomes**
+
+**Learning outcomes**
 
 The learning outcomes of this chapter are:
 
-1.  Apply value iteration to solve small-scale MDP problems manually and
-    program value iteration algorithms to solve medium-scale MDP
-    problems automatically
+1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to 
+    solve medium-scale MDP problems automatically
 
 2.  Construct a policy from a value function
 
 3.  Compare and contrast value iteration to policy iteration
 
-4.  Discuss the strengths and weaknesses of value iterapdflatextion and
-    policy iteration algorithms
+4.  Discuss the strengths and weaknesses of value iteration and policy iteration algorithms
+
+
 
 **Relevant Reading**
 
--   *Any* introduction to probability theory --- see the related reading
-    on the LMS if you are unfamiliar.
+- *Any* introduction to probability theory --- see the related reading on the LMS if you are unfamiliar.
 
--   Chapter 17 of *Artificial Intelligence --- A Modern Approach* by
-    Russell and Norvig. Available in the university library and online
-    in PDF format.
+- Chapter 17 of *Artificial Intelligence --- A Modern Approach* by Russell and Norvig. Available in the 
+    university library and online in PDF format.
 
--   Chapter 4 of *Reinforcement Learning: An Introduction, second
-    edition*. Freely downloadable at
+- Chapter 4 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at 
     <http://www.incompleteideas.net/book/RLbook2020.pdf>
 
-
-
-## Value Iteration
 
 
 **Value Iteration** is a method for finding the optimal value function $V^*$ by solving the
 Bellman equations iteratively.
 
-Once we understand the Bellman equation, the value iteration algorithm is straightforward:
+Once we understand the Bellman equation, the value iteration algorithm is straightforward.
 
 :::{admonition} Algorithm -- Value Iteration
 
@@ -54,7 +49,9 @@ $\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |v - V(S)|)$\
 $\text{Until}~ \Delta \leq \theta$
 :::
 
-This converges exponentially fast to the optimal policy as iterations continue. $V \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite amount of iterations, it will be optimal.
+As we can see, this is just applying the Bellman equation iteratively until either the value function $V$ doesn't change anymore, or until it changes in by a very small amount ($\theta$).
+
+Value iteration converges to the optimal policy as iterations continue. $V \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite amount of iterations, it will be optimal.
 
 
 Value iteration converges to the optimal value function $V^*$
@@ -68,7 +65,7 @@ the action with the highest expected reward using policy extraction.
 The resulting greedy policy $\pi_V$ has it's **loss** bounded by
 $2 \gamma  \Delta / 1-\gamma$.
 
-## Complexity
+### Complexity
 
 The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration,
 we iterate in an outer loop over all states in $S$, and in each outer

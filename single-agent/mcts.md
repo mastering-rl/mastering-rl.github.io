@@ -1,6 +1,6 @@
-# Monte-Carlo Tree Search
+## Monte-Carlo Tree Search
 
-## Learning Outcomes
+**Learning Outcomes**
 
 1.  Explaing the difference between offline and online planning for
     MDPs.
@@ -20,7 +20,7 @@
 7.  Discuss the strengths and weaknesses of the MCTS family of
     algorithms.
 
-## Relevant Reading
+### Relevant Reading
 
 -   Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second
     edition*. Freely downloadable at
@@ -38,7 +38,7 @@
     -   All you want to know about regret analysis and multi-armed
         bandits
 
-## Offline Planning & Online Planning forMDPs
+### Offline Planning & Online Planning forMDPs
 
 We saw value iteration in the previous section.
 This is an *offline* planning method because we solve the problem
@@ -71,7 +71,7 @@ and execution are interleaved such that:
 The question is: how to we do the repeated simuations? *Monte Carlo*
 methods are by far the most widely-used approach.
 
-## Overview
+### Overview
 
 Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all
 based around the same idea. Here, we will focus on using an algorithm
@@ -87,7 +87,7 @@ online are often called *Monte Carlo* methods, because they use
 *randomness* to search the action space.
 
 
-## Foundation: MDPs as ExpectiMax Trees
+### Foundation: MDPs as ExpectiMax Trees
 
 To get the idea of MCTS, we note that MDPs can be represented as trees
 (or graphs), called *ExpectiMax* trees:
@@ -103,7 +103,7 @@ White nodes are state nodes, and the small black nodes represent the
 probabilistic uncertainty: the 'environment' choosing which outcome from
 an action happens, based on the transition function.
 
-## Monte Carlo Tree Search -- Overview
+### Monte Carlo Tree Search -- Overview
 
 The algorithm is online, which means the action selection is interleaved
 with action execution. Thus, MCTS is invoked every time an agent visits
@@ -129,7 +129,7 @@ Fundamental features:
     unusual -- if the problem is that small we should just use
     value/policy iteration).
 
-## The Framework: Monte Carlo Tree Search (MCTS)
+### The Framework: Monte Carlo Tree Search (MCTS)
 
 Build up an MDP tree using simulation. The evaluated states are stored
 in a search tree. The set of evaluated states is *incrementally* built
@@ -157,7 +157,7 @@ From: Chaslot, Guillaume, Sander Bakkes, Istvan Szita, and Pieter
 Spronck. \"Monte-Carlo Tree Search: A New Framework for Game AI.\" In
 *AIIDE*. 2008. <https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf>
 
-### Selection
+#### Selection
 
 Start at the root node, and successively select a child until we reach a
 node that is not fully expanded.
@@ -168,7 +168,7 @@ node that is not fully expanded.
 caption
 ```
 
-### Expansion
+#### Expansion
 
 Unless the node we end up at is a terminating state, expand the children
 of the selected node by choosing an action and creating new nodes using
@@ -180,7 +180,7 @@ the action outcomes.
 caption
 ```
 
-### Simulation
+#### Simulation
 
 Choose one of the new nodes and perform a random simulation of the MDP
 to the terminating state:
@@ -191,7 +191,7 @@ to the terminating state:
 caption
 ```
 
-### Backpropagation
+#### Backpropagation
 
 Given the reward $r$ at the terminating state, *backpropagate* the
 reward to calculate the value $V(s)$ at each state along the path.
@@ -273,27 +273,34 @@ $$
 
 Does this look familiar?! It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
 
-Example -- Backpropagation
 
-Consider the following ExpectiMax tree that has been expanded several times. In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes.
+:::{admonition} Example: Backpropagation
+
+Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.9$, $r=X$
+represents reward $X$ received at a state, N is the number of times the
+state has been visited, and the length of the simulation is 13. After
+the simulation step, but before backpropagation, our tree would look
+like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example
 ```
 
+In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes.
+
 The backpropagation step is then calculated for the nodes $y''$, $t'$, and $s$ as follows:
 
 $$
 \begin{array}{lll}
-  V(y'')  & = & \max_{a\in A} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]\\
+  V(y'')  & = & \max_{a\in A(y'')} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]\\
           & = & \gamma^{13} \times 100~~\textrm{(simulation is 13 steps long and receives reward of 100)}\\
           & \approx &   25\\
   ~~\\
-  V(t')   & = &  max_{a\in \{f\}} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]\\
+  V(t')   & = &  max_{a\in A(t')} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]\\
           & = &  0.1(0+0) ~+~ 0.1(0+0) ~+~ 0.8(0 + 0.9 \times 25)\\
           & = &  18\\
  ~~\\
-  V(s)    & = & \max_{a\in \{a,b\}} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]\\
+  V(s)    & = & \max_{a\in A(s)} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]\\
           & = & \max(0.8(0 + 0.9 \times 12) + 0.2(7 + 0.9 \times 18),~~ \textrm{(action a)}\\
           &   & \quad\quad 0.5(0 + 0.9 \times 40) + 0.5(0 + 0.9 \times 20))~~ \textrm{(action b)}\\
           & = & \max(8.64 + 4.62,~ 18 + 9)\\
@@ -301,54 +308,42 @@ $$
 \end{array}
 $$
 
-The value of $V(s)$ does not
-change because action b still returns the maximum discounted future
+
+The new tree would look like this:
+
+```{figure} ./latex/mcts_example_after_backprop.png
+:name: mcts_example_after_backprop
+```
+
+The value of $V(s)$ does not change because action $b$ still returns the maximum discounted future
 reward.
+
+:::
 
 ### Execution
 
 Once we have run out of computational time, we select the action that
 maximises are expected return, which is simply the one with the highest
-Q-value from our simulations: $$\argmax_{a} Q(s_0, a)$$ which is just
-$$\argmax_{a}\sum_{s' \in A(s_0)} P_a(s'|s_0)\ [r(s_0,a,s') + \gamma\  V(s') ]$$
-We execute that action and wait to see which outcome occurs for the
-action.
+Q-value from our simulations: 
 
-Once we see the outcome, which we will call $s'$, we start the process
-all over again, except with $s_0:=s'$.
+$$\textrm{argmax}_{a \in A(s)} Q(s_0, a)$$ 
+
+which is just
+
+$$\textrm{argmax}_{a \in A(s)}\sum_{s' \in A(s_0)} P_a(s'|s_0)\ [r(s_0,a,s') + \gamma\  V(s') ]$$
+
+We execute that action and wait to see which outcome occurs for the action.
+
+Once we see the outcome state, which we will call $s'$, we start the process
+all over again, except with $s_0 \leftarrow s'$.
 
 However, importantly, we can *keep* the sub-tree from state $s'$, as we
 already have done simulations from that state. We discard the rest of
 the tree (all child of $s_0$ other than the chosen action) and
 incrementally build from $s'$.
 
-Example (after the simulation step) Assume $\gamma=0.9$, $r=X$
-represents reward $X$ received at a state, N is the number of times the
-state has been visited, and the length of the simulation is 13. After
-the simulation step, but before backpropagation, our tree would look
-like this:
 
-
-
-Quiz Example
-
-Canvas quiz answer
-
-  -------- ----- -------------------------------------------------------------------------------------------
-  $V(t)$   $=$   $\max_{a\in \{c,g\}} \sum_{t' \in children(t)} P_a(t'|t)\ [r(t',a,t') + \gamma\  V(t') ]$
-           $=$   $\max(0.9(0 + 0.9 \times 12) + 0.1(0 + 0.9 \times 12)$, (action [c]{.sans-serif})
-                  $1.0(0 + 0.9 \times 40))$ (action [g]{.sans-serif})
-           $=$   $\max(10.8, 36)$
-           $=$   $36$
-  $V(s)$   $=$   $\max_{a\in \{a,b\}} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]$
-           $=$   $\max(0.8(0 + 0.9 \times 36) + 0.2(7 + 0.9 \times 18)$, (action [a]{.sans-serif})
-                  $0.5(0 + 0.9 \times 40) + 0.5(0 + 0.9 \times 20)$ (action [b]{.sans-serif})
-           $=$   $\max(25.92 + 4.64,~ 18 + 9)$
-           $=$   $30.56$ rounded to $30.6$
-  -------- ----- -------------------------------------------------------------------------------------------
-
-
-## Multi-arm Bandits
+### Multi-arm Bandits
 
 
 There is one key question that we need to answer in the MCTS algoritm: How do we select the next node to expand?
@@ -356,7 +351,7 @@ There is one key question that we need to answer in the MCTS algoritm: How do we
 It turns out that this selection makes a big difference on the
 performance of MCTS.
 
-### Intuition
+#### Intuition
 
 The selection of nodes can be considered an instance of the *Multi-armed
 bandit* problem. This problem can be illustrated as follows:
@@ -369,7 +364,7 @@ bandit* problem. This problem can be illustrated as follows:
 > machine.
 
 
-Multi-Armed Bandit: Formal Definition
+#### Multi-Armed Bandit: Formal Definition
 
 An $N$-armed bandit is defined by a set of *random variables* $X_{i,k}$
 where
@@ -385,7 +380,7 @@ not know the probability distributions of the random variables.
 **Intuition**: actions $a$ applicable on $s$ are the "arms of the
 bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$.
 
-Flat Monte Carlo (FMC) a.k.a Uniform Sampling
+#### Flat Monte Carlo (FMC) a.k.a Uniform Sampling
 
 Given that we do not know the distributions, a simple strategy is simply
 to select the arm given a uniform distribution; that is, select each arm
@@ -407,11 +402,11 @@ $$Q(s,a) = \frac{1}{N(s,a)} \sum_{t=1}^{N(s)} {\mathbb I}_{t}(s,a) r_t$$
  FMC suffices to achieve *world champion level* play on Bridge
 (Ginsberg, 01) and Scrabble (Sheppard, 02).
 
-**But what is the issue?** Sampling Time is wasted equally in all
+**But what is the issue?** Time is wasted equally in all
 actions using the uniform distribution. Why not focus also on the *most
 promising actions* given the rewards we have received so far.
 
-Exploration vs. Exploitation
+#### Exploration vs. Exploitation
 
 What we want is to play only the good actions; so just keep playing the
 actions that have given us the best reward so far. However, our
@@ -424,7 +419,6 @@ known as the *exploration vs. exploitation dilemma*.
 
 It is driven by the *The Fear of Missing Out* (FOMO).
 
-![image](../images/fomo-fear.jpg)
 
 The Fear Of Missing Out We seek policies $\pi$ that *minimise regret*.
 
@@ -452,7 +446,7 @@ reward* minus the *expected reward of playing $b$*. If I play arm $a$
   In multi-armed bandit algorithms, exploration is *literally* driven by
 FOMO.
 
-Solutions that aim to minimise regret
+#### Solutions that aim to minimise regret
 
 **$\epsilon$-greedy**: $\epsilon$ is a number in \[0,1\]. Each time we
 need to choose an arm, we choose a random arm with probability
@@ -471,7 +465,7 @@ $$\frac{e^{Q(s,a)/\tau}}{\sum_{b=1}^{n} e^{Q(s,b)/\tau}}$$ in which
 $\tau$ is the *temperature*, a positive number that dictates how much of
 an influence the past data has on the decision.
 
-Upper Confidence Bounds (UCB1)
+#### Upper Confidence Bounds (UCB1)
 
 A highly effective (especially in terms of MCTS) multi-armed bandit
 strategy is the *Upper Confidence Bounds* (UCB1) strategy.
@@ -491,8 +485,7 @@ actions that have had a high reward.
 The right--hand side encourages exploration: it is high for actions that
 have been explored less.
 
-Monte Carlo Tree Search and Multi-Armed Bandits
-===============================================
+### Monte Carlo Tree Search and Multi-Armed Bandits
 
 Upper Confidence Trees (UCT)
 
@@ -509,14 +502,14 @@ $C_p >0$ is the exploration constant, which determines can be increased
 to encourage more exploration, and decreased to encourage less
 exploration. Ties are broken randomly.
 
- if $Q(s,a) \in [0,1]$ **and** $C_p=\frac{1}{\sqrt{2}}$ **then** in
+ If $Q(s,a) \in [0,1]$ **and** $C_p=\frac{1}{\sqrt{2}}$ **then** in
 two-player adversarial games, UCT converges to the well-known Minimax
 algorithm (if you don't know what Minimax is, ignore this for now and
 we'll mention it later in the subject).
 
-What if we do not know $P_a(s' \mid s)$?
+**What if we do not know $P_a(s' \mid s)$?**
 
-In the following lectures, we will look more at situations in which we
+In following sections, we will look more at situations in which we
 do not know $P_a(s' \mid s)$, but it is important to note that we can
 use MCTS even if we do not know our transition probabilities or our
 reward function, provided that we can *simulate* them; e.g. using a
@@ -548,7 +541,7 @@ for our problem, we can apply it -- we do not need an explicit model of
 the problem. For many problem, simulators are easier to produce than
 problems.
 
-Applications of MCTS with UCB tree policies
+### Applications of MCTS with UCB tree policies
 
 **Games**:
 
@@ -571,7 +564,7 @@ Applications of MCTS with UCB tree policies
 -   Operations Research: Optimising bus schedules, energy stock
     management\...
 
-Why does it work so well (sometimes)?
+### Why does it work so well (sometimes)?
 
 It addresses exploitation vs. exploration comprehensively.
 
@@ -583,34 +576,33 @@ It addresses exploitation vs. exploration comprehensively.
 
 [Watch it playing ](https://www.youtube.com/watch?v=HRiEUUC9TUA)
 
-[Where it does not do so well..:
-](https://www.youtube.com/watch?v=YVbTbMO4rtM). It fails here because
+[Where it does not do so well..:](https://www.youtube.com/watch?v=YVbTbMO4rtM). It fails here because
 the character does not receive a reward until it reaches the other side
 of the road, so UCT has no feedback to go on.
 
-### Value/policy iteration vs. MCTS
+### Value iteration vs. MCTS
 
 Often the set of states reachable from the initial state $s_0$ using an
 optimal policy is much small that the set of total states. In this
-regards, value iteration and policy iteration are exhaustive: they
-calculate behaviour from states that will never be encountered if we
+regards, value iteration is exhaustive: it
+calculates behaviour from states that will never be encountered if we
 know the initial state of the problem.
 
 MCTS (and other search methods) methods thus can be used by just taking
 samples starting at $s_0$. However, the result is not as general as
 using value/policy iteration: the resulting solution will work only from
 the known initial state $s_0$ or any state reachable from $s_0$ using
-actions defined in the model. Whereas value/policy iteration methods
-work from any state.
+actions defined in the model. Whereas value iteration 
+works from any state.
 
 
- |                       | **Value/ iteration**   |   **MCTS**     |
+ |                       | **Value iteration**   |   **MCTS**     |
   :--------------------- | :--------------------------: | :-------------:
  | Cost                  | Higher cost (exhaustive)     |  Lower cost (does not solve for entire state space)
  | Coverage/ Robustness  | Higher (works from any state)| Lower (works only from initial state or state reachable from initial state)
  | |
 
-This is important: value/policy iteration are thus more expensive,
+This is important: value iteration is then more expensive,
 however, for an agent operating in its environment, we only solve
 exhaustively once, and we can use the resulting policy many times no
 matter state we are
@@ -618,12 +610,7 @@ matter state we are
 For MCTS, we need to solve *online* each time we encounter a state we
 have not considered before.
 
-Conclusions
-===========
-
- {#section .unnumbered}
-
-Summary
+### Summary
 
 -   Monte Carlo Tree Search (MCTS) is an anytime search algorithm,
     especially good for stochastic domains, such as MDPs.

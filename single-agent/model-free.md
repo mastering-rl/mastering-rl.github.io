@@ -1,11 +1,7 @@
-Agenda
 
-Motivation
-==========
+## Model-free Reinforcement Learning
 
- {#section .unnumbered}
-
-Learning Outcomes
+** Learning Outcomes** 
 
 1.  Identify situations in which model-free reinforcement learning is a
     suitable solution for an MDP
@@ -19,38 +15,33 @@ Learning Outcomes
 4.  Compare and contrast off-policy reinforcement learning with
     on-policy reinforcement learning
 
-Planning and Learning
+### Model-based vs model-free 
 
-So far, the this subject, we have looked blind/heuristic search and
-value/policy iteration.
+So far in these notes, we have have looked at value iteration and MCTS.
 
--   Search and value/policy iteration are what are called as
+Search methods and value iteration are what are called as
     *model-based* techniques. This means that we need to know the model;
     in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
 
--   Q-learning and SARSA (discussed in this lecture) are *model-free*
-    techniques. This means that we do NOT know the $P_a(s' \mid s)$ and
-    $r(s,a,s')$.
+In this section, we look at Q-learning and SARSA, which are *model-free*   techniques. This means that we do NOT know the $P_a(s' \mid s)$ and $r(s,a,s')$.
 
--   *How can we calculate a policy if we don't know the transitions and
-    the rewards?!* We *learn through experience* by trying actions and
+*How can we calculate a policy if we don't know the transitions and
+    the rewards?!* 
+
+We *learn through experience* by trying actions and
     seeing what the results is, making this machine learning problem.
 
 -   Importantly, in model-free reinforcement learning, we do NOT try to
-    learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a policy
-    directly.
+    learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
+     directly.
 
 -   There is something in between model-based and model-free:
-    simulation-based techniques. In this cases, we have a model as a
+    simulation-based techniques. In these cases, we have a model as a
     *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$
-    and learn a policy with a model-free technique.
+    and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
-Reinforcement Learning
-======================
 
- {#section-1 .unnumbered}
-
-Example: The Mystery Game
+:::{Admonition} Example: The Mystery Game
 
 <https://programmingheroes.blogspot.com/2016/02/udacity-reinforcement-learning-mystery-game.html>
 
@@ -65,7 +56,7 @@ Some rewards values appears when you do the things very well or very
 bad. When you finish the game the phrase \"You Win :)\" appears in the
 board. Good luck!
 
-Example: Mystery Game (continued)
+Once you have played this, ask yourself the following questions:
 
 -   What was the process you took?
 
@@ -76,7 +67,7 @@ Example: Mystery Game (continued)
   Imagine how hard it is for a computer that doesn't have any
 assumptions or intuition!
 
-Approaches to AI Planning and Learning
+### Approaches to AI Planning and Learning
 
 ![image](../images/RL_approaches){width="0.9\linewidth"}
 
@@ -101,12 +92,7 @@ reinforcement learning, all with the same basis:
     see no improvement); or (3) our policy is 'good enough' (for each
     new episode we see minimal improvement).
 
-Q Learning
-==========
-
- {#section-2 .unnumbered}
-
-Q-Learning
+## Q-Learning: Off-policy Reinforcement Learning
 
 Q-Learning is perhaps the simplest of reinforcement learning methods,
 and is based on how animals learn from their environment. The intuition
@@ -119,7 +105,7 @@ number of episodes until ...when?
 ![Q-Learning Algorithm (from Sutton and
 Barto)](../images/qlearning){width="0.7\linewidth"}
 
-Updating the Q-function
+### Updating the Q-function
 
 Updating the Q-function (line 7) is where the learning happens:
 
@@ -135,7 +121,7 @@ means it *ignores* the action chosen by the policy, and instead updates
 based on the estimate of the best action for the update. This is known
 as *off policy* learning -- more later.
 
-Q-functions using Q-Tables
+### Q-functions using Q-Tables
 
 Q-tables are the simplest way to maintain a Q-function. They are a table
 with an entry for every $Q(s,a)$. Thus, like value functions in value
@@ -187,7 +173,7 @@ the Q-table above, we would update the Q-value as follows:
                  $\leftarrow$   $0.792$
   -------------- -------------- -----------------------------------------------------------------------
 
-Using Q-functions
+### Policy extraction using Q-functions
 
 We iterate over as many episodes as possible, or until each episode
 hardly improves our Q-values. This gives us a (close to) optimal
@@ -197,12 +183,7 @@ Once we have such a Q-function, we stop exploring and just exploit. We
 use *policy extraction*, which is exactly as we do for value iteration:
 $$\pi(s) = \argmax_{a \in A(s)} Q(s,a)$$
 
-SARSA
-=====
-
- {#section-3 .unnumbered}
-
-SARSA: On-Policy Reinforcement Learning
+## SARSA: On-Policy Reinforcement Learning
 
 SARSA = State-action-reward-state-action
 
@@ -230,7 +211,7 @@ action $\argmax_{a'}\mathcal{Q}(s',a')$ for the update!
 On-Policy SARSA learns action values relative to the policy it follows,
 while Off-Policy Q-Learning does it relative to the greedy policy.
 
-On-policy vs. off-policy: What is the difference here?
+### On-policy vs. off-policy: What is the difference here?
 
 The difference is all in how the update happens in the loop body.
 
@@ -285,7 +266,7 @@ Canvas quiz questions
                  $\leftarrow$   $0.4726$
   -------------- -------------- ------------------------------------------------------------
 
-On-policy vs. off-policy: Who cares??
+### On-policy vs. off-policy: Who cares??
 
 So what difference does this really make? There are two main
 differences:
@@ -299,7 +280,7 @@ differences:
 -   Q-learning learns an optimal policy, but this can be 'unsafe' or
     risky *during training*.
 
-SARSA vs. Q-learning: Example
+### SARSA vs. Q-learning: Example
 
 Consider the grid below. S is the start and state G receives a reward of
 100. Falling off the cliff receives a reward of -100. Going to the top
@@ -372,33 +353,7 @@ calculate the optimal path:
 
 <http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
 
-Conclusion
-==========
-
- {#section-4 .unnumbered}
-
-Summary
-
-If we know the MDP:
-
--   **Offline**: Value Iteration, Policy Iteration,
-
--   **Online**: Monte Carlo Search Tree and friends.
-
-If we do *not* know MDP:
-
--   **Offline**: Reinforcement Learning
-
--   **Online**: Monte Carlo Tree Search and friends.
-
-Once you've got your pacman Q-learning working in python (optional
-assessment and bonus exercise in next week's workshop), you can test it
-on all the environments on OpenAI, Toolkit for developing and testing
-reinforcement learning algorithms:
-
-<https://gym.openai.com/>
-
-Applications of Reinforcement Learning
+### Applications of Reinforcement Learning
 
 -   Checkers (Samuel, 1959)\
     first use of RL in an interesting real game
@@ -460,3 +415,20 @@ Reading
     Content: Convolutional Neural Networks (NN) to estimate
     $\mathcal{Q}(s,a)$. The input for the NN is the state, and the
     output is the esimated reward for each action.
+
+
+### Summary 
+
+If we know the MDP:
+
+-   **Offline**: Value Iteration
+
+-   **Online**: Monte Carlo Search Tree and friends.
+
+If we do *not* know MDP:
+
+-   **Offline**: Q-learning, SARSA, and friends.
+
+-   **Online**: Monte Carlo Tree Search and friends.
+
+
