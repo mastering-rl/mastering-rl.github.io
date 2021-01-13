@@ -102,76 +102,84 @@ multi-armed bandit algorithm; (2) apply that action and receive the
 reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a
 number of episodes until ...when?
 
-![Q-Learning Algorithm (from Sutton and
-Barto)](../images/qlearning){width="0.7\linewidth"}
+:::{admonition} Algorithm -- Q-learning
+
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Output:** Q-function $Q$
+
+Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
+
+$\text{Repeat (for each episode)}$\
+$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
+$\quad\quad$ Repeat (for each step in episode $e)$\
+$\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
+$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha\cdot [r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)]$\
+$\quad\quad\quad\quad s \leftarrow s'$\
+$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
+:::
 
 ### Updating the Q-function
 
-Updating the Q-function (line 7) is where the learning happens:
+Updating the Q-function is where the learning happens:
 
 $$Q(s,a) \leftarrow 
 \underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot
 [\underbrace{r}_{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \underbrace{\max_{a'} Q(s',a')}_{\text{estimate of optimal future value}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
 
-A higher learning rate $\alpha$ will weight more recent information
-higher than older information ($Q(s,a)$).
+A higher learning rate $\alpha$ will weight more recent information higher than older information ($Q(s,a)$). The part of the equation inside the square brackets is the update similar to that of the Bellman equation. However, we do not know $P_a(s' \mid s)$, but we do have access to reward $r$ because we have just received it from the environment.
 
-Note that we estimate the future value using $\max_{a'} Q(s',a')$, which
-means it *ignores* the action chosen by the policy, and instead updates
-based on the estimate of the best action for the update. This is known
-as *off policy* learning -- more later.
+Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the action chosen by the policy, and instead updates based on the estimate of the best action for the update. This is known as *off policy* learning -- more on this later.
 
-### Q-functions using Q-Tables
+### Q-Tables
 
-Q-tables are the simplest way to maintain a Q-function. They are a table
-with an entry for every $Q(s,a)$. Thus, like value functions in value
-iteration, they do not scale to large state-spaces. (More on scaling in
-the next lecture).
+Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every $Q(s,a)$. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).
 
-  ----------- ------- ------- ------ ------
-  **State**                          
-               North   South   East   West
-  (0,0)          0       0      0      0
-  (0,1)          0       0      0      0
-  ...                                
-  (2,2)          0       0      0      0
-  (2,3)          0       0      0      0
-  ----------- ------- ------- ------ ------
+Initially, we would have an arbitrary Q-table, which may look something like this:
 
-    
+$$
+\begin{array}{ccccc}
+\hline
+ \textbf{State} & North & South & East & West\\
+\hline
+ (0,0) & 0 & 0 & 0 & 0\\
+ (0,1) & 0 & 0 & 0 & 0\\
+  \ldots\\
+ (2,2) & 0 & 0 & 0 & 0\\
+ (2,3) & 0 & 0 & 0 & 0\\
+\hline
+\end{array}
+$$
 
-  ----------- ------- ------- ------ ------
-  **State**                          
-               North   South   East   West
-  (0,0)        0.53    0.36    0.36   0.21
-  (0,1)        0.61    0.27    0.23   0.23
-  ...                                
-  (2,2)        0.79    0.72    0.90   0.72
-  (2,3)        0.90    0.78    0.99   0.81
-  ----------- ------- ------- ------ ------
+After some training, we may end up with a Q-function that looks something like this:
 
-Q-learning: Example
+$$
+\begin{array}{ccccc}
+\hline
+ \textbf{State} & North & South & East & West\\
+\hline
+(0,0) & 0.53 & 0.36 & 0.36 & 0.21\\
+(0,1) & 0.61 & 0.27 & 0.23 & 0.23\\
+\ldots\\
+(2,2) & 0.79 & 0.72 & 0.90 & 0.72\\
+(2,3) & 0.90 & 0.78 & 0.99 & 0.81\\
+\hline
+\end{array}
+$$
 
-  ----------- ------- ------- ------ ------
-  **State**                          
-               North   South   East   West
-  (0,0)        0.53    0.36    0.36   0.21
-  (0,1)        0.61    0.27    0.23   0.23
-  ...                                
-  (2,2)        0.79    0.72    0.90   0.72
-  (2,3)        0.90    0.78    0.99   0.81
-  ----------- ------- ------- ------ ------
+:::{Example} Q-learning update
+Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=North$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
 
-In state (2,2), the action 'North' is chosen and executed successfully,
-which would return to state (2,2) there is no cell above (2,2). Using
-the Q-table above, we would update the Q-value as follows:
-
-  -------------- -------------- -----------------------------------------------------------------------
-  $Q((2,2),N)$   $\leftarrow$   $Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]$
-                 $\leftarrow$   $0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),East) - Q((2,2),N)]$
-                 $\leftarrow$   $0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]$
-                 $\leftarrow$   $0.792$
-  -------------- -------------- -----------------------------------------------------------------------
+$$
+\begin{array}{lll}
+Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),East) - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]\\
+           & \leftarrow & 0.792\\
+\end{array}
+$$
+:::
 
 ### Policy extraction using Q-functions
 
@@ -181,104 +189,96 @@ Q-function.
 
 Once we have such a Q-function, we stop exploring and just exploit. We
 use *policy extraction*, which is exactly as we do for value iteration:
-$$\pi(s) = \argmax_{a \in A(s)} Q(s,a)$$
+
+$$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
+
+This selects the action with the maximum Q-value. Given an optimal Q-function (for the MDP), this results in optimal behaviour.
 
 ## SARSA: On-Policy Reinforcement Learning
 
-SARSA = State-action-reward-state-action
+:::{definition} On-policy reinforcement learning
 
-On-Policy: Instead of estimating $Q(s',a')$ for the best estimated
-future state during update, on-policy uses the actual next action to
-update:
+Instead of estimating $Q(s',a')$ for the best estimated future state during update, on-policy uses the actual next action to update:
 
 -   On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action
     pairs, for the current behaviour policy $\pi$, whereas off-policy
     learning estimates the policy independent of the current behaviour.
+:::
 
-![image](../images/sarsa){width="0.8\linewidth"}
+SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm.
 
-On-Policy: Uses the action chosen by the policy for the update!
 
-Q-learning vs. SARSA
+:::{admonition} Algorithm -- SARSA
 
-![Q-Learning Algorithm](../images/qlearning){width="0.99\linewidth"}
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Output:** Q-function $Q$
 
-![Sarsa Algorithm](../images/sarsa){width="0.99\linewidth"}
+Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
-Off-Policy: Ignores the action chosen by the policy, uses the best
-action $\argmax_{a'}\mathcal{Q}(s',a')$ for the update!
+$\text{Repeat (for each episode)}$\
+$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
+$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad$ Repeat (for each step in episode $e)$\
+$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
+$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha\cdot [r + \gamma \cdot Q(s',a') - Q(s,a)]$\
+$\quad\quad\quad\quad s \leftarrow s'$\
+$\quad\quad\quad\quad a \leftarrow a'$\
+$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
+:::
 
-On-Policy SARSA learns action values relative to the policy it follows,
-while Off-Policy Q-Learning does it relative to the greedy policy.
+On-Policy: Uses the action chosen by the policy for the update.
 
-### On-policy vs. off-policy: What is the difference here?
+Off-Policy: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+
+SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
+
+### On-policy vs. off-policy: What is the difference?
 
 The difference is all in how the update happens in the loop body.
 
-Q-learning: (1) selects an action $a$; (2) takes that actions and
-observes the reward & next state $s'$; and (3) updates *optimistically*
-by assuming the future reward is $\max_{a'}Q(s',a')$ -- that is, it
-assumes that future behaviour will be optimal (according to its policy).
+Q-learning: (1) selects an action $a$; (2) takes that actions and observes the reward & next state $s'$; and (3) updates *optimistically* by assuming the future reward is $\max_{a'}Q(s',a')$ -- that is, it assumes that future behaviour will be optimal (according to its policy).
 
-SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the
-next iteration, takes that action and observes the reward & next state
-$s'$; (3) only then chooses $a'$ for the next iteration; and (4) updates
-using the estimate for the actual next action chosen -- which may not be
-the greediest one (e.g. it could be selected so that it can explore).
+SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next iteration, takes that action and observes the reward & next state $s'$; (3) only then chooses $a'$ for the next iteration; and (4) updates using the estimate for the actual next action chosen -- which may not be the greediest one (e.g. it could be selected so that it can explore).
 
-SARSA: Example
+*So what difference does this really make?* There are two main differences:
 
-  ----------- ------- ------- ------ ------
-  **State**                          
-               North   South   East   West
-  (0,0)        0.53    0.36    0.36   0.21
-  (0,1)        0.61    0.27    0.23   0.23
-  ...                                
-  (2,2)        0.79    0.72    0.90   0.72
-  (2,3)        0.90    0.78    0.99   0.81
-  ----------- ------- ------- ------ ------
+-   Q-learning will converge to the optimal policy irrelevant of the policy followed, because it is *off-policy*: it uses the greedy reward estimate in its update rather than following the policy such as $\epsilon$-greedy). Using a random policy, Q-learning will still  converge to the optimal policy, but SARSA will not (necessarily).
 
-In state (2,2), the action 'North' is chosen and executed successfully,
-which would return to state (2,2) there is no cell above (2,2). The next
-selected action is West. Using the Q-table above, we would update the
-Q-value using SARSA as follows:
+-   Q-learning learns an optimal policy, but this can be 'unsafe' or risky *during training*.
 
-  -------------- -------------- ------------------------------------------------------------
-  $Q((2,2),N)$   $\leftarrow$   $Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N)]$
-                 $\leftarrow$   $0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),W) - Q((2,2),N)]$
-                 $\leftarrow$   $0.79 + 0.1 [0 + 0.9 \cdot 0.72 - 0.79]$
-                 $\leftarrow$   $0.7758$
-  -------------- -------------- ------------------------------------------------------------
 
-Canvas quiz questions
+:::{Example} SARSA update
 
-  -------------- -------------- -----------------------------------------------------------------------
-  $Q((0,0),N)$   $\leftarrow$   $Q((0,0),N) + \alpha [r + \gamma \max_{a'} Q((0,0),a') - Q((0,0),N)]$
-                 $\leftarrow$   $0.53 + 0.1 [0 + 0.9 \cdot Q((0,1),N) - Q((0,0),N)]$
-                 $\leftarrow$   $0.53 + 0.1 [0 + 0.9 \cdot 0.61 - 0.53]$
-                 $\leftarrow$   $0.5319$
-  -------------- -------------- -----------------------------------------------------------------------
+For this example, we will use the same Q-table as the earlier Q-learning example:
 
-  -------------- -------------- ------------------------------------------------------------
-  $Q((0,0),N)$   $\leftarrow$   $Q((0,0),N) + \alpha [r + \gamma Q((0,1),S) - Q((0,0),N)]$
-                 $\leftarrow$   $0.53 + 0.2 [0 + 0.9 \cdot Q((0,1),S) - Q((0,0),N)]$
-                 $\leftarrow$   $0.53 + 0.2 [0 + 0.9 \cdot 0.27 - 0.53]$
-                 $\leftarrow$   $0.4726$
-  -------------- -------------- ------------------------------------------------------------
+$$
+\begin{array}{ccccc}
+\hline
+ \textbf{State} & North & South & East & West\\
+\hline
+(0,0) & 0.53 & 0.36 & 0.36 & 0.21\\
+(0,1) & 0.61 & 0.27 & 0.23 & 0.23\\
+\ldots\\
+(2,2) & 0.79 & 0.72 & 0.90 & 0.72\\
+(2,3) & 0.90 & 0.78 & 0.99 & 0.81\\
+\hline
+\end{array}
+$$
 
-### On-policy vs. off-policy: Who cares??
+Assme that in state (2,2), the action 'North' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'West'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
 
-So what difference does this really make? There are two main
-differences:
+$$
+\begin{array}{lll}
+Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),W) - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot 0.72 - 0.79]\\
+           & \leftarrow & 0.7758\\
+\end{array}
+$$
 
--   Q-learning will converge to the optimal policy irrelevant of the
-    policy followed, because it is *off-policy*: it uses the greedy
-    reward estimate in its update rather than following the policy such
-    as $\epsilon$-greedy). Using a random policy, Q-learning will still
-    converge to the optimal policy, but SARSA will not (necessarily).
 
--   Q-learning learns an optimal policy, but this can be 'unsafe' or
-    risky *during training*.
 
 ### SARSA vs. Q-learning: Example
 
@@ -306,7 +306,7 @@ Q-learning learns the *optimal* policy.
 Demo of the cliff example:
 <https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/>
 
-On-policy vs. off policy: Why do we have both?
+#### On-policy vs. off policy: Why do we have both?
 
 Imagine a reinforcement learning agent that manages resources for a
 cloud-based platform and we have no prior data to inform a policy.
@@ -326,21 +326,21 @@ cloud-based platform and we have no prior data to inform a policy.
 
     If we could run our reinforcement learning algorithm in a simulated
     environment before deploying (and we had reason to believe that
-    simulated environment was accurate), off-policy learning would be
+    simulated environment was accurate), off-policy learning may be
     better because its optimal policy could be followed.
 
-In short: use on-policy reinforcement learning for online learning, and
-off-policy learning for offline learning.
+### Limitations of Q-learning and SARSA
 
-Example: if we used reinforcement learning for traffic light
-optimisation, we would use on-policy reinforcement learning, because we
-could not train it before hand given that the policy influences the
-behaviour of drivers.
+The standard versions that we see in this section have two major limitations:
 
-Q-learning Examples in Action
+1. Because we need to select the best action $a$ in Q-learning, we iterate over all actions. This limits Q-learning to discrete action spaces.
 
-In action: solving the cliff example using Q-learning with
-$\epsilon$-greedy:
+2. If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory.
+
+
+### Q-learning Examples in Action
+
+In action: solving the cliff example using Q-learning with $\epsilon$-greedy:
 
 <https://www.youtube.com/watch?v=ppALjH0kYPE>
 
@@ -353,7 +353,7 @@ calculate the optimal path:
 
 <http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
 
-### Applications of Reinforcement Learning
+#### Applications of Reinforcement Learning
 
 -   Checkers (Samuel, 1959)\
     first use of RL in an interesting real game
@@ -386,7 +386,7 @@ calculate the optimal path:
 -   TD-Gammon and Jellyfish (Tesauro, Dahl)\
     World's best backgammon player. Grandmaster level
 
-Reading
+#### Reading
 
 -   *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 

@@ -35,7 +35,7 @@ Once we understand the Bellman equation, the value iteration algorithm is straig
 
 :::{admonition} Algorithm -- Value Iteration
 
-**Input:** MDP\
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Value function $V$
 
 Set $V_0$ to arbitrary value function; e.g., $V_0(s)=0$ for all $s$

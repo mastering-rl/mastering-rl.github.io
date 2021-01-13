@@ -208,7 +208,7 @@ caption
 
 :::{admonition} Algorithm -- Monte-Carlo Tree Search
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')$, base value function $V$, time limit $T$.\
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $V$, time limit $T$.\
 **Output:** selected action $a$
 
 **while** $currentTime < T$\
