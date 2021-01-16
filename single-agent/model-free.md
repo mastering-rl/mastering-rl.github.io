@@ -282,26 +282,42 @@ $$
 
 ### SARSA vs. Q-learning: Example
 
-Consider the grid below. S is the start and state G receives a reward of
+Consider the grid below. $S$ is the start and state $G$ receives a reward of
 100. Falling off the cliff receives a reward of -100. Going to the top
-row receives a -1 reward. Actions are deterministic, but they are not
-known before learning.
+row receives a -1 reward. Actions are deterministic, but $P_a(s' \mid s)$ is unknown to the learning agent.
 
-Q-learning leads the optimal path along (along the edge of the cliff),
-but will fall off sometimes due to the $\epsilon$-greedy action
-selection. SARSA learns the safe path because it is on-policy and
-considers the action select method when learning. Here is a graph
-showing the reward per trial for both Sarsa and Q-Learning:
 
-![image](../images/cliff_layout){width="0.8\linewidth"}
+```{figure} ./figs/cliff_layout.png
+:name: cliff_layout
 
-![image](../images/cliff_rew){width="0.7\linewidth"}
+Cliff layout (taken from Sutton and Barto (2020))
+```
 
-Rewards during training
+If trained with Q-learning, the result will be an optimal policy that takes the agent along the ege of the cliff (if we use a Q-table to represent the states). However, *during* learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. 
 
-SARSA receives a higher average reward *per trial* than Q-Learning,
-because it falls off the cliff less in later episodes. However,
+If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off *less* than the Q-learning agent because it takes actions on the safe path more often during learning?
+
+*Why is this so?*
+Here is a graph from Sutton and Barto (2020) showing the reward per trial for both SARSA and Q-Learning:
+
+```{figure} ./figs/cliff_rew.png
+:name: cliff_rew
+
+Rewards received during training (taken from Sutton and Barto (2020))
+```
+
+During training, SARSA receives a higher average reward *per trial* than Q-Learning, because it falls off the cliff less as its policy improves. However,
 Q-learning learns the *optimal* policy.
+
+*How is it possible that on-policy learning has a sub-optimal policy but higher rewards during training?*
+
+Consider a case of two agents training: one with Q-learning and one with SARSA, both using $\epsilon$-greedy with $\epsilon=0.1$. Then, consider training episode 100 for each agent. From {numref}`cliff_rew`, we can see that both policies are close to converged. 
+
+Now, consider each agent moving from state $A$ to state $B$. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the optimal path, including $\max_{a \in A} Q(s,a)$ as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the agent. The SARSA agent, on the other hand, selects its next action *before* the update, so in the cases where it chooses an action from state $B$ that falls off the cliff, the value $Q(s',a')$ will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a `risky' behaviour, so will learn to instead take the safe path: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.
+
+However, once training is complete, we extract a policy. Because the actions are deterministic, the Q-learning policy is optimal: it will follow the path next to the cliff, but will not fall off. The SARSA agent will follow the safe path, but this safety is no longer required because no exploration is done.
+
+The end result for the SARSA (on policy) methid is a sub-optimal policy, but one that achieves stronger rewards during training.
 
 Demo of the cliff example:
 <https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/>
@@ -318,8 +334,8 @@ cloud-based platform and we have no prior data to inform a policy.
     We would need to operate our cloud platform to get data. As such, if
     the average reward *per trial* is better using on-policy, this would
     give us better overall outcomes than off-policy learning, because
-    the 'trials' are not practice -- they actually influence how much
-    money we make.
+    the 'trials' are not practice -- they actually influence real rewards, 
+    such as profit.
 
 -   Off-policy learning is more appropriate when we have the luxury of
     training our agent offline before it is put into operation.
