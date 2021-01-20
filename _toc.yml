@@ -16,6 +16,7 @@
     - file: single-agent/model-free
     - file: single-agent/n-step
     - file: single-agent/function-approximation
+    - file: single-agent/reward-shaping
     - file: matrix
 
 - part: Multi-agent Reinforcement Learning
