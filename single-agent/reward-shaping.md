@@ -168,7 +168,9 @@ In practice, it is non-trivial to derive a perfect reward function. If
 we could, we would not need to even use reinforcement learning -- we
 could just do a greedy search over the reward function.
 
-Q-function initialisation An approach related to reward shaping is
+### Q-function initialisation 
+
+An approach related to reward shaping is
 *Q-function initialisation*. Recall that TD learning methods can start
 at any arbitrary Q-function. The closer our Q-function is to the optimal
 Q-function, the quicker it will converge.
@@ -197,41 +199,11 @@ Once we start learning over episodes, we will select those actions with
 a higher heuristic value, and also we are already closer to the optimal
 Q-function, so will will converge faster.
 
-Conclusion
-==========
+### Summary
 
- {#section-3 .unnumbered}
 
-Summary
 
-1.  We can scale reinforcement learning by approximating Q-functions,
-    rather than storing complete Q-tables.
-
-2.  Using simple linear methods in which we select features and learn
-    weights are effective and guarantee convergence.
-
-3.  Using neural networks offer alternatives in which we do not need to
-    select features, but require a lot of training data and have not
-    convergence guarantees.
-
-Some tips for reinforcement learning in the group project
-
-1.  Linear Q-function approximation should work well if the features are
-    not strongly dependent on the random initial state.
-
-2.  I would be surprised if using deep Q networks for function
-    approximation was effective because deep neural nets are data hungry
-    and generating enough training data could require weeks or months of
-    computation.
-
-3.  Design good reward shaping structures will help, but keep them
-    simple.
-
-4.  For some advanced techniques, read Sutton and Barto; in particular
-    stuff on: experience replay, approximate methods (even for value
-    iteration!), and generalised policy iteration.
-
-Reading
+### Related Reading
 
 -   Chapter 9 (Approximate Solution Methods) of *Introduction to
     Reinforcement Learning* \[*Sutton and Barto*\]
