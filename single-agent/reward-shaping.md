@@ -69,10 +69,9 @@ approaches that can improve temporal difference methods:
 
 ### Overview
 
-What is reward shaping? In many applications, you will have some idea of
-what a good solution should look like. For example, in our simple
-navigation task, it is clear that moving towards the reward of +1 and
-away from the reward of -1 are likely to be good solutions. 
+What is reward shaping? The basic idea is to give small intermediate rewards to the algorithm that help it converge more quickly.
+
+In many applications, you will have some idea of what a good solution should look like. For example, in our simple navigation task, it is clear that moving towards the reward of +1 and away from the reward of -1 are likely to be good solutions. 
 
 Can we then speed up learning and/or improve our final solution by nudging our
 reinforcement learner towards this behaviour?
@@ -84,120 +83,134 @@ This information is known as *domain knowledge* --- that is, stuff about the dom
 that the human modeller knows about while constructing the model to be
 solved.
 
-Exercise: Freeway What would be a good reward for the Freeway game to
+:::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to
 learn how to get the chicken across the freeway?
 
-![image](../images/freeway_screenshot)
+![image](./figs/freeway_screenshot.png)
 
-Exercise: Gridworld What would be a good reward for the GridWorld
+:::
+
+:::{admonition} Exercise: Gridworld What would be a good heuristic for the GridWorld
 example?
 
-![image](../images/MDP-GridWorld)
+![image](./figs/MDP-GridWorld.png)
 
-Reward Shaping In TD learning methods, we update a Q-function when a
-reward is received. E.g, for 1-step Q-learning:
+:::
 
-$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]$
+### Shaped Reward
 
-The approach to reward shaping is not to modify the reward function, but
-to just give additional reward for some moves:
+In TD learning methods, we update a Q-function when a reward is received. E.g, for 1-step Q-learning:
 
-$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \underbrace{F(s,s')}_{\text{additional reward}} + \gamma \max_{a'} Q(s',a') - Q(s,a)]$
+$$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]$$
 
-The function $F$ provides *heuristic* domain knowledge to the problem.
+The approach to reward shaping is not to modify the reward function or the received reward $r$, but to just give some additional *shaped reward* for some actions:
 
-$r + F(s,s')$ is the *shaped reward* for an action.
+$$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \underbrace{F(s,s')}_{\text{additional reward}} + \gamma \max_{a'} Q(s',a') - Q(s,a)]$$
 
-$G^{\Phi} = \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))$ is the
+The purpose of the function is to give an additional reward $F(s,s')$ when any action transitions from state $s$ to state $s'$. The function $F : S \times S \to \mathbb{R}$ provides *heuristic* domain knowledge to the problem that is typically manually programmed. 
+
+We say that $r + F(s,s')$ is the *shaped reward* for an action.
+
+Further, we say that $G^{\Phi} = \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))$ is the
 shaped reward for the entire trace.
 
-Potential-based Reward Shaping *Potential-based* reward shaping is a
-particular type of reward shaping with nice theoretical guarantees. In
-potential-based reward shaping, $F$ is of the form:
-$$F(s,s') = \gamma \Phi(s') - \Phi(s)$$ We call $\Phi$ the *potential
-function* and $\Phi(s)$ is the potential of state $s$.
+If we define $F(s,s') > 0$ for states $s$ and $s'$, then this provides a small positive reward for transitioning from $s$ to $s'$, thus encouraging actions that transition from $s$ to $s'$ in future exploitation. If we define $F(s,s') < 0$ for states $s$ and $s'$, then this provides a small *negative* reward for transitioning from $s$ to $s'$, thus discouraging actions that transition like this in future exploitation.
 
-**Theoretical guarantee**: this will still converge to the optimal
-policy.
+### Potential-based Reward Shaping 
 
-**But!** It may either increase or decrease the time taken to learn. A
-well-designed potential function will descrease the time.
+*Potential-based* reward shaping is a particular type of reward shaping with nice theoretical guarantees. In potential-based reward shaping, $F$ is of the form:
 
-Example: GridWorld For Grid World, we can use 1 over Manhattan distance
-to define the potential function:
-$$\Phi(s) = \frac{1}{|x(g) - x(s)| + |y(g) - y(s)|}$$ in which $x(s$)
-and $y(s)$ return the $x$ and $y$ coordinates of the agent respectively,
-and $g$ is the goal state.
+$$F(s,s') = \gamma \Phi(s') - \Phi(s)$$ 
 
-Even on the very first iteration, a greedy policy, such as
-$\epsilon$-greedy, will feedback those states closer to the +1 reward.
-From state (1,2) with $\gamma=0.9$ if we go East, we get:
+We call $\Phi$ the *potential function* and $\Phi(s)$ is the *potential* of state $s$.
 
-  ------------------- ----- ---------------------------------------
-  $F((1,2), (2,2))$   $=$   $\gamma\Phi(2,2) - \Phi(1,2)$
-                      $=$   $0.9 \cdot \frac{1}{1} - \frac{1}{2}$
-                      $=$   $0.4$
-  ------------------- ----- ---------------------------------------
+So, instead of defining $F : S \times S \to \mathbb{R}$, we define $\Phi : S \to \mathbb{R}$, which is some heuristic measure of the value of each state $s \in S$.
 
-Reward Shaping Example: GridWorld (continued)
+**Theoretical guarantee**: this will still converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often.
 
-We can compare the Q-values for these states for the four different
-possible moves that could have been taken from (1,2), using and
-$\alpha=0.5$ and $\gamma=0.9$:
+This is quite straightforward to show as follows. Consider an episode with shaped reward $G^{\Phi}$:
 
-  **Action**    $r$                 $F(s,s')$                 $\gamma \max_{a'}Q(s',a')$   New $Q(s,a)$
-  ------------ ----- --------------------------------------- ---------------------------- --------------
-  North          0     $0.9\frac{1}{2} - \frac{1}{2} = 0$                 0                     0
-  South          0     $0.9\frac{1}{2} - \frac{1}{2} = 0$                 0                     0
-  East           0    $0.9\frac{1}{1} - \frac{1}{2} = 0.4$                0                    0.4
-  West           0    $0.9\frac{1}{3} - \frac{1}{2} = -0.2$               0                   $-0.1$
 
-Thus, we can see that our potential reward function rewards actions that
-go towards the goal and penalises actions that go away from the goal.
-Recall that state (1,2) is in the top row, so action North just leaves
-us in state (1,2) and South similarly because we cannot go into the
-wall.
+$$
+\begin{array}{lll}
+G^{\Phi} & = & \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))\\
+         & = & \sum_{i=0}^{\infty} \gamma^i (r_i + \gamma\Phi(s_{i+1}) - \Phi(s_i))\\
+         & = & \sum_{i=0}^{\infty} \gamma^i r_i + \sum_{i=0}^{\infty}\gamma^{i+1}\Phi(s_{i+1}) - \sum_{i=0}^{\infty}\gamma^i\Phi(s_i)\\
+         & = & G + \sum_{i=0}^{\infty}\gamma^{i}\Phi(s_{i}) - \Phi(s_0) - \sum_{i=0}^{\infty}\gamma^i\Phi(s_i) \\
+         & = & G + \Phi(s_0)
+\end{array}
+$$
 
-But! It will not always work. Compare states (0,0) and (0,1). Our
-potential function will reward (0,1) because it is closer to the goal,
-but we know from the lecture on MDPs that (0,0) is a higher value state
-than (0,1). This is because our reward function does not consider the
-negative reward.
 
-In practice, it is non-trivial to derive a perfect reward function. If
-we could, we would not need to even use reinforcement learning -- we
-could just do a greedy search over the reward function.
+where $G$ refers to the shaped and non-shaped reward the episode, and $s_0$ is the starting state of the episode. What this says is that the shaped reward $G^{\Phi}$ is just the unshaped reward $G$ minus the potential of the initial state $s_0$. However, because $F$ does not depend on the actions and $G^{\Phi}$ does not depend on shaped rewards beyond the initial state, the *shaped* Q function, which we refer to as $Q^{\Phi}$, can be defined as just $Q^{\Phi}(s,a) = Q(s,a) + \Phi(s)$. Given this, any optimal policy extracted from $Q^{\Phi}$ will be equivalent to any optimal policy extracted from $Q$.
+
+**However!** While it provides guarantees about the end result, potential-based reward shaping may either increase or decrease the time taken to learn. A well-designed potential function decrease the time to convergence.
+
+:::{admonition} Example -- Reward Shaping for GridWorld 
+
+For Grid World, we can use 1 over Manhattan distance to define the potential function:
+
+$$\Phi(s) = \frac{1}{|x(g) - x(s)| + |y(g) - y(s)|}$$ 
+
+in which $x(s)$ and $y(s)$ return the $x$ and $y$ coordinates of the agent respectively, and $g$ is the goal state.
+
+Even on the very first iteration, a greedy policy, such as $\epsilon$-greedy, will feedback those states closer to the +1 reward. From state (1,2) with $\gamma=0.9$ if we go East, we get:
+
+$$
+\begin{array}{lll}
+  F((1,2), (2,2)) & = & \gamma\Phi(2,2) - \Phi(1,2)\\
+                    & = & 0.9 \cdot \frac{1}{1} - \frac{1}{2}\\
+                    & = & 0.4
+\end{array}
+$$
+
+We can compare the Q-values for these states for the four different possible moves that could have been taken from (1,2), using and $\alpha=0.5$ and $\gamma=0.9$:
+
+$$
+\begin{array}{lllcc}
+\hline
+ \textbf{Action}  & r & F(s,s') & \gamma \max_{a'}Q(s',a') & \textrm{New}~ Q(s,a)\\
+ \hline
+ North  & 0 & 0.9\frac{1}{2} - \frac{1}{2} = 0 & 0 & 0\\
+ South  & 0 & 0.9\frac{1}{2} - \frac{1}{2} = 0 & 0 & 0\\
+ East   & 0 & 0.9\frac{1}{1} - \frac{1}{2} = 0.4 & 0 & 0.4\\
+ West   & 0 & 0.9\frac{1}{3} - \frac{1}{2} = -0.2 & 0 & -0.1\\
+ \hline
+ \end{array}
+$$
+Thus, we can see that our potential reward function rewards actions that go towards the goal and penalises actions that go away from the goal. Recall that state (1,2) is in the top row, so action North just leaves us in state (1,2) and South similarly because we cannot go into the wall.
+
+:::
+
+But! It will not always work. Compare states (0,0) and (0,1). Our potential function will reward (0,1) because it is closer to the goal, but we know from from our value iteration example that (0,0) is a higher value state than (0,1). This is because our reward function does not consider the negative reward.
+
+In practice, it is non-trivial to derive a perfect reward function -- it is the same problem as deriving the perfect search heuristic. If we could do this, we would not need to even use reinforcement learning -- we could just do a greedy search over the reward function.
 
 ### Q-function initialisation 
 
-An approach related to reward shaping is
-*Q-function initialisation*. Recall that TD learning methods can start
-at any arbitrary Q-function. The closer our Q-function is to the optimal
-Q-function, the quicker it will converge.
+An approach related to reward shaping is *Q-function initialisation*. Recall that TD learning methods can start
+at any arbitrary Q-function. The closer our Q-function is to the optimal Q-function, the quicker it will converge.
 
-Imagine if we happened to initialise our Q-function to the optimal
-Q-function. It would converge in one step!
+Imagine if we happened to initialise our Q-function to the optimal Q-function. It would converge in one step!
 
-Q-function initialisation is similar to reward shaping: we use
-heuristics to assign higher values to 'better' states. If we just define
-$\Phi(s) = V(s)$, then they are equivalent. In fact, if our potential
-function is *static* (the definition does not change during learning),
-then Q-function initialisation and reward shaping are equivalent[^1].
+Q-function initialisation is similar to reward shaping: we use heuristics to assign higher values to 'better' states. If we just define $\Phi(s) = V_0(s)$, then they are equivalent. In fact, if our potential function is *static* (the definition does not change during learning), then Q-function initialisation and reward shaping are equivalent[^1].
 
-Q-function Initialisation Example : GridWorld Using the idea of inverse
-Manhattan distance, we can define an initial Q-function as follows for
-state (1,2):
+::: {admonition} Example -- Q-function Initialisation in GridWorld 
 
-  ------------------- ----- ----------------------------- ----- -----------
-  $Q((1,2), North)$   $=$   $\frac{1}{2} - \frac{1}{2}$   $=$   $0$
-  $Q((1,2), South)$   $=$   $\frac{1}{2} - \frac{1}{2}$   $=$   $0$
-  $Q((1,2), East)$    $=$   $\frac{1}{1} - \frac{1}{2}$   $=$   $0.5$
-  $Q((1,2), West)$    $=$   $\frac{1}{3} - \frac{1}{2}$   $=$   $-0.16^*$
-  ------------------- ----- ----------------------------- ----- -----------
+Using the idea of inverse Manhattan distance, we can define an initial Q-function as follows for state (1,2):
+$$
+\begin{array}{llll}
+ Q((1,2), North) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
+ Q((1,2), South) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
+ Q((1,2), East)  & = & \frac{1}{1} - \frac{1}{2} & = & 0.5\\
+ Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16^*\\
+\end{array}
+$$
 
-Once we start learning over episodes, we will select those actions with
-a higher heuristic value, and also we are already closer to the optimal
-Q-function, so will will converge faster.
+
+Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster.
+
+:::
 
 ### Summary
 
@@ -223,5 +236,4 @@ Q-function, so will will converge faster.
 
     <http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf>
 
-[^1]: Wiewiora: ?Potential-based shaping and Q-value initialization are
-    equivalent.? (JAIR, 2003)
+[^1]: Wiewiora: ?Potential-based shaping and Q-value initialization are equivalent.? (JAIR, 2003)

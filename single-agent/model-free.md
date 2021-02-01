@@ -181,6 +181,8 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') 
 $$
 :::
 
+**Theoretical guarantee**: Q-learning will converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often.
+
 ### Policy extraction using Q-functions
 
 We iterate over as many episodes as possible, or until each episode
