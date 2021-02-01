@@ -120,7 +120,7 @@ If we define $F(s,s') > 0$ for states $s$ and $s'$, then this provides a small p
 
 *Potential-based* reward shaping is a particular type of reward shaping with nice theoretical guarantees. In potential-based reward shaping, $F$ is of the form:
 
-$$F(s,s') = \gamma \Phi(s') - \Phi(s)$$ 
+$$F(s,s') = \gamma \Phi(s') - \Phi(s)$$
 
 We call $\Phi$ the *potential function* and $\Phi(s)$ is the *potential* of state $s$.
 
@@ -130,8 +130,7 @@ So, instead of defining $F : S \times S \to \mathbb{R}$, we define $\Phi : S \to
 
 This is quite straightforward to show as follows. Consider an episode with shaped reward $G^{\Phi}$:
 
-
-$$
+$
 \begin{array}{lll}
 G^{\Phi} & = & \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))\\
          & = & \sum_{i=0}^{\infty} \gamma^i (r_i + \gamma\Phi(s_{i+1}) - \Phi(s_i))\\
@@ -139,8 +138,7 @@ G^{\Phi} & = & \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))\\
          & = & G + \sum_{i=0}^{\infty}\gamma^{i}\Phi(s_{i}) - \Phi(s_0) - \sum_{i=0}^{\infty}\gamma^i\Phi(s_i) \\
          & = & G + \Phi(s_0)
 \end{array}
-$$
-
+$
 
 where $G$ refers to the shaped and non-shaped reward the episode, and $s_0$ is the starting state of the episode. What this says is that the shaped reward $G^{\Phi}$ is just the unshaped reward $G$ minus the potential of the initial state $s_0$. However, because $F$ does not depend on the actions and $G^{\Phi}$ does not depend on shaped rewards beyond the initial state, the *shaped* Q function, which we refer to as $Q^{\Phi}$, can be defined as just $Q^{\Phi}(s,a) = Q(s,a) + \Phi(s)$. Given this, any optimal policy extracted from $Q^{\Phi}$ will be equivalent to any optimal policy extracted from $Q$.
 
@@ -198,15 +196,15 @@ Q-function initialisation is similar to reward shaping: we use heuristics to ass
 ::: {admonition} Example -- Q-function Initialisation in GridWorld 
 
 Using the idea of inverse Manhattan distance, we can define an initial Q-function as follows for state (1,2):
-$$
+
+$
 \begin{array}{llll}
  Q((1,2), North) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), South) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), East)  & = & \frac{1}{1} - \frac{1}{2} & = & 0.5\\
  Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16^*\\
 \end{array}
-$$
-
+$
 
 Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster.
 
