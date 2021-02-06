@@ -1,6 +1,6 @@
 ## $n$-step Reinforcement Learning: TD($\lambda$)
 
-** Learning Outcomes**
+**Learning Outcomes**
 
 1.  Manually apply n-step reinforcement learning approximation to solve
     small-scale MDP problems given a set of
@@ -149,7 +149,7 @@ end of the episode (if $\tau+n < T$).
 Finally, we update the Q-value:
 
    $$Q(S_{\tau}, A_{\tau}) \leftarrow  Q(S_{\tau}, A_{\tau}) + \alpha[G - Q(S_{\tau}, A_{\tau}) ]$$
- 
+
 In the update rule above, we are using a SARSA update, but a Q-learning update is similar.
 
 
@@ -335,3 +335,5 @@ Reading
     Available at:
 
     <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>
+
+```

@@ -1,7 +1,7 @@
 
 ## Model-free Reinforcement Learning
 
-** Learning Outcomes** 
+**Learning Outcomes** 
 
 1.  Identify situations in which model-free reinforcement learning is a
     suitable solution for an MDP
@@ -358,18 +358,15 @@ The standard versions that we see in this section have two major limitations:
 
 ### Q-learning Examples in Action
 
-In action: solving the cliff example using Q-learning with $\epsilon$-greedy:
+Solving the cliff example using Q-learning with $\epsilon$-greedy:
 
-<https://www.youtube.com/watch?v=ppALjH0kYPE>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ppALjH0kYPE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-The source code for this:
 
-<https://github.com/alecKarfonta/Gridworld>
 
-Worked example: a complete worked example of using Q-learning to
-calculate the optimal path:
+The source code for this is available from here: <https://github.com/alecKarfonta/Gridworld>
 
-<http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
+A complete worked example of using Q-learning to calculate the optimal path in a navigation task <http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
 
 #### Applications of Reinforcement Learning
 
@@ -404,7 +401,7 @@ calculate the optimal path:
 -   TD-Gammon and Jellyfish (Tesauro, Dahl)\
     World's best backgammon player. Grandmaster level
 
-#### Reading
+#### Further Reading
 
 -   *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 
@@ -415,24 +412,6 @@ calculate the optimal path:
     Content: Great entry level book to Reinforcement Level written by
     the founders of the field.
 
--   *Slides about Approximate Q-learning for PacMan*
-
-    Available at:
-
-    <https://www.cs.swarthmore.edu/~bryce/cs63/s16/slides/3-25_approximate_Q-learning.pdf>
-
-    Content: Great technique if you want to use reinforcement learning
-    for the competition!
-
--   *Deep Q-learning for Atari*
-
-    Available at:
-
-    <http://www.davidqiu.com:8888/research/nature14236.pdf>
-
-    Content: Convolutional Neural Networks (NN) to estimate
-    $\mathcal{Q}(s,a)$. The input for the NN is the state, and the
-    output is the esimated reward for each action.
 
 
 ### Summary 

@@ -13,7 +13,7 @@
 3.  Argue the strengths and weaknesses of function approximation
     approaches
 
-4.  Compare and contrast linear function approximation with deep Q-learning
+4.  Compare and contrast linear Q-learning with deep Q-learning
 
 
 ### Motivation 
@@ -44,7 +44,7 @@ There are four actions: left, right, up, down.
 A Q-table would need to store $12.48\times 10^{144}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
 :::
 
-### Linear Function Approximation 
+### Linear Q-learning (Linear Function Approximation) 
 
 The key idea is to *approximate* the Q-function using a linear combination of *features* and their weights.
 Instead of recording everything in detail, we think about what is most important to know, and model that.
@@ -100,27 +100,25 @@ To represent this, we have two vectors:
 
 ### Defining State-Action Features 
 
-Often it is easier to just define
-features for states, rather than state-action pairs. The features are
-just a vector of $n$ functions of the form $f_i(s)$.
+Often it is easier to just define features for states, rather than state-action pairs. The features are just a vector of $n$ functions of the form $f_i(s)$.
 
-However, for most applications, the weight of a feature is related to
-the action. The weight of being one step away from the end in Freeway is
-different if we go Up to if we go Right.
+However, for most applications, the weight of a feature is related to the action. The weight of being one step away from the end in Freeway is different if we go Up to if we go Right.
 
-It is straightforward to construct $n \times |A|$ state-pair features
-from just $n$ state features:
+It is straightforward to construct $n \times |A|$ state-pair features from just $n$ state features:
 
-$$f_{ik}(s,a) = \Bigg \{
+$$
+f_{ik}(s,a) = \Bigg \{
 \begin{array}{ll}
  f_i(s) & \text{if } a=a_k\\
  0      & \text{otherwise}
  ~~~ 1 \leq i \leq n, 1 \leq k \leq |A|
-\end{array}$$ 
+ \end{array}
+$$
 
 This effectively results in $|A|$ different weight vectors:
 
- $$f(s,a_1) = \begin{pmatrix} 
+$$
+ f(s,a_1) = \begin{pmatrix} 
 f_{1,a_1}(s,a) \\
 f_{2,a_1}(s,a) \\
 0\\
@@ -146,201 +144,140 @@ f(s,a_3) = \begin{pmatrix}
 f_{1,a_3}(s,a) \\
 f_{2,a_3}(s,a) \\
 \ldots
-\end{pmatrix}~~\ldots$$
+\end{pmatrix}~~\ldots
+$$
 
-Approximate Q-function Computation Give a feature vector $f$ and a
-weight vector $w$, the Q-value of a state is a simple linear combination
-of features and weights:
+### Approximate Q-function Computation 
+Give a feature vector $f$ and a weight vector $w$, the Q-value of a state is a simple linear combination of features and weights:
 
-  ---------- ----- -------------------------------------------------------------------------------
-  $Q(s,a)$   $=$   $f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_n(s,a) \cdot w^a_n$
-             $=$   $\sum_{i=0}^{n} f_i(s,a) w^a_i$
-  ---------- ----- -------------------------------------------------------------------------------
+$$
+\begin{array}{lll}
+  Q(s,a) & = & f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_n(s,a) \cdot w^a_n\\
+         & = & \sum_{i=0}^{n} f_i(s,a) w^a_i
+\end{array}
+$$
 
-Example: For the Freeway example, we would assume that moving up would
-give a better score than moving down, all else equal (that is, if the
-closest car in the next row up is the same distance away than the
-closest in the next row down). So, for state $s$ where the chicken is in
-row 1:
+:::{admonition} Example --- Approximate Q-function computation for Freeway
 
-  ----------- ----- -----------------------------------------------------------
-  $Q(s,Up)$   $=$   $f_1(s,Up)\cdot 0.31  + \ldots + f_{14}(s,Up) \cdot 0.04$
-  ----------- ----- -----------------------------------------------------------
+For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state $s$ where the chicken is in row 1:
 
-Note that to be effective, our feature values should be *normalised*
-using e.g. min-max normalisation or mean normalisation.
+$$
+\begin{array}{lll}
+  Q(s,Up)   & = &  f_1(s,Up)\cdot 0.31  + \ldots + f_{14}(s,Up) \cdot 0.04
+\end{array}
+$$
 
-Approximate Q-function Update To use approximate Q-functions in
-reinforcement learning, there are two steps we need to change from the
-standard algorithsm: (1) initialisation; and (2) update.
+Note that to be effective, our feature values should be *normalised* using e.g. min-max normalisation or mean normalisation.
+
+### Approximate Q-function Update 
+
+To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
 
 For initialisation, initialise all weights to 0. Alternatively, you can
 try Q-function initialisation and assign weights that you think will be
-'good' weights.
+`good' weights.
 
 For update, we now need to update the weights instead of the actions.
 For Q-learning, the update rule is now:
+
 $$w^a_i \leftarrow w^a_i + \alpha [r + \gamma max_a' Q(s',a') - Q(s,a)]\ f_i(s,a)$$
+
 For SARSA:
+
 $$w^a_i \leftarrow w^a_i + \alpha [r + \gamma Q(s',a') - Q(s,a)]\ f_i(s,a)$$
-Note: we need to update for each feature $i$ for the last executed
-action $a$.
 
-As this is linear, it will eventually converge!
+Note: we need to update for each feature $i$ for the last executed action $a$.
 
-Q-value Propagation Note that this has the effect of updating Q-values
-to states that have never been visited!
+As this is linear, it is therefore convex, so the weights will converge!!
 
-In Freeway, for example, if we receive our first reward by crossing the
-road (going Up from the final row), this will update the weight all
-features for Up, and now we have a Q-value for going Up from *any*
-position on the final row.
+:::{note} Q-value Propagation
 
-Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state
-and action. Now, we receive the reward of 10 for getting to the other
-side of the road. If feature 14 is has the value $\frac{r}{D}$, where
-$r$ is the current row and $D$ is the distance to the other side, then
+Note that this has the effect of updating Q-values to states that have never been visited! 
+
+In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from *any* position on the final row.
+:::
+
+:::{admonition} Example --- Q-value update for Freeway
+
+Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 14 is has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
 we have:
 
-  --------------- -------------- ----------------------------------------------------------------
-  $w^a_i$         $\leftarrow$   $w^a_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)$
-  $w^{Up}_{14}$   $\leftarrow$   $0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}$
-                  $=$            $5$
-  --------------- -------------- ----------------------------------------------------------------
+$$
+\begin{array}{lll}
+  w^a_i & \leftarrow & w^a_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)\\
+  w^{Up}_{14} & \leftarrow & 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
+              & = &5
+\end{array}
+$$
 
-From this, we now can get an estimate of $Q(s,Up)$ from any state
-because we have some weights in our linear function. Those that are
-closer to the other size of the road will get a higher Q-value than
-those further away (all other things being equal).
+From this, we now can get an estimate of $Q(s,Up)$ from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).
 
-Canvas quiz solutions
+### Deep Q-learning
 
-The update rule is:
-
-  -------------- -------------- ---------------------------------------------------------------------
-  $w^{Down}_i$   $\leftarrow$   $w^{Down}_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)$
-  -------------- -------------- ---------------------------------------------------------------------
-
-We only need to update weights for the $Down$ action. For the row
-feature, this is:
-
-  ---------------- -------------- ----------------------------------------
-  $w^{Down}_{r}$   $\leftarrow$   $0.2 + 0.4[-1 + 0.9 \times 0.162] 0.6$
-                   $=$            $0.2 + 0.4[-0.8542]0.6$
-                   $=$            $0.2 - 0.205$
-                   $=$            $-0.005$
-  ---------------- -------------- ----------------------------------------
-
-The 0.6 is $f_{row}(s,Down)$ normalised. Remember that the first four
-elements in $f(s,a)$ are for the $Up$ action!
-
-The term inside the square brackets is the same for other weights, so we
-can calculate these as:
-
-  ----------------- -------------- --------------------------- ----- ----------
-  $w^{Down}_{dc}$   $\leftarrow$   $0.2 + 0.4[-0.8542] 0.2$    $=$   $0.132$
-  $w^{Down}_{da}$   $\leftarrow$   $0.01 + 0.4[-0.8542] 0.2$   $=$   $-0.058$
-  $w^{Down}_{db}$   $\leftarrow$   $0.2 + 0.4[-0.8542] 0.2$    $=$   $0.132$
-  ----------------- -------------- --------------------------- ----- ----------
-
-The weights for the $Up$ do not change, so the next vector is
-$w =  (0.4, 0.3, 0.2, 0.01, -0.005, 0.132, -0.058, 0.132)$
-
-Q-function Approximation with Neural Networks: Deep Q-learning The
-latest hype in reinforcement learning is all about the use of deep
-neural networks to approximate value and Q-functions.
-
-In brief: instead of selecting features and training weights, we learn
-the parameters $\theta$ to a neural network. The Q-function is
-$Q(s,a; \theta)$, so takes the parameters as an argument.
+The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions. Instead of selecting features and training weights, we learn the parameters $\theta$ to a neural network. The Q-function is $Q(s,a; \theta)$, so takes the parameters as an argument.
 
 The TD update for Q-learning is just:
+
 $$\theta \leftarrow \theta + \alpha[r + \gamma \max_{a'} Q(s',a'; \theta) - Q(s,a ;\theta)]
 \nabla_{\theta} Q(s,a; \theta)$$
 
-Advantage (compared to linear Q functions): we do not need to select
-features -- the 'features' will be learnt as part of the hidden layers.
+where $\nabla_{\theta} Q(s,a; \theta)$ is the *gradient* of the Q-function.
 
-Disadvantages: there are no convergence guarantees; and very data hungry
-because they need to learn features as well as Q-function.
+**Advantages (compared to linear Q functions):** 
+- We do not need to select features -- the 'features' will be learnt as part of the hidden layers of the neural network. 
+-   The state $s$ can be less structured, such as images or sequences of images (video).
 
-Despite this, deep Q-learning often works remarkably well in practice,
-especially for tasks that require vision (see the robotic arm grasping
-unknown objects in the lecture on Q-learning).
+**Disadvantages:**
+- There are no convergence guarantees.
+- Deep neural networks are very data hungry because they need to learn features as well as Q-function, so compared to a linear approximation with good features, learning good Q-functions can be very difficult.
 
-Strengths and Limitations of Q-function Approximation
+Despite this, deep Q-learning  works remarkably well in some areas, especially for tasks that require vision (see the robotic arm grasping unknown objects).
 
-Approximating Q-functions using machine learning techniques has
-advantages and disadvantages.
+### Strengths and Limitations of Q-function Approximation
 
-Advantages:
+Approximating Q-functions using machine learning techniques such as linear functions or deep learning  has advantages and disadvantages.
 
--   More efficient representation compared with Q-tables.
+**Advantages:**
 
--   Q-value propagation
+-   Memory: More efficient representation compared with Q-tables because we only store weights/parameters for the Q-function, rather than the the $|A| \times |S|$ entries for a Q-table.
 
-Disadvantages:
+-   Q-value propagation: we do not need to apply action $a$ in state $s$ to get a value for $Q(s,a)$ because the Q-function generalises.
 
--   The Q-function is now only an approximation of the real Q-function:
-    states that share feature values may have different actual values
+**Disadvantages:**
 
-Applications of Deep Reinforcement Learning A great application of using
-off-policy updates in deep Q-learning for robotic arms to learn how to
-grasp unknown objects. The only input for the problem is the camera
-data:
+-   The Q-function is now only an approximation of the real Q-function: states that share feature values may have different actual values. 
 
-<https://www.youtube.com/watch?v=cXaic_k80uM&feature=youtu.be>
+### Applications of Function Approximation 
 
-This is using policy iteration (policy gradient descent) rather than
-standard Q-learning.
+A great application of using off-policy updates in deep Q-learning for robotic arms to learn how to grasp unknown objects. The only input for the problem is the camera data:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cXaic_k80uM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This is using policy iteration (policy gradient descent) rather than standard Q-learning.
 
 ### Summary
 
-1.  We can scale reinforcement learning by approximating Q-functions,
-    rather than storing complete Q-tables.
+1.  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
 
-2.  Using simple linear methods in which we select features and learn
-    weights are effective and guarantee convergence.
+2.  Using simple linear methods in which we select features and learn weights are effective and guarantee convergence.
 
-3.  Using neural networks offer alternatives in which we do not need to
-    select features, but require a lot of training data and have n
-    convergence guarantees.
+3.  Deep Q-learning offers alternatives in which we do not need to select features, but require a lot of training data (more episodes) and has no convergence guarantees.
 
-Some tips for reinforcement learning in the group project
 
-1.  Linear Q-function approximation should work well if the features are
-    not strongly dependent on the random initial state.
 
-2.  I would be surprised if using deep Q networks for function
-    approximation was effective because deep neural nets are data hungry
-    and generating enough training data could require weeks or months of
-    computation.
 
-3.  Design good reward shaping structures will help, but keep them
-    simple.
+### Further Reading
 
-4.  For some advanced techniques, read Sutton and Barto; in particular
-    stuff on: experience replay, approximate methods (even for value
-    iteration!), and generalised policy iteration.
+- Chapter 9 (Approximate Solution Methods) of *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 
-Reading
+  <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
--   Chapter 9 (Approximate Solution Methods) of *Introduction to
-    Reinforcement Learning* \[*Sutton and Barto*\]
+- Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the esimated reward for each action. There are two papers worth reading on this:
 
-    Available at:
-
-    <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
-
--   *Playing Atari with Deep Reinforcement Learning* from DeepMind.
-
-    Available at:
-
-    <https://arxiv.org/pdf/1312.5602v1.pdf>
+  - *Human-level control through deep reinforcement
+    learning*: <http://www.davidqiu.com:8888/research/nature14236.pdf>
+  - *Playing Atari with Deep Reinforcement Learning* from DeepMind. <https://arxiv.org/pdf/1312.5602v1.pdf>
 
 -   Before AlphaGo there was TD-gammon, which was the first paper to
     combine reinforcement learning and neural networks:
-
     <http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf>
-
-

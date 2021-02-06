@@ -1,9 +1,6 @@
 ## Value Iteration
 
-
 **Learning outcomes**
-
-The learning outcomes of this chapter are:
 
 1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to 
     solve medium-scale MDP problems automatically
@@ -14,22 +11,12 @@ The learning outcomes of this chapter are:
 
 4.  Discuss the strengths and weaknesses of value iteration and policy iteration algorithms
 
+### Overview
 
+*Value Iteration* is a method for finding the optimal value function $V^*$ by solving the
+Bellman equations iteratively. It uses the concept of dynamic programming to keep a value function $V$ that approximates the optimal value function $V^**$, iteratvely improving $V$ until it converges to $V^*$ (or close to it). 
 
-**Relevant Reading**
-
-- *Any* introduction to probability theory --- see the related reading on the LMS if you are unfamiliar.
-
-- Chapter 17 of *Artificial Intelligence --- A Modern Approach* by Russell and Norvig. Available in the 
-    university library and online in PDF format.
-
-- Chapter 4 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at 
-    <http://www.incompleteideas.net/book/RLbook2020.pdf>
-
-
-
-**Value Iteration** is a method for finding the optimal value function $V^*$ by solving the
-Bellman equations iteratively.
+### Algorithm
 
 Once we understand the Bellman equation, the value iteration algorithm is straightforward.
 
@@ -54,16 +41,9 @@ As we can see, this is just applying the Bellman equation iteratively until eith
 Value iteration converges to the optimal policy as iterations continue. $V \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite amount of iterations, it will be optimal.
 
 
-Value iteration converges to the optimal value function $V^*$
-asymptotically, but in practice, the algorithm is stopped when the
-**residual**  $\Delta$ reaches some pre-determined
-threshold $\theta$ -- that is, when the largest change in the values
-between iterations is "small enough".
+Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the *residual*  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-A policy can now be easily defined: in a state $s$, given $V$, choose
-the action with the highest expected reward using policy extraction.
-The resulting greedy policy $\pi_V$ has it's **loss** bounded by
-$2 \gamma  \Delta / 1-\gamma$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The resulting greedy policy $\pi_V$ has it's *loss* bounded by $2 \gamma  \Delta / 1-\gamma$.
 
 ### Complexity
 
@@ -84,13 +64,10 @@ $|2^N|$.
 
 **Answer:** Yes! Using function approximation, which we will see later.
 
-
 It is clear to see that the value iteration can be easily parallelised
 by updating the value of many states at once: the values of states at
 step $t + 1$ are dependent only on the value of other states at step
 $t$.
-
-
 
 ### Value iteration example: Grid World.
 
@@ -110,7 +87,6 @@ $$
 0.00 & 0.00 & 0.00  & 0.00\\
 \hline
 \end{array}$$
-
 $$
 \text{After 2 iterations}
 
@@ -136,7 +112,6 @@ $$
 0.00 & 0.00 & 0.00  & 0.00\\
 \hline
 \end{array}$$
-
 $$
 \text{After 4 iterations}
 
@@ -162,7 +137,6 @@ $$
 0.00 & 0.22 & 0.37  & 0.13\\
 \hline
 \end{array}$$
-
 $$
 \text{After 10 iterations}
 
@@ -188,7 +162,6 @@ $$
 0.49 & 0.43 & 0.48  & 0.28\\
 \hline
 \end{array}$$
-
 $$
 \text{Policy after 3 iterations}
 
@@ -204,3 +177,6 @@ $$
 
 
 
+### Strengths and Limitations
+
+*TODO*

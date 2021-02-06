@@ -1,7 +1,6 @@
 # Markov Decision Processes
 
-
-**Chapter learning outcomes**
+**Learning outcomes**
 
 The learning outcomes of this chapter are:
 
@@ -381,3 +380,5 @@ Like MDPs, solutions are policies that map belief states into actions. Optimal p
 We will not cover this in detail in these notes. However, POMDPs are
 clearly a generalisation of MDPs, and they have had a much larger impact
 on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which one is acting.
+
+```
