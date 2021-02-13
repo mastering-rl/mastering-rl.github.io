@@ -32,11 +32,21 @@ class NavigationMDP(MDP):
         states = [self.TERMINAL]
         for x in range(self.width):
             for y in range(self.height):
-                states.append((x,y))
+                if not (x, y) in self.blockedStates:
+                    states.append((x,y))
         return states
 
-    def getActions(self):
-        return ['N', 'S', 'E', 'W', self.TERMINATE]
+    def getActions(self, state=None):
+
+        if (state == None):
+            return ['N', 'S', 'E', 'W', self.TERMINATE]
+
+        actions = []
+        for action in ['N', 'S', 'E', 'W', self.TERMINATE]:
+            for (newState, probability) in self.getTransitions(state, action):
+                if probability > 0:
+                    actions.append(action)
+        return actions
 
     def getGoalStates(self):
         return self.goalStates
@@ -58,7 +68,7 @@ class NavigationMDP(MDP):
         transitions = []
 
         if state == self.TERMINAL:
-            return []
+            return [(self.TERMINAL, 1.0)]
 
         (x, y) = state
         if state in self.getGoalStates().keys():
@@ -96,13 +106,16 @@ class NavigationMDP(MDP):
     def getDiscountFactor(self):
         return self.discountFactor
 
+    ''' Convert a grid world value function to a formatted string '''
     def valueFunctionToString(self, values):
-        line = " {:-^{n}}\n".format("", n=7*self.width + 1)
+        line = " {:-^{n}}\n".format("", n=len(" | +0.00")*self.width + 1)
         result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
-                result += " | "
-                result += "{:0.2f}".format(values[(x, y)])
+                if (x, y) in self.blockedStates:
+                    result += " | #####"
+                else:
+                    result += " | {:+0.2f}".format(values[(x, y)])
             result += " |\n"
             result += line
 
@@ -123,12 +136,12 @@ class ValueIteration():
            for state in mdp.getStates():
                oldValue = values[state]
                actionValues = dict()
-               for action in mdp.getActions():
+               for action in mdp.getActions(state):
                    newValue = 0.0
                    for (newState, probability) in mdp.getTransitions(state, action):
                        reward = mdp.getReward(state, action, newState)
                        newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-                   actionValues.update({action: newValue})
+                   actionValues.update({action: newValue})                
                newValues.update({state: max(actionValues.values())})
            values = newValues
 
@@ -147,7 +160,9 @@ mdp = NavigationMDP()
 
 valueIteration = ValueIteration(mdp)
 
-for i in [1, 2, 3, 4, 5]:
+for i in [1, 2, 3, 4, 5, 10, 1000]:
+#for i in [1]:
     print("After iteration " + str(i))
+    #mdp.valueFunctionToString(valueIteration.valueIteration(iterations = i))
     print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = i)) + "\n")
 
