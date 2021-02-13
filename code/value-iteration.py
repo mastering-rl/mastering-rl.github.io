@@ -1,16 +1,50 @@
-
 class MDP:
+    ''' Return all states of this MDP '''
     def getStates(self): abstract
+
+    ''' Return all actions with non-zero probability from this state '''
     def getActions(self, state): abstract
+
+    ''' Return all non-zero probability transitions for this action from this state '''
     def getTransitions(self, state, action): abstract
+
+    ''' Return the reward for transitioning from state to nextState via action '''
     def getReward(self, state, action, nextState): abstract
+
+    ''' Return the discount factor for this MDP '''
     def getDiscountFactor(self): abstract
-    def getInitialStates(self): abstract
+
+    ''' Return the initial state of this MDP '''
+    def getInitialState(self): abstract
+
+    ''' Return all goal states of this MDP '''
     def getGoalStates(self): abstract
 
-    ''' Returns a new state and a reward for executing action in state '''
-    def simulate(self, state, action): abstract
+    ''' Return a policy given a value function '''
+    def extractPolicy(self, values):
+        policy = dict()
+        for state in mdp.getStates():
+            maxQ = float('-inf')
+            for action in mdp.getActions(state):
+               # Calculate the value of Q(s,a)
+               qValue = 0.0
+               for (newState, probability) in mdp.getTransitions(state, action):
+                   reward = mdp.getReward(state, action, newState)
+                   qValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
 
+               # if this is the maximum Q-value so far, set the policy for this state
+               if qValue > maxQ:
+                   policy.update({state: action})
+                   maxQ = qValue
+
+        return policy
+
+    ''' 
+       Return a new state and a reward for executing action in state, 
+       based on the underlying probability. This can be used for 
+       model-free method
+    '''
+    def simulate(self, state, action): abstract
 
 class NavigationMDP(MDP):
 
@@ -46,6 +80,7 @@ class NavigationMDP(MDP):
             for (newState, probability) in self.getTransitions(state, action):
                 if probability > 0:
                     actions.append(action)
+                    break
         return actions
 
     def getGoalStates(self):
@@ -121,31 +156,55 @@ class NavigationMDP(MDP):
 
         return result
 
+    ''' Convert a grid world policy to a formatted string '''
+    def policyToString(self, policy):
+        line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
+        result = line 
+        for y in range(self.height - 1, -1, -1):
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += " | ###"
+                else:
+                    action = "T" if policy[(x, y)] == self.TERMINATE else policy[(x, y)]
+                    result += " |  " + action + " "
+            result += " |\n"
+            result += line
+
+        return result
 
 class ValueIteration():
 
     def __init__(self, mdp):
         self.mdp = mdp
 
-    ''' To run until convergence (minus theta), set iterations to -1 '''
-    def valueIteration(self, iterations = -1, theta = 0.01):
+    ''' Implmentation of value iteration '''
+    def valueIteration(self, iterations = 100, theta = 0.001):
+
+        # Initialise the value function V with all 0s
         values = self.initialiseValueFunction()
         for _ in range(iterations):
+
            delta = 0
-           newValues = self.initialiseValueFunction()
            for state in mdp.getStates():
-               oldValue = values[state]
-               actionValues = dict()
+               qValues = dict()
                for action in mdp.getActions(state):
+                   # Calculate the value of Q(s,a)
                    newValue = 0.0
                    for (newState, probability) in mdp.getTransitions(state, action):
                        reward = mdp.getReward(state, action, newState)
                        newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-                   actionValues.update({action: newValue})                
-               newValues.update({state: max(actionValues.values())})
-           values = newValues
+                   qValues.update({action: newValue})
 
-        return newValues
+               # V(s) = max_a Q(s,a)
+               maxQ = max(qValues.values())
+               delta = max(delta, abs(values[state] - maxQ))
+               values.update({state: maxQ})
+
+           # terminate if the value function has converged
+           if delta < theta:
+               break
+
+        return values
 
     def initialiseValueFunction(self):
         values = dict()
@@ -154,15 +213,13 @@ class ValueIteration():
         return values
 
 
-
-
 mdp = NavigationMDP()
-
 valueIteration = ValueIteration(mdp)
 
-for i in [1, 2, 3, 4, 5, 10, 1000]:
-#for i in [1]:
-    print("After iteration " + str(i))
-    #mdp.valueFunctionToString(valueIteration.valueIteration(iterations = i))
-    print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = i)) + "\n")
+for iterations in [1, 2, 3, 4, 5, 10, 100]:
+    print("After iteration " + str(iterations))
+    #mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations))
+    print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
 
+print("Policy after 100 iterations")
+print(mdp.policyToString(mdp.extractPolicy(valueIteration.valueIteration(iterations = 100))))

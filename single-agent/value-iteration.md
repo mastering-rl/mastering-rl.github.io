@@ -25,20 +25,29 @@ Once we understand the Bellman equation, the value iteration algorithm is straig
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Value function $V$
 
-Set $V_0$ to arbitrary value function; e.g., $V_0(s)=0$ for all $s$
+Set $V$ to arbitrary value function; e.g., $V(s)=0$ for all $s$
 
 $\text{Repeat}$\
 $\quad\quad \Delta \leftarrow 0$\
 $\quad\quad \text{For each}~ s \in S$\
-$\quad\quad\quad\quad v \leftarrow V(s)$\
-$\quad\quad\quad\quad \underbrace{V(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}}$\
-$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |v - V(S)|)$\
+$\quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}}$\
+$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'(s) - V(s)|)$\
+$\quad\quad V \leftarrow V'$\
 $\text{Until}~ \Delta \leq \theta$
 :::
 
 As we can see, this is just applying the Bellman equation iteratively until either the value function $V$ doesn't change anymore, or until it changes in by a very small amount ($\theta$).
 
-Value iteration converges to the optimal policy as iterations continue. $V \mapsto V^*$ as $i \mapsto \infty$. That is, given an infinite amount of iterations, it will be optimal.
+We could also write the algorithm using the idea of Q-functions, which is closer to a code-based implementation. For this, the loop is:
+
+$\quad\quad \Delta \leftarrow 0$\
+$\quad\quad \text{For each}~ s \in S$\
+$\quad\quad\quad\quad \text{For each}~ a \in A(s)$\
+$\quad\quad\quad\quad\quad\quad Q(s,a) \leftarrow \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]$\_
+$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |\max_{a \in A(s)} Q(s,a) - V(s)|)$\
+$\quad\quad\quad\quad V(s) \leftarrow \max_{a \in A(s)} Q(s,a)$
+
+Value iteration converges to the optimal policy as iterations continue: $V \mapsto V^*$ as $i \mapsto \infty$, where $i$ is the number of iterations. So, given an infinite amount of iterations, it will be optimal.
 
 
 Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the *residual*  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
