@@ -1,3 +1,5 @@
+import random
+
 class MDP:
     ''' Return all states of this MDP '''
     def getStates(self): abstract
@@ -11,6 +13,9 @@ class MDP:
     ''' Return the reward for transitioning from state to nextState via action '''
     def getReward(self, state, action, nextState): abstract
 
+    ''' Return true if and only if state is a terminal state of this MDP '''
+    def isTerminal(self, state): abstract
+    
     ''' Return the discount factor for this MDP '''
     def getDiscountFactor(self): abstract
 
@@ -20,8 +25,9 @@ class MDP:
     ''' Return all goal states of this MDP '''
     def getGoalStates(self): abstract
 
+
     ''' Return a policy given a value function '''
-    def extractPolicy(self, values):
+    def extractPolicyFromValueFunction(self, values):
         policy = dict()
         for state in mdp.getStates():
             maxQ = float('-inf')
@@ -39,12 +45,42 @@ class MDP:
 
         return policy
 
+    ''' Return a policy given a Q function '''
+    def extractPolicyFromQFunction(self, qValues):
+        policy = dict()
+        for state in mdp.getStates():
+            # Get the QValues for this state only
+            sQValues = dict(filter(lambda sa: sa[0][0] == state, qValues.items()))
+
+            # Find the maximum Q-value
+            maxQ = float('-inf')
+            for (_, action) in sQValues:
+               # if this is the maximum Q-value so far, set the policy for this state
+               qValue = sQValues[(state, action)]
+               if qValue > maxQ:
+                   policy.update({state: action})
+                   maxQ = qValue
+
+        return policy
+
     ''' 
        Return a new state and a reward for executing action in state, 
        based on the underlying probability. This can be used for 
        model-free method
     '''
-    def simulate(self, state, action): abstract
+    def simulate(self, state, action):
+        r = random.random()
+        cumulativeProbability = 0.0
+        for (newState, probability) in mdp.getTransitions(state, action):
+            if r >= cumulativeProbability and r <= probability + cumulativeProbability:
+                return (newState, self.getReward(state, action, newState))
+            cumulativeProbability += probability
+            if cumulativeProbability >= 1.0:
+                raise "Cumulative probability >= 1.0 for action " + str(action) + " from " + str(state)
+        print("No outcome state in simulation for action " + str(action) + " from " + str(state))
+        raise "No outcome state in simulation for action"
+        return None
+
 
 class NavigationMDP(MDP):
 
@@ -82,6 +118,9 @@ class NavigationMDP(MDP):
                     actions.append(action)
                     break
         return actions
+
+    def getInitialState(self):
+        return (0,0)
 
     def getGoalStates(self):
         return self.goalStates
@@ -141,6 +180,11 @@ class NavigationMDP(MDP):
     def getDiscountFactor(self):
         return self.discountFactor
 
+    def isTerminal(self, state):
+        if state == self.TERMINAL:
+            return True
+        return False
+
     ''' Convert a grid world value function to a formatted string '''
     def valueFunctionToString(self, values):
         line = " {:-^{n}}\n".format("", n=len(" | +0.00")*self.width + 1)
@@ -154,6 +198,63 @@ class NavigationMDP(MDP):
             result += " |\n"
             result += line
 
+        return result
+
+    ''' Convert a grid world Q function to a formatted string '''
+    def qFunctionToString(self, qValues):
+        space = " |               "
+
+        line = "  "
+        for x in range(self.width):
+            line += "---------------- "
+        line += "\n"
+        
+        result = line
+        for y in range(self.height - 1, -1, -1):
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += space
+                else:
+                    result += " |       /\      "
+            result += " |\n"
+            
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += space
+                else:
+                    result += " |     {:+0.2f}     ".format(qValues[((x, y), 'N')])
+            result += " |\n"
+            
+            for x in range(self.width):
+                result += space
+            result += " |\n"
+            
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += " |     #####     "
+                else:
+                    result += " | <{:+0.2f}  {:+0.2f}>".format(qValues[((x, y), 'W')], qValues[((x, y), 'E')])
+            result += " |\n"
+
+            for x in range(self.width):
+                result += space
+            result += " |\n"
+
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += space
+                else:
+                    result += " |     {:+0.2f}     ".format(qValues[((x, y), 'S')])
+            result += " |\n"
+
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += space
+                else:
+                    result += " |       \/      "
+            result += " |\n"
+            result += line
+        
         return result
 
     ''' Convert a grid world policy to a formatted string '''
@@ -212,14 +313,82 @@ class ValueIteration():
             values.update({state: 0.0})
         return values
 
+class MultiArmedBandits():
 
-mdp = NavigationMDP()
+    def epsilonGreedy(actions, state, qValues, epsilon=0.1):
+        r = random.random()
+
+        selection = None
+        # select a random action with epsilon probability
+        if r < epsilon:
+            index = random.randint(0, len(actions) - 1)
+            return actions[index]
+        else:
+            # find the action with maximum Q value
+            maxKey = None
+            maxValue = float('-inf')
+            for action in actions:
+                value = qValues[(state, action)]
+                if value > maxValue:
+                    maxAction = action
+                    maxValue = value
+            return maxAction
+    
+class QLearning():
+
+    def __init__(self, mdp):
+        self.mdp = mdp
+
+    def qLearning(self, episodes = 1000, alpha=0.2, epsilon=0.1):
+        qValues = self.initialiseQFunction()
+        for _ in range(episodes):
+            state = mdp.getInitialState()
+            while not mdp.isTerminal(state):
+                validActions = mdp.getActions(state)
+                action = MultiArmedBandits.epsilonGreedy(validActions, state, qValues)
+                (newState, reward) = mdp.simulate(state, action)
+                newValue = self.update(qValues, state, action, newState, reward, alpha)
+                qValues.update({(state, action): newValue})
+                state = newState
+        return qValues
+
+    def update(self, qValues, state, action, newState, reward, alpha):
+        (_, maxQValue) = self.getMaxQValue(qValues, newState)
+        qValue = qValues[(state, action)]
+        if state == (3,0) and action == 'N':
+            print(qValue, newState, reward, maxQValue)    
+        return qValue + alpha * (reward + mdp.discountFactor * maxQValue - qValue)
+
+    def getMaxQValue(self, qValues, state):
+        maxQ = None
+        maxValue = float('-inf')
+        validActions = self.mdp.getActions(state)
+        for (qState, action) in qValues.keys():
+            value = qValues[(qState, action)]
+            if qState == state and action in validActions and maxValue < value:
+                maxQ = action
+                maxValue = value
+        return (maxQ, maxValue)
+
+    def initialiseQFunction(self):
+        qValues = dict()
+        for state in self.mdp.getStates():
+            for action in self.mdp.getActions():
+                qValues.update({(state, action): 0.0})
+        return qValues
+
+mdp = NavigationMDP(discountFactor=0.8)
 valueIteration = ValueIteration(mdp)
 
-for iterations in [1, 2, 3, 4, 5, 10, 100]:
+for iterations in []: #1, 2, 3, 4, 5, 10, 100]:
     print("After iteration " + str(iterations))
     #mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations))
     print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
 
 print("Policy after 100 iterations")
-print(mdp.policyToString(mdp.extractPolicy(valueIteration.valueIteration(iterations = 100))))
+print(mdp.policyToString(mdp.extractPolicyFromValueFunction(valueIteration.valueIteration(iterations = 100))))
+
+
+qLearning = QLearning(mdp)
+print("qLearning")
+print(mdp.qFunctionToString(qLearning.qLearning(episodes = 100)) + "\n")
