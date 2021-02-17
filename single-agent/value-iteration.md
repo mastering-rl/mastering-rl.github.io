@@ -66,141 +66,11 @@ A policy can now be easily defined: in a state $s$, given $V$, choose the action
 
 ### Complexity
 
-The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration,
-we iterate in an outer loop over all states in $S$, and in each outer
-loop iteration, we need to iterate over all states ($\sum_{s' \in S}$),
-meaning $|S|^2$ iterations. But also within each outer loop iteration,
-we need to calculate the value for every action to find the maximum.
+The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterate in an outer loop over all states in $S$, and in each outer loop iteration, we need to iterate over all states ($\sum_{s' \in S}$), meaning $|S|^2$ iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum.
 
-**The Curse of Dimensionality** Solving MDPs using value iteration is polynomial 
-in the size of the state space, but exponential in the number of variables if we use a
-factored representation such as a PDDL-like language to represent our problem. If there are $N$
-number of variables, each a Boolean, there are $2^N$ number of states.
-Value iteration requires us to keep a vector of size
-$|2^N|$.
+It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step $t + 1$ are dependent only on the value of other states at step $t$.
 
-**Question:** Can we do better?
-
-**Answer:** Yes! Using function approximation, which we will see later.
-
-It is clear to see that the value iteration can be easily parallelised
-by updating the value of many states at once: the values of states at
-step $t + 1$ are dependent only on the value of other states at step
-$t$.
-
-### Value iteration example: Grid World.
-
-Assuming $\gamma = 0.9$.
-
-
-
-$$
-\text{After 1 iteration}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.00 & 0.00 & 0.00 & +1\\
-\hline
-0.00 & --  & 0.00  & -1\\
-\hline
-0.00 & 0.00 & 0.00  & 0.00\\
-\hline
-\end{array}$$
-$$
-\text{After 2 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.00 & 0.00 & 0.72 & +1\\
-\hline
-0.00 & --  & 0.00  & -1\\
-\hline
-0.00 & 0.00 & 0.00  & 0.00\\
-\hline
-\end{array}$$
-
-$$
-\text{After 3 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.00 & 0.52 & 0.78 & +1\\
-\hline
-0.00 & --  & 0.43  & -1\\
-\hline
-0.00 & 0.00 & 0.00  & 0.00\\
-\hline
-\end{array}$$
-$$
-\text{After 4 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.37 & 0.66 & 0.83 & +1\\
-\hline
-0.00 & --  & 0.51  & -1\\
-\hline
-0.00 & 0.00 & 0.31  & 0.00\\
-\hline
-\end{array}$$
-
-$$
-\text{After 5 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.51 & 0.72 & 0.84 & +1\\
-\hline
-0.27 & --  & 0.55  & -1\\
-\hline
-0.00 & 0.22 & 0.37  & 0.13\\
-\hline
-\end{array}$$
-$$
-\text{After 10 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.64 & 0.74 & 0.85 & +1\\
-\hline
-0.57 & --  & 0.57  & -1\\
-\hline
-0.49 & 0.43 & 0.48  & 0.28\\
-\hline
-\end{array}$$
-
-$$
-\text{After 1000 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-0.64 & 0.74 & 0.85 & +1\\
-\hline
-0.57 & --  & 0.57  & -1\\
-\hline
-0.49 & 0.43 & 0.48  & 0.28\\
-\hline
-\end{array}$$
-$$
-\text{Policy after 3 iterations}
-
-\begin{array}{|c|c|c|c|}
-\hline
-\rightarrow & \rightarrow & \rightarrow & +1\\
-\hline
-\uparrow & --  & \uparrow  & -1\\
-\hline
-\uparrow & \leftarrow & \uparrow  & \leftarrow\\
-\hline
-\end{array}$$
-
-
-
-### Strengths and Limitations
-
-*TODO*
-
-### Code stuff
+### Implementation
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -380,6 +250,8 @@ class NavigationMDP(MDP):
         return result
 ```
 
+Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
+
 ```{code-cell} ipython3
 class ValueIteration():
 
@@ -422,20 +294,33 @@ class ValueIteration():
         return values
 ```
 
+Given this, we can create a GridWorld MDP, and solve using value iteration. The code below prints the value function for value iteration after 1, 2, 3, 4, 5, 10, and 100 iterations:
+
 
 ```{code-cell} ipython3
-
-
 mdp = NavigationMDP()
 valueIteration = ValueIteration(mdp)
 
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print("After iteration " + str(iterations))
-    #mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations))
-    print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
-
-print("Policy after 100 iterations")
-print(mdp.policyToString(mdp.extractPolicy(valueIteration.valueIteration(iterations = 100))))
+    values = valueIteration.valueIteration(iterations = iterations)
+    print(mdp.valueFunctionToString(values) + "\n")
 ```
 
-Whatever else
+We can then extract  this using the `extractPolicy` method  from the MDP class:
+
+```{code-cell} ipython3
+print("Policy after 100 iterations")
+values = valueIteration.valueIteration(iterations = 100)
+print(mdp.policyToString(mdp.extractPolicy(values)))
+```
+
+### Strengths and Limitations
+
+**Guarantees** Value iteration is guaranteed to converge to the optimal policy, given an infinite amount of time. In practice, for problems with a small-to-medium size state space, value iteration converges in a "reasonable" amount of time, returning a close-to-optimal value function, and quite often an optimal policy.
+
+**The Curse of Dimensionality** Solving MDPs using value iteration is polynomial  in the size of the state space, but exponential in the number of variables if we use a factored representation such as a PDDL-like language to represent our problem. If there are $N$ number of variables, each a Boolean, there are $2^N$ number of states. Value iteration requires us to keep a vector of size $|2^N|$.
+
+**Question:** Can we do better?
+
+**Answer:** Yes! Using function approximation, which we will see later.

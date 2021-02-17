@@ -17,28 +17,17 @@
 
 ### Model-based vs model-free 
 
-So far in these notes, we have have looked at value iteration and MCTS.
-
-Search methods and value iteration are what are called as
-    *model-based* techniques. This means that we need to know the model;
-    in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
+Value iteration is part of a class of solutions known as *model-based* techniques. This means that we need to know the model; in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
 
 In this section, we look at Q-learning and SARSA, which are *model-free*   techniques. This means that we do NOT know the $P_a(s' \mid s)$ and $r(s,a,s')$.
 
-*How can we calculate a policy if we don't know the transitions and
-    the rewards?!* 
+*How can we calculate a policy if we don't know the transitions and the rewards?!*We *learn through experience* by trying actions and seeing what the results is, making this machine learning problem.
 
-We *learn through experience* by trying actions and
-    seeing what the results is, making this machine learning problem.
+Importantly, in model-free reinforcement learning, we do NOT try to
+learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
+ directly.
 
--   Importantly, in model-free reinforcement learning, we do NOT try to
-    learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
-     directly.
-
--   There is something in between model-based and model-free:
-    simulation-based techniques. In these cases, we have a model as a
-    *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$
-    and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
+There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
 
 :::{Admonition} Example: The Mystery Game
@@ -64,43 +53,27 @@ Once you have played this, ask yourself the following questions:
 
 -   What assumptions did you use?
 
-  Imagine how hard it is for a computer that doesn't have any
-assumptions or intuition!
+Imagine how hard it is for a computer that doesn't have any assumptions or intuition!
 
 ### Approaches to AI Planning and Learning
 
 ![image](../images/RL_approaches){width="0.9\linewidth"}
 
-Reinforcement Learning: The Basics There are many different models of
-reinforcement learning, all with the same basis:
+Reinforcement Learning: The Basics There are many different models of reinforcement learning, all with the same basis:
 
--   We execute many different *episodes* of the problem we want to
-    solve, and from that we learnt a *policy*.
-
--   During learning, we try to learn the value of applying particular
-    actions in particular states.
-
--   During each episode, we need to execute some actions. After each
-    action, we get a reward (which may be 0) and we can see the new
-    state.
-
--   From this, we *reinforce* our estimates of applying the previous
-    action in the previous state.
-
--   We terminate when: (1) we run out of training time; (2) we think our
-    policy has converged to the optimal policy (for each new episode we
-    see no improvement); or (3) our policy is 'good enough' (for each
-    new episode we see minimal improvement).
+-   We execute many different *episodes* of the problem we want to solve, and from that we learnt a *policy*.
+    
+-   During learning, we try to learn the value of applying particular actions in particular states.
+    
+-   During each episode, we need to execute some actions. After each action, we get a reward (which may be 0) and we can see the new state.
+    
+-   From this, we *reinforce* our estimates of applying the previous action in the previous state.
+    
+-   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
 ## Q-Learning: Off-policy Reinforcement Learning
 
-Q-Learning is perhaps the simplest of reinforcement learning methods,
-and is based on how animals learn from their environment. The intuition
-is quite straightforward. Maintain a Q-function that records $Q(s,a)$
-for every state-action pair. At each step: (1) choose an action using a
-multi-armed bandit algorithm; (2) apply that action and receive the
-reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a
-number of episodes until ...when?
+Q-Learning is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a Q-function that records $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
 :::{admonition} Algorithm -- Q-learning
 
@@ -170,7 +143,6 @@ $$
 
 :::{Example} Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=North$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
-
 $$
 \begin{array}{lll}
 Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
@@ -185,12 +157,9 @@ $$
 
 ### Policy extraction using Q-functions
 
-We iterate over as many episodes as possible, or until each episode
-hardly improves our Q-values. This gives us a (close to) optimal
-Q-function.
+We iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
 
-Once we have such a Q-function, we stop exploring and just exploit. We
-use *policy extraction*, which is exactly as we do for value iteration:
+Once we have such a Q-function, we stop exploring and just exploit. We use *policy extraction*, which is exactly as we do for value iteration:
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
@@ -202,10 +171,8 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 Instead of estimating $Q(s',a')$ for the best estimated future state during update, on-policy uses the actual next action to update:
 
--   On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action
-    pairs, for the current behaviour policy $\pi$, whereas off-policy
-    learning estimates the policy independent of the current behaviour.
-:::
+-   On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour.
+    :::
 
 SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm.
 

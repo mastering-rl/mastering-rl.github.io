@@ -160,6 +160,15 @@ probability of the bomb clogging the toilet.
              (probabilistic 0.05 (toilet-clogged))))
 :::
 
+
+:::{admonition} Example MDP: GridWorld
+<object data="code/value_iteration.py" type="text/plain"
+width="500" style="height: 300px">
+<a href="code/value_iteration.py">No Support?</a>
+</object>
+
+:::
+
 ## Policies
 
 The planning problem for discounted-reward MDPs is different to that of
