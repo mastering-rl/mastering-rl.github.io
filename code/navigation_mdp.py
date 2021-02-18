@@ -5,7 +5,11 @@ class NavigationMDP(MDP):
     # labels for terminate action and terminal state
     TERMINATE = 'terminate'
     TERMINAL = ('terminal', 'terminal')
-
+    LEFT = '\u25C4'
+    UP  = '\u25B2'
+    RIGHT = '\u25BA'
+    DOWN = '\u25BC'
+    
     def __init__(self, width = 4, height = 3,
                  discountFactor = 0.9, 
                  blockedStates = [(1,1)],
@@ -26,16 +30,18 @@ class NavigationMDP(MDP):
 
     def getActions(self, state=None):
 
+        actions = [self.UP, self.DOWN, self.LEFT, self.RIGHT, self.TERMINATE]
+        #actions = ["Up", "Down", "Left", "Right", "X"]
         if (state == None):
-            return ['N', 'S', 'E', 'W', self.TERMINATE]
+            return actions
 
-        actions = []
-        for action in ['N', 'S', 'E', 'W', self.TERMINATE]:
+        validActions= []
+        for action in actions:
             for (newState, probability) in self.getTransitions(state, action):
                 if probability > 0:
-                    actions.append(action)
+                    validActions.append(action)
                     break
-        return actions
+        return validActions
 
     def getInitialState(self):
         return (0,0)
@@ -67,25 +73,26 @@ class NavigationMDP(MDP):
             if action == self.TERMINATE:
                 transitions += [(self.TERMINAL, 1.0)]
 
-        elif action == 'N':
+        elif action == self.UP:
             transitions += self.validAdd(state, (x, y + 1), 0.8)
             transitions += self.validAdd(state, (x - 1, y), 0.1)
             transitions += self.validAdd(state, (x + 1, y), 0.1)
 
-        elif action == 'S':
+        elif action == self.DOWN:
             transitions += self.validAdd(state, (x, y - 1), 0.8)
             transitions += self.validAdd(state, (x - 1, y), 0.1)
             transitions += self.validAdd(state, (x + 1, y), 0.1)
 
-        elif action == 'E':
+        elif action == self.RIGHT:
             transitions += self.validAdd(state, (x + 1, y), 0.8)
             transitions += self.validAdd(state, (x, y - 1), 0.1)
             transitions += self.validAdd(state, (x, y + 1), 0.1)
 
-        elif action == 'W':
+        elif action == self.LEFT:
             transitions += self.validAdd(state, (x - 1, y), 0.8)
             transitions += self.validAdd(state, (x, y - 1), 0.1)
             transitions += self.validAdd(state, (x, y + 1), 0.1)
+
 
         return transitions
 
@@ -120,27 +127,32 @@ class NavigationMDP(MDP):
 
     ''' Convert a grid world Q function to a formatted string '''
     def qFunctionToString(self, qValues):
+        leftArrow = '\u25C4'
+        upArrow = '\u25B2'
+        rightArrow = '\u25BA'
+        downArrow = '\u25BC'
+        
         space = " |               "
 
         line = "  "
         for x in range(self.width):
             line += "---------------- "
         line += "\n"
-        
+
         result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |       /\      "
+                    result += " |       {}       ".format(upArrow)
             result += " |\n"
             
             for x in range(self.width):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qValues[((x, y), 'N')])
+                    result += " |     {:+0.2f}     ".format(qValues[((x, y), self.UP)])
             result += " |\n"
             
             for x in range(self.width):
@@ -153,7 +165,7 @@ class NavigationMDP(MDP):
                 elif (x, y) in self.getGoalStates().keys():
                     result += " |     {:+0.2f}     ".format(qValues[((x, y), self.TERMINATE)])
                 else:
-                    result += " | <{:+0.2f}  {:+0.2f}>".format(qValues[((x, y), 'W')], qValues[((x, y), 'E')])
+                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, qValues[((x, y), self.LEFT)], qValues[((x, y), self.RIGHT)], rightArrow)
             result += " |\n"
 
             for x in range(self.width):
@@ -164,14 +176,14 @@ class NavigationMDP(MDP):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qValues[((x, y), 'S')])
+                    result += " |     {:+0.2f}     ".format(qValues[((x, y), self.DOWN)])
             result += " |\n"
 
             for x in range(self.width):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |       \/      "
+                    result += " |       {}       ".format(downArrow)
             result += " |\n"
             result += line        
         return result

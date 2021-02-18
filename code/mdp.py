@@ -35,7 +35,7 @@ class MDP:
                # Calculate the value of Q(s,a)
                qValue = 0.0
                for (newState, probability) in self.getTransitions(state, action):
-                   reward = mdp.getReward(state, action, newState)
+                   reward = self.getReward(state, action, newState)
                    qValue += probability * (reward + (self.getDiscountFactor() * values[newState]))
 
                # if this is the maximum Q-value so far, set the policy for this state
@@ -48,15 +48,13 @@ class MDP:
     ''' Return a policy given a Q function '''
     def extractPolicyFromQFunction(self, qValues):
         policy = dict()
-        for state in mdp.getStates():
-            # Get the QValues for this state only
-            sQValues = dict(filter(lambda sa: sa[0][0] == state, qValues.items()))
+        for state in self.getStates():
 
             # Find the maximum Q-value
             maxQ = float('-inf')
-            for (_, action) in sQValues:
+            for action in self.getActions(state):
                # if this is the maximum Q-value so far, set the policy for this state
-               qValue = sQValues[(state, action)]
+               qValue = qValues[(state, action)]
                if qValue > maxQ:
                    policy.update({state: action})
                    maxQ = qValue

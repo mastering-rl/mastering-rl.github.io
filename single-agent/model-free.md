@@ -30,13 +30,30 @@ learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
 There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
 
-:::{Admonition} Example: The Mystery Game
 
-<https://programmingheroes.blogspot.com/2016/02/udacity-reinforcement-learning-mystery-game.html>
-
-![image](../images/mystery_game_0){height="0.3\linewidth"
-width="0.3\linewidth"}
-
+The game:
+ <div class="section" id="container" markdown="1">
+ <center>
+ <script>
+        var game = null;
+        window.addEventListener("load", function ()
+        {
+            var container = document.getElementById("container");
+            var classes = [[2, 1, 0, 1, 1, 3],
+                           [1, 1, 0, 1, 1, 1],
+                           [1, 1, 1, 1, 1, 1],
+                           [1, 1, 1, 1, 1, 1],
+                           [1, 0, 1, 1, 0, 0],
+                           [4, 0, 1, 1, 1, 5]];
+            var player = [2, 2];
+            var object = [5, 3];
+            var actions = ["up", "left", "right", "release", "down", "catch"];
+            game = new MysteryGame(container, classes, player, object, actions);
+         });
+    </script>
+    </center>
+</div>
+    
 From the website (in Spanish): The aim of this game is to experiment how
 computers learn. Press keys from 1 to 6 to do actions. You need to learn
 what the actions produce and how to win the game.
@@ -256,7 +273,7 @@ Consider the grid below. $S$ is the start and state $G$ receives a reward of
 row receives a -1 reward. Actions are deterministic, but $P_a(s' \mid s)$ is unknown to the learning agent.
 
 
-```{figure} ./figs/cliff_layout.png
+​```{figure} ./figs/cliff_layout.png
 :name: cliff_layout
 
 Cliff layout (taken from Sutton and Barto (2020))

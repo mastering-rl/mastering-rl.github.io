@@ -50,5 +50,8 @@ class QLearning():
 
 mdp = NavigationMDP(discountFactor=0.9, width = 6, height = 4)
 qLearning = QLearning(mdp)
+qFunction = qLearning.qLearning(episodes = 100)
 print("qLearning")
-print(mdp.qFunctionToString(qLearning.qLearning(episodes = 1000)) + "\n")
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.qFunctionToString(qFunction) + "\n")
+print(mdp.policyToString(policy))
