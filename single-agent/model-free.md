@@ -29,9 +29,12 @@ learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
 
 There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
+:::{admonition} Exercise -- The Mystery game
 
+Consider the following game, implemented by Github user guiferviz, and available for download at [https://github.com/guiferviz/rl_udacity/](https://github.com/guiferviz/rl_udacity/).
 
-The game:
+The aim of the game is to win the game. You have six actions available, which can be executed by pressing keys 1, 2, 3, 4, 5, and 6. You need to learn what the actions do and what the rewards are. No other instructions are given, but you will know when you receive any rewards/points. Try to play the game and see if you can win. Have fun!
+
  <div class="section" id="container" markdown="1">
  <center>
  <script>
@@ -53,14 +56,10 @@ The game:
     </script>
     </center>
 </div>
-    
-From the website (in Spanish): The aim of this game is to experiment how
-computers learn. Press keys from 1 to 6 to do actions. You need to learn
-what the actions produce and how to win the game.
 
-Some rewards values appears when you do the things very well or very
-bad. When you finish the game the phrase \"You Win :)\" appears in the
-board. Good luck!
+
+
+
 
 Once you have played this, ask yourself the following questions:
 
@@ -70,13 +69,17 @@ Once you have played this, ask yourself the following questions:
 
 -   What assumptions did you use?
 
-Imagine how hard it is for a computer that doesn't have any assumptions or intuition!
+I would guess that you experimented by pressing the keys 1 to 6, from the outcome of the keys, you learnt the effect of each of the keys, including the state transitions and the rewards. From this, you could easily construct a winning strategy. I also would guess that you perhaps used the colours as a way to guess what you should do.
 
-### Approaches to AI Planning and Learning
+:::
 
-![image](../images/RL_approaches){width="0.9\linewidth"}
+This game is of interest because it is a *model-free* (at least initially) Markov decision process: you didn't know the transition function or the reward function; instead you had to learn it. Similarly, model-free reinforcement learning techniques don't know the transition function or the reward function of an MDP, so they just learn by trying different behaviours and observing what rewards they get. Over time, they learn which behaviours lead to positive rewards, so they *reinforce* the policy to try that behaviour more, and which behaviours lead to negative rewards, and they reinforce the policy to avoid that behaviour.
 
-Reinforcement Learning: The Basics There are many different models of reinforcement learning, all with the same basis:
+Imagine how hard it is for a computer that doesn't have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did --- they just construct the policy directly.
+
+### Intuition of model-free reinforcement learning
+
+Reinforcement Learning: There are many different techniques for model-free reinforcement learning, all with the same basis:
 
 -   We execute many different *episodes* of the problem we want to solve, and from that we learnt a *policy*.
     
@@ -158,8 +161,9 @@ $$
 \end{array}
 $$
 
-:::{Example} Q-learning update
+:::{note} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=North$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
+
 $$
 \begin{array}{lll}
 Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
@@ -184,15 +188,17 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 ## SARSA: On-Policy Reinforcement Learning
 
+SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
+
 :::{definition} On-policy reinforcement learning
 
-Instead of estimating $Q(s',a')$ for the best estimated future state during update, on-policy uses the actual next action to update:
+Instead of estimating $Q(s',a')$ for the best estimated future state during update, *on-policy reinforcement learning* uses the actual next action to update:
 
--   On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour.
-    :::
+- On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour
 
-SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm.
+:::
 
+To illustrate how this differs, let's take a look at the SARSA algorithm.
 
 :::{admonition} Algorithm -- SARSA
 
@@ -214,15 +220,7 @@ $\quad\quad\quad\quad a \leftarrow a'$\
 $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 :::
 
-On-Policy: Uses the action chosen by the policy for the update.
-
-Off-Policy: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
-
-SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
-
-### On-policy vs. off-policy: What is the difference?
-
-The difference is all in how the update happens in the loop body.
+The difference between the Q-learning and SARSA algorithms is what happens in the update in the loop body.
 
 Q-learning: (1) selects an action $a$; (2) takes that actions and observes the reward & next state $s'$; and (3) updates *optimistically* by assuming the future reward is $\max_{a'}Q(s',a')$ -- that is, it assumes that future behaviour will be optimal (according to its policy).
 
@@ -235,7 +233,7 @@ SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next it
 -   Q-learning learns an optimal policy, but this can be 'unsafe' or risky *during training*.
 
 
-:::{Example} SARSA update
+:::{admonition} Example -- SARSA update
 
 For this example, we will use the same Q-table as the earlier Q-learning example:
 
@@ -265,7 +263,6 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N
 $$
 
 
-
 ### SARSA vs. Q-learning: Example
 
 Consider the grid below. $S$ is the start and state $G$ receives a reward of
@@ -273,7 +270,7 @@ Consider the grid below. $S$ is the start and state $G$ receives a reward of
 row receives a -1 reward. Actions are deterministic, but $P_a(s' \mid s)$ is unknown to the learning agent.
 
 
-​```{figure} ./figs/cliff_layout.png
+```{figure} ./figs/cliff_layout.png
 :name: cliff_layout
 
 Cliff layout (taken from Sutton and Barto (2020))
@@ -310,26 +307,15 @@ Demo of the cliff example:
 
 #### On-policy vs. off policy: Why do we have both?
 
-Imagine a reinforcement learning agent that manages resources for a
-cloud-based platform and we have no prior data to inform a policy.
+Imagine a reinforcement learning agent that manages resources for a cloud-based platform and we have no prior data to inform a policy.
 
--   On-policy learning is more appropriate when we want to optimise the
-    behaviour of an agent who learns *while operating in its
-    environment*.
+-   On-policy learning is more appropriate when we want to optimise the behaviour of an agent who learns *while operating in its environment*.
+    
+    We would need to operate our cloud platform to get data. As such, if the average reward *per trial* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the 'trials' are not practice -- they actually influence real rewards,  such as profit.
 
-    We would need to operate our cloud platform to get data. As such, if
-    the average reward *per trial* is better using on-policy, this would
-    give us better overall outcomes than off-policy learning, because
-    the 'trials' are not practice -- they actually influence real rewards, 
-    such as profit.
-
--   Off-policy learning is more appropriate when we have the luxury of
-    training our agent offline before it is put into operation.
-
-    If we could run our reinforcement learning algorithm in a simulated
-    environment before deploying (and we had reason to believe that
-    simulated environment was accurate), off-policy learning may be
-    better because its optimal policy could be followed.
+-   Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
+    
+If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
 
 ### Limitations of Q-learning and SARSA
 
@@ -400,16 +386,23 @@ A complete worked example of using Q-learning to calculate the optimal path in a
 
 ### Summary 
 
-If we know the MDP:
+If we know the MDP, we can use model-based techniques:
 
 -   **Offline**: Value Iteration
 
 -   **Online**: Monte Carlo Search Tree and friends.
 
-If we do *not* know MDP:
+We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model..
+
+If we do *not* know MDP, we can use model-free techniques:
 
 -   **Offline**: Q-learning, SARSA, and friends.
 
 -   **Online**: Monte Carlo Tree Search and friends.
 
+On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
+
+Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+
+SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
 

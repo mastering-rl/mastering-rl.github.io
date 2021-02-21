@@ -46,8 +46,8 @@
  */
 MysteryGame = function (container, map, player, circle, actions)
 {
-    this.w = container.offsetWidth;
-    this.h = container.offsetHeight;
+    this.w = container.offsetWidth*0.8;
+    this.h = container.offsetHeight*0.8;
     if (!this.h)
     {
         this.h = this.w;

@@ -307,14 +307,6 @@ for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print(mdp.valueFunctionToString(values) + "\n")
 ```
 
-We can then extract  this using the `extractPolicy` method  from the MDP class:
-
-```{code-cell} ipython3
-print("Policy after 100 iterations")
-values = valueIteration.valueIteration(iterations = 100)
-print(mdp.policyToString(mdp.extractPolicy(values)))
-```
-
 ### Strengths and Limitations
 
 **Guarantees** Value iteration is guaranteed to converge to the optimal policy, given an infinite amount of time. In practice, for problems with a small-to-medium size state space, value iteration converges in a "reasonable" amount of time, returning a close-to-optimal value function, and quite often an optimal policy.
