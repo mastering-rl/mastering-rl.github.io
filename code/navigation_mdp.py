@@ -31,11 +31,10 @@ class NavigationMDP(MDP):
     def getActions(self, state=None):
 
         actions = [self.UP, self.DOWN, self.LEFT, self.RIGHT, self.TERMINATE]
-        #actions = ["Up", "Down", "Left", "Right", "X"]
-        if (state == None):
+        if state == None:
             return actions
 
-        validActions= []
+        validActions = []
         for action in actions:
             for (newState, probability) in self.getTransitions(state, action):
                 if probability > 0:
@@ -51,7 +50,7 @@ class NavigationMDP(MDP):
 
     def validAdd(self, state, newState, probability):
         # if the next state is blocked, stay in the same state
-        if (newState in self.blockedStates):
+        if newState in self.blockedStates:
             return [(state, probability)]
 
         # move to the next space if it is not off the grid
@@ -152,7 +151,7 @@ class NavigationMDP(MDP):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qValues[((x, y), self.UP)])
+                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y), self.UP))
             result += " |\n"
             
             for x in range(self.width):
@@ -163,9 +162,9 @@ class NavigationMDP(MDP):
                 if (x, y) in self.blockedStates:
                     result += " |     #####     "
                 elif (x, y) in self.getGoalStates().keys():
-                    result += " |     {:+0.2f}     ".format(qValues[((x, y), self.TERMINATE)])
+                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y), self.TERMINATE))
                 else:
-                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, qValues[((x, y), self.LEFT)], qValues[((x, y), self.RIGHT)], rightArrow)
+                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, MDP.getQValue(qValues, (x, y), self.LEFT), MDP.getQValue(qValues, (x, y), self.RIGHT), rightArrow)
             result += " |\n"
 
             for x in range(self.width):
@@ -176,7 +175,7 @@ class NavigationMDP(MDP):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qValues[((x, y), self.DOWN)])
+                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y),  self.DOWN))
             result += " |\n"
 
             for x in range(self.width):

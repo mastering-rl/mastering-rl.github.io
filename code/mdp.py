@@ -7,7 +7,10 @@ class MDP:
     ''' Return all actions with non-zero probability from this state '''
     def getActions(self, state): abstract
 
-    ''' Return all non-zero probability transitions for this action from this state '''
+    '''
+        Return all non-zero probability transitions for this action from this state,
+        as a list of (state, probability) pairs
+    '''
     def getTransitions(self, state, action): abstract
 
     ''' Return the reward for transitioning from state to nextState via action '''
@@ -25,7 +28,12 @@ class MDP:
     ''' Return all goal states of this MDP '''
     def getGoalStates(self): abstract
 
-
+    def getQValue(qValues, state, action):
+        qValue = 0.0
+        if (state, action) in qValues.keys():
+            qValue = qValues[(state, action)]
+        return qValue
+    
     ''' Return a policy given a value function '''
     def extractPolicyFromValueFunction(self, values):
         policy = dict()
@@ -54,10 +62,11 @@ class MDP:
             maxQ = float('-inf')
             for action in self.getActions(state):
                # if this is the maximum Q-value so far, set the policy for this state
-               qValue = qValues[(state, action)]
-               if qValue > maxQ:
-                   policy.update({state: action})
-                   maxQ = qValue
+                qValue = MDP.getQValue(qValues, state, action)
+            
+                if qValue > maxQ:
+                    policy.update({state: action})
+                    maxQ = qValue
 
         return policy
 
@@ -79,3 +88,5 @@ class MDP:
         print("No outcome state in simulation for action " + str(action) + " from " + str(state))
         raise "No outcome state in simulation for action"
         return None
+
+

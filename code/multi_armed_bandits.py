@@ -19,3 +19,6 @@ class MultiArmedBandits():
                     maxAction = action
                     maxValue = value
             return maxAction
+
+    def uct(actions, state, qValues):
+        return MultiArmedBandits.epsilonGreedy(actions, state, qValues)
