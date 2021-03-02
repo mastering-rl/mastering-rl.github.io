@@ -41,8 +41,9 @@ class ValueIteration():
         return values
 
 
-mdp = NavigationMDP(discountFactor=0.9, width = 6, height = 4)
+mdp = NavigationMDP(discountFactor=0.9, width = 4, height = 3)
 valueIteration = ValueIteration(mdp)
+
 
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print("After iteration " + str(iterations))

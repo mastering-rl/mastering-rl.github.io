@@ -65,7 +65,10 @@ class NavigationMDP(MDP):
         transitions = []
 
         if state == self.TERMINAL:
-            return [(self.TERMINAL, 1.0)]
+            if action == self.TERMINATE:
+                return [(self.TERMINAL, 1.0)]
+            else:
+                return []
 
         (x, y) = state
         if state in self.getGoalStates().keys():
@@ -92,14 +95,13 @@ class NavigationMDP(MDP):
             transitions += self.validAdd(state, (x, y - 1), 0.1)
             transitions += self.validAdd(state, (x, y + 1), 0.1)
 
-
         return transitions
 
     def getReward(self, state, action, newState):
-       reward = 0.0
-       if state in self.getGoalStates().keys() and newState == self.TERMINAL:
-          reward = self.getGoalStates().get(state)
-       return reward
+        reward = 0.0
+        if state in self.getGoalStates().keys() and newState == self.TERMINAL:
+            reward = self.getGoalStates().get(state)
+        return reward
 
     def getDiscountFactor(self):
         return self.discountFactor

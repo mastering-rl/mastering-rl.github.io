@@ -11,14 +11,19 @@ class MultiArmedBandits():
             return actions[index]
         else:
             # find the action with maximum Q value
-            maxAction = None
+            maxActions = []
             maxValue = float('-inf')
             for action in actions:
                 value = qValues[(state, action)]
                 if value > maxValue:
-                    maxAction = action
+                    maxActions = [action]
                     maxValue = value
-            return maxAction
+                elif value == maxValue:
+                    maxActions += [action]
+
+            # if there are multiple actions with the highest value
+            # choose one randomly
+            return random.choice(maxActions)
 
     def uct(actions, state, qValues):
         return MultiArmedBandits.epsilonGreedy(actions, state, qValues)

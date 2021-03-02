@@ -35,11 +35,12 @@ class ModelBasedMCTS():
     def __init__(self, mdp, qValues = dict()):
         self.mdp = mdp
         self.qValues = qValues
+        self.visited = []
 
     '''
     Execute the MCTS algorithm from the initial state given, with timeOut in seconds
     '''
-    def mcts(self, timeOut = 100, epsilon = 0.1):
+    def mcts(self, timeOut = 90, epsilon = 0.1):
 
         rootNode = Node(mdp, mdp.getInitialState(), None, 1.0, 0)
 
@@ -48,14 +49,19 @@ class ModelBasedMCTS():
         while currentTime < startTime + timeOut * 1000:
 
             expandedNode = self.select(rootNode)
-            print("expand", expandedNode.state)
-            outcomes = self.expand(expandedNode)
-            child = self.choose(outcomes)
-            reward = self.simulate(child)
-            self.backPropagate(expandedNode, reward)
+            if not self.mdp.isTerminal(expandedNode):
+                outcomes = self.expand(expandedNode)
+                for outcome in outcomes:
+                #child = self.selectOutcome(outcomes)
+                #if child.state not in self.visited:
+                    print("select", outcome.state)
+                    reward = self.simulate(outcome)
+                    self.backPropagate(expandedNode, reward)
+                    #self.visited += [child.state]
+                print(self.qValues)
             currentTime = int(time.time() * 1000)
 
-        print(self.qValues)
+
         return self.qValues
 
     def getQValue(qValues, state, action):
@@ -65,25 +71,27 @@ class ModelBasedMCTS():
             return 0.0
 
     def select(self, node):
-
         node.visits += 1
         if node.isFullyExpanded():
-            return self.selectChild(node)
+            child = self.selectChild(node)
+            return child
         else:
             return node
             
     def selectChild(self, node):
         actions = list(node.children.keys())
+        qValues = dict()
         for action in actions:
             #get the Q values from all outcome nodes
             qValue = 0.0
             for outcome in node.children[action]:
                  qValue += outcome.value * outcome.probability
-            self.qValues[(node.state, action)] = qValue
-        bestAction = MultiArmedBandits.uct(actions, node.state, self.qValues)
+            qValues[(node.state, action)] = qValue
+        print("innerq =", qValues)
+        bestAction = MultiArmedBandits.uct(actions, node.state, qValues)
         outcome = self.selectOutcome(node.children[bestAction])
         return self.select(outcome)
-
+ 
     '''
         Select an outcome based on the probability of the child nodes
     '''
@@ -134,20 +142,34 @@ class ModelBasedMCTS():
         return cumulativeReward
     
     def backPropagate(self, node, reward):
+        print("reward", reward)
         while node != None:
+            qValues = dict()
             for action in node.children.keys():
+                string = ""
                 value = 0.0
                 for outcome in node.children[action]:
+                    string += "\t outcome %s to state %s has value %f * (%f + gamma * %f)" % (action, outcome.state, outcome.probability, outcome.reward, outcome.value)
                     value += outcome.probability * (outcome.reward + mdp.getDiscountFactor() * outcome.value)
-                self.qValues.update({action: value})
-            node.value = self.getMaxQ(self.qValues)
+                qValues.update({(node.state, action) : value})
+                #self.qValues.update({(node.state, action): value})
+                #if value > 1.0 or node.state == self.mdp.TERMINAL:
+                #    print("value = %f for (%s, %s)" % (value, node.state, action))
+                #    print(string)
+                #    print("update(%s, %s)" %(node.state, action), value)
+            node.value = self.getMaxQ(qValues)
+            #print(self.qValues)
+            #print(string)
+            self.qValues.update(qValues)
             node = node.parent
             
     def getMaxQ(self, qValues, state):
         argmaxQ = None
         maxQ = float('-inf')
         for action in self.mdp.getActions(state):
-            value = qValues[(state, action)]
+            value = float('-inf')
+            if (state, action) in qValues.keys():
+                value = qValues[(state, action)]
             if maxQ < value:
                 argMaxQ = action
                 maxQ = value
@@ -162,7 +184,7 @@ class ModelBasedMCTS():
         return maxQ
 
 
-mdp = NavigationMDP(discountFactor=0.9)
+mdp = NavigationMDP(discountFactor=1.0)
 mcts = ModelBasedMCTS(mdp)
 qFunction = mcts.mcts()
 print("mcts")
