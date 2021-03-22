@@ -190,7 +190,7 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 
-:::{definition} On-policy reinforcement learning
+:::{admonition} Definition -- On-policy reinforcement learning
 
 Instead of estimating $Q(s',a')$ for the best estimated future state during update, *on-policy reinforcement learning* uses the actual next action to update:
 
@@ -315,6 +315,7 @@ Imagine a reinforcement learning agent that manages resources for a cloud-based 
 
 -   Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
     
+
 If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
 
 ### Limitations of Q-learning and SARSA

@@ -438,6 +438,45 @@ This is important: value iteration is then more expensive, however, for an agent
 
 For MCTS, we need to solve *online* each time we encounter a state we have not considered before.
 
+### Combining MCTS and TD learning: Alpha Zero
+
+Alpha Zero (or more accurately its predecessor AlphaGo) made headlines
+when it beat Go world champion Lee Sodol in 2016. It uses a combination
+of MCTS and (deep) reinforcement learning to learn a policy. 
+
+A simple overview:
+
+1.  AlphaZero uses a deep neural network to estimate the Q-function. More
+    accurately, it gives an estimate of the probability of selecting
+    action $a$ in state $s$ ($P(a|s)$), and the *value* of the state
+    ($V(s)$), which represents the probability of the player winning
+    from $s$.
+
+2.  It is trained via *self-play*. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.
+
+3.  At each move, AlphaZero:
+
+    1.  Executes an MCTS search using UCB-like selection: $Q(s,a) + P(s,a)/1+N(s,a)$,
+        which returns the probabilities of playing each move.
+
+    2.  The neural network is used to guide the MCTS by influencing
+        $Q(s,a)$.
+
+    3.  The final result of a simulated game is used as the reward for
+        each simulation.
+
+    4.  After a set number of MCTS simulations, the best move is chosen
+        for self-play.
+
+    5.  Repeat steps 1-4 for each move until the self-play game ends.
+
+    6.  Then, feedback the result of the self-play game to update the
+        $Q$ function for each move.
+
+AlphaZero is best summarised using the following figure from the Alpha Zero Nature paper (2016):
+
+![image](./figs/AlphaGoZero-Architecture.png)
+
 ### Summary
 
 -   Monte Carlo Tree Search (MCTS) is an anytime search algorithm,

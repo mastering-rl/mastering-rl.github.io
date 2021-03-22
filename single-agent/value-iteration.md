@@ -10,11 +10,12 @@ kernelspec:
 ---
 ## Value Iteration
 
-**Learning outcomes**
+### Learning outcomes
 
-1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to 
-    solve medium-scale MDP problems automatically
+The learning outcomes of this chapter are:
 
+1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to  solve medium-scale MDP problems automatically
+    
 2.  Construct a policy from a value function
 
 3.  Compare and contrast value iteration to policy iteration
@@ -24,11 +25,11 @@ kernelspec:
 ### Overview
 
 *Value Iteration* is a method for finding the optimal value function $V^*$ by solving the
-Bellman equations iteratively. It uses the concept of dynamic programming to keep a value function $V$ that approximates the optimal value function $V^**$, iteratvely improving $V$ until it converges to $V^*$ (or close to it). 
+Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
 
 ### Algorithm
 
-Once we understand the Bellman equation, the value iteration algorithm is straightforward.
+Once we understand the Bellman equation, the value iteration algorithm is straightforward: we just repeatedly calculate $V$ using the Bellman equation until we converge to the solution or we execute a pre-determined number of iterations.
 
 :::{admonition} Algorithm -- Value Iteration
 
@@ -48,7 +49,7 @@ $\text{Until}~ \Delta \leq \theta$
 
 As we can see, this is just applying the Bellman equation iteratively until either the value function $V$ doesn't change anymore, or until it changes in by a very small amount ($\theta$).
 
-We could also write the algorithm using the idea of Q-functions, which is closer to a code-based implementation. For this, the loop is:
+We could also write the algorithm using the idea of Q-values, which is closer to a code-based implementation. For this, the loop is:
 
 $\quad\quad \Delta \leftarrow 0$\
 $\quad\quad \text{For each}~ s \in S$\
@@ -62,7 +63,9 @@ Value iteration converges to the optimal policy as iterations continue: $V \maps
 
 Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the *residual*  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The resulting greedy policy $\pi_V$ has it's *loss* bounded by $2 \gamma  \Delta / 1-\gamma$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The resulting greedy policy $\pi_V$ has it's loss bounded by $2 \gamma  \Delta / 1-\gamma$.
+
+Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
 
 ### Complexity
 
@@ -296,7 +299,6 @@ class ValueIteration():
 
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below prints the value function for value iteration after 1, 2, 3, 4, 5, 10, and 100 iterations:
 
-
 ```{code-cell} ipython3
 mdp = NavigationMDP()
 valueIteration = ValueIteration(mdp)
@@ -307,6 +309,7 @@ for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print(mdp.valueFunctionToString(values) + "\n")
 ```
 
+
 ### Strengths and Limitations
 
 **Guarantees** Value iteration is guaranteed to converge to the optimal policy, given an infinite amount of time. In practice, for problems with a small-to-medium size state space, value iteration converges in a "reasonable" amount of time, returning a close-to-optimal value function, and quite often an optimal policy.
@@ -315,4 +318,12 @@ for iterations in [1, 2, 3, 4, 5, 10, 100]:
 
 **Question:** Can we do better?
 
-**Answer:** Yes! Using function approximation, which we will see later.
+**Answer:** Yes! There are a number of ways to mitigate this, including using function approximation, which we will see later in the section on [](function-approximation.md).
+
+### Summary
+
+- Value iteration is an algorithm for calculating a  value function $V$, from which a policy can be extracted using policy extraction.
+
+- It produces an optimal policy  an infinite amount of time.
+
+- For medium-scale problems, it works well, but as the state-space grows, it does not scale well.

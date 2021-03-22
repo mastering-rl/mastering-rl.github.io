@@ -1,5 +1,5 @@
-## Approximating Q-functions
 
+## Q-Function Approximation
 
 **Learning Outcomes**
 

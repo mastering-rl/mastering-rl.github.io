@@ -2,11 +2,8 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: Introduction to Reinforcement Learning
-author: Tim Miller
+author: Tim Miller, The University of Melbourne
 logo: uom.png
-header-includes: 
-  - \usepackage{tikz}
-  - \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

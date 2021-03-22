@@ -1,63 +1,39 @@
 # Markov Decision Processes
 
-**Learning outcomes**
+## Learning outcomes
 
 The learning outcomes of this chapter are:
 
-1.  Identify situations in which Markov Decisions Processes (MDPs) are a
-    suitable model of a problem
+1.  Define 'Markov Decision Process'.  
 
-2.  Define 'Markov Decision Process'
-
+2. Identify situations in which Markov Decisions Processes (MDPs) are a
+    suitable model of a problem.
+    
 3.  Compare MDPs to model of classical planning
 
 4.  Explain how Bellman equations are solutions to MDP problems
 
-## Overview
+## Chapter Overview
 
-So far, we have looked at classical planning.
-Classical planning tools can produce solutions quickly in large search
-spaces; but assume:
-
--   Deterministic events
-
--   Environments change only as the result of an action
-
--   Perfect knowledge (omniscience)
-
--   Single actor (omnipotence)
-
-Throughout the remainder of this subject, we are going to look at how to
-relax a few of these assumptions, starting with the first: deterministic
-events.
-
-*Markov Decision Processes* (MDPs) remove the assumption of
-deterministic events and instead assume that each action could have
-multiple outcomes, with each outcome associated with a probability.
+Classical planning algorithms assume that action are deterministic. *Markov Decision Processes* (MDPs) remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability.
 
 For example:
 
 -   Flipping a coin has two outcomes: heads ($\frac{1}{2}$) and tails
     ($\frac{1}{2}$)
-
 -   Rolling two dices together has twelve outcomes: 2 ($\frac{1}{36}$),
     3 ($\frac{1}{18}$), 4 ($\frac{3}{36}$), ..., 12 ($\frac{1}{36}$)
-
 -   When trying to pick up an object with a robot arm, there could be
     two outcomes: successful ($\frac{4}{5}$) and unsuccessful
     ($\frac{1}{5}$)
+-   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.s
 
-MDPs have been successfully applied to planning in many domains: robot
-navigation, planning which areas of a mine to dig for minerals,
-treatment for patients, maintenance scheduling on vehicles, and many
-others.
+MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
 
-:::{admonition} Definition
-Discounted Reward Markov Decision Processes
+:::{admonition} Definition: Discounted Reward Markov Decision Processes
 
-MDPs are **fully observable, probabilistic** state models. The most
-common formulation of MDPs is a *Discounted-Reward* Markov Decision
-Process:
+** Markov Decision Processes** (MDPs) are *fully observable, probabilistic* state models. The most common formulation of MDPs is a **Discounted-Reward** Markov Decision
+Process. A discount-reward MDP $(S, s_0, A, P, r, \gamma)$ is a tuple containing:
 
 -   a state space $S$
 
@@ -74,34 +50,22 @@ Process:
 -   a **discount factor** $0 \leq \gamma < 1$
 :::
 
-What is different from classical planning? Four things:
+What is different between an MDP and the models from classical planning? There are four main differences:
 
--   The transition function is no longer deterministic. Each action has
-    a probability of $P_a(s'|s)$ of ending in state $s'$ if $a$ is
-    executed in the state $s$.
+-   The transition function is not deterministic. Each action has a probability of $P_a(s'|s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
 
--   There are no goals. Each action receives a reward when applied. The
-    value of the reward is dependent on the state in which it is
-    applied.
+-   There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.
 
--   There are no action costs. These are modelled as negative rewards.
+-   There are no action costs. Actions costs are modelled as negative rewards.
 
 -   We have a *discount factor*.
 
----
-
-**Discounted rewards** The discount factor determines how much a future reward should be
+The **discount factor**  determines how much a future reward should be
 discounted compared to a current reward.
 
-For example, would you prefer \$100 today or \$100 in a year's time? We
-(humans) often *discount* the future and place a higher value on
-nearer-term rewards.
+For example, would you prefer \$100 today or \$100 in a year's time? We (humans) often *discount* the future and place a higher value on nearer-term rewards.
 
-In an MDP, a discount reward must be strictly less than 1. Later in this chapter, we will see why.
-
-Assume our agent receives rewards $r_1, r_2, r_3, r_4, \ldots$ in that
-order. If $\gamma$ is the discount factor, then the discounted reward
-is:
+Assume our agent receives rewards $r_1, r_2, r_3, r_4, \ldots$ in that order. If $\gamma$ is the discount factor, then the discounted reward is:
 
 $$
  \begin{array}{lll}
@@ -110,16 +74,14 @@ $$
  \end{array}
 $$
 
-If $V_t$ is the value received at time-step $t$, then
-$V_t = r_t + \gamma V_{t+1}$.
+If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1}$. So, the further away a reward is from the start state $s_0$, the less actual reward we will receive from it.
 
+In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
-:::{admonition} Example -- Grid World
-Our agent is in the bottom left cell of a grid. The grey square is a
-wall. The two labelled cells give a *reward*: 1 for reaching the
-top-right cell, but a negative reward of -1 for the cell immediately
+:::{admonition} Example MDP: Grid World
+
+An agent is in the bottom left cell of a grid. The grey square is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately
 below.
-
 
 ![image](./figs/MDP-GridWorld.png)
 
@@ -137,9 +99,11 @@ not what we want:
 
 -   If the wall is in the way of the cell that would have been taken,
     the agent stays put.
+
+The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?
 :::
 
-:::{admonition} Example action
+:::{admonition} Example MDP model
 *Probabilistic PDDL* is one way to represent an MDP. It extends PDDL
 with a few additional constructs. Of most relevance is that outcomes can
 be associated with probabilities. The following describes the "Bomb and
@@ -158,16 +122,87 @@ probability of the bomb clogging the toilet.
      :parameters (?pkg)
      :effect (and (when (bomb-in-package ?pkg) (bomb-defused))
              (probabilistic 0.05 (toilet-clogged))))
+```
 :::
 
+MDPs can also be expressed as code, rather than just as a model. An algorithm for solving the MDP creates an instance of a class and obtains the information that it requires to solve it.
 
-:::{admonition} Example MDP: GridWorld
-<object data="code/value_iteration.py" type="text/plain"
-width="500" style="height: 300px">
-<a href="code/value_iteration.py">No Support?</a>
-</object>
+:::{admonition} Example MDP model as Python code: Grid World
+First, we have an interface that defines what an MDP is:
 
+```
+class MDP:
+    ''' Return all states of this MDP '''
+    def getStates(self): abstract
+
+    ''' Return all actions with non-zero probability from this state '''
+    def getActions(self, state): abstract
+
+    ''' Return all non-zero probability transitions for this action from this state '''
+    def getTransitions(self, state, action): abstract
+
+    ''' Return the reward for transitioning from state to nextState via action '''
+    def getReward(self, state, action, nextState): abstract
+
+    ''' Return the discount factor for this MDP '''
+    def getDiscountFactor(self): abstract
+
+    ''' Return the initial state of this MDP '''
+    def getInitialState(self): abstract
+
+    ''' Return all goal states of this MDP '''
+    def getGoalStates(self): abstract
+```
+
+Then, we need to implement this interface to create an MDP. Below is the implementation for ``getTransitions`` and ``getReward`` for GridWorld:
+
+```
+class GridWorld(MDP):
+
+    ...
+
+    def getTransitions(self, state, action):
+        transitions = []
+
+        if state == self.TERMINAL:
+            return [(self.TERMINAL, 1.0)]
+
+        (x, y) = state
+        if state in self.getGoalStates().keys():
+            if action == self.TERMINATE:
+                transitions += [(self.TERMINAL, 1.0)]
+
+        elif action == 'N':
+            transitions += self.validAdd(state, (x, y + 1), 0.8)
+            transitions += self.validAdd(state, (x - 1, y), 0.1)
+            transitions += self.validAdd(state, (x + 1, y), 0.1)
+
+        elif action == 'S':
+            transitions += self.validAdd(state, (x, y - 1), 0.8)
+            transitions += self.validAdd(state, (x - 1, y), 0.1)
+            transitions += self.validAdd(state, (x + 1, y), 0.1)
+
+        elif action == 'E':
+            transitions += self.validAdd(state, (x + 1, y), 0.8)
+            transitions += self.validAdd(state, (x, y - 1), 0.1)
+            transitions += self.validAdd(state, (x, y + 1), 0.1)
+
+        elif action == 'W':
+            transitions += self.validAdd(state, (x - 1, y), 0.8)
+            transitions += self.validAdd(state, (x, y - 1), 0.1)
+            transitions += self.validAdd(state, (x, y + 1), 0.1)
+
+        return transitions
+
+    def getReward(self, state, action, newState):
+       reward = 0.0
+       if state in self.getGoalStates().keys() and newState == self.TERMINAL:
+          reward = self.getGoalStates().get(state)
+       return reward
+```
 :::
+
+In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
 
 ## Policies
 
@@ -175,14 +210,11 @@ The planning problem for discounted-reward MDPs is different to that of
 classical planning because the actions are non-deterministic. Instead of
 a sequence of actions, an MDP produces a *policy*.
 
-
 :::{admonition} Definition
-Policy
-: A policy $\pi$ is a function that tells an agent which is the best
+A **policy** $\pi$ is a function that tells an agent which is the best
 action to choose in each state. A policy can be *deterministic* or
 *stochastic*.
 :::
-
 
 A *deterministic policy* $\pi : S \rightarrow A$ is a *mapping* from states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
 A graphical representation of the policy for Grid World is:
@@ -200,50 +232,20 @@ $$\begin{array}{|c|c|c|c|}
 So, in the initial state (bottom left cell), following this policy the
 agent should go up. If it accidently slips right, it should go left again to return to the initial state.
 
+Of course, agents do not work with graphical policies. The output from a planning algorithm would be a dictionary-like object or a function that takes a state and returns an action.
 
-Of course, agents do not work with graphical policies. The output from
-an planner would look more like this:
+A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$ specifies the *probability distribution* from which an agent should select an action. Intuitively, $\pi(s,a)$ specifies the probability that action $a$ should be executed in state $s$.
 
-```
-at(0,0) => move_up
-at(0,1) => move_up
-at(0,2) => move_right
-at(1,0) => move_left
-at(1,2) => move_right
-at(2,0) => move_up
-at(2,2) => move_right
-at(3,0) => move_left
-```
+To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probablistically such that actions with higher probability are chosen proportionally to their relative probabilities.
 
-where at(X, Y) is a proposition specifying that the agent is a coordinates (X,Y).
+We will focus mostly on  deterministic policies, but stochastic policies have their place.
 
-An agent can then parse this in and use it by determining what state it
-is in, looking up the action for that state, and executing the action.
-Then repeat.
+## Optimal Solutions for MDPs
 
-
-A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$
-specifies the *probability distribution* from which an agent should
-select an action. Intuitively, $\pi(s,a)$ specifies the probability that
-action $a$ should be executed in state $s$.
-
-To execute a stochastic policy, we could just take the action with the
-maximum $\pi(s,a)$. However, in some domains, it is better to select an
-action based on the probability distribution; that is, choose the action
-probablistically such that actions with higher probability are chosen
-proportionally to their relative probabilities.
-
-In this book, we will focus only on deterministic policies, but
-stochastic policies have their place.
-
-## Solving MDPs
-
-For discounted-reward MDPs, optimal solutions maximise the *expected
-discounted accumulated reward* from the initial state $s_0$. But what is
-the expected discounted accumulated reward?
+For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
 :::{admonition} Definition
-The **expected discounted reward from $s$** for a policy $\pi$ is:
+The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
 $$
 V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(a_i,s_i) \ | \ s_0 = s, a_i = \pi(s_i)]\,
@@ -264,17 +266,15 @@ $$
 \end{array}
 $$
 
-
 :::{admonition} Definition
-The *Bellman equation*, identified by Richard Bellman, describes the
+The **Bellman equation**, identified by Richard Bellman, describes the
 condition that must hold for a policy to be optimal. The Bellman equation is defined recursively
 as:
 
 $$
-V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]$$
+V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]
 $$
 :::
-
 
 Therefore, $V$ is optimal **if** for all states $s$, $V(s)$ describes the
 total discounted reward for taking the action with the highest reward
@@ -292,53 +292,37 @@ reward of those states. The discounted future reward is the $\gamma$ (discount r
 
 Second, the value $V(s)$ is the value of the action with the maximum the expected reward. This is because the Bellman equation assumes that once we know the best states, we will always take the action that leads to the best state.
 
----
+Bellman equations can be described slightly differently, using what are known as *$Q$-values*.
 
-Bellman equations can be described slightly differently, using
-what are known as *$Q$-functions*.
-
-If $V(s)$ is the expected value of being in state $s$ and acting
-optimally according to our policy, then we can also describe the
-*Q-value* of being in a state $s$, choosing action $a$ and then acting
-optimally according to our policy as:
+If $V(s)$ is the expected value of being in state $s$ and acting optimally according to our policy, then we can also describe the *Q-value* of being in a state $s$, choosing action $a$ and then acting optimally according to our policy as.
 
 :::{admonition} Definition
-The *Q-value* for action $a$ in state $s$ is defined recursively
-as:
+The **Q-value** for action $a$ in state $s$ is defined as:
 
 $$
 Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
 $$
 :::
-This is just the expression inside the $\max$ expression in the Bellman
-equation. Using this, we can then Bellman equation then
-defined as: 
+This is just the expression inside the $\max$ expression in the Bellman equation. Using this, we can then Bellman equation then defined as: 
 
 $$
 V(s) = \max_{a \in A(s)} Q(s,a)
-$$ 
+$$
 
-The two definitions are equivalent, and you may seem them defined in both ways. However, when we
-move onto Q-learning later, we will use $Q$ functions more explicitly.
+The two definitions are equivalent, and you may seem them defined in both ways. However, when we move onto Q-learning later, we will use $Q$-values more explicitly.
 
 
 ## Policy extraction
 
-Given a value function $V$, how should we then select the
-action to play in a given state? It is reasonably straightforward:
-select the action that maximises our expected utility!
+Given a value function $V$, how should we then select the action to play in a given state? It is reasonably straightforward: select the action that maximises our expected utility!
 
-So, given $V$, we can select the action with the highest expected reward
-using:
+So, if the value function $V$ is optimal, we can select the action with the highest expected reward using:
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
 
-This is known as *policy extraction*, because it extracts a policy for a
-value function (or Q-function). This can be calculated 'on the fly' at
-runtime, or we can extract a policy beforehand and use this.
+This is known as *policy extraction*, because it extracts a policy for a value function (or Q-function). This can be calculated 'on the fly' at runtime, or we can extract a policy beforehand and use this.
 
-Alternatively, given a Q-function instead of a value function, we can
-use: 
+Alternatively, given a Q-function instead of a value function, we can use:
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$ 
 
@@ -346,17 +330,12 @@ This is simpler than using the value functions because we do not need to sum ove
 possible output states, but we need to store $|A| \times |S|$ values in a Q-function, but just $|S|$ values in a value function.
 
 
-
 ## Partially Observable MDPs
 
-MDPs assume that the agent always knows exactly what state it is in ---
-the problem is fully-observable. However, this is not valid for many
-tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone
-for survivors will by definition not know the location of survivors; a
-card-player agent will not know the cards its opponent holds; etc.
+MDPs assume that the agent always knows exactly what state it is in --- the problem is fully-observable. However, this is not valid for many tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone for survivors will by definition not know the location of survivors; a card-playing agent playing solitaire will not know the cards that are face-down;, etc.
 
 :::{admonition} Definition
-*Partially-observable MDPs* (POMDPs) relax the assumption of
+**Partially-observable MDPs** (POMDPs) relax the assumption of
 full-observability. A POMDP is defined as:
 
 -   states $s \in S$
@@ -376,18 +355,11 @@ full-observability. A POMDP is defined as:
 
 The sensor model allows the agent to observe the environment. If an agent executes an action $a$, it has probability $O_a(o \mid s')$ of observing state $s'$.
 
-
-Solving POMDPs is very similar to solving MDPs. In fact, the same
-algorithms apply. The only difference is that we case the POMDP problem
-as a standard MDP problem with a new state space: each state is a
-**probability distribution** over the set $S$. Thus, each state of the
-POMDP is a **belief state**, which defined the probability of being in
-each state $S$.
+Solving POMDPs is similar to solving MDPs. In fact, the same algorithms apply. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
+POMDP is a **belief state**, which defined the probability of being in each state $S$.
 
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies minimise the expected reward.
 
-We will not cover this in detail in these notes. However, POMDPs are
-clearly a generalisation of MDPs, and they have had a much larger impact
-on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which one is acting.
+We will not cover this in detail in these notes. However, POMDPs are clearly a generalisation of MDPs, and they have had a much larger impact on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.
 
 ```
