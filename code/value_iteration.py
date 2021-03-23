@@ -1,4 +1,4 @@
-from navigation_mdp import *
+from gridworld import *
 
 class ValueIteration():
 
@@ -41,7 +41,7 @@ class ValueIteration():
         return values
 
 
-mdp = NavigationMDP(discountFactor=0.9, width = 4, height = 3)
+mdp = GridWorld(discountFactor=0.9, width = 4, height = 3)
 valueIteration = ValueIteration(mdp)
 
 

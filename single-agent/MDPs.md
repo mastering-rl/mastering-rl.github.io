@@ -30,10 +30,10 @@ For example:
 
 MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
 
-:::{admonition} Definition: Discounted Reward Markov Decision Processes
+:::{admonition} Definition
 
-** Markov Decision Processes** (MDPs) are *fully observable, probabilistic* state models. The most common formulation of MDPs is a **Discounted-Reward** Markov Decision
-Process. A discount-reward MDP $(S, s_0, A, P, r, \gamma)$ is a tuple containing:
+** Markov Decision Processes** (MDPs) are *fully observable, probabilistic* state models. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
+Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ containing:
 
 -   a state space $S$
 
@@ -162,45 +162,76 @@ class GridWorld(MDP):
     ...
 
     def getTransitions(self, state, action):
+    
         transitions = []
 
         if state == self.TERMINAL:
-            return [(self.TERMINAL, 1.0)]
+            if action == self.TERMINATE:
+                return [(self.TERMINAL, 1.0)]
+            else:
+                return []
 
         (x, y) = state
         if state in self.getGoalStates().keys():
             if action == self.TERMINATE:
                 transitions += [(self.TERMINAL, 1.0)]
 
-        elif action == 'N':
+        elif action == self.UP:
             transitions += self.validAdd(state, (x, y + 1), 0.8)
             transitions += self.validAdd(state, (x - 1, y), 0.1)
             transitions += self.validAdd(state, (x + 1, y), 0.1)
 
-        elif action == 'S':
+        elif action == self.DOWN:
             transitions += self.validAdd(state, (x, y - 1), 0.8)
             transitions += self.validAdd(state, (x - 1, y), 0.1)
             transitions += self.validAdd(state, (x + 1, y), 0.1)
 
-        elif action == 'E':
+        elif action == self.RIGHT:
             transitions += self.validAdd(state, (x + 1, y), 0.8)
             transitions += self.validAdd(state, (x, y - 1), 0.1)
             transitions += self.validAdd(state, (x, y + 1), 0.1)
 
-        elif action == 'W':
+        elif action == self.LEFT:
             transitions += self.validAdd(state, (x - 1, y), 0.8)
             transitions += self.validAdd(state, (x, y - 1), 0.1)
             transitions += self.validAdd(state, (x, y + 1), 0.1)
 
         return transitions
 
+    def validAdd(self, state, newState, probability):
+        # if the next state is blocked, stay in the same state
+        if newState in self.blockedStates:
+            return [(state, probability)]
+
+        # move to the next space if it is not off the grid
+        (x, y) = newState
+        if (x >= 0 and x < self.width and y >= 0 and y < self.height):
+            return [((x, y), probability)]
+ 
+        # if off the grid, state in the same state
+        return [(state, probability)]
+
     def getReward(self, state, action, newState):
-       reward = 0.0
-       if state in self.getGoalStates().keys() and newState == self.TERMINAL:
-          reward = self.getGoalStates().get(state)
-       return reward
+        reward = 0.0
+        if state in self.getGoalStates().keys() and newState == self.TERMINAL:
+            reward = self.getGoalStates().get(state)
+        return reward
 ```
 :::
+
+Let's break this down into its parts:
+
+- The state space $s$ here is the location of the robot in Cartesian coordinates: $(x,y)$, where $x$ is the column and $y$ the row. The state space is the set of all possible coordinates from $(0,0)$ to $(3,2)$, as well as a special state called $Terminal$ from which we cannot escape and transitioning to it has no reward. We can expand the state space to be larger.
+
+- The initial state $s_0$ is the location $(0,0)$ in the bottom left. 
+
+- The actions are *Up*, *Down*, *Left*, and *Right*, as well as the special action $Terminate$, which transitions into the $Terminal$ state from a goal state.
+
+- ``getTransitions`` defines the transition probabilities. For example, we can see that if the action is *Left*, then there are three possible transitions: to the left with 0.8 probability, and either up or down with 0.1 probability each. The method ``validAdd`` ensures that if we agent cannot go in that direction due to a wall, it remains in the current state for its outcome.
+
+- The reward is modelled as receiving +1 or -1 for exiting a goal state and transitioning into the terminal state. We will see later that this models our desire that the goal states have the value of $1$ and $-1$ respectively.
+
+- Finally, the discount factor is simply a paramater to the MDP in this code, with default value 0.9.
 
 In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
 
@@ -298,13 +329,11 @@ If $V(s)$ is the expected value of being in state $s$ and acting optimally accor
 
 :::{admonition} Definition
 The **Q-value** for action $a$ in state $s$ is defined as:
-
 $$
 Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
 $$
 :::
 This is just the expression inside the $\max$ expression in the Bellman equation. Using this, we can then Bellman equation then defined as: 
-
 $$
 V(s) = \max_{a \in A(s)} Q(s,a)
 $$
@@ -361,5 +390,7 @@ POMDP is a **belief state**, which defined the probability of being in each stat
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies minimise the expected reward.
 
 We will not cover this in detail in these notes. However, POMDPs are clearly a generalisation of MDPs, and they have had a much larger impact on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.
+
+```
 
 ```
