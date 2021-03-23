@@ -78,6 +78,11 @@ It is clear to see that the value iteration can be easily parallelised by updati
 Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
+import sys
+sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
+
+from gridworld import *
+
 class ValueIteration():
 
     def __init__(self, mdp):
@@ -90,7 +95,7 @@ class ValueIteration():
         values = self.initialiseValueFunction()
         for _ in range(iterations):
 
-           delta = 0
+           delta = 0.0
            for state in mdp.getStates():
                qValues = dict()
                for action in mdp.getActions(state):
@@ -122,15 +127,20 @@ class ValueIteration():
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below prints the value function for value iteration after 1, 2, 3, 4, 5, 10, and 100 iterations:
 
 ```{code-cell} ipython3
-mdp = NavigationMDP()
+mdp = GridWorld(discountFactor=0.9, width = 4, height = 3)
 valueIteration = ValueIteration(mdp)
 
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print("After iteration " + str(iterations))
-    values = valueIteration.valueIteration(iterations = iterations)
-    print(mdp.valueFunctionToString(values) + "\n")
+    print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
 ```
 
+From the policy, we extract a policy:
+
+```{code-cell} ipython3
+print("Policy after 100 iterations")
+print(mdp.policyToString(mdp.extractPolicyFromValueFunction(valueIteration.valueIteration(iterations = 100))))
+```
 
 ### Strengths and Limitations
 
