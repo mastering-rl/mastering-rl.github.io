@@ -237,14 +237,10 @@ In later chapters, we will see how to use these code-based models in several way
 
 ## Policies
 
-The planning problem for discounted-reward MDPs is different to that of
-classical planning because the actions are non-deterministic. Instead of
-a sequence of actions, an MDP produces a *policy*.
+The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
 
 :::{admonition} Definition
-A **policy** $\pi$ is a function that tells an agent which is the best
-action to choose in each state. A policy can be *deterministic* or
-*stochastic*.
+A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
 :::
 
 A *deterministic policy* $\pi : S \rightarrow A$ is a *mapping* from states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
@@ -260,8 +256,7 @@ $$\begin{array}{|c|c|c|c|}
 \hline
 \end{array}$$
 
-So, in the initial state (bottom left cell), following this policy the
-agent should go up. If it accidently slips right, it should go left again to return to the initial state.
+So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidently slips right, it should go left again to return to the initial state.
 
 Of course, agents do not work with graphical policies. The output from a planning algorithm would be a dictionary-like object or a function that takes a state and returns an action.
 
@@ -282,12 +277,10 @@ $$
 V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(a_i,s_i) \ | \ s_0 = s, a_i = \pi(s_i)]\,
 $$
 
-Sp, $V^{\pi}(s)$ defines the expected value of following the policy
-$\pi$ from state $s$.
+Sp, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
 :::
 
-For our Grid World example, assuming only the -1 and +1 states have
-rewards, the expected value is:
+For our Grid World example, assuming only the -1 and +1 states have rewards, the expected value is:
 
 $$
 \begin{array}{lll}
@@ -307,9 +300,7 @@ V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]
 $$
 :::
 
-Therefore, $V$ is optimal **if** for all states $s$, $V(s)$ describes the
-total discounted reward for taking the action with the highest reward
-over an indefinite/infinite horizon.
+Therefore, $V$ is optimal **if** for all states $s$, $V(s)$ describes the total discounted reward for taking the action with the highest reward over an indefinite/infinite horizon.
 
 Let's break this down:
 
@@ -317,9 +308,7 @@ $$
 V(s) = \overbrace{\max_{a \in A(s)}}^{\text{best action from $s$}} \overbrace{\underbrace{\sum_{s' \in S}}_{\text{for every state}} P_a(s' \mid s) [\underbrace{r(s,a,s')}_{\text{immediate reward}} + \underbrace{\gamma}_{\text{discount factor}} \cdot  \underbrace{V(s')}_{\text{value of } s'}]}^{\text{expected reward of executing action $a$ in state $s$}}
 $$
 
-First, we calculate the expected reward for each action. The reward of an action is: the sum of the immediate reward for all
-states possibly resulting from that action plus the discounted  future
-reward of those states. The discounted future reward is the $\gamma$ (discount reward) times the value of $s'$, where $s'$ is the state that we end up in. However, because we can end up in multiple states, we must multiple the reward by the probability of it happening: $P_a(s' \mid s)$.
+First, we calculate the expected reward for each action. The reward of an action is: the sum of the immediate reward for all states possibly resulting from that action plus the discounted  future reward of those states. The discounted future reward is the $\gamma$ (discount reward) times the value of $s'$, where $s'$ is the state that we end up in. However, because we can end up in multiple states, we must multiple the reward by the probability of it happening: $P_a(s' \mid s)$.
 
 Second, the value $V(s)$ is the value of the action with the maximum the expected reward. This is because the Bellman equation assumes that once we know the best states, we will always take the action that leads to the best state.
 
@@ -329,11 +318,13 @@ If $V(s)$ is the expected value of being in state $s$ and acting optimally accor
 
 :::{admonition} Definition
 The **Q-value** for action $a$ in state $s$ is defined as:
+
 $$
 Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
 $$
 :::
 This is just the expression inside the $\max$ expression in the Bellman equation. Using this, we can then Bellman equation then defined as: 
+
 $$
 V(s) = \max_{a \in A(s)} Q(s,a)
 $$
@@ -385,12 +376,8 @@ full-observability. A POMDP is defined as:
 The sensor model allows the agent to observe the environment. If an agent executes an action $a$, it has probability $O_a(o \mid s')$ of observing state $s'$.
 
 Solving POMDPs is similar to solving MDPs. In fact, the same algorithms apply. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
-POMDP is a **belief state**, which defined the probability of being in each state $S$.
+POMDP is a **belief state**, which defined the probability of being in each state $S$. This leads to an exponentially-larger state space, so POMDPs are typically harder problems to solve.
 
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies minimise the expected reward.
 
-We will not cover this in detail in these notes. However, POMDPs are clearly a generalisation of MDPs, and they have had a much larger impact on planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.
-
-```
-
-```
+We will not cover this in detail in these notes. However, POMDPs are  a generalisation of MDPs, and they are more suited to practical solutions in  planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.

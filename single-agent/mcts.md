@@ -10,8 +10,6 @@
 
 3.  Construct a policy from Q-functions resulting from MCTS algorithms
 
-4.  Select and apply multi-armed bandit algorithms
-
 5.  Integrate multi-armed bandit algorithms (including UCB) to MCTS
     algorithms
 
@@ -266,93 +264,10 @@ Once we see the outcome state, which we will call $s'$, we start the process all
 However, importantly, we can *keep* the sub-tree from state $s'$, as we already have done simulations from that state. We discard the rest of the tree (all child of $s_0$ other than the chosen action) and incrementally build from $s'$.
 
 
-### Multi-arm Bandits
-
-There is one key question that we need to answer in the MCTS algoritm: How do we select the next node to expand?
-
-It turns out that this selection makes a big difference on the performance of MCTS.
-
-#### Intuition
-
-The selection of nodes can be considered an instance of the *Multi-armed bandit* problem. This problem can be illustrated as follows:
-
-> Imagine that you have $N$ number of slot machines (or poker machines  in Australia), which are sometimes called *one-armed bandits*. Over  time, each bandit pays a random reward from an unknown probability distrbution. Some bandits pay higher rewards than others. The goal is to maximize the sum of the rewards of a sequence of lever pulls of the  machine.
-
-
-#### Multi-Armed Bandit: Formal Definition
-
-An $N$-armed bandit is defined by a set of *random variables* $X_{i,k}$ where
-
--   $1 \leq i \leq N$, such that $i$ is the *arm* of the bandit; and
-
--   $k$ the index of the *play* of arm $i$.
-
-Successive plays $X_{i,1}, X_{j,2}, X_{k,3}\ldots$ are assumed to be independently distributed, but we do not know the probability distributions of the random variables.
-
-**Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$.
-
-#### Uniform Sampling
-
-Given that we do not know the distributions, a simple strategy is simply to select the arm given a uniform distribution; that is, select each arm with the same probability. This is just uniform sampling.
-
-Then, the Q-value for an action $a$ in a given state $s$ can be approximated using the following formula:
-
-$$Q(s,a) = \frac{1}{N(s,a)} \sum_{t=1}^{N(s)} {\mathbb I}_{t}(s,a) r_t$$
-
-where $N(s,a)$ is the number of times $a$ executed in $s$, $N(s)$ is the number of times $s$ is visited, $r_t$ is the *reward* obtained by the $t$-th simulation from $s$, and  $\mathbb{I}_{t}(s,a)$ is $1$ if $a$ was selected on the $t$-th simulation from $s$, and is $0$ otherwise
-
-**But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Why not focus also on the *most promising actions* given the rewards we have received so far.
-
-#### Exploration vs. Exploitation
-
-What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, our selection is randomised, so what if we just haven't sampled the best action enough times? Thus, we want strategies that *exploit* what we think are the best actions so far, but still *explore* other actions.
-
-But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO).
-
-FOMO drives us to search for policies $\pi$ that *minimise regret*.
-
-:::{definition}(Pseudo)--Regret 
-Pseudo-regret is defined formally as:
-
- $$\mathcal {R_{N(s),b} }  =  Q(\pi^*(s),s) N(s) - \mathbb{E} [ \sum_{t}^{N(s)} Q(b,s) \mathbb{I}_{t}(s,b) ]$$
-
-
-where $Q(\pi^*(s),s)$ is the $Q$-value for the (unknown) optimal policy $\pi^*(s)$, $N(s)$ is the number of visits to state $s$, $\mathbb{I}_{i}(s,a)$ is $1$ if $a$ was selected on the $i$-th visit from $s$, and $0$ otherwise, and ${\mathbb E}[ \sum_{t}^{N(s)} Q(b,s) \mathbb{I}_{t}(s,b)] > 0$ for every $b$.
-:::
-
-Informally: If I play arm $b$, my regret is the *best possible expected reward* minus the *expected reward of playing $b$*. If I play arm $a$ (the best arm), my regret is 0. So, regret is the *expected loss* from not taking the best action.
-
-#### Minimising regret
-
-There are several basic strategies for minimising regret:
-
-**$\epsilon$-greedy**: $\epsilon$ is a number in \[0,1\]. Each time we need to choose an arm, we choose a random arm with probability $\epsilon$, and choose the arm with max $Q(s,a)$ with probability $1-\epsilon$. Typically, values of $\epsilon$ around 0.05-0.1 work well.
-
-**$\epsilon$-decreasing**: The same as $\epsilon$-greedy, $\epsilon$ decreases over time. A parameter $\alpha$ between \[0,1\] specifies the *decay*, such that $\epsilon := \epsilon \times \alpha$ after each action is chosen.
-
-**Softmax**: This is *probability matching strategy*, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally:
-
-$$\frac{e^{Q(s,a)/\tau}}{\sum_{b=1}^{n} e^{Q(s,b)/\tau}}$$ 
-
-in which $\tau$ is the *temperature*, a positive number that dictates how much of
-an influence the past data has on the decision.
-
-#### Upper Confidence Bounds (UCB1)
-
-A highly effective (especially in terms of MCTS) multi-armed bandit
-strategy is the *Upper Confidence Bounds* (UCB1) strategy.
-
-Using the UCB1 strategy, we select the next action using the following:
-
-$\textrm{argmax}_{a \in A(s)}\, Q(s,a)   +   \sqrt{\frac{2 \ln N(s)}{N(s,a)}}$
-
-where $Q(s,a)$ is the estimated $Q$-value, $N(s)$ is the number of times $s$ has been visited, and $N(s,a)$ is the number of times times $a$ has been executed in $s$.
-
-The left--hand side encourages exploitation: the Q-value is high for actions that have had a high reward.
-
-The right--hand side encourages exploration: it is high for actions that have been explored less.
 
 ### Upper Confidence Trees (UCT)
+
+**Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$.
 
 Upper Confidence Trees (UCT) is the combination of MCST with the UCB1 strategy for selecting the next node to follow:
 

@@ -44,7 +44,6 @@ class ValueIteration():
 mdp = GridWorld(discountFactor=0.9, width = 4, height = 3)
 valueIteration = ValueIteration(mdp)
 
-
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print("After iteration " + str(iterations))
     print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
