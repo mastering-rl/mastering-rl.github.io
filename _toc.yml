@@ -12,6 +12,7 @@
   - file: single-agent/value-based
     sections:
     - file: single-agent/value-iteration
+    - file: single-agent/multi-armed-bandits
     - file: single-agent/mcts
     - file: single-agent/model-free
     - file: single-agent/n-step

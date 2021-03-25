@@ -78,9 +78,14 @@ It is clear to see that the value iteration can be easily parallelised by updati
 Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
 import sys
 sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
+```
 
+```{code-cell} ipython3
 from gridworld import *
 
 class ValueIteration():

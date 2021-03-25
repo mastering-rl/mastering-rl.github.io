@@ -24,18 +24,23 @@ A **multi-armed bandit** (also known as an **$N$-armed bandit**) is defined by a
 
 -   $1 \leq i \leq N$, such that $i$ is the *arm* of the bandit; and
 
--   $k$ the index of the *play* of arm $i$.
+-   $k$ the index of the *play* of arm $i$;
 
 Successive plays $X_{i,1}, X_{j,2}, X_{k,3}\ldots$ are assumed to be independently distributed, but we do not know the probability distributions of the random variables.
+
+The idea is that a gambler iteratively plays rounds, observing the reward from the arm after each round, and can adjust their strategy each time. The aim is to maximise the sum of the rewards collected over all  rounds.
+
 :::
 
 Given that we do not know the distributions, a simple strategy is simply to select the arm given a uniform distribution; that is, select each arm with the same probability. This is just uniform sampling.
 
-Then, the Q-value for an action $a$ in a given state $s$ can be approximated using the following formula:
+Then, the Q-value for an action $a$ can be estimated using the following formula:
 
-$$Q(s,a) = \frac{1}{N(s,a)} \sum_{t=1}^{N(s)} {\mathbb I}_{t}(s,a) r_t$$
+$$Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t} {\mathbb I}_{i}(a) r_i$$
 
-where $N(s,a)$ is the number of times $a$ executed in $s$, $N(s)$ is the number of times $s$ is visited, $r_t$ is the *reward* obtained by the $t$-th simulation from $s$, and  $\mathbb{I}_{t}(s,a)$ is $1$ if $a$ was selected on the $t$-th simulation from $s$, and is $0$ otherwise
+where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, $r_i$ is the *reward* obtained in the $i$-th round, and  $\mathbb{I}_{i}(a)$ is $1$ if $a$ was selected on the $i$-th round, and is $0$ otherwise.
+
+The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of $Q(a)$ start to stabilise), we start selecting $\max_a Q(a)$. This is a strategy known as *$\epsilon$-first* strategy, where the parameter $\epsilon$ (epsilon), determines how many rounds to select random actions before moving to the greedy action.
 
 **But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Why not focus also on the *most promising actions* given the rewards we have received so far.
 
@@ -43,19 +48,19 @@ where $N(s,a)$ is the number of times $a$ executed in $s$, $N(s)$ is the number 
 
 What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, our selection is randomised, so what if we just haven't sampled the best action enough times? Thus, we want strategies that *exploit* what we think are the best actions so far, but still *explore* other actions.
 
-But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO).
-
-FOMO drives us to search for policies $\pi$ that *minimise regret*.
+But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO). FOMO drives us to search for strategies that *minimise regret*.
 
 :::{definition}(Pseudo)--Regret 
 Pseudo-regret is defined formally as:
 
- $$\mathcal {R_{N(s),b} }  =  Q(\pi^*(s),s) N(s) - \mathbb{E} [ \sum_{t}^{N(s)} Q(b,s) \mathbb{I}_{t}(s,b) ]$$
+ $$\mathcal {R_{N,b} }  =  \max_a Q(a) N(s) - \mathbb{E} [ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b) ]$$
 
-where $Q(\pi^*(s),s)$ is the $Q$-value for the optimal policy $\pi^*(s)$ (which we do not know), $N(s)$ is the number of visits to state $s$, $\mathbb{I}_{i}(s,a)$ is $1$ if $a$ was selected on the $i$-th visit from $s$, and $0$ otherwise, and ${\mathbb E}[ \sum_{t}^{N(s)} Q(b,s) \mathbb{I}_{t}(s,b)] > 0$ for every $b$.
+where $t$ is the number of rounds, $\mathbb{I}_{i}(a)$ is $1$ if $a$ was selected on the $i$-th round and $0$ otherwise, and ${\mathbb E}[ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b)] > 0$ for every $b$.
 :::
 
-Informally: If I play arm $b$, my regret is the *best possible expected reward* minus the *expected reward of playing $b$*. If I play arm $a$ (the best arm), my regret is 0. So, regret is the *expected loss* from not taking the best action.
+Informally: If I take action $b$, my regret is the *best possible expected reward* minus the *expected reward of playing $b$*. If I take action $a$ (the best action), my regret is 0. So, regret is the *expected loss* from not taking the best action.
+
+A *zero-regret* strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.
 
 ### Solutions for minimising regret
 
@@ -63,11 +68,11 @@ There are several basic strategies for minimising regret. In each of these techn
 
 ### Epsilon-greedy strategy
 
-The $\epsilon$-greedy strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in \[0,1\]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
+The $\epsilon$-greedy strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in [0,1]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
 
-Each time we need to choose an arm, we do the following:
+Each time we need to choose an action, we do the following:
 
-- With probability $\epsilon$ we choose the arm with the maximum Q value: $\argmax_a Q(a)$
+- With probability $\epsilon$ we choose the arm with the maximum Q value: $\textrm{argmax}_a Q(a)$
 - With probability $1-\epsilon$ we choose a random arm with uniform probability.
 
 The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.1 work well as they exploit what they have learnt.
@@ -84,9 +89,9 @@ The selection mechanism is the same as epsilon greedy, but then after each selec
 
 Softmax  is *probability matching strategy*, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the *Boltzman* distribution for that action:
 
-$$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{n} e^{Q(b)/\tau}}$$ 
+$$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}$$ 
 
-in which $\tau$ (pronounced "tau") is the *temperature*, a positive number that dictates how much of an influence the past data has on the decision. A higher value of $\tau$ woudl mean that the probability of selecting each action is close to each other, while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^(Q(a))$.
+where $N$ is the number of arms, and $\tau$ (pronounced "tau") is the *temperature*, a positive number that dictates how much of an influence the past data has on the decision. A higher value of $\tau$ would mean that the probability of selecting each action is close to each other, while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^{Q(a)}$.
 
 As with epsilon decreasing, we can add a decay parameter $\alpha$ that allows the value of $\tau$ to decay until it reaches 1. This encourages exploration in earlier phases, and exploration less as we gather more feedback.
 
@@ -96,10 +101,22 @@ A highly effective multi-armed bandit strategy is the *Upper Confidence Bounds* 
 
 Using the UCB1 strategy, we select the next action  using the following:
 
-$\textrm{argmax}_{a}(Q(a)   +   \sqrt{\frac{2 \ln N}{N(a)}})$
+$$\textrm{argmax}_{a}\left(Q(a)   +   \sqrt{\frac{2 \ln t}{N(a)}}\right)$$
 
-where $N$ is the number of times we have made a multi-armed bandit decision, and $N(a)$ is the number of times times $a$ has been chosen.
+where $t$ is the number of rounds so far, and $N(a)$ is the number of times times $a$ has been chosen in all previous rounds. The term inside the square root is undefined if $N(a) = 0$. The avoid this, the typical strategy is to spend the first $N$ rounds to select each of the $N$ bandits once.
 
 The left--hand side encourages exploitation: the Q-value is high for actions that have had a high reward.
 
-The right--hand side encourages exploration: it is high for actions that have been explored less.
+The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions.
+
+Interesting, the UCB formula is not a weighted formula -- that is, there is no parameter giving weight to the $Q(a)$ or the square root expressions to balance exploration vs. exploitation. So how does it work? We will not get into all the details, but instead just give some intuition.
+
+We want to learn the Q-function, which gives us the average return on each action $a$, such that it approximates the real (unknown) Q-function, which we will call $Q^*$. At each round, we select the action $a$ that maximises the expression inside the brackets. If arm $a$ is optimal, then we want the following to hold for all actions $b \neq a$:
+
+$$Q(b) + sqrt{\frac{2 \ln t}{N(a)}} \leq Q^*(a)$$
+
+If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low for some actions, we do not have this confidence. 
+
+If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is disregarded, but should not be. We want this to occur only with probability $\frac{1}{N}$ to maximise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
+
+## Implementation
