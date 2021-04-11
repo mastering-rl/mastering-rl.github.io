@@ -1,3 +1,14 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 ## Multi-armed bandits
 
 ### Learning outcomes
@@ -72,7 +83,7 @@ The $\epsilon$-greedy strategy  is a simple and effective way of balancing explo
 
 Each time we need to choose an action, we do the following:
 
-- With probability $\epsilon$ we choose the arm with the maximum Q value: $\textrm{argmax}_a Q(a)$
+- With probability $\epsilon$ we choose the arm with the maximum Q value: $\textrm{argmax}_a Q(a)$. If there is a tie between multiple actions with the larget Q-value, break the tie.
 - With probability $1-\epsilon$ we choose a random arm with uniform probability.
 
 The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.1 work well as they exploit what they have learnt.
@@ -120,3 +131,16 @@ If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low 
 If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is disregarded, but should not be. We want this to occur only with probability $\frac{1}{N}$ to maximise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
 
 ## Implementation
+
+```{code-cell} ipython3 
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(-1, 1, 50)
+y = 2*x + 1
+z = x*x
+
+plt.plot(x, y)
+plt.plot(x, z)
+plt.show()
+```
