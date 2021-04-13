@@ -1,4 +1,5 @@
-- Example of value iteration
+- Add google analytics: https://jupyterbook.org/advanced/html.html
+
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
 
 

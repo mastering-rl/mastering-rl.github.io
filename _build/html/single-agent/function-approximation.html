@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Q-Function Approximation &#8212; Introduction to Reinforcement Learning</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.2d2078699c18a0efb88233928e1cf6ed.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/mystery_game.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.be0a4a0c39cd630af62a2fcf693f3f06.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reward shaping" href="reward-shaping.html" />
+    <link rel="prev" title="n-step Reinforcement Learning" href="n-step.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/uom.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Introduction to Reinforcement Learning</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro.html">
+   COMP90054: Reinforcement Learning
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Single-agent Reinforcement Learning
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="MDPs.html">
+   Markov Decision Processes
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="reference internal" href="value-based.html">
+   Value-based Methods
+  </a>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="value-iteration.html">
+     Value Iteration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="multi-armed-bandits.html">
+     Multi-armed bandits
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mcts.html">
+     Monte-Carlo Tree Search
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html">
+     Model-free Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html#q-learning-off-policy-reinforcement-learning">
+     Q-Learning: Off-policy Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html#sarsa-on-policy-reinforcement-learning">
+     SARSA: On-Policy Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="n-step.html">
+     n-step Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Q-Function Approximation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reward-shaping.html">
+     Reward shaping
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Multi-agent Reinforcement Learning
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../multi-agent/normal-form.html">
+   Normal form games
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/single-agent/function-approximation.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/executablebooks/jupyter-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/function-approximation.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#motivation">
+   Motivation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#linear-q-learning-linear-function-approximation">
+   Linear Q-learning (Linear Function Approximation)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#approximate-q-function-representation">
+   Approximate Q-function Representation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#defining-state-action-features">
+   Defining State-Action Features
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#approximate-q-function-computation">
+   Approximate Q-function Computation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#approximate-q-function-update">
+   Approximate Q-function Update
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deep-q-learning">
+   Deep Q-learning
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#strengths-and-limitations-of-q-function-approximation">
+   Strengths and Limitations of Q-function Approximation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#applications-of-function-approximation">
+   Applications of Function Approximation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#further-reading">
+   Further Reading
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="q-function-approximation">
+<h1>Q-Function Approximation<a class="headerlink" href="#q-function-approximation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Learning Outcomes</strong></p>
+<ol class="simple">
+<li><p>Manually apply linear Q-function approximation to solve small-scale
+MDP problems given some known features</p></li>
+<li><p>Select suitable features and design &amp; implement Q-function
+approximation for model-free reinforcement learning techniques to
+solve medium-scale MDP problems automatically</p></li>
+<li><p>Argue the strengths and weaknesses of function approximation
+approaches</p></li>
+<li><p>Compare and contrast linear Q-learning with deep Q-learning</p></li>
+</ol>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Using a Q-table has two main limitations:</p>
+<ol class="simple">
+<li><p>It requires that we visit every reachable state many times and apply every action many times to get a good estimate of <span class="math notranslate nohighlight">\(Q(s,a)\)</span>. Thus, if we never visit a state <span class="math notranslate nohighlight">\(s\)</span>, we have no estimate of <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, even if we have visited states that are very similar to <span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>It requires us to maintain a table of size <span class="math notranslate nohighlight">\(|A| \times |S|\)</span>, which is prohibitively large for any non-trivial problem.</p></li>
+</ol>
+<p>To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at <em>linear function approximation</em> and approximation using <em>deep learning</em> (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of <span class="math notranslate nohighlight">\(Q(s,a)\)</span> <em>even if we have not applied action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> previously</em>.</p>
+<div class="admonition">
+<p class="admonition-title"> Example — Freeway</p>
+<p>Conside the game <em>Freeway</em>, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:</p>
+<p><img alt="image" src="../_images/freeway_screenshot.png" /></p>
+<p>Let us assume that there are 12 rows and about 40 columns. This grossly underestimates the actual number of rows and columns because the cars move a few pixels at a time, not in columns. This means there are 480 different positions that a chicken can be in, and there are two chickens. We also need to record whether there is a car in each location.</p>
+<p>This leads to:</p>
+<div class="math notranslate nohighlight">
+\[480^2 +  2^{480} = 3.12\times 10^{144} \text{ states}\]</div>
+<p>There are four actions: left, right, up, down.</p>
+<p>A Q-table would need to store <span class="math notranslate nohighlight">\(12.48\times 10^{144}\)</span> entries. This is a huge Q-table for what is a trivial example compared to many other problems.</p>
+</div>
+</div>
+<div class="section" id="linear-q-learning-linear-function-approximation">
+<h2>Linear Q-learning (Linear Function Approximation)<a class="headerlink" href="#linear-q-learning-linear-function-approximation" title="Permalink to this headline">¶</a></h2>
+<p>The key idea is to <em>approximate</em> the Q-function using a linear combination of <em>features</em> and their weights.
+Instead of recording everything in detail, we think about what is most important to know, and model that.</p>
+<p>What are some features that are relevant to the Freeway example?</p>
+<p>The overall process is:</p>
+<ol class="simple">
+<li><p>For the states, consider what are the features that determine its representation.</p></li>
+<li><p>During learning, perform updates based on the <em>weights</em> of
+<em>features</em> instead of states.</p></li>
+<li><p>Estimate <span class="math notranslate nohighlight">\(Q(s,a)\)</span> by summing the features and their weights.</p></li>
+</ol>
+<div class="admonition">
+<p class="admonition-title"> Example — Features for <em>Freeway</em></p>
+<p>Instead of recording the position of both chickens and whether there is a car in every position, we just record the following features:</p>
+<ul class="simple">
+<li><p>the number of columns each chicken is away from the other side of the road in (two features – one for each chicken); and</p></li>
+<li><p>how far away the <em>closest</em> car is in the row above and below each chicken (four features — two for each chicken).</p></li>
+</ul>
+<p>This requires just six features.</p>
+</div>
+</div>
+<div class="section" id="approximate-q-function-representation">
+<h2>Approximate Q-function Representation<a class="headerlink" href="#approximate-q-function-representation" title="Permalink to this headline">¶</a></h2>
+<p>In linear Q-learning, we store features and weights, not states. What we need to learn is how important each feature is (its <em>weight</em>) for each action.</p>
+<p>To represent this, we have two vectors:</p>
+<ol>
+<li><p>A <em>feature vector</em>, <span class="math notranslate nohighlight">\(f(s,a)\)</span>, which is a vector of <span class="math notranslate nohighlight">\(n \cdot |A|\)</span>
+different functions, where <span class="math notranslate nohighlight">\(n\)</span> is the number of state features and
+<span class="math notranslate nohighlight">\(|A|\)</span> the number of actions. Each function extracts the value of a
+feature for state-action pair <span class="math notranslate nohighlight">\((s,a)\)</span>. We say <span class="math notranslate nohighlight">\(f_i(s,a)\)</span> extracts
+the <span class="math notranslate nohighlight">\(i\)</span>th feature from the state-action pair <span class="math notranslate nohighlight">\((s,a)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(s,a) = \begin{pmatrix} 
+        f_1(s,a) \\
+        f_2(s,a) \\
+        \ldots\\
+        f_n(s,a) \\
+        \end{pmatrix}\end{split}\]</div>
+<p>In the Freeway example, we have a vector with six state features
+times four actions. The function <span class="math notranslate nohighlight">\(f_1(s,Up)\)</span> returns value of the feature that represents the distance chicken 1 is away from the goal. The function <span class="math notranslate nohighlight">\(f_{3}(s, Up)\)</span>
+returns the distance to the nearest car in the row above the first chicken.</p>
+</li>
+<li><p>A <em>weight</em> vector <span class="math notranslate nohighlight">\(w\)</span> of size <span class="math notranslate nohighlight">\(n \times |A|\)</span>: one weight for each
+feature-action pair. <span class="math notranslate nohighlight">\(w^a_i\)</span> defines the weight of a feature <span class="math notranslate nohighlight">\(i\)</span> for
+action <span class="math notranslate nohighlight">\(a\)</span>.</p></li>
+</ol>
+</div>
+<div class="section" id="defining-state-action-features">
+<h2>Defining State-Action Features<a class="headerlink" href="#defining-state-action-features" title="Permalink to this headline">¶</a></h2>
+<p>Often it is easier to just define features for states, rather than state-action pairs. The features are just a vector of <span class="math notranslate nohighlight">\(n\)</span> functions of the form <span class="math notranslate nohighlight">\(f_i(s)\)</span>.</p>
+<p>However, for most applications, the weight of a feature is related to the action. The weight of being one step away from the end in Freeway is different if we go Up to if we go Right.</p>
+<p>It is straightforward to construct <span class="math notranslate nohighlight">\(n \times |A|\)</span> state-pair features from just <span class="math notranslate nohighlight">\(n\)</span> state features:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+f_{ik}(s,a) = \Bigg \{
+\begin{array}{ll}
+ f_i(s) &amp; \text{if } a=a_k\\
+ 0      &amp; \text{otherwise}
+ ~~~ 1 \leq i \leq n, 1 \leq k \leq |A|
+ \end{array}
+\end{split}\]</div>
+<p>This effectively results in <span class="math notranslate nohighlight">\(|A|\)</span> different weight vectors:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ f(s,a_1) = \begin{pmatrix} 
+f_{1,a_1}(s,a) \\
+f_{2,a_1}(s,a) \\
+0\\
+0\\
+0\\
+0\\
+\ldots
+\end{pmatrix}~~
+f(s,a_2) = \begin{pmatrix} 
+0\\
+0\\
+f_{1,a_2}(s,a) \\
+f_{2,a_2}(s,a) \\
+0\\
+0\\
+\ldots
+\end{pmatrix}~~
+f(s,a_3) = \begin{pmatrix} 
+0\\
+0\\
+0\\
+0\\
+f_{1,a_3}(s,a) \\
+f_{2,a_3}(s,a) \\
+\ldots
+\end{pmatrix}~~\ldots
+\end{split}\]</div>
+</div>
+<div class="section" id="approximate-q-function-computation">
+<h2>Approximate Q-function Computation<a class="headerlink" href="#approximate-q-function-computation" title="Permalink to this headline">¶</a></h2>
+<p>Give a feature vector <span class="math notranslate nohighlight">\(f\)</span> and a weight vector <span class="math notranslate nohighlight">\(w\)</span>, the Q-value of a state is a simple linear combination of features and weights:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  Q(s,a) &amp; = &amp; f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_n(s,a) \cdot w^a_n\\
+         &amp; = &amp; \sum_{i=0}^{n} f_i(s,a) w^a_i
+\end{array}
+\end{split}\]</div>
+<div class="admonition">
+<p class="admonition-title"> Example — Approximate Q-function computation for Freeway</p>
+<p>For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state <span class="math notranslate nohighlight">\(s\)</span> where the chicken is in row 1:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{array}{lll}
+  Q(s,Up)   &amp; = &amp;  f_1(s,Up)\cdot 0.31  + \ldots + f_{14}(s,Up) \cdot 0.04
+\end{array}
+\]</div>
+<p>Note that to be effective, our feature values should be <em>normalised</em> using e.g. min-max normalisation or mean normalisation.</p>
+</div>
+<div class="admonition">
+<p class="admonition-title"> Example — Q-value update for Freeway</p>
+<p>Assume that all weights are 0, therefore, <span class="math notranslate nohighlight">\(Q(s,a) = 0\)</span> for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 14 is has the value <span class="math notranslate nohighlight">\(\frac{r}{D}\)</span>, where <span class="math notranslate nohighlight">\(r\)</span> is the current row and <span class="math notranslate nohighlight">\(D\)</span> is the distance to the other side, then
+we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  w^a_i &amp; \leftarrow &amp; w^a_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)\\
+  w^{Up}_{14} &amp; \leftarrow &amp; 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
+              &amp; = &amp;5
+\end{array}
+\end{split}\]</div>
+<p>From this, we now can get an estimate of <span class="math notranslate nohighlight">\(Q(s,Up)\)</span> from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).</p>
+</div>
+</div>
+<div class="section" id="approximate-q-function-update">
+<h2>Approximate Q-function Update<a class="headerlink" href="#approximate-q-function-update" title="Permalink to this headline">¶</a></h2>
+<p>To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.</p>
+<p>For initialisation, initialise all weights to 0. Alternatively, you can
+try Q-function initialisation and assign weights that you think will be
+`good’ weights.</p>
+<p>For update, we now need to update the weights instead of the actions.
+For Q-learning, the update rule is now:</p>
+<div class="math notranslate nohighlight">
+\[w^a_i \leftarrow w^a_i + \alpha [r + \gamma max_a' Q(s',a') - Q(s,a)]\ f_i(s,a)\]</div>
+<p>For SARSA:</p>
+<div class="math notranslate nohighlight">
+\[w^a_i \leftarrow w^a_i + \alpha [r + \gamma Q(s',a') - Q(s,a)]\ f_i(s,a)\]</div>
+<p>Note: we need to update for each feature <span class="math notranslate nohighlight">\(i\)</span> for the last executed action <span class="math notranslate nohighlight">\(a\)</span>.</p>
+<p>As this is linear, it is therefore convex, so the weights will converge!!</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this has the effect of updating Q-values to states that have never been visited!</p>
+<p>In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from <em>any</em> position on the final row.</p>
+</div>
+</div>
+<div class="section" id="deep-q-learning">
+<h2>Deep Q-learning<a class="headerlink" href="#deep-q-learning" title="Permalink to this headline">¶</a></h2>
+<p>The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions. Instead of selecting features and training weights, we learn the parameters <span class="math notranslate nohighlight">\(\theta\)</span> to a neural network. The Q-function is <span class="math notranslate nohighlight">\(Q(s,a; \theta)\)</span>, so takes the parameters as an argument.</p>
+<p>The TD update for Q-learning is just:</p>
+<div class="math notranslate nohighlight">
+\[\theta \leftarrow \theta + \alpha[r + \gamma \max_{a'} Q(s',a'; \theta) - Q(s,a ;\theta)]
+\nabla_{\theta} Q(s,a; \theta)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\nabla_{\theta} Q(s,a; \theta)\)</span> is the <em>gradient</em> of the Q-function.</p>
+<p><strong>Advantages (compared to linear Q functions):</strong></p>
+<ul class="simple">
+<li><p>We do not need to select features – the ‘features’ will be learnt as part of the hidden layers of the neural network.</p></li>
+<li><p>The state <span class="math notranslate nohighlight">\(s\)</span> can be less structured, such as images or sequences of images (video).</p></li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>There are no convergence guarantees.</p></li>
+<li><p>Deep neural networks are very data hungry because they need to learn features as well as Q-function, so compared to a linear approximation with good features, learning good Q-functions can be very difficult.</p></li>
+</ul>
+<p>Despite this, deep Q-learning  works remarkably well in some areas, especially for tasks that require vision (see the robotic arm grasping unknown objects).</p>
+</div>
+<div class="section" id="strengths-and-limitations-of-q-function-approximation">
+<h2>Strengths and Limitations of Q-function Approximation<a class="headerlink" href="#strengths-and-limitations-of-q-function-approximation" title="Permalink to this headline">¶</a></h2>
+<p>Approximating Q-functions using machine learning techniques such as linear functions or deep learning  has advantages and disadvantages.</p>
+<p><strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Memory: More efficient representation compared with Q-tables because we only store weights/parameters for the Q-function, rather than the the <span class="math notranslate nohighlight">\(|A| \times |S|\)</span> entries for a Q-table.</p></li>
+<li><p>Q-value propagation: we do not need to apply action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> to get a value for <span class="math notranslate nohighlight">\(Q(s,a)\)</span> because the Q-function generalises.</p></li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>The Q-function is now only an approximation of the real Q-function: states that share feature values may have different actual values.</p></li>
+</ul>
+</div>
+<div class="section" id="applications-of-function-approximation">
+<h2>Applications of Function Approximation<a class="headerlink" href="#applications-of-function-approximation" title="Permalink to this headline">¶</a></h2>
+<p>A great application of using off-policy updates in deep Q-learning for robotic arms to learn how to grasp unknown objects. The only input for the problem is the camera data:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cXaic_k80uM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>This is using policy iteration (policy gradient descent) rather than standard Q-learning.</p>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.</p></li>
+<li><p>Using simple linear methods in which we select features and learn weights are effective and guarantee convergence.</p></li>
+<li><p>Deep Q-learning offers alternatives in which we do not need to select features, but require a lot of training data (more episodes) and has no convergence guarantees.</p></li>
+</ol>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Chapter 9 (Approximate Solution Methods) of <em>Introduction to Reinforcement Learning</em> [<em>Sutton and Barto</em>]</p>
+<p><a class="reference external" href="https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html">https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html</a></p>
+</li>
+<li><p>Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate <span class="math notranslate nohighlight">\(\mathcal{Q}(s,a)\)</span>. The input for the NN is the state, and the output is the esimated reward for each action. There are two papers worth reading on this:</p>
+<ul class="simple">
+<li><p><em>Human-level control through deep reinforcement
+learning</em>: <a class="reference external" href="http://www.davidqiu.com:8888/research/nature14236.pdf">http://www.davidqiu.com:8888/research/nature14236.pdf</a></p></li>
+<li><p><em>Playing Atari with Deep Reinforcement Learning</em> from DeepMind. <a class="reference external" href="https://arxiv.org/pdf/1312.5602v1.pdf">https://arxiv.org/pdf/1312.5602v1.pdf</a></p></li>
+</ul>
+</li>
+<li><p>Before AlphaGo there was TD-gammon, which was the first paper to
+combine reinforcement learning and neural networks:
+<a class="reference external" href="http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf">http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf</a></p></li>
+</ul>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="n-step.html" title="previous page">n-step Reinforcement Learning</a>
+    <a class='right-next' id="next-link" href="reward-shaping.html" title="next page">Reward shaping</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Tim Miller, The University of Melbourne<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>n-step Reinforcement Learning &#8212; Introduction to Reinforcement Learning</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.2d2078699c18a0efb88233928e1cf6ed.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/mystery_game.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.be0a4a0c39cd630af62a2fcf693f3f06.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Q-Function Approximation" href="function-approximation.html" />
+    <link rel="prev" title="Model-free Reinforcement Learning" href="model-free.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/uom.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Introduction to Reinforcement Learning</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro.html">
+   COMP90054: Reinforcement Learning
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Single-agent Reinforcement Learning
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="MDPs.html">
+   Markov Decision Processes
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="reference internal" href="value-based.html">
+   Value-based Methods
+  </a>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="value-iteration.html">
+     Value Iteration
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="multi-armed-bandits.html">
+     Multi-armed bandits
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="multi-armed-bandits.html#implementation">
+     Implementation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mcts.html">
+     Monte-Carlo Tree Search
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html">
+     Model-free Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html#q-learning-off-policy-reinforcement-learning">
+     Q-Learning: Off-policy Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="model-free.html#sarsa-on-policy-reinforcement-learning">
+     SARSA: On-Policy Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     n-step Reinforcement Learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="function-approximation.html">
+     Q-Function Approximation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reward-shaping.html">
+     Reward shaping
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Multi-agent Reinforcement Learning
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../multi-agent/normal-form.html">
+   Normal form games
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/single-agent/n-step.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/executablebooks/jupyter-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/n-step.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#motivation">
+   Motivation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#n-step-td-learning">
+   n-step TD learning
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#discounted-future-rewards-again">
+     Discounted Future Rewards (again)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#truncated-discounted-rewards">
+     Truncated Discounted Rewards
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#updating-the-q-function">
+     Updating the Q-function
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#n-step-sarsa">
+   n-step SARSA
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parameter-selection">
+   Parameter selection
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reading">
+   Reading
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="n-step-reinforcement-learning">
+<h1>n-step Reinforcement Learning<a class="headerlink" href="#n-step-reinforcement-learning" title="Permalink to this headline">¶</a></h1>
+<p><strong>Learning Outcomes</strong></p>
+<ol class="simple">
+<li><p>Manually apply n-step reinforcement learning approximation to solve
+small-scale MDP problems given a set of</p></li>
+<li><p>Design and implement n-step reinforcement learning to solve
+medium-scale MDP problems automatically</p></li>
+<li><p>Argue the strengths and weaknesses of n-step reinforcement learning</p></li>
+</ol>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>In the previous sections on of this chapter, we looked at two fundamental temporal
+difference (TD) methods for reinforcement learning: Q-learning and
+SARSA.</p>
+<p>These two methods have some weaknesses in this basic format:</p>
+<ol class="simple">
+<li><p>Unlike Monte-Carlo methods, which reach a reward and then
+backpropagate this reward, TD methods use bootstrapping (they
+estimate the future discounted reward using <span class="math notranslate nohighlight">\(Q(s,a)\)</span>), which means
+that for problems with sparse rewards, it can take a long time to
+for rewards to propagate throughout a Q-function.</p></li>
+<li><p>Both methods estimate a Q-function <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, and the simplest way to
+model this is via a Q-table. However, this requires us to maintain a
+table of size <span class="math notranslate nohighlight">\(|A| \times |S|\)</span>, which is prohibitively large for any
+non-trivial problem.</p></li>
+<li><p>Using a Q-table requires that we visit every reachable state many
+times and apply every action many times to get a good estimate of
+<span class="math notranslate nohighlight">\(Q(s,a)\)</span>. Thus, if we never visit a state <span class="math notranslate nohighlight">\(s\)</span>, we have no estimate
+of <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, even if we have visited states that are very similar to
+<span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>Rewards can be sparse, meaning that there are few state/actions that
+lead to non-zero rewards. This is problematic because initially,
+reinforcement learning algorithms behave entirely randomly and will
+struggle to find good rewards. Remember the Freeway demo from the
+previous lecture?</p></li>
+</ol>
+<p>To get around these limitations, we are going to look at n-step temporal difference learning: Monte Carlo techniques
+execute entire traces and then backpropagate the reward, while basic
+TD methods only look at the reward in the next step, estimating the
+future wards. n-step methods instead look <span class="math notranslate nohighlight">\(n\)</span> steps ahead for the
+reward before updating the reward, and then estimate the remainder.</p>
+<p>n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte
+Carlo methods uses ‘deep backups’, where entire traces are executed and
+the reward backpropagated. Methods such as Q-learning and SARSA use
+‘shallow backups’, only using the reward from the 1-step ahead. n-step
+learning finds the middle ground: only update the Q-function after
+having explored ahead <span class="math notranslate nohighlight">\(n\)</span> steps.</p>
+<div class="figure align-default" id="rl-approaches">
+<img alt="../_images/RL_approaches.png" src="../_images/RL_approaches.png" />
+<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">Reinforcement learning approaches (from Sutton and Barto (2020))</span><a class="headerlink" href="#rl-approaches" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="n-step-td-learning">
+<h2>n-step TD learning<a class="headerlink" href="#n-step-td-learning" title="Permalink to this headline">¶</a></h2>
+<p>We will look at n-step reinforcement learning, in which <span class="math notranslate nohighlight">\(n\)</span> is the parameter that
+determines the number of steps that we want to look ahead before
+updating the Q-function. So for <span class="math notranslate nohighlight">\(n=0\)</span>, this is just ‘standard’ reinforcement
+learning that we saw earlier in this chapter, and when <span class="math notranslate nohighlight">\(n=1\)</span>, the algorithm looks one step beyond the immediate reward, <span class="math notranslate nohighlight">\(n=2\)</span> it looks two steps beyond, etc.</p>
+<p>Both Q-learning and SARSA have an n-step version. We will look at
+n-step learning more generally, and then show an algorithm for n-step
+SARSA. The version for Q-learning is similar.</p>
+<div class="section" id="discounted-future-rewards-again">
+<h3>Discounted Future Rewards (again)<a class="headerlink" href="#discounted-future-rewards-again" title="Permalink to this headline">¶</a></h3>
+<p>When calculating a discounted reward over a trace, we simply sum up the rewards over the trace:</p>
+<div class="math notranslate nohighlight">
+\[ G_t   =   r_1 + \gamma r_2 + \gamma^2 r_3 + \gamma^3 r_4 + \ldots \]</div>
+<p>We can re-write this as:</p>
+<div class="math notranslate nohighlight">
+\[ G_t =   r_1 + \gamma(r_2 + \gamma(r_3 + \gamma(r_4 + \ldots))) \]</div>
+<p>If <span class="math notranslate nohighlight">\(G_t\)</span> is the value received at time-step <span class="math notranslate nohighlight">\(t\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[ G_t = r_t + \gamma G_{t+1} \]</div>
+<p>In TD(0) methods such as Q-learning and SARSA, we do not know <span class="math notranslate nohighlight">\(G_{t+1}\)</span>
+when updating <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, so we estimate using bootstrapping:</p>
+<div class="math notranslate nohighlight">
+\[ G_t = r_t + \gamma \cdot V(s_{t+1}) \]</div>
+<p>That is, the reward of the
+entire future from step <span class="math notranslate nohighlight">\(t\)</span> is estimated as the reward at <span class="math notranslate nohighlight">\(t\)</span> plus the
+estimated (discounted) future reward from <span class="math notranslate nohighlight">\(t+1\)</span>. <span class="math notranslate nohighlight">\(V(s_{t+1})\)</span> is
+estimated using the maximum expected return (Q-learning) or the
+estimated value of the next action (SARSA).</p>
+<p>This is a <em>one-step return</em>.</p>
+</div>
+<div class="section" id="truncated-discounted-rewards">
+<h3>Truncated Discounted Rewards<a class="headerlink" href="#truncated-discounted-rewards" title="Permalink to this headline">¶</a></h3>
+<p>However, we can estimate a two-step return:</p>
+<div class="math notranslate nohighlight">
+\[ G^2_t = r_t + \gamma r_{t+1} + \gamma^3 V(s_{t+2}) \]</div>
+<p>a three-step return:</p>
+<div class="math notranslate nohighlight">
+\[ G^3_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} +  \gamma^3 V(s_{t+2}) \]</div>
+<p>or n-step returns:</p>
+<div class="math notranslate nohighlight">
+\[ G^n_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \ldots  \gamma^n V(s_{t+n}) \]</div>
+<p>In this above expression <span class="math notranslate nohighlight">\(G^n_t\)</span> is the full reward, <em>truncated</em> at <span class="math notranslate nohighlight">\(n\)</span>
+steps, at time <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>The basic idea of n-step reinforcement learning is that we do not update the Q-value
+immediately after executing an action: we wait <span class="math notranslate nohighlight">\(n\)</span> steps and update it
+based on the n-step return.</p>
+<p>If <span class="math notranslate nohighlight">\(T\)</span> is the termination step and <span class="math notranslate nohighlight">\(t+n&gt;T\)</span>, then we just use the full
+reward.</p>
+<p>In Monte-Carlo methods, we go all the way to the end of an episode.
+Monte-Carlo Tree Search is one such Monte-Carlo method, but there are
+others that we do not cover.</p>
+</div>
+<div class="section" id="updating-the-q-function">
+<h3>Updating the Q-function<a class="headerlink" href="#updating-the-q-function" title="Permalink to this headline">¶</a></h3>
+<p>The update rule is then different. First, we need to
+calculate the truncated reward for <span class="math notranslate nohighlight">\(n\)</span> steps, in which <span class="math notranslate nohighlight">\(\tau\)</span> is the
+time step that we are updating for (that is, <span class="math notranslate nohighlight">\(\tau\)</span> is the action taken <span class="math notranslate nohighlight">\(n\)</span> steps ago):</p>
+<div class="math notranslate nohighlight">
+\[G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i\]</div>
+<p>This just sums the discounted rewards from time step <span class="math notranslate nohighlight">\(\tau+1\)</span> until either <span class="math notranslate nohighlight">\(n\)</span>
+steps (<span class="math notranslate nohighlight">\(\tau+n\)</span>) or termination of the episode (<span class="math notranslate nohighlight">\(T\)</span>), whichever comes
+first.</p>
+<p>Then calculate the n-step expected reward:</p>
+<div class="math notranslate nohighlight">
+\[\text{If } \tau+n &lt; T \text{ then } G \leftarrow G + \gamma^n Q(S_{\tau+n}, A_{\tau+n}).\]</div>
+<p>This adds the future expect reward if we are not at the
+end of the episode (if <span class="math notranslate nohighlight">\(\tau+n &lt; T\)</span>).</p>
+<p>Finally, we update the Q-value:</p>
+<div class="math notranslate nohighlight">
+\[Q(S_{\tau}, A_{\tau}) \leftarrow  Q(S_{\tau}, A_{\tau}) + \alpha[G - Q(S_{\tau}, A_{\tau}) ]\]</div>
+<p>In the update rule above, we are using a SARSA update, but a Q-learning update is similar.</p>
+</div>
+</div>
+<div class="section" id="n-step-sarsa">
+<h2>n-step SARSA<a class="headerlink" href="#n-step-sarsa" title="Permalink to this headline">¶</a></h2>
+<p>While conceptually this is not so difficult, an algorithm for doing n-step learning needs to store the rewards and observed states for <span class="math notranslate nohighlight">\(n\)</span> steps, as well as keep track of which step to update. An algorithm for n-step SARSA is shown below.</p>
+<div class="admonition">
+<p class="admonition-title"> Algorithm – n-step SARSA</p>
+<p><strong>Input:</strong> MDP <span class="math notranslate nohighlight">\(M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\)</span>, number of steps <span class="math notranslate nohighlight">\(n\)</span><br />
+<strong>Output:</strong> Q-function <span class="math notranslate nohighlight">\(Q\)</span></p>
+<p>Initialise <span class="math notranslate nohighlight">\(Q\)</span> arbitrary; e.g., <span class="math notranslate nohighlight">\(Q(s,a)=0\)</span> for all <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(a\)</span></p>
+<p>Repeat (for each episode)<br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> <span class="math notranslate nohighlight">\(T \leftarrow \infty\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> <span class="math notranslate nohighlight">\(t \leftarrow 0\)</span>  (<span class="math notranslate nohighlight">\(t\)</span> is the current time step of this episode)<br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> <span class="math notranslate nohighlight">\(s \leftarrow\)</span> the first state in episode <span class="math notranslate nohighlight">\(e\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> Select action <span class="math notranslate nohighlight">\(a\)</span> to apply in <span class="math notranslate nohighlight">\(s\)</span> using Q-values in <span class="math notranslate nohighlight">\(Q\)</span> and a multi-armed bandit algorithm such as <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy<br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> Repeat (for each step in episode <span class="math notranslate nohighlight">\(e)\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\)</span> If <span class="math notranslate nohighlight">\(t &lt; T\)</span> then:<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> Execute action <span class="math notranslate nohighlight">\(a_t\)</span> in state <span class="math notranslate nohighlight">\(s_t\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> Observe and store reward <span class="math notranslate nohighlight">\(r_{t+1}\)</span> and new state <span class="math notranslate nohighlight">\(s_{t+1}\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> If <span class="math notranslate nohighlight">\(s_{t+1}\)</span> is a terminal state then:<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\quad\quad\)</span> <span class="math notranslate nohighlight">\(T \leftarrow t + 1\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> Else:<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\quad\quad\)</span> Select and store action <span class="math notranslate nohighlight">\(a_{t+1}\)</span> to apply in <span class="math notranslate nohighlight">\(s_{t+1}\)</span> using Q-values in <span class="math notranslate nohighlight">\(Q\)</span> and a multi-armed bandit algorithm such as <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\)</span> <span class="math notranslate nohighlight">\(\tau \leftarrow t - n + 1\)</span>  (calculate the index of the action to update)<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\)</span> If <span class="math notranslate nohighlight">\(\tau \geq 0\)</span> then:<br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> <span class="math notranslate nohighlight">\(G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> If <span class="math notranslate nohighlight">\(\tau+n &lt; T\)</span> then: <span class="math notranslate nohighlight">\(G \leftarrow G + \gamma^n Q(S_{\tau+n}, A_{\tau+n})\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\quad\quad\)</span> <span class="math notranslate nohighlight">\(Q(S_{\tau}, A_{\tau}) \leftarrow  Q(S_{\tau}, A_{\tau}) + \alpha[G - Q(S_{\tau}, A_{\tau})]\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad\)</span> <span class="math notranslate nohighlight">\(t \leftarrow t + 1\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\)</span> Until <span class="math notranslate nohighlight">\(t = T - 1\)</span></p>
+</div>
+<p>For the first <span class="math notranslate nohighlight">\(n-1\)</span> steps of the any episode, we do not update <span class="math notranslate nohighlight">\(Q\)</span> at
+all; that is, if <span class="math notranslate nohighlight">\(\tau &lt; 0\)</span>.</p>
+<p>Also, we have to continue updating <span class="math notranslate nohighlight">\(n-1\)</span> steps after the end of the
+episode, but not selecting actions; that is, if <span class="math notranslate nohighlight">\(t \geq T\)</span>.</p>
+<p>Computationally, this is not much worse than 1-step learning. We need to
+store the last <span class="math notranslate nohighlight">\(n\)</span> states, but the per-step computation is small and
+uniform for n-step, just as for 1-step.</p>
+<div class="admonition-example-n-step-sarsa-update admonition">
+<p class="admonition-title">Example – <span class="math notranslate nohighlight">\(n\)</span>-step SARSA update</p>
+<p>Consider our simple 2D navigation task, in which we do not know
+the probability transitions nor the rewards. Initially, the
+reinforcement learning algorithm will be required to search randomly
+until it finds a reward. Propagated this reward back n-steps will be
+helpful.</p>
+<p><img alt="image" src="../_images/MDP-GridWorld-with-episode.png" /></p>
+<p>Assuming <span class="math notranslate nohighlight">\(Q(s,a)=0\)</span> for all <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(a\)</span>, if we (finally) traverse the
+episode the labelled episode, what will our Q-function look like for a
+5-step update with <span class="math notranslate nohighlight">\(\alpha=0.5\)</span> and <span class="math notranslate nohighlight">\(\gamma=0.9\)</span>?</p>
+<p>We only receive a reward in the last action, and all other actions give
+an immediate reward of 0 until then:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{lll}
+  G   &amp;  \leftarrow &amp; \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i\\ 
+  G_1 &amp;  \leftarrow &amp; \gamma^1 \cdot 0 + \ldots + \gamma^5 \cdot 1\\    
+      &amp;  \leftarrow &amp; 0.9^5 \cdot 1\\
+      &amp;  \leftarrow &amp; 0.5905
+\end{array}
+\end{split}\]</div>
+<p>So, we update the Q-value for the state <span class="math notranslate nohighlight">\((0,2)\)</span>, which is 5 steps back:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  Q((0,2),E) &amp;  \leftarrow &amp;  Q((0,2), E) + \alpha [G_1 - Q((0,2), E)]\\
+             &amp;  \leftarrow &amp;  0 + 0.5 [0.5905 - 0]\\
+             &amp;  \leftarrow &amp;  0.2953\\
+\end{array}
+\end{split}\]</div>
+<p>The tables below compares 1-step vs. 5-step SARSA
+for the trace above. In 1-step SARSA, reaching the reward only informs
+the state from which it is reached. Whereas for 5-step, it informs the
+previous five steps. Then, in the next episode, there is more chance of
+encountering a non-zero state, so which will again inform the five steps
+instead of just one. The rewards ‘spread’ throughout the Q-table faster.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{ccccc}
+ &amp; &amp;  \textbf{1-step}\\
+\hline
+ \textbf{State} &amp; North &amp; South &amp; East &amp; West\\
+\hline
+ (0,0) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (0,1) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (0,2) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+  \ldots\\
+ (1,2) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (2,1) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (2,2) &amp; 0 &amp; 0 &amp; 0.45 &amp; 0\\
+ (2,3) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ \ldots\\
+\hline
+\end{array}~~
+\begin{array}{ccccc}
+ &amp; &amp; \textbf{5-step}\\
+\hline
+ \textbf{State} &amp; North &amp; South &amp; East &amp; West\\
+\hline
+ (0,0) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (0,1) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+ (0,2) &amp; 0 &amp; 0 &amp; 0.2953 &amp; 0\\
+  \ldots\\
+ (1,2) &amp; 0 &amp; 0 &amp; 0.3281 &amp; 0\\
+ (2,1) &amp; 0.405 &amp; 0 &amp; 0 &amp; 0\\
+ (2,2) &amp; 0 &amp; 0.3645 &amp; 0.45 &amp; 0\\
+ (2,3) &amp; 0 &amp; 0 &amp; 0 &amp; 0\\ 
+ \ldots\\
+\hline
+\end{array}
+\end{split}\]</div>
+<p></p>
+</div>
+</div>
+<div class="section" id="parameter-selection">
+<h2>Parameter selection<a class="headerlink" href="#parameter-selection" title="Permalink to this headline">¶</a></h2>
+<p><strong>TODO</strong></p>
+</div>
+<div class="section" id="reading">
+<h2>Reading<a class="headerlink" href="#reading" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Chapter 7 of <em>Introduction to Reinforcement Learning</em> [<em>Sutton and
+Barto</em>]</p>
+<p>Available at:</p>
+<p><a class="reference external" href="https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html">https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html</a></p>
+</li>
+<li><p><em>Mastering the Game of Go without Human Knowledge</em> from DeepMind.</p>
+<p>Available at:</p>
+<p><a class="reference external" href="https://deepmind.com/documents/119/agz_unformatted_nature.pdf">https://deepmind.com/documents/119/agz_unformatted_nature.pdf</a></p>
+</li>
+</ul>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="model-free.html" title="previous page">Model-free Reinforcement Learning</a>
+    <a class='right-next' id="next-link" href="function-approximation.html" title="next page">Q-Function Approximation</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Tim Miller, The University of Melbourne<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    
+  </body>
+</html>
