@@ -1,16 +1,12 @@
 import random
 import math
 
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.ndimage import gaussian_filter1d
-
 class MultiArmedBandit():
 
     '''
         Select an action given Q-values for each action.
     '''
-    def select(self, action, qValues): abstract
+    def select(self, actions, qValues): abstract
 
     '''
         Reset a multi-armed bandit to its initial configuration.
@@ -64,42 +60,7 @@ class MultiArmedBandit():
 
             rewards += [episodeRewards]
 
-        print(qValues)
         return rewards
-
-    '''
-        Calculate the average reward per step over all episodes
-    '''
-    def getAverageRewards(rewards):
-        averageRewards = []
-        #calculate the average reward for each step in an episode
-        for step in range(len(rewards[0])):
-            sum = 0.0
-            for episode in range(len(rewards)):
-                sum += rewards[episode][step]
-            averageRewards += [sum/len(rewards)]
-        return averageRewards
-
-
-    '''
-    Plot the rewards of a series of multi-armed bandit decisions.
-    '''
-    def plotRewards(labels, rewardList):
-        x = np.linspace(0, len(rewardList[0][0]), len(rewardList[0][0]))
-        index = 0
-        linestyles = ['--', '-', ':', '-.']
-        for rewards in rewardList:
-            y = MultiArmedBandit.getAverageRewards(rewards)
-            #y_smooth = spline(x, y, x)
-            y_smoothed = gaussian_filter1d(y, sigma=5)
-            plt.plot(x, y_smoothed,
-                    label = labels[index],
-                    linestyle = linestyles[index % len(linestyles)])
-            index += 1
-
-        plt.legend()
-        plt.show()
-        
 
 class EpsilonGreedy(MultiArmedBandit):
 
@@ -205,6 +166,10 @@ class UpperConfidenceBounds(MultiArmedBandit):
         self.total += 1
         return result
 
+
+
+from plot import Plot
+
 def plotEpsilonGreedy(drift = False):
     epsilon005 = EpsilonGreedy(epsilon = 0.05).runBandit(drift = drift)
     epsilon01 = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
@@ -213,8 +178,8 @@ def plotEpsilonGreedy(drift = False):
     epsilon08 = EpsilonGreedy(epsilon = 0.8).runBandit(drift = drift)
     epsilon10 = EpsilonGreedy(epsilon = 1.0).runBandit(drift = drift)
 
-    MultiArmedBandit.plotRewards(["epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
-                                 [epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
+    Plot.plotRewards(["epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
+                     [epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
 
 
 def plotEpsilonDecreasing(drift = False):
@@ -224,8 +189,8 @@ def plotEpsilonDecreasing(drift = False):
     alpha1 = EpsilonDecreasing(alpha = 1.0).runBandit(drift = drift)
     
 
-    MultiArmedBandit.plotRewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
-                                 [alpha09, alpha099, alpha0999, alpha1])
+    Plot.plotRewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
+                     [alpha09, alpha099, alpha0999, alpha1])
 
 
 def plotSoftmax(drift = False):
@@ -234,8 +199,8 @@ def plotSoftmax(drift = False):
     tau15 = Softmax(tau = 1.5).runBandit(drift = drift)
     tau20 = Softmax(tau = 2.0).runBandit(drift = drift)
 
-    MultiArmedBandit.plotRewards(["tau = 1.0", "tau = 1.1", "tau = 1.5", "tau = 2.0"],
-                                 [tau10, tau11, tau15, tau20])
+    Plot.plotRewards(["tau = 1.0", "tau = 1.1", "tau = 1.5", "tau = 2.0"],
+                     [tau10, tau11, tau15, tau20])
 
 def plotComparison(drift = False):
     epsilonGreedy = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
@@ -243,8 +208,8 @@ def plotComparison(drift = False):
     softmax = Softmax(tau = 1.0).runBandit(drift = drift)
     ucb = UpperConfidenceBounds().runBandit(drift = drift)
 
-    MultiArmedBandit.plotRewards(["Epsilon Greedy (epsilon = 0.1)", "Epsilon Decreasing (alpha = 0.99)", "Softmax (tau = 1.0)", "UCB"],
-                                 [epsilonGreedy, epsilonDecreasing, softmax, ucb])
+    Plot.plotRewards(["Epsilon Greedy (epsilon = 0.1)", "Epsilon Decreasing (alpha = 0.99)", "Softmax (tau = 1.0)", "UCB"],
+                     [epsilonGreedy, epsilonDecreasing, softmax, ucb])
 
 plotEpsilonGreedy()
 plotEpsilonDecreasing()
