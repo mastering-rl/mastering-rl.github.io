@@ -218,7 +218,7 @@ To illustrate how this differs, let's take a look at the SARSA algorithm.
 
 Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
-$Repeat (for each episode)$\
+Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
 $\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as epsilon-greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\

@@ -1,35 +1,14 @@
 import math
-from navigation_mdp import *
-from multi_armed_bandits import *
+from gridworld import *
+from multi_armed_bandits import EpsilonGreedy
 
-class QLearning():
+class ModelFreeReinforcementLearner():
 
-    def __init__(self, mdp):
+    def __init__(self, mdp, bandit):
         self.mdp = mdp
+        self.bandit = bandit
 
-    def qLearning(self, episodes = 1000, alpha = 0.05, decay = 0.2, epsilon = 0.1):
-        qValues = self.initialiseQFunction()
-
-        decay = 0.2 
-        for i in range(episodes):
-            state = mdp.getInitialState()
-
-            while not mdp.isTerminal(state):
-                validActions = mdp.getActions(state)
-                action = MultiArmedBandits.epsilonGreedy(validActions, state, qValues)
-                (newState, reward) = mdp.simulate(state, action)
-                newValue = self.update(qValues, state, action, newState, reward, alpha)
-                qValues[(state, action)] = newValue
-                state = newState
-
-            alpha = max(0.05, alpha * math.exp(-decay * i))
-        return qValues
-
-
-    def update(self, qValues, state, action, newState, reward, alpha):
-        (_, maxQValue) = self.getMaxQ(qValues, newState)
-        qValue = qValues[(state, action)]
-        return qValue + alpha * (reward + mdp.discountFactor * maxQValue - qValue)
+    def execute(self, episodes = 100, alpha = 0.1): abstract
 
     def getMaxQ(self, qValues, state):
         argmaxQ = None
@@ -48,10 +27,63 @@ class QLearning():
                 qValues.update({(state, action): 0.0})
         return qValues
 
-mdp = NavigationMDP(discountFactor=0.9, width = 6, height = 4)
-qLearning = QLearning(mdp)
-qFunction = qLearning.qLearning(episodes = 100)
-print("qLearning")
+    '''
+        Return the Q-values only for this state
+    '''
+    def getQValues(self, state, qValues):
+        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
+
+class QLearning(ModelFreeReinforcementLearner):
+    def execute(self, episodes = 100, alpha = 0.1):
+        qValues = self.initialiseQFunction()
+
+        for i in range(episodes):
+            state = self.mdp.getInitialState()
+
+            while not self.mdp.isTerminal(state):
+                actions = self.mdp.getActions(state)
+                action = self.bandit.select(actions, self.getQValues(state, qValues))
+                (nextState, reward) = self.mdp.simulate(state, action)
+                newValue = self.update(qValues, state, action, nextState, reward, alpha)
+                qValues[(state, action)] = newValue
+                state = nextState
+            
+        return qValues
+
+    
+    def update(self, qValues, state, action, nextState, reward, alpha): 
+        (_, maxQValue) = self.getMaxQ(qValues, nextState)
+        qValue = qValues[(state, action)]
+        return qValue + alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+
+class SARSA(ModelFreeReinforcementLearner):
+    def execute(self, episodes = 100, alpha = 0.1):
+        qValues = self.initialiseQFunction()
+
+        for i in range(episodes):
+            state = self.mdp.getInitialState()
+            actions = self.mdp.getActions(state)
+            action = self.bandit.select(actions, self.getQValues(state, qValues))
+            
+            while not self.mdp.isTerminal(state):
+                (nextState, reward) = self.mdp.simulate(state, action)
+                actions = self.mdp.getActions(nextState)
+                nextAction = self.bandit.select(actions, self.getQValues(nextState, qValues))
+                newValue = self.update(qValues, state, action, nextState, nextAction, reward, alpha)
+                qValues[(state, action)] = newValue
+                state = nextState
+                action = nextAction
+            
+        return qValues
+    
+    def update(self, qValues, state, action, nextState, nextAction, reward, alpha): 
+        qValue = qValues[(state, action)]
+        qValueNext = qValues[(nextState, nextAction)]
+        return qValue + alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+
+
+mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
+qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 1000)
 policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.qFunctionToString(qFunction) + "\n")
+print(mdp.qFunctionToString(qFunction))
 print(mdp.policyToString(policy))

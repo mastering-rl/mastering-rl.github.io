@@ -209,9 +209,10 @@ def plotComparison(drift = False):
     Plot.plotRewards(["Epsilon Greedy (epsilon = 0.1)", "Epsilon Decreasing (alpha = 0.99)", "Softmax (tau = 1.0)", "UCB"],
                      [epsilonGreedy, epsilonDecreasing, softmax, ucb])
 
-plotEpsilonGreedy()
-plotEpsilonDecreasing()
-plotSoftmax(drift = False)
-plotSoftmax(drift = True)
-plotComparison(drift = False)
-plotComparison(drift = True)
+if __name__ == "__main__":
+    plotEpsilonGreedy()
+    plotEpsilonDecreasing()
+    plotSoftmax(drift = False)
+    plotSoftmax(drift = True)
+    plotComparison(drift = False)
+    plotComparison(drift = True)

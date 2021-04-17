@@ -10,10 +10,13 @@ class GridWorld(MDP):
     RIGHT = '\u25BA'
     DOWN = '\u25BC'
     
-    def __init__(self, width = 4, height = 3,
+    def __init__(self,
+                 noise = 0.1,
+                 width = 4, height = 3,
                  discountFactor = 0.9, 
                  blockedStates = [(1,1)],
                  goals = [((3,2), 1), ((3,1), -1)]):
+        self.noise = noise
         self.width = width
         self.height = height
         self.blockedStates = blockedStates
@@ -70,30 +73,33 @@ class GridWorld(MDP):
             else:
                 return []
 
+        # probability of not slipping left or right
+        straight = 1 - (2 * self.noise)
+
         (x, y) = state
         if state in self.getGoalStates().keys():
             if action == self.TERMINATE:
                 transitions += [(self.TERMINAL, 1.0)]
 
         elif action == self.UP:
-            transitions += self.validAdd(state, (x, y + 1), 0.8)
-            transitions += self.validAdd(state, (x - 1, y), 0.1)
-            transitions += self.validAdd(state, (x + 1, y), 0.1)
+            transitions += self.validAdd(state, (x, y + 1), straight)
+            transitions += self.validAdd(state, (x - 1, y), self.noise)
+            transitions += self.validAdd(state, (x + 1, y), self.noise)
 
         elif action == self.DOWN:
-            transitions += self.validAdd(state, (x, y - 1), 0.8)
-            transitions += self.validAdd(state, (x - 1, y), 0.1)
-            transitions += self.validAdd(state, (x + 1, y), 0.1)
+            transitions += self.validAdd(state, (x, y - 1), straight)
+            transitions += self.validAdd(state, (x - 1, y), self.noise)
+            transitions += self.validAdd(state, (x + 1, y), self.noise)
 
         elif action == self.RIGHT:
-            transitions += self.validAdd(state, (x + 1, y), 0.8)
-            transitions += self.validAdd(state, (x, y - 1), 0.1)
-            transitions += self.validAdd(state, (x, y + 1), 0.1)
+            transitions += self.validAdd(state, (x + 1, y), straight)
+            transitions += self.validAdd(state, (x, y - 1), self.noise)
+            transitions += self.validAdd(state, (x, y + 1), self.noise)
 
         elif action == self.LEFT:
-            transitions += self.validAdd(state, (x - 1, y), 0.8)
-            transitions += self.validAdd(state, (x, y - 1), 0.1)
-            transitions += self.validAdd(state, (x, y + 1), 0.1)
+            transitions += self.validAdd(state, (x - 1, y), straight)
+            transitions += self.validAdd(state, (x, y - 1), self.noise)
+            transitions += self.validAdd(state, (x, y + 1), self.noise)
 
         return transitions
 
