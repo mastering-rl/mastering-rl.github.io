@@ -8,6 +8,8 @@ pandoc for converting tex to markdown:
 
 Tikz magic (not currently used): 
 - https://github.com/mkrphys/ipython-tikzmagic
+- tabulate package
+- matplotlib package
 
 
 Convert PDF to PNG:

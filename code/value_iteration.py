@@ -49,6 +49,7 @@ for iterations in [1, 2, 3, 4, 5, 10, 100]:
     print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
 
 print("Policy after 100 iterations")
-print(mdp.policyToString(mdp.extractPolicyFromValueFunction(valueIteration.valueIteration(iterations = 100))))
-
+values = valueIteration.valueIteration(iterations = 100)
+policy = mdp.extractPolicyFromValueFunction(values)
+print(mdp.policyToString(policy))
 

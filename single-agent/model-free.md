@@ -1,5 +1,15 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 
-## Model-free Reinforcement Learning
+# Model-free Reinforcement Learning
 
 **Learning Outcomes** 
 
@@ -15,17 +25,15 @@
 4.  Compare and contrast off-policy reinforcement learning with
     on-policy reinforcement learning
 
-### Model-based vs model-free 
+## Model-based vs model-free 
 
 Value iteration is part of a class of solutions known as *model-based* techniques. This means that we need to know the model; in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
 
-In this section, we look at Q-learning and SARSA, which are *model-free*   techniques. This means that we do NOT know the $P_a(s' \mid s)$ and $r(s,a,s')$.
+In this section, we look at Q-learning and SARSA, which are *model-free*   techniques. This means that we do NOT know $P_a(s' \mid s)$ and $r(s,a,s')$ of our model
 
-*How can we calculate a policy if we don't know the transitions and the rewards?!*We *learn through experience* by trying actions and seeing what the results is, making this machine learning problem.
+*How can we calculate a policy if we don't know the transitions and the rewards?!* We *learn through experience* by trying actions and seeing what the results is, making this machine learning problem.
 
-Importantly, in model-free reinforcement learning, we do NOT try to
-learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy
- directly.
+Importantly, in model-free reinforcement learning, we do NOT try to learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy directly.
 
 There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
@@ -61,6 +69,7 @@ The aim of the game is to win the game. You have six actions available, which ca
 
 
 
+
 Once you have played this, ask yourself the following questions:
 
 -   What was the process you took?
@@ -77,11 +86,11 @@ This game is of interest because it is a *model-free* (at least initially) Marko
 
 Imagine how hard it is for a computer that doesn't have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did --- they just construct the policy directly.
 
-### Intuition of model-free reinforcement learning
+## Intuition of model-free reinforcement learning
 
-Reinforcement Learning: There are many different techniques for model-free reinforcement learning, all with the same basis:
+There are many different techniques for model-free reinforcement learning, all with the same basis:
 
--   We execute many different *episodes* of the problem we want to solve, and from that we learnt a *policy*.
+-   We execute many different *episodes* of the problem we want to solve, and from that we learn a *policy*.
     
 -   During learning, we try to learn the value of applying particular actions in particular states.
     
@@ -91,7 +100,7 @@ Reinforcement Learning: There are many different techniques for model-free reinf
     
 -   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
-## Q-Learning: Off-policy Reinforcement Learning
+# Q-Learning: Off-policy Reinforcement Learning
 
 Q-Learning is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a Q-function that records $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
@@ -102,7 +111,7 @@ Q-Learning is perhaps the simplest of reinforcement learning methods, and is bas
 
 Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
-$\text{Repeat (for each episode)}$\
+Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
@@ -113,7 +122,7 @@ $\quad\quad\quad\quad s \leftarrow s'$\
 $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 :::
 
-### Updating the Q-function
+## Updating the Q-function
 
 Updating the Q-function is where the learning happens:
 
@@ -121,45 +130,46 @@ $$Q(s,a) \leftarrow
 \underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot
 [\underbrace{r}_{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \underbrace{\max_{a'} Q(s',a')}_{\text{estimate of optimal future value}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
 
-A higher learning rate $\alpha$ will weight more recent information higher than older information ($Q(s,a)$). The part of the equation inside the square brackets is the update similar to that of the Bellman equation. However, we do not know $P_a(s' \mid s)$, but we do have access to reward $r$ because we have just received it from the environment.
+We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information. The new information is weighted by a parameter $alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
 
-Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the action chosen by the policy, and instead updates based on the estimate of the best action for the update. This is known as *off policy* learning -- more on this later.
+The estimate from the new observations is given by $r + \gamma \cdot \max_{a'} Q(s',a')$, where $r$ is the reward that was received by executing action $a$ in state $s$, and $\gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* value. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The part of the equation inside the square brackets is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference value. The last part in the square brackets where we subtract the old value of $Q(s,a)$ ensures that the old value is weighted $1 - \alpha$.
 
-### Q-Tables
+Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
+
+## Q-Tables
 
 Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every $Q(s,a)$. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).
 
-Initially, we would have an arbitrary Q-table, which may look something like this:
+Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros::
 
-$$
-\begin{array}{ccccc}
-\hline
- \textbf{State} & North & South & East & West\\
-\hline
- (0,0) & 0 & 0 & 0 & 0\\
- (0,1) & 0 & 0 & 0 & 0\\
-  \ldots\\
- (2,2) & 0 & 0 & 0 & 0\\
- (2,3) & 0 & 0 & 0 & 0\\
-\hline
-\end{array}
-$$
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+from tabulate import tabulate
+
+headers=["State", "North", "South", "East", "West"]
+data = [[(0,0), 0, 0, 0, 0],
+        [(0,1), 0, 0, 0, 0],
+        ["..."],
+        [(2,2), 0, 0, 0, 0],
+        [(2,3), 0, 0, 0, 0]] 
+print (tabulate(data, headers))
+```
 
 After some training, we may end up with a Q-function that looks something like this:
 
-$$
-\begin{array}{ccccc}
-\hline
- \textbf{State} & North & South & East & West\\
-\hline
-(0,0) & 0.53 & 0.36 & 0.36 & 0.21\\
-(0,1) & 0.61 & 0.27 & 0.23 & 0.23\\
-\ldots\\
-(2,2) & 0.79 & 0.72 & 0.90 & 0.72\\
-(2,3) & 0.90 & 0.78 & 0.99 & 0.81\\
-\hline
-\end{array}
-$$
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+data = [[(0,0), 0.53, 0.36, 0.36, 0.21],
+        [(0,1), 0.61, 0.27, 0.23, 0.23],
+        ["..."],
+        [(2,2), 0.79, 0.72, 0.90, 0.72],
+        [(2,3), 0.90, 0.78, 0.99, 0.81]] 
+print (tabulate(data, headers))
+```
 
 :::{note} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=North$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
@@ -174,9 +184,11 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') 
 $$
 :::
 
-**Theoretical guarantee**: Q-learning will converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often.
+:::{admonition} Theoretical guarantee
+Using Q-tables to represent Q-functions, Q-learning will converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often. 
+:::
 
-### Policy extraction using Q-functions
+## Policy extraction using Q-functions
 
 We iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
 
@@ -186,16 +198,15 @@ $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
 This selects the action with the maximum Q-value. Given an optimal Q-function (for the MDP), this results in optimal behaviour.
 
-## SARSA: On-Policy Reinforcement Learning
+# SARSA: On-Policy Reinforcement Learning
 
 SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 
 :::{admonition} Definition -- On-policy reinforcement learning
 
-Instead of estimating $Q(s',a')$ for the best estimated future state during update, *on-policy reinforcement learning* uses the actual next action to update:
+Instead of estimating $Q(s',a')$ for the best estimated future state during update, *on-policy reinforcement learning* uses the actual next action to update.
 
-- On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour
-
+On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour
 :::
 
 To illustrate how this differs, let's take a look at the SARSA algorithm.
@@ -207,9 +218,9 @@ To illustrate how this differs, let's take a look at the SARSA algorithm.
 
 Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
-$\text{Repeat (for each episode)}$\
+$Repeat (for each episode)$\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as epsilon-greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
@@ -235,21 +246,7 @@ SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next it
 
 :::{admonition} Example -- SARSA update
 
-For this example, we will use the same Q-table as the earlier Q-learning example:
-
-$$
-\begin{array}{ccccc}
-\hline
- \textbf{State} & North & South & East & West\\
-\hline
-(0,0) & 0.53 & 0.36 & 0.36 & 0.21\\
-(0,1) & 0.61 & 0.27 & 0.23 & 0.23\\
-\ldots\\
-(2,2) & 0.79 & 0.72 & 0.90 & 0.72\\
-(2,3) & 0.90 & 0.78 & 0.99 & 0.81\\
-\hline
-\end{array}
-$$
+For this example, we will use the same Q-table as the earlier Q-learning example.
 
 Assme that in state (2,2), the action 'North' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'West'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
 
@@ -263,7 +260,7 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N
 $$
 
 
-### SARSA vs. Q-learning: Example
+## SARSA vs. Q-learning: Example
 
 Consider the grid below. $S$ is the start and state $G$ receives a reward of
 100. Falling off the cliff receives a reward of -100. Going to the top
@@ -305,7 +302,7 @@ The end result for the SARSA (on policy) methid is a sub-optimal policy, but one
 Demo of the cliff example:
 <https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/>
 
-#### On-policy vs. off policy: Why do we have both?
+### On-policy vs. off policy: Why do we have both?
 
 Imagine a reinforcement learning agent that manages resources for a cloud-based platform and we have no prior data to inform a policy.
 
@@ -318,7 +315,7 @@ Imagine a reinforcement learning agent that manages resources for a cloud-based 
 
 If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
 
-### Limitations of Q-learning and SARSA
+## Limitations of Q-learning and SARSA
 
 The standard versions that we see in this section have two major limitations:
 
@@ -327,7 +324,7 @@ The standard versions that we see in this section have two major limitations:
 2. If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory.
 
 
-### Q-learning Examples in Action
+## Q-learning Examples in Action
 
 Solving the cliff example using Q-learning with $\epsilon$-greedy:
 
@@ -339,7 +336,7 @@ The source code for this is available from here: <https://github.com/alecKarfont
 
 A complete worked example of using Q-learning to calculate the optimal path in a navigation task <http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
 
-#### Applications of Reinforcement Learning
+### Applications of Reinforcement Learning
 
 -   Checkers (Samuel, 1959)\
     first use of RL in an interesting real game
@@ -372,7 +369,7 @@ A complete worked example of using Q-learning to calculate the optimal path in a
 -   TD-Gammon and Jellyfish (Tesauro, Dahl)\
     World's best backgammon player. Grandmaster level
 
-#### Further Reading
+### Further Reading
 
 -   *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 
@@ -385,7 +382,7 @@ A complete worked example of using Q-learning to calculate the optimal path in a
 
 
 
-### Summary 
+## Summary 
 
 If we know the MDP, we can use model-based techniques:
 

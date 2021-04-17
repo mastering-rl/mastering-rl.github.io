@@ -143,7 +143,9 @@ From the policy, we extract a policy:
 
 ```{code-cell} ipython3
 print("Policy after 100 iterations")
-print(mdp.policyToString(mdp.extractPolicyFromValueFunction(valueIteration.valueIteration(iterations = 100))))
+values = valueIteration.valueIteration(iterations = 100)
+policy = mdp.extractPolicyFromValueFunction(values)
+print(mdp.policyToString(policy))
 ```
 
 ## Strengths and Limitations

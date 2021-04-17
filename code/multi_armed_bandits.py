@@ -29,7 +29,7 @@ class MultiArmedBandit():
 
             # The probability of receiving a payoff of 1 for each action
             probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]
-        
+
             qValues = dict()
             N = dict()
             for action in actions:
@@ -42,7 +42,7 @@ class MultiArmedBandit():
                 # Halfway through the episode, change the probabilities
                 if drift and step == episodeLength / 2:
                     probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]
-                
+
                 #select an action
                 action = self.select(actions, qValues)
 
@@ -85,7 +85,7 @@ class EpsilonGreedy(MultiArmedBandit):
                     maxValue = value
                 elif value == maxValue:
                     maxActions += [action]
-                    
+
             # if there are multiple actions with the highest value
             # choose one randomly
             return random.choice(maxActions)
@@ -99,21 +99,20 @@ class EpsilonDecreasing(MultiArmedBandit):
 
     def reset(self):
         self.epsilonGreedyBandit = EpsilonGreedy(self.initialEpsilon)
-    
+
     def select(self, actions, qValues):
-        
         result = self.epsilonGreedyBandit.select(actions, qValues)
         self.epsilonGreedyBandit.epsilon *= self.alpha
         return result
 
 class Softmax(MultiArmedBandit):
-    
+
     def __init__(self, tau = 1.0):
         self.tau = tau
 
     def reset(self):
         None
-    
+
     def select(self, actions, qValues):
 
         # calculate the denominator for the softmax strategy
@@ -158,7 +157,7 @@ class UpperConfidenceBounds(MultiArmedBandit):
                 maxValue = value
             elif value == maxValue:
                 maxActions += [action]
-                    
+
         # if there are multiple actions with the highest value
         # choose one randomly
         result = random.choice(maxActions)
@@ -187,7 +186,6 @@ def plotEpsilonDecreasing(drift = False):
     alpha099 = EpsilonDecreasing(alpha = 0.99).runBandit(drift = drift)
     alpha0999 = EpsilonDecreasing(alpha = 0.999).runBandit(drift = drift)
     alpha1 = EpsilonDecreasing(alpha = 1.0).runBandit(drift = drift)
-    
 
     Plot.plotRewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
                      [alpha09, alpha099, alpha0999, alpha1])
@@ -217,7 +215,3 @@ plotSoftmax(drift = False)
 plotSoftmax(drift = True)
 plotComparison(drift = False)
 plotComparison(drift = True)
-
-
-
-

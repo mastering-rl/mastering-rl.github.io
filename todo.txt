@@ -1,3 +1,12 @@
+- Modify gridworld to allow 'noise' to be specified
+- Add Q-learning and SARSA code
+- Add approx Q-function code
+- Policy iteration
+- Policy gradient descent
+
+- Normal form games 
+- Extended form games
+
 - Add google analytics: https://jupyterbook.org/advanced/html.html
 
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
