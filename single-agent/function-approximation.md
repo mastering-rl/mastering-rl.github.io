@@ -1,7 +1,7 @@
 
-## Q-Function Approximation
+# Q-Function Approximation
 
-**Learning Outcomes**
+## Learning Outcomes
 
 1.  Manually apply linear Q-function approximation to solve small-scale
     MDP problems given some known features
@@ -16,8 +16,7 @@
 4.  Compare and contrast linear Q-learning with deep Q-learning
 
 
-### Motivation 
-
+## Overview
 Using a Q-table has two main limitations:
 
 1. It requires that we visit every reachable state many times and apply every action many times to get a good estimate of $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate of $Q(s,a)$, even if we have visited states that are very similar to $s$.
@@ -44,7 +43,7 @@ There are four actions: left, right, up, down.
 A Q-table would need to store $12.48\times 10^{144}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
 :::
 
-### Linear Q-learning (Linear Function Approximation) 
+## Linear Q-learning (Linear Function Approximation) 
 
 The key idea is to *approximate* the Q-function using a linear combination of *features* and their weights.
 Instead of recording everything in detail, we think about what is most important to know, and model that.
@@ -212,7 +211,7 @@ $$
 
 From this, we now can get an estimate of $Q(s,Up)$ from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).
 
-### Deep Q-learning
+## Deep Q-learning
 
 The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions. Instead of selecting features and training weights, we learn the parameters $\theta$ to a neural network. The Q-function is $Q(s,a; \theta)$, so takes the parameters as an argument.
 
@@ -247,7 +246,7 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 -   The Q-function is now only an approximation of the real Q-function: states that share feature values may have different actual values. 
 
-### Applications of Function Approximation 
+## Applications of Function Approximation 
 
 A great application of using off-policy updates in deep Q-learning for robotic arms to learn how to grasp unknown objects. The only input for the problem is the camera data:
 
@@ -255,7 +254,7 @@ A great application of using off-policy updates in deep Q-learning for robotic a
 
 This is using policy iteration (policy gradient descent) rather than standard Q-learning.
 
-### Summary
+## Summary
 
 1.  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
 
@@ -266,7 +265,7 @@ This is using policy iteration (policy gradient descent) rather than standard Q-
 
 
 
-### Further Reading
+## Further Reading
 
 - Chapter 9 (Approximate Solution Methods) of *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 

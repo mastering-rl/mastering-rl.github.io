@@ -8,6 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
+(sec:value-iteration)=
 # Value Iteration
 ## Learning outcomes
 
@@ -17,9 +18,7 @@ The learning outcomes of this chapter are:
     
 2.  Construct a policy from a value function
 
-3.  Compare and contrast value iteration to policy iteration
-
-4.  Discuss the strengths and weaknesses of value iteration and policy iteration algorithms
+4.  Discuss the strengths and weaknesses of value iteration
 
 ## Overview
 
@@ -72,6 +71,7 @@ The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterat
 
 It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step $t + 1$ are dependent only on the value of other states at step $t$.
 
+(sec:value-iteration:implementation)=
 ## Implementation
 
 Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.

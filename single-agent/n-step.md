@@ -1,6 +1,6 @@
-## n-step Reinforcement Learning
+# n-step Reinforcement Learning
 
-**Learning Outcomes**
+## Learning Outcomes
 
 1.  Manually apply n-step reinforcement learning approximation to solve
     small-scale MDP problems given a set of
@@ -10,7 +10,7 @@
 
 3.  Argue the strengths and weaknesses of n-step reinforcement learning
 
-### Motivation
+## Overview
 
 In the previous sections on of this chapter, we looked at two fundamental temporal
 difference (TD) methods for reinforcement learning: Q-learning and
@@ -60,7 +60,7 @@ having explored ahead $n$ steps.
 Reinforcement learning approaches (from Sutton and Barto (2020))
 ```
 
-### n-step TD learning
+## n-step TD learning
 
 We will look at n-step reinforcement learning, in which $n$ is the parameter that
 determines the number of steps that we want to look ahead before
@@ -71,7 +71,7 @@ Both Q-learning and SARSA have an n-step version. We will look at
 n-step learning more generally, and then show an algorithm for n-step
 SARSA. The version for Q-learning is similar.
 
-#### Discounted Future Rewards (again)
+### Discounted Future Rewards (again)
 
 When calculating a discounted reward over a trace, we simply sum up the rewards over the trace:
 
@@ -99,7 +99,7 @@ estimated value of the next action (SARSA).
 
 This is a *one-step return*.
 
-#### Truncated Discounted Rewards
+### Truncated Discounted Rewards
 
 However, we can estimate a two-step return:
 
@@ -127,7 +127,7 @@ In Monte-Carlo methods, we go all the way to the end of an episode.
 Monte-Carlo Tree Search is one such Monte-Carlo method, but there are
 others that we do not cover.
 
-#### Updating the Q-function
+### Updating the Q-function
 
 The update rule is then different. First, we need to
 calculate the truncated reward for $n$ steps, in which $\tau$ is the
@@ -186,34 +186,24 @@ $\quad\quad\quad\quad$ $t \leftarrow t + 1$\
 $\quad\quad$ Until $t = T - 1$
 :::
 
-For the first $n-1$ steps of the any episode, we do not update $Q$ at
-all; that is, if $\tau < 0$.
+For the first $n-1$ steps of the any episode, we do not update $Q$ at all; that is, if $\tau < 0$.
 
-Also, we have to continue updating $n-1$ steps after the end of the
-episode, but not selecting actions; that is, if $t \geq T$.
+Also, we have to continue updating $n-1$ steps after the end of the episode, but not selecting actions; that is, if $t \geq T$.
 
-Computationally, this is not much worse than 1-step learning. We need to
-store the last $n$ states, but the per-step computation is small and
-uniform for n-step, just as for 1-step.
+Computationally, this is not much worse than 1-step learning. We need to store the last $n$ states, but the per-step computation is small and uniform for n-step, just as for 1-step.
 
-```{admonition} Example -- $n$-step SARSA update
+:::{admonition} Example -- $n$-step SARSA update
 
-Consider our simple 2D navigation task, in which we do not know
-the probability transitions nor the rewards. Initially, the
-reinforcement learning algorithm will be required to search randomly
-until it finds a reward. Propagated this reward back n-steps will be
-helpful.
+Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagated this reward back n-steps will be helpful.
 
 ![image](./figs/MDP-GridWorld-with-episode.png)
 
-Assuming $Q(s,a)=0$ for all $s$ and $a$, if we (finally) traverse the
-episode the labelled episode, what will our Q-function look like for a
-5-step update with $\alpha=0.5$ and $\gamma=0.9$?
+Assuming $Q(s,a)=0$ for all $s$ and $a$, if we (finally) traverse the episode the labelled episode, what will our Q-function look like for a 5-step update with $\alpha=0.5$ and $\gamma=0.9$?
 
-We only receive a reward in the last action, and all other actions give
-an immediate reward of 0 until then:
+We only receive a reward in the last action, and all other actions give an immediate reward of 0 until then:
 
-$$\begin{array}{lll}
+$$
+\begin{array}{lll}
   G   &  \leftarrow & \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i\\ 
   G_1 &  \leftarrow & \gamma^1 \cdot 0 + \ldots + \gamma^5 \cdot 1\\    
       &  \leftarrow & 0.9^5 \cdot 1\\
@@ -231,12 +221,7 @@ $$
 \end{array}
 $$
 
-The tables below compares 1-step vs. 5-step SARSA
-for the trace above. In 1-step SARSA, reaching the reward only informs
-the state from which it is reached. Whereas for 5-step, it informs the
-previous five steps. Then, in the next episode, there is more chance of
-encountering a non-zero state, so which will again inform the five steps
-instead of just one. The rewards 'spread' throughout the Q-table faster.
+The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-step SARSA, reaching the reward only informs the state from which it is reached. Whereas for 5-step, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a non-zero state, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table faster.
 
 $$
 \begin{array}{ccccc}
@@ -272,31 +257,15 @@ $$
 \hline
 \end{array}
 $$
+:::
 
-    
-
-
-### Parameter selection
-
-**TODO**
-
-
-
-
-
-### Reading
+## Further Reading
 
 -   Chapter 7 of *Introduction to Reinforcement Learning* \[*Sutton and
     Barto*\]
 
-    Available at:
-
-    <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+    Available at:  <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
 -   *Mastering the Game of Go without Human Knowledge* from DeepMind.
 
-    Available at:
-
-    <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>
-
-```
+    Available at: <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>

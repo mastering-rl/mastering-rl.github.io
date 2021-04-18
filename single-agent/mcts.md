@@ -1,6 +1,7 @@
-## Monte-Carlo Tree Search
+(sec:monte-carlo-tree-search)=
+# Monte-Carlo Tree Search
 
-**Learning Outcomes**
+## Learning Outcomes
 
 1.  Explaing the difference between offline and online planning for
     MDPs.
@@ -18,9 +19,7 @@
 7.  Discuss the strengths and weaknesses of the MCTS family of
     algorithms.
 
-
-
-### Offline Planning & Online Planning forMDPs
+## Offline Planning & Online Planning forMDPs
 
 We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. These offline planning methods derive a policy $\pi$ such that:
 
@@ -40,7 +39,7 @@ In *online* planning, planning is undertaken immediately before executing an act
 
 The question is: how to we do the repeated simuations? *Monte Carlo* methods are by far the most widely-used approach.
 
-### Overview
+## Overview
 
 Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based around the same idea. Here, we will focus on using an algorithm for solving single-agent MDPs in a model-based manner. Later, we look at solving single-agent MDPs in a model-free manner and  multi-agent MDPs using MCTS.
 
@@ -75,7 +74,7 @@ Fundamental features:
 	-   This is complete if there are *no* dead--ends.
 	-   This is optimal if an entire search can be performed (which is unusual -- if the problem is that small we should just use a dynamic programming technique such as  value iteration).
 
-### The Framework: Monte Carlo Tree Search (MCTS)
+## The Framework: Monte Carlo Tree Search (MCTS)
 
 The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is *incrementally* built be iterating over the following four steps:
 
@@ -90,7 +89,7 @@ The basic framework is to build up a tree using simulation. The states that have
 
 
 
-#### Selection
+### Selection
 
 Start at the root node, and successively select a child until we reach a node that is not fully expanded.
 
@@ -100,7 +99,7 @@ Start at the root node, and successively select a child until we reach a node th
 caption
 ```
 
-#### Expansion
+### Expansion
 
 Unless the node we end up at is a terminating state, expand the children of the selected node by choosing an action and creating new nodes using the action outcomes.
 
@@ -110,7 +109,7 @@ Unless the node we end up at is a terminating state, expand the children of the 
 caption
 ```
 
-#### Simulation
+### Simulation
 
 Choose one of the new nodes and perform a random simulation of the MDP to the terminating state:
 
@@ -120,7 +119,7 @@ Choose one of the new nodes and perform a random simulation of the MDP to the te
 caption
 ```
 
-#### Backpropagation
+### Backpropagation
 
 Given the reward $r$ at the terminating state, *backpropagate* the reward to calculate the value $V(s)$ at each state along the path.
 
@@ -130,7 +129,7 @@ Given the reward $r$ at the terminating state, *backpropagate* the reward to cal
 caption
 ```
 
-### Algorithm
+## Algorithm
 
 **Input**: MDP $M$, with initial state $s_0$ and time limit $T$.
 
@@ -247,7 +246,7 @@ The value of $V(s)$ does not change because action $b$ still returns the maximum
 
 :::
 
-### Execution
+## Execution
 
 Once we have run out of computational time, we select the action that maximises are expected return, which is simply the one with the highest Q-value from our simulations: 
 
@@ -265,7 +264,7 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 
 
-### Upper Confidence Trees (UCT)
+## Upper Confidence Trees (UCT)
 
 **Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$.
 
@@ -281,7 +280,7 @@ $C_p >0$ is the exploration constant, which determines can be increased to encou
 
 If $Q(s,a) \in [0,1]$ and $C_p=\frac{1}{\sqrt{2}}$ then in two-player zero-sum, UCT converges to the well-known Minimax algorithm.
 
-### Model-free MCTS
+## Model-free MCTS
 
 **What if we do not know $P_a(s' \mid s)$?**
 
@@ -299,7 +298,7 @@ The disadvantage of this approach is that we have to do repeated simulations for
 
 The advantage is that it is more general: as long as we have a simulator for our problem, we can apply it -- we do not need an explicit model of the problem. For many problem, simulators are easier to produce than problems.
 
-### Applications of MCTS with UCB tree policies
+## Applications of MCTS with UCB tree policies
 
 **Games**:
 
@@ -353,7 +352,7 @@ This is important: value iteration is then more expensive, however, for an agent
 
 For MCTS, we need to solve *online* each time we encounter a state we have not considered before.
 
-### Combining MCTS and TD learning: Alpha Zero
+## Combining MCTS and TD learning: Alpha Zero
 
 Alpha Zero (or more accurately its predecessor AlphaGo) made headlines
 when it beat Go world champion Lee Sodol in 2016. It uses a combination
@@ -392,7 +391,7 @@ AlphaZero is best summarised using the following figure from the Alpha Zero Natu
 
 ![image](./figs/AlphaGoZero-Architecture.png)
 
-### Summary
+## Summary
 
 -   Monte Carlo Tree Search (MCTS) is an anytime search algorithm,
     especially good for stochastic domains, such as MDPs.
@@ -411,7 +410,7 @@ AlphaZero is best summarised using the following figure from the Alpha Zero Natu
 -   UCT is the combination of MCTS and UCB1, and is an *extremely
     successful* algorithm.
 
-### Further Reading
+## Further Reading
 
 -   Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at  http://incompleteideas.net/book/the-book.html 
 -   [A Survey of Monte Carlo Tree Search Methods](https://www.academia.edu/download/53617804/A_Survey_of_Monte_Carlo_Tree_Search_Meth20170621-25252-76lty6.pdf). Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. *IEEE Transactions on Computational Intelligence and AI in Games*, (4)1: 1-49, 2012

@@ -1,6 +1,12 @@
 Jupyter book
 - jupyter-book build rl-notes
 
+Including code from a file:
+
+```{code-cell} ipython3
+:load: "../code/qlearning.py"
+```
+
 pandoc for converting tex to markdown:
 
 - command: pandoc -f markdown -t latex filename.tex -o filename.md

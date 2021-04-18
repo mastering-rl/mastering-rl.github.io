@@ -11,19 +11,15 @@ kernelspec:
 
 # Model-free Reinforcement Learning
 
-**Learning Outcomes** 
+## Learning Outcomes
 
-1.  Identify situations in which model-free reinforcement learning is a
-    suitable solution for an MDP
-
+1.  Identify situations in which model-free reinforcement learning is a suitable solution for an MDP
+    
 2.  Explain how model-free planning differs from model-based planning
 
-3.  Apply Q-learning and SARSA to solve small-scale MDP problems
-    manually and program Q-learning and SARSA algorithms to solve
-    medium-scale MDP problems automatically
-
-4.  Compare and contrast off-policy reinforcement learning with
-    on-policy reinforcement learning
+3.  Apply Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically
+    
+4.  Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning
 
 ## Model-based vs model-free 
 
@@ -140,11 +136,11 @@ Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means i
 
 Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every $Q(s,a)$. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).
 
-Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros::
+Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros:
 
 ```{code-cell} ipython3
 ---
-tags: [remove-cell]
+tags: [remove-input]
 ---
 from tabulate import tabulate
 
@@ -161,7 +157,7 @@ After some training, we may end up with a Q-function that looks something like t
 
 ```{code-cell} ipython3
 ---
-tags: [remove-cell]
+tags: [remove-input]
 ---
 data = [[(0,0), 0.53, 0.36, 0.36, 0.21],
         [(0,1), 0.61, 0.27, 0.23, 0.23],
@@ -197,6 +193,109 @@ Once we have such a Q-function, we stop exploring and just exploit. We use *poli
 $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
 This selects the action with the maximum Q-value. Given an optimal Q-function (for the MDP), this results in optimal behaviour.
+
+## Implementation
+
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+import sys
+sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
+```
+
+To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains some simple helper functions. You can view this via the "Click to show" on the right:
+
+```{code-cell} ipython3
+---
+tags: [hide-cell]
+---
+class ModelFreeReinforcementLearner():
+
+    def __init__(self, mdp, bandit, alpha = 0.2, initQValues = None):
+        self.mdp = mdp
+        self.bandit = bandit
+        self.alpha = alpha
+        self.initQValues = initQValues
+
+    def execute(self, episodes = 2000): abstract
+
+    def getMaxQ(self, qValues, state):
+        argmaxQ = None
+        maxQ = float('-inf')
+        for action in self.mdp.getActions(state):
+            value = qValues[(state, action)]
+            if maxQ < value:
+                argMaxQ = action
+                maxQ = value
+        return (argmaxQ, maxQ)
+
+    def initialiseQFunction(self):
+        if self.initQValues == None:
+            qValues = dict()
+            for state in self.mdp.getStates():
+                for action in self.mdp.getActions():
+                    qValues.update({(state, action): 0.0})
+            return qValues
+        else:
+            return self.initQValues
+
+    '''
+        Return the Q-values only for this state
+    '''
+    def getQValues(self, state, qValues):
+        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
+```
+
+We inherit from this class to implement the Q-learning algorithm:
+
+```{code-cell} ipython3
+from multi_armed_bandits import EpsilonGreedy
+
+class QLearning(ModelFreeReinforcementLearner):
+    def execute(self, episodes = 100):
+        qValues = self.initialiseQFunction()
+
+        for i in range(episodes):
+            state = self.mdp.getInitialState()
+
+            while not self.mdp.isTerminal(state):
+                actions = self.mdp.getActions(state)
+                action = self.bandit.select(actions, self.getQValues(state, qValues))
+                (nextState, reward) = self.mdp.execute(state, action)
+                newValue = self.update(qValues, state, action, nextState, reward)
+                qValues[(state, action)] = newValue
+                state = nextState
+            
+        return qValues
+
+    def update(self, qValues, state, action, nextState, reward): 
+        (_, maxQValue) = self.getMaxQ(qValues, nextState)
+        qValue = qValues[(state, action)]
+        return qValue + self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+```
+
+First, we need a [multi-armed bandit](sec:multi-armed-bandits) strategy to help us explore. In this case, we use epsilon greedy, but it could be any bandit strategy.
+
+The ```execute``` method then implements the Q-learning algorithm. We use a simple Python dictionary for a Q-table, where the keys are state-action pairs, such as: ```((0,1), ◄)```.
+
+Using this, we execute 1000 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
+
+```{code-cell} ipython3
+from gridworld import *
+mdp = GridWorld()
+qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 1000)
+print(mdp.qFunctionToString(qFunction))
+```
+
+If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
+
+Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:
+
+```{code-cell} ipython3
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.policyToString(policy))
+```
 
 # SARSA: On-Policy Reinforcement Learning
 
@@ -258,49 +357,142 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N
            & \leftarrow & 0.7758\\
 \end{array}
 $$
+:::
 
+## Implementation
 
-## SARSA vs. Q-learning: Example
+As with the Q-learning agent, we inherit from the ```ModelFreeReinforcementLearner``` class to implement SARSA:
 
-Consider the grid below. $S$ is the start and state $G$ receives a reward of
-100. Falling off the cliff receives a reward of -100. Going to the top
-row receives a -1 reward. Actions are deterministic, but $P_a(s' \mid s)$ is unknown to the learning agent.
+```{code-cell} ipython3
+class SARSA(ModelFreeReinforcementLearner):
+    def execute(self, episodes = 100):
+        qValues = self.initialiseQFunction()
 
-
-```{figure} ./figs/cliff_layout.png
-:name: cliff_layout
-
-Cliff layout (taken from Sutton and Barto (2020))
+        for i in range(episodes):
+            state = self.mdp.getInitialState()
+            actions = self.mdp.getActions(state)
+            action = self.bandit.select(actions, self.getQValues(state, qValues))
+            
+            while not self.mdp.isTerminal(state):
+                (nextState, reward) = self.mdp.execute(state, action)
+                actions = self.mdp.getActions(nextState)
+                nextAction = self.bandit.select(actions, self.getQValues(nextState, qValues))
+                newValue = self.update(qValues, state, action, nextState, nextAction, reward)
+                qValues[(state, action)] = newValue
+                state = nextState
+                action = nextAction
+            
+        return qValues
+    
+    def update(self, qValues, state, action, nextState, nextAction, reward): 
+        qValue = qValues[(state, action)]
+        qValueNext = qValues[(nextState, nextAction)]
+        return qValue + self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
 ```
 
-If trained with Q-learning, the result will be an optimal policy that takes the agent along the ege of the cliff (if we use a Q-table to represent the states). However, *during* learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. 
+Note the ordering of the action selection and execution is different.
 
-If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off *less* than the Q-learning agent because it takes actions on the safe path more often during learning?
+As before, we can execute SARSA for 1000 episodes:
 
-*Why is this so?*
-Here is a graph from Sutton and Barto (2020) showing the reward per trial for both SARSA and Q-Learning:
-
-```{figure} ./figs/cliff_rew.png
-:name: cliff_rew
-
-Rewards received during training (taken from Sutton and Barto (2020))
+```{code-cell} ipython3
+qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
+print(mdp.qFunctionToString(qFunction))
 ```
 
-During training, SARSA receives a higher average reward *per trial* than Q-Learning, because it falls off the cliff less as its policy improves. However,
-Q-learning learns the *optimal* policy.
+Again, we get an approximate Q-function. In this particular run, the policy is no optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
+
+```{code-cell} ipython3
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.policyToString(policy))
+```
+
+This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
+
+## SARSA vs. Q-learning example: Cliff world
+
+Consider the example below called "Cliff World". The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
+
+```{code-cell} ipython3
+mdp = CliffWorld()
+print(mdp.visualise())
+```
+
+Let's try training this with Q-learning for 500 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
+
+```{code-cell} ipython3
+mdp = CliffWorld()
+qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+qLearningRewards = mdp.getRewards()
+print(mdp.qFunctionToString(qFunction))
+```
+
+From this, we extract the following policy:
+
+```{code-cell} ipython3
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.policyToString(policy))
+```
+
+We can see that the policy will take from initially up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
+
+Now, let's try training the same problem with SARSA:
+
+```{code-cell} ipython3
+mdp = CliffWorld()
+qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+sarsaRewards = mdp.getRewards()
+print(mdp.qFunctionToString(qFunction))
+```
+
+Extracting the policy, we get:
+
+```{code-cell} ipython3
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.policyToString(policy))
+```
+
+We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*
+
+The answer is because SARSA uses a reward from the *actual* next action that is executed. Even with a mature Q-function, with epsilon = 0.2 in the bandit used,, the actual next action with be an exploratory action with probability 0.2, which means some of the time, the next action chosen will be "down", so the agent falls of the cliff.
+
+Cconsider each agent moving from state $(1,1)$ to state $(2,1)$. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the cliff path, including $\max_{a \in A} Q(s,a)$ as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the Q-learning agent. The SARSA agent, on the other hand, selects its next action *before* the update, so in the cases where it chooses an action from state $(2,1)$ that falls off the cliff, the value $Q(s',a')$ will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a "risky" behaviour, so will learn to instead take the safe path away from the cliff: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.
+
+However, *during* learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off *less* than the Q-learning agent because it takes actions on the safe path more often during learning?
+
+Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode::
+
+```{code-cell} ipython3
+# Train using Q-learning
+mdp = CliffWorld()
+qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+
+# Execute using the policy
+QLearning(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
+qLearningRewards = mdp.getRewards()
+                    
+#train using SARSA
+mdp = CliffWorld()
+qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+
+# Execute using the policy
+SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
+sarsaRewards = mdp.getRewards()
+
+from plot import *
+Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
+```
+
+During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
+Q-learning learns the optimal policy, meaning that once we extract the policy, its rewards will be higher on average.
 
 *How is it possible that on-policy learning has a sub-optimal policy but higher rewards during training?*
 
-Consider a case of two agents training: one with Q-learning and one with SARSA, both using $\epsilon$-greedy with $\epsilon=0.1$. Then, consider training episode 100 for each agent. From {numref}`cliff_rew`, we can see that both policies are close to converged. 
-
-Now, consider each agent moving from state $A$ to state $B$. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the optimal path, including $\max_{a \in A} Q(s,a)$ as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the agent. The SARSA agent, on the other hand, selects its next action *before* the update, so in the cases where it chooses an action from state $B$ that falls off the cliff, the value $Q(s',a')$ will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a `risky' behaviour, so will learn to instead take the safe path: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.
+Consider a case of two agents training: one with Q-learning and one with SARSA, both using epsilon-greedy with epsilon=0.2. Then, consider training episode 100 for each agent. From the plot above,  we can see that both policies are close to converged. 
 
 However, once training is complete, we extract a policy. Because the actions are deterministic, the Q-learning policy is optimal: it will follow the path next to the cliff, but will not fall off. The SARSA agent will follow the safe path, but this safety is no longer required because no exploration is done.
 
-The end result for the SARSA (on policy) methid is a sub-optimal policy, but one that achieves stronger rewards during training.
+The end result for the SARSA (on policy) method is a sub-optimal policy, but one that achieves stronger rewards during training.
 
-Demo of the cliff example:
-<https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/>
 
 ### On-policy vs. off policy: Why do we have both?
 
@@ -308,7 +500,7 @@ Imagine a reinforcement learning agent that manages resources for a cloud-based 
 
 -   On-policy learning is more appropriate when we want to optimise the behaviour of an agent who learns *while operating in its environment*.
     
-    We would need to operate our cloud platform to get data. As such, if the average reward *per trial* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the 'trials' are not practice -- they actually influence real rewards,  such as profit.
+    We would need to operate our cloud platform to get data. As such, if the average reward *per episode* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the episodes are not practice -- they actually influence real rewards,  such as profit.
 
 -   Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
     
@@ -326,81 +518,58 @@ The standard versions that we see in this section have two major limitations:
 
 ## Q-learning Examples in Action
 
-Solving the cliff example using Q-learning with $\epsilon$-greedy:
+Solving the cliff example using Q-learning with epsilon-greedy:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ppALjH0kYPE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-
-
 The source code for this is available from here: <https://github.com/alecKarfonta/Gridworld>
 
-A complete worked example of using Q-learning to calculate the optimal path in a navigation task <http://www.mnemstudio.org/path-finding-q-learning-tutorial.htm>
 
 ### Applications of Reinforcement Learning
 
--   Checkers (Samuel, 1959)\
-    first use of RL in an interesting real game
+-   Checkers (Samuel, 1959): first use of RL in an interesting real game
 
--   (Inverted) Helicopter Flight (Ng et al. 2004)\
-    better than any human
+-   (Inverted) Helicopter Flight (Ng et al. 2004), better than any human
 
--   Computer Go (AlphaGo 2016)\
-    AlphaGo beats Go world champion Lee Sedol 4:1
-
--   Atari 2600 Games (DQN & Blob-PROST 2015)\
-    human-level performance on half of 50+ games
-
--   Robocup Soccer Teams (Stone & Veloso, Reidmiller et al.)\
-    World's best player of simulated soccer, 1999; Runner-up 2000
-
--   Inventory Management (Van Roy, Bertsekas, Lee & Tsitsiklis)\
-    10-15% improvement over industry standard methods
-
--   Dynamic Channel Assignment (Singh & Bertsekas, Nie & Haykin)\
-    World's best assigner of radio channels to mobile telephone calls
-
--   Elevator Control (Crites & Barto)\
-    (Probably) world's best down-peak elevator controller
-
--   Many Robots\
-    navigation, bi-pedal walking, grasping, switching between skills,
-    ...
-
--   TD-Gammon and Jellyfish (Tesauro, Dahl)\
-    World's best backgammon player. Grandmaster level
+-   Computer Go (AlphaGo 2016): AlphaGo beats Go world champion Lee Sedol 4:1
+    
+-   Atari 2600 Games (DQN & Blob-PROST 2015): human-level performance on half of 50+ games
+    
+-   Robocup Soccer Teams (Stone & Veloso, Reidmiller et al.): World's best player of simulated soccer, 1999; Runner-up 2000
+    
+-   Inventory Management (Van Roy, Bertsekas, Lee & Tsitsiklis): 10-15% improvement over industry standard methods
+    
+-   Dynamic Channel Assignment (Singh & Bertsekas, Nie & Haykin): World's best assigner of radio channels to mobile telephone calls
+    
+-   TD-Gammon and Jellyfish (Tesauro, Dahl): World's best backgammon player. Grandmaster level
 
 ### Further Reading
 
--   *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
+-   Chapter 6 of *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
 
-    Available at:
+    Available at: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
-    <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
-
-    Content: Great entry level book to Reinforcement Level written by
-    the founders of the field.
-
-
+    
 
 ## Summary 
-
-If we know the MDP, we can use model-based techniques:
-
--   **Offline**: Value Iteration
-
--   **Online**: Monte Carlo Search Tree and friends.
-
-We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model..
-
-If we do *not* know MDP, we can use model-free techniques:
-
--   **Offline**: Q-learning, SARSA, and friends.
-
--   **Online**: Monte Carlo Tree Search and friends.
 
 On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
 
 Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
 
 SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
+
+If we know the MDP, we can use model-based techniques:
+
+-   **Offline**: Value Iteration
+
+-   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
+
+We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
+
+If we do *not* know MDP, we need to use model-free techniques:
+
+-   **Offline**: Q-learning, SARSA, and friends.
+
+-   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
 

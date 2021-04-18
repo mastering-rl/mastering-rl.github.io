@@ -9,6 +9,7 @@ kernelspec:
   name: python3
 ---
 
+(sec:multi-armed-bandits)=
 # Multi-armed bandits
 
 ## Learning outcomes

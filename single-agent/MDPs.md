@@ -79,39 +79,56 @@ In an MDP, a discount reward must be strictly less than 1. Later, we will see wh
 
 :::{admonition} Example MDP: Grid World
 
-An agent is in the bottom left cell of a grid. The grey square is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately
-below.
+An agent is in the bottom left cell of a grid. The cell containing '#'s  is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately below.
 
-![image](./figs/MDP-GridWorld.png)
+```
+  --------------- --------------- --------------- --------------- 
+ |       ▲       |       ▲       |       ▲       |               |
+ |               |               |               |               |
+ |               |               |               |               |
+ | ◄           ► | ◄           ► | ◄           ► |     +1.00     |
+ |               |               |               |               |
+ |               |               |               |               |
+ |       ▼       |       ▼       |       ▼       |               |
+  --------------- --------------- --------------- --------------- 
+ |       ▲       | ############# |       ▲       |               |
+ |               | ############# |               |               |
+ |               | ############# |               |               |
+ | ◄           ► | ############# | ◄           ► |     -1.00     |
+ |               | ############# |               |               |
+ |               | ############# |               |               |
+ |       ▼       | ############# |       ▼       |               |
+  --------------- --------------- --------------- --------------- 
+ |       ▲       |       ▲       |       ▲       |       ▲       |
+ |     _____     |               |               |               |
+ |    ||o  o|    |               |               |               |
+ | ◄  ||  * |  ► | ◄           ► | ◄           ► | ◄           ► |
+ |    ||====|    |               |               |               |
+ |     -----     |               |               |               |
+ |       ▼       |       ▼       |       ▼       |       ▼       |
+  --------------- --------------- --------------- --------------- 
+```
 
-But! Things can go wrong --- sometimes the effects of the actions are
-not what we want:
 
--   If the agent tries to move north, 80$\%$ of the time, this works as
-    planned (provided the wall is not in the way)
 
--   10$\%$ of the time, trying to move north takes the agent west
-    (provided the wall is not in the way);
+But! Things can go wrong --- sometimes the effects of the actions are not what we want:
 
--   10$\%$ of the time, trying to move north takes the agent east
-    (provided the wall is not in the way)
+-   If the agent tries to move north, 80$\%$ of the time, this works as planned (provided the wall is not in the way)
 
--   If the wall is in the way of the cell that would have been taken,
-    the agent stays put.
+-   10$\%$ of the time, trying to move north takes the agent west (provided the wall is not in the way);
+
+-   10$\%$ of the time, trying to move north takes the agent east (provided the wall is not in the way)
+
+-   If the wall is in the way of the cell that would have been taken, the agent stays in the current cell.
 
 The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?
 :::
 
 :::{admonition} Example MDP model
-*Probabilistic PDDL* is one way to represent an MDP. It extends PDDL
-with a few additional constructs. Of most relevance is that outcomes can
-be associated with probabilities. The following describes the "Bomb and
-Toilet" problem, in which one of two packages contains a bomb. The bomb
-can be diffused by dunking it into a toilet, but there is a 0.05
-probability of the bomb clogging the toilet.
+*Probabilistic PDDL* is one way to represent an MDP. It extends PDDL with a few additional constructs. Of most relevance is that outcomes can be associated with probabilities. The following describes the "Bomb and Toilet" problem, in which one of two packages contains a bomb. The bomb can be diffused by dunking it into a toilet, but there is a 0.05 probability of the bomb clogging the toilet.
 
 ```
-(define (domain bomb-and-toilet)
+(define (domain gridworld)
 
     (:requirements :conditional-effects :probabilistic-effects)
 
@@ -224,13 +241,13 @@ Let's break this down into its parts:
 
 - The initial state $s_0$ is the location $(0,0)$ in the bottom left. 
 
-- The actions are *Up*, *Down*, *Left*, and *Right*, as well as the special action $Terminate$, which transitions into the $Terminal$ state from a goal state.
+- The actions are *Up*, *Down*, *Left*, and *Right*, as well as the special action *Terminate*, which transitions into the *Terminal* state from a goal state.
 
 - ``getTransitions`` defines the transition probabilities. For example, we can see that if the action is *Left*, then there are three possible transitions: to the left with 0.8 probability, and either up or down with 0.1 probability each. The method ``validAdd`` ensures that if we agent cannot go in that direction due to a wall, it remains in the current state for its outcome.
 
-- The reward is modelled as receiving +1 or -1 for exiting a goal state and transitioning into the terminal state. We will see later that this models our desire that the goal states have the value of $1$ and $-1$ respectively.
+- The reward is modelled as receiving +1 or -1 for exiting a goal state and transitioning into the terminal state. We will see later that this models our desire that the goal states have the value of 1 and -1 respectively.
 
-- Finally, the discount factor is simply a paramater to the MDP in this code, with default value 0.9.
+- Finally, the discount factor is simply a parameter to the MDP in this code, with default value 0.9.
 
 In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
 

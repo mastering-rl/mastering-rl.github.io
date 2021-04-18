@@ -1,7 +1,7 @@
 
 ## Reward shaping
 
-**Learning Outcomes**
+## Learning Outcomes
 
 1.  Explain how reward shaping can be used to help model-free
     reinforcement learning methods to converge
@@ -14,9 +14,11 @@
 
 4.  Compare and contrast reward shaping with Q-function initialisation
 
-Reinforcement Learning -- Some Weaknesses
+## Overview
 
-In the previous lectures, we looked at fundamental temporal difference
+### Reinforcement Learning -- Some weaknesses
+
+In the previous chapters, we looked at fundamental temporal difference
 (TD) methods for reinforcement learning. As noted, these two methods
 have some weaknesses in this basic format:
 
@@ -43,7 +45,7 @@ have some weaknesses in this basic format:
     struggle to find good rewards. Remember the Freeway demo from the
     previous lecture?
 
-Reinforcement Learning -- Some Improvements
+### Reinforcement Learning -- Some Improvements
 
 To get around these limitations, we are going to look at three simple
 approaches that can improve temporal difference methods:
@@ -197,15 +199,14 @@ Q-function initialisation is similar to reward shaping: we use heuristics to ass
 
 Using the idea of inverse Manhattan distance, we can define an initial Q-function as follows for state (1,2):
 
-$
+$$
 \begin{array}{llll}
  Q((1,2), North) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), South) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), East)  & = & \frac{1}{1} - \frac{1}{2} & = & 0.5\\
  Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16^*\\
 \end{array}
-$
-
+$$
 Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster.
 
 :::

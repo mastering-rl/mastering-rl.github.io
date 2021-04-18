@@ -6,11 +6,12 @@ These notes are for the 2nd half of the subject [COMP90054 -- AI Planning for Au
 The first half of the subject details with *classical planning and search*. Classical planning tools can produce solutions quickly in large search spaces, but they make the following assumptions about the problem:
 
 1.  Actions are all deterministic
-2.   Environments change only as the result of an action
-3.   Perfect knowledge (omniscience)
+2.  Environments change only as the result of an action
+3.  Perfect knowledge (omniscience)
 4.  Single actor (omnipotence).
+5.  A known model.
 
-In these notes, we look at methods to relax a few of these assumptions, in particular, assumptions 1 and 4. 
+In these notes, we look at methods to relax a few of these assumptions, in particular, assumptions 1, 4, and 5. 
 
 In Part I of these notes, we introduce  *Markov Decision Processes* (MDPs). MDPs allow us to model problems  in which the outcomes of actions are probabilistic; that is, we do not know the outcome beforehand, but we know there is some probability distribution over a set of possible outcomes. We look at *model-based* techniques, where these probabilistic outcomes are given to use, and *model-free* techniques, which are flexible enough the probabilities are unknown, but we can sample enough times that we can still learn good behaviour.
 

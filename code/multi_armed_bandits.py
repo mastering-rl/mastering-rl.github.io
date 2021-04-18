@@ -166,9 +166,6 @@ class UpperConfidenceBounds(MultiArmedBandit):
         return result
 
 
-
-from plot import Plot
-
 def plotEpsilonGreedy(drift = False):
     epsilon005 = EpsilonGreedy(epsilon = 0.05).runBandit(drift = drift)
     epsilon01 = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
@@ -210,6 +207,9 @@ def plotComparison(drift = False):
                      [epsilonGreedy, epsilonDecreasing, softmax, ucb])
 
 if __name__ == "__main__":
+
+    from plot import Plot
+
     plotEpsilonGreedy()
     plotEpsilonDecreasing()
     plotSoftmax(drift = False)

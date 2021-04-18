@@ -31,7 +31,9 @@ html:
 
 # Enable extended syntax
 parse:
-  myst_extended_syntax: true
-
+  myst_extended_syntax:
+    - colon_fence
+    - dollar_math
+    - amsmath
 
 

@@ -73,10 +73,10 @@ class MDP:
     ''' 
        Return a new state and a reward for executing action in state, 
        based on the underlying probability. This can be used for 
-       model-free method, but requires a model to operator.
+       model-free method, but requires a model to operate.
        Override for simulation-based learning
     '''
-    def simulate(self, state, action):
+    def execute(self, state, action):
         r = random.random()
         cumulativeProbability = 0.0
         for (newState, probability) in self.getTransitions(state, action):
@@ -88,5 +88,3 @@ class MDP:
         print("No outcome state in simulation for action " + str(action) + " from " + str(state))
         raise "No outcome state in simulation for action"
         return None
-
-
