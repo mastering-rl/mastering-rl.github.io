@@ -87,7 +87,7 @@ class SARSA(ModelFreeReinforcementLearner):
 
 if __name__ == "__main__":
     from gridworld import *
-    '''
+    
     print("==========\nQ-learning\n==========")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
     qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 1000)
@@ -108,7 +108,6 @@ if __name__ == "__main__":
     print(mdp.qFunctionToString(qFunction))
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.policyToString(policy))
-    qLearningRewards = mdp.getRewards()
 
     print("=====\nSARSA\n=====")
     mdp = CliffWorld()
@@ -116,11 +115,6 @@ if __name__ == "__main__":
     print(mdp.qFunctionToString(qFunction))
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.policyToString(policy))
-    sarsaRewards = mdp.getRewards()
-
-    from plot import *
-    Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
-    '''
 
     print("==========\nQ-learning\n==========")
     mdp = CliffWorld()
@@ -134,5 +128,5 @@ if __name__ == "__main__":
     SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
     sarsaRewards = mdp.getRewards()
 
-    from plot import *
+    from plot import Plot
     Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
