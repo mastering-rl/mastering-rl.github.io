@@ -1,5 +1,3 @@
-- Modify gridworld to allow 'noise' to be specified
-- Add Q-learning and SARSA code
 - Add approx Q-function code
 - Policy iteration
 - Policy gradient descent

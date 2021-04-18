@@ -412,10 +412,14 @@ AlphaZero is best summarised using the following figure from the Alpha Zero Natu
 
 ## Further Reading
 
--   Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at  http://incompleteideas.net/book/the-book.html 
+- Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at  http://incompleteideas.net/book/the-book.html 
+
+- *Mastering the Game of Go without Human Knowledge* from DeepMind.
+
+  Available at: <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>
+
 -   [A Survey of Monte Carlo Tree Search Methods](https://www.academia.edu/download/53617804/A_Survey_of_Monte_Carlo_Tree_Search_Meth20170621-25252-76lty6.pdf). Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. *IEEE Transactions on Computational Intelligence and AI in Games*, (4)1: 1-49, 2012
+    
     -   Good "entry level" resource, with lots of pointers to seminal papers
--   [Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems](https://arxiv.org/abs/1204.5721). Sébastien Bubeck and Nicolo Cesa--Bianchi, *Machine Learning* 5(1): 1-122, 2012
-    -   A great analysis of multi-armed bandits.
     
 -   [Monte-Carlo Tree Search: A New Framework for Game AI](https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf).  Guillaume Chaslot, Sander Bakkes, Istvan Szita, and Pieter Spronck.  In *AIIDE*, 1-2, 2008.

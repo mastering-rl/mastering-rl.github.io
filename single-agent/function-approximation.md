@@ -197,7 +197,6 @@ In Freeway, for example, if we receive our first reward by crossing the road (go
 :::
 
 :::{admonition} Example --- Q-value update for Freeway
-
 Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 14 is has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
 we have:
 
@@ -210,6 +209,7 @@ $$
 $$
 
 From this, we now can get an estimate of $Q(s,Up)$ from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).
+:::
 
 ## Deep Q-learning
 

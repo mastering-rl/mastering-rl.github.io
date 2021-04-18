@@ -176,7 +176,7 @@ $\quad\quad\quad\quad\quad\quad$ Observe and store reward $r_{t+1}$ and new stat
 $\quad\quad\quad\quad\quad\quad$ If $s_{t+1}$ is a terminal state then:\
 $\quad\quad\quad\quad\quad\quad\quad\quad$ $T \leftarrow t + 1$\
 $\quad\quad\quad\quad\quad\quad$ Else:\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ Select and store action $a_{t+1}$ to apply in $s_{t+1}$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad\quad\quad\quad\quad$ Select and store action $a_{t+1}$ to apply in $s_{t+1}$ using Q-values in $Q$ and a multi-armed bandit algorithm\
 $\quad\quad\quad\quad$ $\tau \leftarrow t - n + 1$  (calculate the index of the action to update)\
 $\quad\quad\quad\quad$ If $\tau \geq 0$ then:\
 $\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i$\
@@ -264,8 +264,5 @@ $$
 -   Chapter 7 of *Introduction to Reinforcement Learning* \[*Sutton and
     Barto*\]
 
-    Available at:  <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+    Available at:  <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html
 
--   *Mastering the Game of Go without Human Knowledge* from DeepMind.
-
-    Available at: <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>
