@@ -63,10 +63,10 @@ What we want is to play only the good actions; so just keep playing the actions 
 
 But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO). FOMO drives us to search for strategies that *minimise regret*.
 
-:::{definition}(Pseudo)--Regret 
+:::{admonition} Definition --- (Pseudo)--Regret 
 Pseudo-regret is defined formally as:
 
- $$\mathcal {R_{N,b} }  =  \max_a Q(a) N(s) - \mathbb{E} [ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b) ]$$
+ $$\mathcal {R_{N,b} }  =  \max_a Q(a) N(a) - \mathbb{E} [ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b) ]$$
 
 where $t$ is the number of rounds, $\mathbb{I}_{i}(a)$ is $1$ if $a$ was selected on the $i$-th round and $0$ otherwise, and ${\mathbb E}[ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b)] > 0$ for every $b$.
 :::
@@ -173,8 +173,8 @@ The $\epsilon$-greedy strategy  is a simple and effective way of balancing explo
 
 Each time we need to choose an action, we do the following:
 
-- With probability $\epsilon$ we choose the arm with the maximum Q value: $\textrm{argmax}_a Q(a)$. If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
-- With probability $1-\epsilon$ we choose a random arm with uniform probability.
+- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\textrm{argmax}_a Q(a)$. If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
+- With probability $\epsilon$ we choose a random arm with uniform probability.
 
 The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.1 work well as they exploit what they have learnt, while still exploring.
 
@@ -295,7 +295,7 @@ Softmax is *probability matching strategy*, which means that the probability of 
 
 $$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}$$ 
 
-where $N$ is the number of arms, and $\tau >  0 (pronounced "tau") is the *temperature*, which dictates how much of an influence the past data has on the decision. A higher value of $\tau$ would mean that the probability of selecting each action is close to each other (as $\tau$ approaches infinity, softmax approaches a uniform strategy), while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^{Q(a)}$, and as $\tau$ approaches 0, softmax approaches a greedy strategy.
+where $N$ is the number of arms, and $\tau >  0$ (pronounced "tau") is the *temperature*, which dictates how much of an influence the past data has on the decision. A higher value of $\tau$ would mean that the probability of selecting each action is close to each other (as $\tau$ approaches infinity, softmax approaches a uniform strategy), while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^{Q(a)}$, and as $\tau$ approaches 0, softmax approaches a greedy strategy.
 
 As with the epsilon-decreasing strategy, we can add a decay parameter $\alpha$ that allows the value of $\tau$ to decay until it reaches 1. This encourages exploration in earlier phases, and exploration less as we gather more feedback.
 

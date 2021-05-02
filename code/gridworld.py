@@ -60,6 +60,9 @@ class GridWorld(MDP):
 
     def validAdd(self, state, newState, probability):
         # if the next state is blocked, stay in the same state
+        if probability == 0.0:
+            return []
+
         if newState in self.blockedStates:
             return [(state, probability)]
 

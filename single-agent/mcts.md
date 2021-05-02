@@ -56,7 +56,7 @@ To get the idea of MCTS, we note that MDPs can be represented as trees (or graph
 Abstract example of an ExpectiMax Tree
 ```
 
-The letters a-e represent actions, and letters $s$-$x$ represent states. White nodes are state nodes, and the small black nodes represent the probabilistic uncertainty: the 'environment' choosing which outcome from an action happens, based on the transition function.
+The letters $a$-$e$ represent actions, and letters $s$-$x$ represent states. White nodes are state nodes, and the small black nodes represent the probabilistic uncertainty: the 'environment' choosing which outcome from an action happens, based on the transition function.
 
 ### Monte Carlo Tree Search -- Overview
 
@@ -108,6 +108,8 @@ Unless the node we end up at is a terminating state, expand the children of the 
 
 caption
 ```
+
+Alternatively, one may expand just one of the children nodes (one outcome). 
 
 ### Simulation
 
@@ -190,7 +192,7 @@ Simulate($child$)
 Backpropagation($expand\_node$, $reward$)
 
 - The reward from the simulation is backpropagated from the expanded node to its ancestors recursively.
-We must not forget the $discount factor$!
+We must not forget the *discount factor*!
 
 - For each state, get the expected value of all actions from that node:
 
