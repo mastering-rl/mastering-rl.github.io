@@ -23,36 +23,23 @@ These two methods have some weaknesses in this basic format:
     estimate the future discounted reward using $Q(s,a)$), which means
     that for problems with sparse rewards, it can take a long time to
     for rewards to propagate throughout a Q-function.
-
-2.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to
+2.  Rewards can be sparse, meaning that there are few state/actions that
+    lead to non-zero rewards. This is problematic because initially,
+    reinforcement learning algorithms behave entirely randomly and will
+    struggle to find good rewards. 
+3.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to
     model this is via a Q-table. However, this requires us to maintain a
     table of size $|A| \times |S|$, which is prohibitively large for any
     non-trivial problem.
-
-3.  Using a Q-table requires that we visit every reachable state many
+4.  Using a Q-table requires that we visit every reachable state many
     times and apply every action many times to get a good estimate of
     $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate
     of $Q(s,a)$, even if we have visited states that are very similar to
     $s$.
 
-4.  Rewards can be sparse, meaning that there are few state/actions that
-    lead to non-zero rewards. This is problematic because initially,
-    reinforcement learning algorithms behave entirely randomly and will
-    struggle to find good rewards. Remember the Freeway demo from the
-    previous lecture?
+To get around limitations 1 and 2, we are going to look at n-step temporal difference learning: 'Monte Carlo' techniques execute entire traces and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
-To get around these limitations, we are going to look at n-step temporal difference learning: Monte Carlo techniques
-    execute entire traces and then backpropagate the reward, while basic
-    TD methods only look at the reward in the next step, estimating the
-    future wards. n-step methods instead look $n$ steps ahead for the
-    reward before updating the reward, and then estimate the remainder.
-
-n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte
-Carlo methods uses 'deep backups', where entire traces are executed and
-the reward backpropagated. Methods such as Q-learning and SARSA use
-'shallow backups', only using the reward from the 1-step ahead. n-step
-learning finds the middle ground: only update the Q-function after
-having explored ahead $n$ steps.
+n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire traces are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
 
 ```{figure} ./figs/RL_approaches.png
 :name: RL_approaches
@@ -176,7 +163,7 @@ $\quad\quad\quad\quad\quad\quad$ Observe and store reward $r_{t+1}$ and new stat
 $\quad\quad\quad\quad\quad\quad$ If $s_{t+1}$ is a terminal state then:\
 $\quad\quad\quad\quad\quad\quad\quad\quad$ $T \leftarrow t + 1$\
 $\quad\quad\quad\quad\quad\quad$ Else:\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ Select and store action $a_{t+1}$ to apply in $s_{t+1}$ using Q-values in $Q$ and a multi-armed bandit algorithm\
+$\quad\quad\quad\quad\quad\quad\quad\quad$ Select & store action $a_{t+1}$ to apply in $s_{t+1}$ using $Q$ and a multi-armed bandit algorithm\
 $\quad\quad\quad\quad$ $\tau \leftarrow t - n + 1$  (calculate the index of the action to update)\
 $\quad\quad\quad\quad$ If $\tau \geq 0$ then:\
 $\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i$\

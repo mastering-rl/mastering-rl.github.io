@@ -4,7 +4,9 @@ import time
 from gridworld import *
 from multi_armed_bandits import *
 
-class Node():
+class Node():    
+
+    nextNodeID = 0
     
     def __init__(self, mdp, parent, state):
         self.mdp = mdp  
@@ -20,6 +22,8 @@ class Node():
         else:
             self.level = parent.level + 1
 
+        self.id = Node.nextNodeID
+        Node.nextNodeID += 1
 
     '''
     Return the value of this node
@@ -62,8 +66,6 @@ class StateNode(Node):
                 #get the Q values from all outcome nodes
                 qValues[action] = self.children[action].getValue()
             bestAction = self.bandit.select(actions, qValues)
-            if level == 0:
-                print("select " + bestAction)
             return self.children[bestAction].select(level + 1)
 
     def expand(self):
@@ -83,17 +85,19 @@ class StateNode(Node):
         if self.parent != None:
             self.parent.backPropagate(reward)
 
-    def toString(self, level = 0):
+    def convertToDot(self, level = 0):
         result = ""
         for action in self.children.keys():
             child = self.children[action]
-            result += "\"" + self.nodeString() + "\" -> \"" +  child.nodeString() + " \" [label = \"" + action + "\"]\n"
+            result += "\"" + self.nodeString() + "\" -> \"" +  child.nodeString() + \
+                "\" [label = \"" + action + "\"]\n"
         for action in self.children:
-            result += self.children[action].toString()
+            result += self.children[action].convertToDot()
         return result
 
     def nodeString(self):
-        return "State" + str(self.state)+ "." + str(self.level) + "[" + str(self.totalRewards) + "]"
+        #return "State" + str(self.state)+ "." + str(self.level) + "[" + str(self.totalRewards) + "]"
+        return str(self.state) + "." + str(self.id)
 
     def getQFunction(self):
         qValues = {}
@@ -102,6 +106,7 @@ class StateNode(Node):
         return qValues
 
 class EnvironmentNode(Node):
+    
     def __init__(self, mdp, parent, state, action):
         super().__init__(mdp, parent, state)
         self.outcmes = {}
@@ -109,6 +114,7 @@ class EnvironmentNode(Node):
         
         # a set of outcomes
         self.children = []
+
 
     def select(self, level):
         # choose one outcome based on transition probabilities
@@ -133,10 +139,13 @@ class EnvironmentNode(Node):
 
         seleted = None
         transitions = self.mdp.getTransitions(self.state, self.action)
+        expandedOutcomes = []
         for (outcome, probability) in transitions:
-            newChild = self.addChild(self.action, outcome)
-            if outcome == newState:
-                selected = newChild
+            if outcome not in expandedOutcomes:
+                newChild = self.addChild(self.action, outcome)
+                if outcome == newState:
+                    selected = newChild
+                expandedOutcomes += [outcome]
 
         self.expanded = True
 
@@ -147,16 +156,18 @@ class EnvironmentNode(Node):
         self.totalRewards += reward
         self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
     
-    def toString(self, level = 0):
+    def convertToDot(self, level = 0):
         result = ""
         for child in self.children:
             result += "\"" + self.nodeString() + "\"" + " -> \"" + child.nodeString() + "\"\n"
         for child in self.children:
-            result += child.toString(level + 1)
+            result += child.convertToDot(level + 1)
         return result
 
+
     def nodeString(self):
-        return "Env" + str(self.state) + "." + str(id(self))
+        #return "Env" + str(self.state) + "." + str(id(self))
+        return str(self.id)
 
 class MCTS():
 
@@ -168,7 +179,7 @@ class MCTS():
     '''
     Execute the MCTS algorithm from the initial state given, with timeOut in seconds
     '''
-    def mcts(self, timeOut = 10, epsilon = 0.1):
+    def mcts(self, timeOut = 0.1, epsilon = 0.1):
 
         rootNode = StateNode(mdp, None, mdp.getInitialState())
 
@@ -178,21 +189,24 @@ class MCTS():
 
             # find a state node to expand
             selectedNode = rootNode.select(level = 0)
-            print("select %s.%d" % (str(selectedNode.state), selectedNode.level))
+            #print("select %s.%d" % (str(selectedNode.state), selectedNode.level))
             if not self.mdp.isTerminal(selectedNode):
 
                 child = selectedNode.expand()
                 
-                print("\tsimulate from %s" % str(child.state))
+                #print("\tsimulate from %s" % str(child.state))
                 reward = self.simulate(child)
-                print("reward = " + str(reward))
+                #print("reward = " + str(reward))
                 self.backPropagate(selectedNode, reward)
                 
             currentTime = int(time.time() * 1000)
 
-        print("digraph mcts {")
-        print(rootNode.toString())
-        print("}")
+        import io
+        with io.open("mcts.dot", "w", encoding="utf-8") as f:
+            f.write("digraph mcts {")
+            f.write(rootNode.convertToDot())
+            f.write("}")
+            f.close()
         print("Q = " + str(rootNode.getQFunction()))
         return self.qValues
 
@@ -256,3 +270,11 @@ print("mcts")
 policy = mdp.extractPolicyFromQFunction(qFunction)
 print(mdp.qFunctionToString(qFunction) + "\n")
 print(mdp.policyToString(policy))
+
+from graphviz import Digraph
+
+g = Digraph('G', filename='hello.gv')
+
+g.edge('Hello', 'World')
+
+g.view()

@@ -3,21 +3,17 @@
 
 ## Learning Outcomes
 
-1.  Explaing the difference between offline and online planning for
-    MDPs.
-
-2.  Apply MCTS solve small-scale MDP problems manually and program MCTS
-    algorithms to solve medium-scale MDP problems automatically
-
+1.  Explain the difference between offline and online planning for MDPs.
+    
+2.  Apply MCTS solve small-scale MDP problems manually and program MCTS algorithms to solve medium-scale MDP problems automatically
+    
 3.  Construct a policy from Q-functions resulting from MCTS algorithms
 
-5.  Integrate multi-armed bandit algorithms (including UCB) to MCTS
-    algorithms
+5.  Integrate multi-armed bandit algorithms (including UCB) to MCTS algorithms
+    
+6.  Compare and contrast MCTS to value iteration
 
-6.  Compare and contrast MCTS to value/policy iteration
-
-7.  Discuss the strengths and weaknesses of the MCTS family of
-    algorithms.
+6.  Discuss the strengths and weaknesses of the MCTS family of algorithms.
 
 ## Offline Planning & Online Planning forMDPs
 

@@ -98,26 +98,28 @@ class ValueIteration():
         # Initialise the value function V with all 0s
         values = self.initialiseValueFunction()
         for _ in range(iterations):
+            delta = 0.0
+            newValues = dict()
+            for state in mdp.getStates():
+                qValues = dict()
+                for action in mdp.getActions(state):
+                    # Calculate the value of Q(s,a)
+                    newValue = 0.0
+                    for (newState, probability) in mdp.getTransitions(state, action):
+                        reward = mdp.getReward(state, action, newState)
+                        newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
+                    qValues.update({action: newValue})
 
-           delta = 0.0
-           for state in mdp.getStates():
-               qValues = dict()
-               for action in mdp.getActions(state):
-                   # Calculate the value of Q(s,a)
-                   newValue = 0.0
-                   for (newState, probability) in mdp.getTransitions(state, action):
-                       reward = mdp.getReward(state, action, newState)
-                       newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-                   qValues.update({action: newValue})
+                # V(s) = max_a Q(s,a)
+                maxQ = max(qValues.values())
+                delta = max(delta, abs(values[state] - maxQ))
+                newValues.update({state: maxQ})
 
-               # V(s) = max_a Q(s,a)
-               maxQ = max(qValues.values())
-               delta = max(delta, abs(values[state] - maxQ))
-               values.update({state: maxQ})
+            values.update(newValues)
 
-           # terminate if the value function has converged
-           if delta < theta:
-               break
+            # terminate if the value function has converged
+            if delta < theta:
+                break
 
         return values
 
