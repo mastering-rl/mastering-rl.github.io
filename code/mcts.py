@@ -1,50 +1,46 @@
 import math
 import random
 import time
-from gridworld import *
 from multi_armed_bandits import *
 
 class Node():    
 
+    # record a unique node id to distinguish duplicated states
     nextNodeID = 0
     
     def __init__(self, mdp, parent, state):
         self.mdp = mdp  
         self.parent = parent
         self.state = state
-
-        # the total rewards seen from this node
-        self.totalRewards = 0.0
-        self.visits = 0
-
-        if parent == None:
-            self.level = 0
-        else:
-            self.level = parent.level + 1
-
         self.id = Node.nextNodeID
         Node.nextNodeID += 1
+
+        # the value and the total visits to this node
+        self.visits = 0
+        self.value = 0.0
 
     '''
     Return the value of this node
     '''
     def getValue(self):
-        value = 0.0
-        if self.visits > 0:
-            value = self.totalRewards / self.visits
-        return value
-
+        return self.value
 
 class StateNode(Node):
     
-    def __init__(self, mdp, parent, state):
+    def __init__(self, mdp, parent, state, reward = 0, probability = 1.0, bandit = UpperConfidenceBounds()):
         super().__init__(mdp, parent, state)
         
         # a dictionary from actions to an environment node
         self.children = {}
 
-        # A multi-armed bandit for this node
-        self.bandit = UpperConfidenceBounds()
+        # the reward received for this state
+        self.reward = reward
+        
+        # the probability of this node being chosen from its parent
+        self.probability = probability
+
+        # a multi-armed bandit for this node
+        self.bandit = bandit
 
     '''
     Return true if and only if all child actions have been expanded
@@ -56,7 +52,7 @@ class StateNode(Node):
         else:
             return False
 
-    def select(self, level):
+    def select(self):
         if not self.isFullyExpanded():
             return self
         else:
@@ -66,7 +62,7 @@ class StateNode(Node):
                 #get the Q values from all outcome nodes
                 qValues[action] = self.children[action].getValue()
             bestAction = self.bandit.select(actions, qValues)
-            return self.children[bestAction].select(level + 1)
+            return self.children[bestAction].select()
 
     def expand(self):
         #randomly select an unexpanded action to expand
@@ -81,28 +77,27 @@ class StateNode(Node):
 
     def backPropagate(self, reward):
         self.visits += 1
-        self.totalRewards += reward
+
+        # Find the value of the best child
+        
+        if len(self.children.keys()) == 0:
+            self.value = self.value + ((self.reward + reward - self.value) / self.visits)
+        else:
+            bestChildValue = float('-inf')
+            for action in self.children.keys():
+                childValue = self.children[action].getValue()
+                if childValue > bestChildValue:
+                    bestChildValue = childValue
+            self.value = self.reward + self.mdp.getDiscountFactor() * bestChildValue
+        #self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
+        
         if self.parent != None:
             self.parent.backPropagate(reward)
-
-    def convertToDot(self, level = 0):
-        result = ""
-        for action in self.children.keys():
-            child = self.children[action]
-            result += "\"" + self.nodeString() + "\" -> \"" +  child.nodeString() + \
-                "\" [label = \"" + action + "\"]\n"
-        for action in self.children:
-            result += self.children[action].convertToDot()
-        return result
-
-    def nodeString(self):
-        #return "State" + str(self.state)+ "." + str(self.level) + "[" + str(self.totalRewards) + "]"
-        return str(self.state) + "." + str(self.id)
 
     def getQFunction(self):
         qValues = {}
         for action in self.children.keys():
-            qValues[(self.state, action)] = self.children[action].getValue()
+            qValues[(self.state, action)] = round(self.children[action].getValue(), 3)
         return qValues
 
 class EnvironmentNode(Node):
@@ -115,21 +110,17 @@ class EnvironmentNode(Node):
         # a set of outcomes
         self.children = []
 
-
-    def select(self, level):
+    def select(self):
         # choose one outcome based on transition probabilities
         (newState, reward) = self.mdp.execute(self.state, self.action)
 
         #find the corresponding state
         for child in self.children:
             if newState == child.state:
-                return child.select(level + 1)
+                return child.select()
 
-        # unreachable
-        return None
-
-    def addChild(self, action, newState):
-        child = StateNode(self.mdp, self, newState)
+    def addChild(self, action, newState, reward, probability):
+        child = StateNode(self.mdp, self, newState, reward, probability)
         self.children += [child]
         return child
 
@@ -137,144 +128,78 @@ class EnvironmentNode(Node):
         # choose one outcome based on transition probabilities
         (newState, reward) = self.mdp.execute(self.state, self.action)
 
-        seleted = None
+        # expand all outcomes
+        selected = None
         transitions = self.mdp.getTransitions(self.state, self.action)
-        expandedOutcomes = []
         for (outcome, probability) in transitions:
-            if outcome not in expandedOutcomes:
-                newChild = self.addChild(self.action, outcome)
-                if outcome == newState:
-                    selected = newChild
-                expandedOutcomes += [outcome]
-
-        self.expanded = True
-
+            newChild = self.addChild(self.action, outcome, reward, probability)
+            # find the child node correponding to the new state
+            if outcome == newState:
+                selected = newChild
         return selected
 
     def backPropagate(self, reward):
         self.visits += 1
-        self.totalRewards += reward
+        self.value = self.value + ((reward - self.value) / self.visits)
         self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
-    
-    def convertToDot(self, level = 0):
-        result = ""
-        for child in self.children:
-            result += "\"" + self.nodeString() + "\"" + " -> \"" + child.nodeString() + "\"\n"
-        for child in self.children:
-            result += child.convertToDot(level + 1)
-        return result
-
-
-    def nodeString(self):
-        #return "Env" + str(self.state) + "." + str(id(self))
-        return str(self.id)
 
 class MCTS():
 
-    # Initialise with a base policy (default to empty)
-    def __init__(self, mdp, qValues = dict()):
+    def __init__(self, mdp):
         self.mdp = mdp
-        self.qValues = qValues
 
     '''
-    Execute the MCTS algorithm from the initial state given, with timeOut in seconds
+    Execute the MCTS algorithm from the initial state given, with timeout in seconds
     '''
-    def mcts(self, timeOut = 0.1, epsilon = 0.1):
-
-        rootNode = StateNode(mdp, None, mdp.getInitialState())
-
+    def mcts(self, timeout = 1):
+        rootNode = StateNode(self.mdp, None, self.mdp.getInitialState())
+        
         startTime = int(time.time() * 1000)
         currentTime = int(time.time() * 1000)
-        while currentTime < startTime + timeOut * 1000:
-
+        while currentTime < startTime + timeout * 1000:
             # find a state node to expand
-            selectedNode = rootNode.select(level = 0)
-            #print("select %s.%d" % (str(selectedNode.state), selectedNode.level))
+            selectedNode = rootNode.select()
             if not self.mdp.isTerminal(selectedNode):
-
                 child = selectedNode.expand()
-                
-                #print("\tsimulate from %s" % str(child.state))
                 reward = self.simulate(child)
-                #print("reward = " + str(reward))
-                self.backPropagate(selectedNode, reward)
+                child.backPropagate(reward)
                 
             currentTime = int(time.time() * 1000)
 
-        import io
-        with io.open("mcts.dot", "w", encoding="utf-8") as f:
-            f.write("digraph mcts {")
-            f.write(rootNode.convertToDot())
-            f.write("}")
-            f.close()
-        print("Q = " + str(rootNode.getQFunction()))
-        return self.qValues
+        return rootNode
 
-    def getQValue(qValues, state, action):
+    '''
+        Choose a random action. Heustics can be used here to improve simulations.
+    '''
+    def choose(self, state):
+        return random.choice(self.mdp.getActions(state))
 
-        if (state, action) in qValues.keys():
-            return qValues[(state,action)]
-        else:
-            return 0.0
-
-    def choose(self, outcomes):
-        return random.choice(list(outcomes))
-
+    '''
+        Simulate until a terminal state
+    '''
     def simulate(self, node):
         state = node.state
         cumulativeReward = 0.0
         depth = 0
         while not self.mdp.isTerminal(state):
-            #choose a random action
-            actions = self.mdp.getActions(state)
-            action = self.choose(actions)
+            #choose an action to execute
+            action = self.choose(state)
+            
+            # execute the action
             (newState, reward) = self.mdp.execute(state, action)
+
+            # discount the reward 
             cumulativeReward += pow(self.mdp.getDiscountFactor(), depth) * reward
             depth += 1
+
             state = newState
-        node.value = cumulativeReward
+            
         return cumulativeReward
 
-    '''
-        Backpropoate the reward from a simulate node to the root
-    '''
-    def backPropagate(self, node, reward):
-        node.backPropagate(reward)
-
-            
-    def getMaxQ(self, qValues, state):
-        argmaxQ = None
-        maxQ = float('-inf')
-        for action in self.mdp.getActions(state):
-            value = float('-inf')
-            if (state, action) in qValues.keys():
-                value = qValues[(state, action)]
-            if maxQ < value:
-                argMaxQ = action
-                maxQ = value
-        return (argmaxQ, maxQ)
+if __name__ == "__main__":
+    from gridworld import *
     
-    def getMaxQ(self, qValues):
-        maxQ = float('-inf')
-        for action in qValues.keys():
-            value = qValues[action]
-            if maxQ < value:
-                maxQ = value
-        return maxQ
-
-
-mdp = GridWorld(discountFactor=0.9, noise=0.1) #, blockedStates=[(1,1), (2,1)])
-mcts = MCTS(mdp)
-qFunction = mcts.mcts()
-print("mcts")
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.qFunctionToString(qFunction) + "\n")
-print(mdp.policyToString(policy))
-
-from graphviz import Digraph
-
-g = Digraph('G', filename='hello.gv')
-
-g.edge('Hello', 'World')
-
-g.view()
+    mdp = GridWorld()
+    rootNode = MCTS(mdp).mcts(timeout=1.0)
+    print("mcts")
+    print(rootNode.getQFunction())

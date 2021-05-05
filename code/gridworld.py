@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from mdp import *
 
 class GridWorld(MDP):
@@ -110,6 +112,16 @@ class GridWorld(MDP):
             transitions += self.validAdd(state, (x - 1, y), straight)
             transitions += self.validAdd(state, (x, y - 1), self.noise)
             transitions += self.validAdd(state, (x, y + 1), self.noise)
+
+        # merge any duplicate outcomes
+        # TODO: change the transitions data structure into a dictionary
+        merged = defaultdict(lambda: 0.0)
+        for (state, probability) in transitions:
+            merged[state] = merged[state] + probability
+
+        transitions = []
+        for outcome in merged.keys():
+            transitions += [(outcome, merged[outcome])]
 
         return transitions
 

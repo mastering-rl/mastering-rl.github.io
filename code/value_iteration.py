@@ -11,7 +11,6 @@ class ValueIteration():
         # Initialise the value function V with all 0s
         values = self.initialiseValueFunction()
         for i in range(iterations):
-            print("iteration "+ str(i))
             delta = 0.0
             newValues = dict()
             for state in mdp.getStates():
@@ -33,7 +32,6 @@ class ValueIteration():
             
             # terminate if the value function has converged
             if delta < theta:
-                print("%d iterations" % i)
                 break
 
         return values
@@ -46,7 +44,6 @@ class ValueIteration():
 
 if __name__ == "__main__":
     mdp = GridWorld(discountFactor=0.9, width = 4, height = 3)
-    #mdp = GridWorld(discountFactor=0.9, width = 40, height = 24, goals = [((35,20), 1), ((35,19), -1)])
     valueIteration = ValueIteration(mdp)
 
     for iterations in [1, 2, 3, 4, 5, 10, 100]:
@@ -54,11 +51,7 @@ if __name__ == "__main__":
         print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
 
     print("Policy after 100 iterations")
-    import time
-    start = time.time_ns()
     values = valueIteration.valueIteration(iterations = 100)
-    finish = time.time_ns()
     policy = mdp.extractPolicyFromValueFunction(values)
     print(mdp.policyToString(policy))
-    print("Value iteration execution time = %f" % ((finish - start) / 1000000))
 

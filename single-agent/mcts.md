@@ -1,3 +1,14 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (sec:monte-carlo-tree-search)=
 # Monte-Carlo Tree Search
 
@@ -82,9 +93,6 @@ The basic framework is to build up a tree using simulation. The states that have
     
 -   *Backpropagate*: Finally, the value of the node is *backpropagated* to the root node, updating the value of each ancestor node on the way using expected value.
 
-
-
-
 ### Selection
 
 Start at the root node, and successively select a child until we reach a node that is not fully expanded.
@@ -137,47 +145,40 @@ caption
 **Output:** selected action $a$
 
 **while** $currentTime < T$\
-$\quad\quad expand\_node \leftarrow \textrm{Select}(root)$\
-$\quad\quad children \leftarrow \textrm{Expand}(expand\_node)$\
-$\quad\quad child \leftarrow \textrm{Choose}(children)$ -- choose a child to simulate\
+$\quad\quad selectedNode \leftarrow \textrm{Select}(root)$\
+$\quad\quad child \leftarrow \textrm{Expand}(selectedNode)$ -- expand and choose a child to simulate\
 $\quad\quad reward \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
-$\quad\quad \textrm{Backpropagate}(expand\_node, reward)$\
+$\quad\quad \textrm{Backpropagate}(child, reward)$\
 **return** $\textrm{argmax}_{a} Q(s_0, a)$
 :::
 
-Each node stores three items:
+Each node stores four items:
 
 1.  $V(s)$ (an estimate of the value of the state) for its state;
+2.  the number of times $N$ the state has been visited; 
+3.  a set of children nodes; and
+4.  a pointer to their parent node.
 
-2. the number of times $N$ the state has been visited; and
+Given this, there are four functions used in the algorithm above:
 
-3. a pointer to their parent node.
+### Select($node$)
 
-Select($root$)
+- Recursively select the next node using some probabilistic policy (i.e. a multi-armed bandit) until we reach a state node that is not fully expanded
 
-- Recursively select the next node using some probabilistic policy (we'll see more of this in the Multi-Armed Bandits section later), until we reach a node that is not fullyexpanded
+- At each choice point, if a node is fully expanded, select one of the edges in the tree using a multi-armed bandit using the Q values for the actions.
 
-- At each choice point, select one of the edges in the tree. 
-
-- Then, using $P_a(s' \mid s)$, select the outcome for that action. Thus, our simulation follows the probability transitions of the underlying model.
-
-
-Expand($expand\_node$)
-
-- Take the selected node and randomly select an action that can be applied in thatstate and has not been selected previously in that state.
-
-- Expand all possible outcomes nodes for that action.
-
-- Check if the generated nodes are already in tree.  If not in the tree, *add* these nodes to the tree.
-
-:::{note} 
-$P_a(s' \mid s)$ is stochastic, so several visits (in theory an infinite number) may be necessary to generate all successors.
-:::
+- Then, using $P_a(s' \mid s)$, select an outcome for that action. Thus, our simulation follows the probability transitions of the underlying model.
 
 
-Simulate($child$)
+### Expand($expand\_node$)
 
-- Perform a random simulation of the MDP until we reach a terminating state.That is, at each choice point, randomly select an enable action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action.
+- One we reach a node that is not fully expanded (the selected node), from that node, randomly select an action that can be applied in that state and has not been selected previously in that state.
+
+- Expand all possible outcomes nodes for that action. Alternatively, one could simply expand just one outcome using $P_a(s' \mid s)$, but in practice, these are the same thing: after expansion, only one is visited each time. However, because $P_a(s' \mid s)$ is stochastic,  several visits (in theory an infinite number) may be necessary to generate all successors.
+
+###Simulate($child$)
+
+- Perform a random simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action.
 
 - We can use non-random simulation as well by following some heuristic, but we will not look at this in these notes.
 
@@ -185,10 +186,9 @@ Simulate($child$)
 
 - To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
 
-Backpropagation($expand\_node$, $reward$)
+### Backpropagate($child$, $reward$)
 
-- The reward from the simulation is backpropagated from the expanded node to its ancestors recursively.
-We must not forget the *discount factor*!
+- The reward from the simulation is backpropagated from the expanded node to its ancestors recursively. We must not forget the *discount factor*!
 
 - For each state, get the expected value of all actions from that node:
 
@@ -198,6 +198,13 @@ $$
 
 Does this look familiar?! It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
 
+However, we do not really need to use the Bellman equation at all. Instead, we can simply calculate the value of a node as: 
+
+$$
+V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G_{t+1} - V(s) / N(s)
+$$
+
+where $G_{t+1}$ is the discounted future reward passed up from the child node during simulation. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because the Select function selects using $P_a(s' \mid s)$, on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$, so the moving average will correspond to the Bellman equation given an infinite number of executions.
 
 :::{admonition} Example: Backpropagation
 
@@ -233,7 +240,6 @@ $$
 \end{array}
 $$
 
-
 The new tree would look like this:
 
 ```{figure} ./latex/mcts_example_after_backprop.png
@@ -250,51 +256,342 @@ Once we have run out of computational time, we select the action that maximises 
 
 $$\textrm{argmax}_{a \in A(s)} Q(s_0, a)$$ 
 
-which is just
-
-$$\textrm{argmax}_{a \in A(s)}\sum_{s' \in A(s_0)} P_a(s'|s_0)\ [r(s_0,a,s') + \gamma\  V(s') ]$$
-
 We execute that action and wait to see which outcome occurs for the action.
 
 Once we see the outcome state, which we will call $s'$, we start the process all over again, except with $s_0 \leftarrow s'$.
 
 However, importantly, we can *keep* the sub-tree from state $s'$, as we already have done simulations from that state. We discard the rest of the tree (all child of $s_0$ other than the chosen action) and incrementally build from $s'$.
 
-
-
 ## Upper Confidence Trees (UCT)
 
-**Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$.
+When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorith, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
 
-Upper Confidence Trees (UCT) is the combination of MCST with the UCB1 strategy for selecting the next node to follow:
+**Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$. So, at each state, simply run a multi-armed bandit at that state.
+
+The Upper Confidence Trees (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
 
 $$UCT = MCTS + UCB1$$
 
-The UCT selection strategy is very similar to the UCB1 strategy:
+The UCT selection strategy is similar to the UCB1 strategy:
 
 $$\text{argmax}_{a \in A(s)} Q(s,a) + 2 C_p \sqrt{\frac{2 \ln N(s)}{N(s,a)}}$$
 
-$C_p >0$ is the exploration constant, which determines can be increased to encourage more exploration, and decreased to encourage less exploration. Ties are broken randomly.
+$N(s)$ is the number of times a state node has been visited, and $N(s,a)$ is the number of times $a$ has been selected from this node. $C_p >0$ is the exploration constant, which determines can be increased to encourage more exploration, and decreased to encourage less exploration. Ties are broken randomly.
 
 If $Q(s,a) \in [0,1]$ and $C_p=\frac{1}{\sqrt{2}}$ then in two-player zero-sum, UCT converges to the well-known Minimax algorithm.
 
-## Model-free MCTS
+## Simulation-based MCTS
 
 **What if we do not know $P_a(s' \mid s)$?**
 
-In following sections of this chapter, we will look more at situations in which we do not know $P_a(s' \mid s)$, but it is important to note that we can use MCTS even if we do not know our transition probabilities or our reward function, provided that we can *simulate* them; e.g. using a code-based simulator. The new approach is a straightforward modification:
+We can use MCTS if we do not know our transition probabilities or our reward function, provided that we can *simulate* them; e.g. using a code-based simulator. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
+
+The new approach is a straightforward modification:
 
 1.  *Selection* is as before.
 
-2.  In the *expansion* step, instead of expanding all child nodes of an  action, we run the simulation forward one step, which will choose an outcome according to $P(s' \mid s)$ (provided the simulator is accurate).
+2.  In the *expansion* step, instead of expanding all child nodes of an action, we run the simulation forward one step, which will choose an outcome according to $P(s' \mid s)$ (provided the simulator is accurate), even though we cannot "see"  $P(s' \mid s)$.
 
-3.  We then simulate as before, and we learn the rewards when we receive them.
+3.  We then simulate as before, and we learn the rewards when we receive them from the simulator.
 
 4.  In the *backpropagation* step, instead of using the Bellman equation to calculate the expected return, we simply use the *average* return. If we simulate each step enough times, the average will converge to the expected return.
 
-The disadvantage of this approach is that we have to do repeated simulations for the average to converge, whereas when we know $P_a(s' \mid s)$, we need only expand an action once to know its immediate effect.
+The advantage of this is that it is more general: as long as we have a simulator for our problem, we can apply it -- we do not need an explicit model of the problem. For many problem, simulators are easier to produce than problems.
 
-The advantage is that it is more general: as long as we have a simulator for our problem, we can apply it -- we do not need an explicit model of the problem. For many problem, simulators are easier to produce than problems.
+(sec:mcts:implementation)=
+## Implementation
+
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+import sys
+sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code/')
+```
+
+Below is an implementation of MCTS in Python. This is a simulation-based implementation as it simulates outcomes and uses a moving average to calculate a value. However, the implementation keeps track of probabilities for the purpose of visualisation.
+
+First, we create a class `Node`, which forms the basis for the tree:
+
+```{code-cell} ipython3 
+import math
+import random
+import time
+from multi_armed_bandits import *
+
+class Node():    
+
+    # record a unique node id to distinguish duplicated states for visualisation
+    nextNodeID = 0
+    
+    def __init__(self, mdp, parent, state):
+        self.mdp = mdp  
+        self.parent = parent
+        self.state = state
+        self.id = Node.nextNodeID
+        Node.nextNodeID += 1
+
+        # the value and the total visits to this node
+        self.visits = 0
+        self.value = 0.0
+
+    '''
+    Return the value of this node
+    '''
+    def getValue(self):
+        return self.value
+```
+
+In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points' for the environment (that is, the filled nodes that correspond to an action outcome). 
+
+Our implementation mirrors this, with two different classes for nodes: `StateNode` and `EnvironmentNode`. The children of a `StateNode` are all `EnvironmentNode` instances, and vice versa.
+
+For simplicity, we implement the select, expand, and backpropagate methods in these two node classes:
+
+```{code-cell} ipython3
+class StateNode(Node):
+    
+    def __init__(self, mdp, parent, state, reward = 0, probability = 1.0, bandit = UpperConfidenceBounds()):
+        super().__init__(mdp, parent, state)
+        
+        # a dictionary from actions to an environment node
+        self.children = {}
+
+        # the reward received for this state
+        self.reward = reward
+        
+        # the probability of this node being chosen from its parent
+        self.probability = probability
+
+        # a multi-armed bandit for this node
+        self.bandit = bandit
+
+    '''
+    Return true if and only if all child actions have been expanded
+    '''
+    def isFullyExpanded(self):
+        validActions = self.mdp.getActions(self.state)
+        if len(validActions) == len(self.children):
+            return True
+        else:
+            return False
+
+    def select(self):
+        if not self.isFullyExpanded():
+            return self
+        else:
+            actions = list(self.children.keys())    
+            qValues = dict()
+            for action in actions:
+                #get the Q values from all outcome nodes
+                qValues[action] = self.children[action].getValue()
+            bestAction = self.bandit.select(actions, qValues)
+            return self.children[bestAction].select()
+
+    def expand(self):
+        #randomly select an unexpanded action to expand
+        actions = self.mdp.getActions(self.state) - self.children.keys()
+        action = random.choice(list(actions))
+
+        #choose an outcome
+        newChild = EnvironmentNode(self.mdp, self, self.state, action)
+        newStateNode = newChild.expand()
+        self.children[action] = newChild
+        return newStateNode
+
+    def backPropagate(self, reward):
+        self.visits += 1
+
+        # Find the value of the best child
+        
+        if len(self.children.keys()) == 0:
+            self.value = self.value + ((self.reward + reward - self.value) / self.visits)
+        else:
+            bestChildValue = float('-inf')
+            for action in self.children.keys():
+                childValue = self.children[action].getValue()
+                if childValue > bestChildValue:
+                    bestChildValue = childValue
+            self.value = self.reward + self.mdp.getDiscountFactor() * bestChildValue
+        #self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
+        
+        if self.parent != None:
+            self.parent.backPropagate(reward)
+
+    def getQFunction(self):
+        qValues = {}
+        for action in self.children.keys():
+            qValues[(self.state, action)] = round(self.children[action].getValue(), 3)
+        return qValues
+
+class EnvironmentNode(Node):
+    
+    def __init__(self, mdp, parent, state, action):
+        super().__init__(mdp, parent, state)
+        self.outcmes = {}
+        self.action = action
+        
+        # a set of outcomes
+        self.children = []
+
+    def select(self):
+        # choose one outcome based on transition probabilities
+        (newState, reward) = self.mdp.execute(self.state, self.action)
+
+        #find the corresponding state
+        for child in self.children:
+            if newState == child.state:
+                return child.select()
+
+    def addChild(self, action, newState, reward, probability):
+        child = StateNode(self.mdp, self, newState, reward, probability)
+        self.children += [child]
+        return child
+
+    def expand(self):
+        # choose one outcome based on transition probabilities
+        (newState, reward) = self.mdp.execute(self.state, self.action)
+
+        # expand all outcomes
+        selected = None
+        transitions = self.mdp.getTransitions(self.state, self.action)
+        for (outcome, probability) in transitions:
+            newChild = self.addChild(self.action, outcome, reward, probability)
+            # find the child node correponding to the new state
+            if outcome == newState:
+                selected = newChild
+        return selected
+
+    def backPropagate(self, reward):
+        self.visits += 1
+        self.value = self.value + ((reward - self.value) / self.visits)
+        self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
+```
+
+Once these are implemented, the MCTS class is quite straightforward. It simply implements the algorithm from above, and implements the simulation method:
+
+```{code-cell} ipython3
+class MCTS():
+
+    def __init__(self, mdp):
+        self.mdp = mdp
+
+    '''
+    Execute the MCTS algorithm from the initial state given, with timeout in seconds
+    '''
+    def mcts(self, timeout = 1):
+        rootNode = StateNode(self.mdp, None, self.mdp.getInitialState())
+        
+        startTime = int(time.time() * 1000)
+        currentTime = int(time.time() * 1000)
+        while currentTime < startTime + timeout * 1000:
+            # find a state node to expand
+            selectedNode = rootNode.select()
+            if not self.mdp.isTerminal(selectedNode):
+                child = selectedNode.expand()
+                reward = self.simulate(child)
+                child.backPropagate(reward)
+                
+            currentTime = int(time.time() * 1000)
+
+        return rootNode
+
+    '''
+        Choose a random action. Heustics can be used here to improve simulations.
+    '''
+    def choose(self, state):
+        return random.choice(self.mdp.getActions(state))
+
+    '''
+        Simulate until a terminal state
+    '''
+    def simulate(self, node):
+        state = node.state
+        cumulativeReward = 0.0
+        depth = 0
+        while not self.mdp.isTerminal(state):
+            #choose an action to execute
+            action = self.choose(state)
+            
+            # execute the action
+            (newState, reward) = self.mdp.execute(state, action)
+
+            # discount the reward 
+            cumulativeReward += pow(self.mdp.getDiscountFactor(), depth) * reward
+            depth += 1
+
+            state = newState
+            
+        return cumulativeReward
+```
+
+We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.01 seconds (to avoid a tree that is too large to visualise), we show the tree (open in a new tab to see a larger version):
+
+```{code-cell} ipython3
+---
+tags: [hide-cell]
+---
+from mcts import *
+
+from graphviz import Digraph
+
+class GraphVisualisation():
+
+    def __init__(self, maxLevel = 3):
+        self.maxLevel = maxLevel
+
+    def singleAgentMCTSToGraph(self, stateNode, filename='mcts'):
+        g = Digraph('G', filename=filename, format='png')
+        self.stateNodeToGraph(g, stateNode, level = 0)
+        return g
+
+    def stateNodeID(self, stateNode):
+        return "V(" + str(stateNode.state) + "." + str(stateNode.id) + ") = " + str(round(stateNode.getValue(), 3)) +\
+               "\\nN = " + str(stateNode.visits)
+
+    def environmentNodeID(self, environmentNode):
+        return "V(" + str(environmentNode.id) + ") = " + str(round(environmentNode.getValue(), 3)) +\
+               "\\nN = " + str(environmentNode.visits)
+    
+    def stateNodeToGraph(self, g, stateNode, level):
+        for action in stateNode.children.keys():
+            g.edge(self.stateNodeID(stateNode), self.environmentNodeID(stateNode.children[action]), action)
+
+        if level <= self.maxLevel:
+            for action in stateNode.children.keys():
+                self.environmentNodeToGraph(g, stateNode.children[action], level)
+
+    def environmentNodeToGraph(self, g, environmentNode, level):
+        for child in environmentNode.children:
+            g.node(self.environmentNodeID(environmentNode), self.environmentNodeID(environmentNode), style='filled', shape='point', width='0.25')
+            g.edge(self.environmentNodeID(environmentNode), self.stateNodeID(child), str(child.probability))
+            
+        for child in environmentNode.children:
+            self.stateNodeToGraph(g, child, level + 1)
+```  
+
+```{code-cell} ipython3
+from gridworld import *
+mdp = GridWorld()
+rootNode = MCTS(mdp).mcts(timeout=0.01)
+gv = GraphVisualisation(maxLevel = 2)
+g = gv.singleAgentMCTSToGraph(rootNode, filename = 'mcts')
+g
+```
+
+In this tree, the expression $(x, y).z$ represents the $(x,y)$ state with the unique identify $z$ for the node. 
+
+The MCTS tree example shows weakness: the same state expanded multiple times, and will continue to be expanded. We can work around this by not expanding states that have already been visited. We can work around this by simply returning $V(s)$ as the reward for any expanded state, and not expanding it any more.
+
+Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and print the corresponding Q-function for the initial state:
+
+```{code-cell} ipython3
+mdp = GridWorld()
+rootNode = MCTS(mdp).mcts()
+print(rootNode.getQFunction())
+```
+What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, moving down from the initial state transitions back to the initial state with probability 0.9, so the difference between the two actions on average is just the discount factor.
+
 
 ## Applications of MCTS with UCB tree policies
 
