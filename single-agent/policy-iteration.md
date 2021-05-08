@@ -65,6 +65,14 @@ However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence
 suggests that the most efficient is dependent on the particular MDP
 model being solved.
 
+## Applications of Policy Gradients
+
+A great application of using off-policy updates in deep Q-learning for robotic arms to learn how to grasp unknown objects. The only input for the problem is the camera data:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cXaic_k80uM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This is using policy iteration (policy gradient descent) rather than standard Q-learning.
+
 
 Summary: MDPs
 -------------
@@ -81,7 +89,6 @@ iteratively improve on a non-optimal solution.
 Heuristic search can also be used, but does not produce solutions that
 are as general -- the work only for states that are reachable from the
 initial state of the search.
-
 
 **What's next?** How to *learn* the probabilities over the action
 outcomes using *reinforcement learning*.

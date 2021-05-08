@@ -88,6 +88,9 @@ class EpsilonGreedy(MultiArmedBandit):
 
             # if there are multiple actions with the highest value
             # choose one randomly
+            if len(maxActions) == 0:
+                print("actions = " + str(actions))
+                print("qValues = " + str(qValues))
             return random.choice(maxActions)
 
 class EpsilonDecreasing(MultiArmedBandit):

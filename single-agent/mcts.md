@@ -161,7 +161,7 @@ Each node stores four items:
 
 Given this, there are four functions used in the algorithm above:
 
-### Select($node$)
+**Select($node$)**
 
 - Recursively select the next node using some probabilistic policy (i.e. a multi-armed bandit) until we reach a state node that is not fully expanded
 
@@ -170,13 +170,13 @@ Given this, there are four functions used in the algorithm above:
 - Then, using $P_a(s' \mid s)$, select an outcome for that action. Thus, our simulation follows the probability transitions of the underlying model.
 
 
-### Expand($expand\_node$)
+**Expand($expand\_node$)**
 
 - One we reach a node that is not fully expanded (the selected node), from that node, randomly select an action that can be applied in that state and has not been selected previously in that state.
 
 - Expand all possible outcomes nodes for that action. Alternatively, one could simply expand just one outcome using $P_a(s' \mid s)$, but in practice, these are the same thing: after expansion, only one is visited each time. However, because $P_a(s' \mid s)$ is stochastic,  several visits (in theory an infinite number) may be necessary to generate all successors.
 
-###Simulate($child$)
+**Simulate($child$)**
 
 - Perform a random simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action.
 
@@ -186,7 +186,7 @@ Given this, there are four functions used in the algorithm above:
 
 - To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
 
-### Backpropagate($child$, $reward$)
+**Backpropagate($child$, $reward$)**
 
 - The reward from the simulation is backpropagated from the expanded node to its ancestors recursively. We must not forget the *discount factor*!
 
@@ -198,21 +198,18 @@ $$
 
 Does this look familiar?! It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
 
-However, we do not really need to use the Bellman equation at all. Instead, we can simply calculate the value of a node as: 
+However, in most MCTS frameworks,  we do not use the Bellman equation at all. Instead, we calculate the value of a node as: 
 
 $$
 V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G_{t+1} - V(s) / N(s)
 $$
 
-where $G_{t+1}$ is the discounted future reward passed up from the child node during simulation. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because the Select function selects using $P_a(s' \mid s)$, on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$, so the moving average will correspond to the Bellman equation given an infinite number of executions.
+where $G_{t+1}$ is the discounted future reward passed up from the child node during simulation. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because the Select function selects using $P_a(s' \mid s)$, on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$, so the moving average will correspond to the Bellman equation given an infinite number of executions. 
 
 :::{admonition} Example: Backpropagation
 
-Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.9$, $r=X$
-represents reward $X$ received at a state, N is the number of times the
-state has been visited, and the length of the simulation is 13. After
-the simulation step, but before backpropagation, our tree would look
-like this:
+Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.9$, $r=X$ represents reward $X$ received at a state, N is the number of times the
+state has been visited, and the length of the simulation is 13. After the simulation step, but before backpropagation, our tree would look like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example
@@ -401,19 +398,7 @@ class StateNode(Node):
 
     def backPropagate(self, reward):
         self.visits += 1
-
-        # Find the value of the best child
-        
-        if len(self.children.keys()) == 0:
-            self.value = self.value + ((self.reward + reward - self.value) / self.visits)
-        else:
-            bestChildValue = float('-inf')
-            for action in self.children.keys():
-                childValue = self.children[action].getValue()
-                if childValue > bestChildValue:
-                    bestChildValue = childValue
-            self.value = self.reward + self.mdp.getDiscountFactor() * bestChildValue
-        #self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
+        self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
         
         if self.parent != None:
             self.parent.backPropagate(reward)
@@ -581,7 +566,7 @@ g
 
 In this tree, the expression $(x, y).z$ represents the $(x,y)$ state with the unique identify $z$ for the node. 
 
-The MCTS tree example shows weakness: the same state expanded multiple times, and will continue to be expanded. We can work around this by not expanding states that have already been visited. We can work around this by simply returning $V(s)$ as the reward for any expanded state, and not expanding it any more.
+The MCTS tree example shows weakness: the same state expanded multiple times, and will continue to be expanded. We can work around this by not expanding states that have already been visited. We can work around this by simply returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.
 
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and print the corresponding Q-function for the initial state:
 
@@ -590,33 +575,9 @@ mdp = GridWorld()
 rootNode = MCTS(mdp).mcts()
 print(rootNode.getQFunction())
 ```
-What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, moving down from the initial state transitions back to the initial state with probability 0.9, so the difference between the two actions on average is just the discount factor.
+What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations end up long and get a very small discounted reward. Finally, there is actually very little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
-
-## Applications of MCTS with UCB tree policies
-
-**Games**:
-
--   Go: [MoGo]{.smallcaps} (2006), [Fuego]{.smallcaps} (2009), \...,
-    [Alpha Go]{.smallcaps}(2010--2016)
-
--   Board Games: [Havannah]{.smallcaps}, [Y]{.smallcaps},
-    [Cataan]{.smallcaps}, [Othello]{.smallcaps},
-    [Arimaa]{.smallcaps}\...
-
--   Video Games: [Atari]{.smallcaps} 2600
-
-**Not Games**:
-
--   Computer Security: Attack tree generation & Penetration testing
-
--   Deep Learning: Automated "performance tuning" of Neural Nets and
-    Feature Selection
-
--   Operations Research: Optimising bus schedules, energy stock
-    management\...
-
-### Why does it work so well (sometimes)?
+## Why does it work so well (sometimes)?
 
 It addresses exploitation vs. exploration comprehensively.
 
@@ -626,13 +587,23 @@ It addresses exploitation vs. exploration comprehensively.
 
     -   Exploration aims at *minimising regret*.
 
-[Watch it playing ](https://www.youtube.com/watch?v=HRiEUUC9TUA)
+Watch it playing Mario brothers. The lines in front of Mario illustrate the exploration:
 
-[Where it does not do so well..:](https://www.youtube.com/watch?v=YVbTbMO4rtM). It fails here because the character does not receive a reward until it reaches the other side of the road, so UCT has no feedback to go on.
+<p align="center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/HRiEUUC9TUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
+
+Here is UCT doing very poorly playing a game of Freeway:
+
+<p align="center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/YVbTbMO4rtM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
+
+It fails here because the character does not receive a reward until it reaches the other side of the road, so UCT has no feedback to go on. This is the same problem that we see in GridWorld: random simulations spend a lot of time exploring for no reward. In this case, the length of a path to reach a reward is so long that it does not even get to the other side of the road. Heuristics are needed here.
 
 ### Value iteration vs. MCTS
 
-Often the set of states reachable from the initial state $s_0$ using an optimal policy is much small that the set of total states. In this regards, value iteration is exhaustive: it calculates behaviour from states that will never be encountered if we know the initial state of the problem.
+Often the set of states reachable from the initial state $s_0$ using an optimal policy is much smaller than the set of total states. In this regards, value iteration is exhaustive: it calculates behaviour from states that will never be encountered if we know the initial state of the problem.
 
 MCTS (and other search methods) methods thus can be used by just taking samples starting at $s_0$. However, the result is not as general as using value/policy iteration: the resulting solution will work only from the known initial state $s_0$ or any state reachable from $s_0$ using actions defined in the model. Whereas value iteration  works from any state.
 
@@ -643,23 +614,17 @@ MCTS (and other search methods) methods thus can be used by just taking samples 
  | Coverage/ Robustness  | Higher (works from any state)| Lower (works only from initial state or state reachable from initial state)
  | |
 
-This is important: value iteration is then more expensive, however, for an agent operating in its environment, we only solve exhaustively once, and we can use the resulting policy many times no matter state we are
+This is important: value iteration is then more expensive for many problems, however, for an agent operating in its environment, we only solve exhaustively once, and we can use the resulting policy many times no matter state we are in latter.
 
-For MCTS, we need to solve *online* each time we encounter a state we have not considered before.
+For MCTS, we need to solve *online* each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heurist for rollouts), this can be improved.
 
 ## Combining MCTS and TD learning: Alpha Zero
 
-Alpha Zero (or more accurately its predecessor AlphaGo) made headlines
-when it beat Go world champion Lee Sodol in 2016. It uses a combination
-of MCTS and (deep) reinforcement learning to learn a policy. 
+Alpha Zero (or more accurately its predecessor AlphaGo) made headlines when it beat Go world champion Lee Sodol in 2016. It uses a combination of MCTS and (deep) reinforcement learning to learn a policy. 
 
 A simple overview:
 
-1.  AlphaZero uses a deep neural network to estimate the Q-function. More
-    accurately, it gives an estimate of the probability of selecting
-    action $a$ in state $s$ ($P(a|s)$), and the *value* of the state
-    ($V(s)$), which represents the probability of the player winning
-    from $s$.
+1.  AlphaZero uses a deep neural network to estimate the Q-function. More accurately, it gives an estimate of the probability of selecting action $a$ in state $s$ ($P(a|s)$), and the *value* of the state ($V(s)$), which represents the probability of the player winning from $s$.
 
 2.  It is trained via *self-play*. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.
 
@@ -682,39 +647,26 @@ A simple overview:
     6.  Then, feedback the result of the self-play game to update the
         $Q$ function for each move.
 
-AlphaZero is best summarised using the following figure from the Alpha Zero Nature paper (2016):
+AlphaZero is best summarised using the following figure from the Alpha Zero Nature paper (2017):
 
 ![image](./figs/AlphaGoZero-Architecture.png)
 
+
 ## Summary
 
--   Monte Carlo Tree Search (MCTS) is an anytime search algorithm,
-    especially good for stochastic domains, such as MDPs.
+-   Monte Carlo Tree Search (MCTS) is an anytime search algorithm, especially good for stochastic domains, such as MDPs.
 
-    -   Smart selection strategies are *crucial* for good performance.
+    - It can be used for model-based or simulation-based problems.
+    - Smart selection strategies are *crucial* for good performance.
 
--   Upper Confidence Bounds (UCB1) for Multi-Armed Bandits makes a good
-    selection policy.
-
-    -   UCB1 (with slight modifications) balances exploitation and
-        exploration remarkable well.
-
-    -   The Fear Of Missing Out is an *excellent* motivator for
-        exploration.
-
--   UCT is the combination of MCTS and UCB1, and is an *extremely
-    successful* algorithm.
+-   UCT is the combination of MCTS and UCB1, and is a successful algorithm on many problems.
 
 ## Further Reading
 
 - Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at  http://incompleteideas.net/book/the-book.html 
 
-- *Mastering the Game of Go without Human Knowledge* from DeepMind.
+- [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 
-  Available at: <https://deepmind.com/documents/119/agz_unformatted_nature.pdf>
-
--   [A Survey of Monte Carlo Tree Search Methods](https://www.academia.edu/download/53617804/A_Survey_of_Monte_Carlo_Tree_Search_Meth20170621-25252-76lty6.pdf). Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. *IEEE Transactions on Computational Intelligence and AI in Games*, (4)1: 1-49, 2012
-    
-    -   Good "entry level" resource, with lots of pointers to seminal papers
+-   [A Survey of Monte Carlo Tree Search Methods](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.297.3086&rep=rep1&type=pdf). Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. *IEEE Transactions on Computational Intelligence and AI in Games*, (4)1: 1-49, 2012
     
 -   [Monte-Carlo Tree Search: A New Framework for Game AI](https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf).  Guillaume Chaslot, Sander Bakkes, Istvan Szita, and Pieter Spronck.  In *AIIDE*, 1-2, 2008.

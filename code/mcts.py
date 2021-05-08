@@ -77,19 +77,7 @@ class StateNode(Node):
 
     def backPropagate(self, reward):
         self.visits += 1
-
-        # Find the value of the best child
-        
-        if len(self.children.keys()) == 0:
-            self.value = self.value + ((self.reward + reward - self.value) / self.visits)
-        else:
-            bestChildValue = float('-inf')
-            for action in self.children.keys():
-                childValue = self.children[action].getValue()
-                if childValue > bestChildValue:
-                    bestChildValue = childValue
-            self.value = self.reward + self.mdp.getDiscountFactor() * bestChildValue
-        #self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
+        self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
         
         if self.parent != None:
             self.parent.backPropagate(reward)
@@ -200,6 +188,6 @@ if __name__ == "__main__":
     from gridworld import *
     
     mdp = GridWorld()
-    rootNode = MCTS(mdp).mcts(timeout=1.0)
+    rootNode = MCTS(mdp).mcts(timeout=10.0)
     print("mcts")
     print(rootNode.getQFunction())

@@ -16,8 +16,8 @@
     - file: single-agent/model-free
     - file: single-agent/n-step
     - file: single-agent/mcts
-#    - file: single-agent/function-approximation
-#    - file: single-agent/reward-shaping
+    - file: single-agent/function-approximation
+    - file: single-agent/reward-shaping
 
 #- part: Multi-agent Reinforcement Learning
 #  chapters:

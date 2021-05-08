@@ -40,7 +40,7 @@ class GraphVisualisation():
 if __name__ == "__main__":
     from gridworld import *
     mdp = GridWorld()
-    rootNode = MCTS(mdp).mcts(timeout=1)
+    rootNode = MCTS(mdp).mcts(timeout=0.03)
     print(rootNode.getQFunction())
     gv = GraphVisualisation(maxLevel = 2)
     g = gv.singleAgentMCTSToGraph(rootNode)

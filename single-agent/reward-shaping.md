@@ -1,5 +1,5 @@
 
-## Reward shaping
+# Reward shaping
 
 ## Learning Outcomes
 
@@ -224,15 +224,5 @@ Once we start learning over episodes, we will select those actions with a higher
 
     <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
--   *Playing Atari with Deep Reinforcement Learning* from DeepMind.
-
-    Available at:
-
-    <https://arxiv.org/pdf/1312.5602v1.pdf>
-
--   Before AlphaGo there was TD-gammon, which was the first paper to
-    combine reinforcement learning and neural networks:
-
-    <http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf>
 
 [^1]: Wiewiora: ?Potential-based shaping and Q-value initialization are equivalent.? (JAIR, 2003)

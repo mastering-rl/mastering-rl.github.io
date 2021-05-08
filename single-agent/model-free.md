@@ -502,8 +502,7 @@ Imagine a reinforcement learning agent that manages resources for a cloud-based 
     
     We would need to operate our cloud platform to get data. As such, if the average reward *per episode* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the episodes are not practice -- they actually influence real rewards,  such as profit.
 
--   Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
-    
+- Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
 
 If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
 
@@ -520,7 +519,9 @@ The standard versions that we see in this section have two major limitations:
 
 Solving the cliff example using Q-learning with epsilon-greedy:
 
+<p align="center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ppALjH0kYPE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
 
 The source code for this is available from here: <https://github.com/alecKarfonta/Gridworld>
 
