@@ -39,11 +39,18 @@ class QTable(QFunction):
 
 class ModelFreeReinforcementLearner():
 
-    def __init__(self, mdp, bandit, alpha = 0.1, initQValues = None):
+    # how many episodes to take an average for determining convergence
+    length = 30
+
+    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = 0.05, initQValues = None):
         self.mdp = mdp
         self.bandit = bandit
         self.alpha = alpha
+        self.convergenceEpsilon = convergenceEpsilon
         self.initQValues = initQValues
+
+        self.latestRewards = []
+        self.previousAverage = 0.0
 
     def execute(self, episodes = 2000): abstract
 
@@ -73,20 +80,33 @@ class ModelFreeReinforcementLearner():
     def getQValues(self, state, qValues):
         return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
 
+
+    '''
+        Return true if and only if this has converged, defined as the last self.length episodes
+        having an average reward within self.convergenceEpsilon of the previous 30 episodes
+    '''
+    def isConverged(self, episodeReward):
+        converged = False
+        if len(self.latestRewards) == self.length:
+            average = sum(self.latestRewards) / self.length
+            if abs(self.previousAverage - average) < self.convergenceEpsilon:
+                converged = True
+            self.previousAverage = average
+            self.latestRewards = []
+        else:
+            self.latestRewards += [episodeReward]
+        return converged
+
 from multi_armed_bandits import EpsilonGreedy
 
 class QLearning(ModelFreeReinforcementLearner):
     def execute(self, episodes = 100):
         qValues = self.initialiseQFunction()
 
-        latest = []
-        length = 30
-        previousAverage = 0
-
         for i in range(episodes):
             state = self.mdp.getInitialState()
 
-            totalReward = 0 
+            episodeReward = 0 
             while not self.mdp.isTerminal(state):
                 actions = self.mdp.getActions(state)
                 action = self.bandit.select(actions, self.getQValues(state, qValues))
@@ -94,19 +114,10 @@ class QLearning(ModelFreeReinforcementLearner):
                 newValue = self.update(qValues, state, action, nextState, reward)
                 qValues[(state, action)] = newValue
                 state = nextState
-                totalReward += reward
+                episodeReward += reward
 
-
-            if len(latest) == length:
-                average = sum(latest) / length
-                if abs(previousAverage - average) < 0.05:
-                    print("%d episodes" % i)
-                    break
-                previousAverage = average
-                latest = []
-            else:
-                latest += [totalReward]
-                
+            if self.isConverged(episodeReward):
+                break
             
         return qValues
 
@@ -124,7 +135,8 @@ class SARSA(ModelFreeReinforcementLearner):
             state = self.mdp.getInitialState()
             actions = self.mdp.getActions(state)
             action = self.bandit.select(actions, self.getQValues(state, qValues))
-            
+
+            episodeReward = 0
             while not self.mdp.isTerminal(state):
                 (nextState, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.getActions(nextState)
@@ -133,7 +145,11 @@ class SARSA(ModelFreeReinforcementLearner):
                 qValues[(state, action)] = newValue
                 state = nextState
                 action = nextAction
-            
+                episodeReward += reward
+
+            if self.isConverged(episodeReward):
+                break
+
         return qValues
 
     def update(self, qValues, state, action, nextState, nextAction, reward): 
@@ -158,6 +174,7 @@ class LinearSARSA(ModelFreeReinforcementLearner):
             actions = self.mdp.getActions(state)
             action = self.bandit.select(actions, self.getQValues(actions, state))
 
+            episodeReward = 0
             while not self.mdp.isTerminal(state):
                 (nextState, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.getActions(nextState)
@@ -168,7 +185,11 @@ class LinearSARSA(ModelFreeReinforcementLearner):
                 newValue = self.update(state, action, nextState, nextAction, reward)
                 state = nextState
                 action = nextAction
-                
+                episodeReward += reward
+
+            if self.isConverged(episodeReward):
+                print("episodes = %d" % i)
+                break
 
         print("TERMINATE")
         qValues = dict()
@@ -318,9 +339,9 @@ if __name__ == "__main__":
     print("==========\nLinearSarsa\n==========")
     width = 4
     height = 3
-    #mdp = GridWorld(discountFactor = 0.9, noise=0.0, width = width, height = height, goals=[((3,0),1)])
+    mdp = GridWorld(discountFactor = 0.9, noise=0.0, width = width, height = height, goals=[((3,2),1)])
     #mdp = GridWorld(discountFactor = 0.9, noise = 0.0, blockedStates=[], goals=[((3,2),1)], width = width, height = height)
-    mdp = GridWorld()
+    print(mdp.visualise())
     featureExtractor = GridWorldFeatureExtractor(width = width, height = height)
     qFunction = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor).execute(episodes = 100)
     policy = mdp.extractPolicyFromQFunction(qFunction)

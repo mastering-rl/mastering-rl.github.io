@@ -55,3 +55,5 @@ if __name__ == "__main__":
     policy = mdp.extractPolicyFromValueFunction(values)
     print(mdp.policyToString(policy))
 
+    print(mdp.policyToString(policy))
+
