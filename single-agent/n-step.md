@@ -51,8 +51,8 @@ Reinforcement learning approaches (from Sutton and Barto (2020))
 
 We will look at n-step reinforcement learning, in which $n$ is the parameter that
 determines the number of steps that we want to look ahead before
-updating the Q-function. So for $n=0$, this is just 'standard' reinforcement
-learning that we saw earlier in this chapter, and when $n=1$, the algorithm looks one step beyond the immediate reward, $n=2$ it looks two steps beyond, etc.
+updating the Q-function. So for $n=0$, this is just "normal" TD learning such as Q-learning or SARSA.
+When $n=1$, the algorithm looks one step beyond the immediate reward, $n=2$ it looks two steps beyond, etc.
 
 Both Q-learning and SARSA have an n-step version. We will look at
 n-step learning more generally, and then show an algorithm for n-step
