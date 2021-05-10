@@ -577,6 +577,7 @@ print(rootNode.getQFunction())
 ```
 What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations end up long and get a very small discounted reward. Finally, there is actually very little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
+(sec:monte-carlo-tree-search:demo)=
 ## Why does it work so well (sometimes)?
 
 It addresses exploitation vs. exploration comprehensively.

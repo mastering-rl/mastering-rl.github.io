@@ -16,60 +16,14 @@
 
 ## Overview
 
-### Reinforcement Learning -- Some weaknesses
+In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes *sparse*. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a [UCT algorithm playing Freeway](sec:monte-carlo-tree-search:demo).
 
-In the previous chapters, we looked at fundamental temporal difference
-(TD) methods for reinforcement learning. As noted, these two methods
-have some weaknesses in this basic format:
+In this section, we look at two simple approaches that can improve temporal difference methods:
 
-1.  Unlike Monte-Carlo methods, which reach a reward and then
-    backpropagate this reward, TD methods use bootstrapping (they
-    estimate the future discounted reward using $Q(s,a)$), which means
-    that for problems with spare rewards, it can take a long time to for
-    rewards to propagate throughout a Q-function.
+1.  *Reward shaping*: If rewards are sparse, we can modify/augment our reward function to reward behaviour that we think moves us closer to the solution.
+2.  *Q-Value Initialisation*:  We can "guess" a good Q-function at the start and initialise $Q(s,a)$ to be this at the start, which will guide our learning algorithm.
 
-2.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to
-    model this is via a Q-table. However, this requires us to maintain a
-    table of size $|A| \times |S|$, which is prohibitively large for any
-    non-trivial problem.
-
-3.  Using a Q-table requires that we visit every reachable state many
-    times and apply every action many times to get a good estimate of
-    $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate
-    of $Q(s,a)$, even if we have visited states that are very similar to
-    $s$.
-
-4.  Rewards can be sparse, meaning that there are few state/actions that
-    lead to non-zero rewards. This is problematic because initially,
-    reinforcement learning algorithms behave entirely randomly and will
-    struggle to find good rewards. Remember the Freeway demo from the
-    previous lecture?
-
-### Reinforcement Learning -- Some Improvements
-
-To get around these limitations, we are going to look at three simple
-approaches that can improve temporal difference methods:
-
-1.  *$n$-step temporal difference learning*: Monte Carlo techniques
-    execute entire traces and then backpropagate the reward, while basic
-    TD methods only look at the reward in the next step, estimating the
-    future wards. $n$-step methods instead look $n$ steps ahead for the
-    reward before updating the reward, and then estimate the remainder.
-    *Last lecture!*
-
-2.  *Approximate methods*: Instead of calculating an exact Q-function,
-    we approximate it using simple methods that both eliminate the need
-    for a large Q-table (therefore the methods scale better), and also
-    allowing use to provide reasonable estimates of $Q(s,a)$ *even if we
-    have not applied action $a$ in state $s$ previously*. *This
-    lecture!*
-
-3.  *Reward shaping and Q-Value Initialisation*: If rewards are sparse,
-    we can modify/augment our reward function to reward behaviour that
-    we think moves us closer to the solution, or we can guess the
-    optimal Q-function and initial $Q(s,a)$ to be this. *This lecture!*
-
-### Overview
+## Reward shaping
 
 What is reward shaping? The basic idea is to give small intermediate rewards to the algorithm that help it converge more quickly.
 
@@ -89,13 +43,38 @@ solved.
 learn how to get the chicken across the freeway?
 
 ![image](./figs/freeway_screenshot.png)
-
 :::
 
-:::{admonition} Exercise: Gridworld What would be a good heuristic for the GridWorld
+:::{admonition} Exercise: GridWorld What would be a good heuristic for the GridWorld
 example?
 
-![image](./figs/MDP-GridWorld.png)
+```
+  --------------- --------------- --------------- --------------- 
+ |       ▲       |       ▲       |       ▲       |               |
+ |               |               |               |               |
+ |               |               |               |               |
+ | ◄           ► | ◄           ► | ◄           ► |     +1.00     |
+ |               |               |               |               |
+ |               |               |               |               |
+ |       ▼       |       ▼       |       ▼       |               |
+  --------------- --------------- --------------- --------------- 
+ |       ▲       | ############# |       ▲       |               |
+ |               | ############# |               |               |
+ |               | ############# |               |               |
+ | ◄           ► | ############# | ◄           ► |     -1.00     |
+ |               | ############# |               |               |
+ |               | ############# |               |               |
+ |       ▼       | ############# |       ▼       |               |
+  --------------- --------------- --------------- --------------- 
+ |       ▲       |       ▲       |       ▲       |       ▲       |
+ |     _____     |               |               |               |
+ |    ||o  o|    |               |               |               |
+ | ◄  ||  * |  ► | ◄           ► | ◄           ► | ◄           ► |
+ |    ||====|    |               |               |               |
+ |     -----     |               |               |               |
+ |       ▼       |       ▼       |       ▼       |       ▼       |
+  --------------- --------------- --------------- --------------- 
+```
 
 :::
 
@@ -213,16 +192,15 @@ Once we start learning over episodes, we will select those actions with a higher
 
 ### Summary
 
-
+- A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.
+- Reward shaping takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.
+- Q-function initialisation is a "guess" of the initial Q-function to guide early exploration
+- Reward sharping and Q-function initialisation are equivalent if our potential function is static.
 
 ### Related Reading
 
 -   Chapter 9 (Approximate Solution Methods) of *Introduction to
-    Reinforcement Learning* \[*Sutton and Barto*\]
-
-    Available at:
-
-    <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+    Reinforcement Learning* \[*Sutton and Barto*\]: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
 
 [^1]: Wiewiora: ?Potential-based shaping and Q-value initialization are equivalent.? (JAIR, 2003)

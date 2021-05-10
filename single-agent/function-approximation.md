@@ -1,4 +1,13 @@
-
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 # Q-Function Approximation
 
 ## Learning Outcomes
@@ -159,6 +168,7 @@ $$
   Q(s,Up)   & = &  f_1(s,Up)\cdot 0.31  + \ldots + f_{14}(s,Up) \cdot 0.04
 \end{array}
 $$
+:::
 
 ### Linear Q-function Update 
 
@@ -264,6 +274,222 @@ Approximating Q-functions using machine learning techniques such as linear funct
 **Disadvantages:**
 
 -   The Q-function is now only an approximation of the real Q-function: states that share feature values will have the same Q-value according to the Q-function, but the actual Q-value according to the (unknown) optimal Q-function may be different.
+
+## Implementation
+
+In this section, we present an implementation of linear Q-function approximation for SARSA and run it on a modified GridWorld problem. For simplicity, we will first demonstrate this on the GridWorld with just one goal state: the one in the top right that returns +1. The -1 will just become a normal cell. We will see later that the original GridWorld problem is not easy to define features for given a linear approximation.
+
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+import sys
+sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
+```
+
+The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here: 
+
+1. The distance from the goal on the X-axis.
+2. The distance from the goal on the Y-axis.
+3. The total distance from the goal as a Manhattan distance.
+
+As noted above, normalising features is important to ensure that they are in the same magnitude. So, given the current position $(x,y)$ as the state, we extract the values of the state features as follows:
+
+1. $1 - ((x(g) - x(s)) / width)$
+2. $1 - ((y(g) - y(s)) / height)$
+3. $1 - ((x(g) - x(s) + y(g) - y(s) / (x(g) + y(g))$
+
+where $x(s)$ and $y(s)$ return the x and y coordinates of the agent respectively, and $g$ is the goal state.
+
+These expressions normalise the feature values to the range $[0,1]$. Subtracting from 1 means that states that are closer to the goal have a higher value, which is intuitively easier to consider, but is technically not necessary.
+
+Then, to extract state-action features, we need to define these as $f(s,a)$ is defined from $f(s)$ above.
+
+We can implement these in a feature extractor class:
+
+```{code-cell} ipython3
+class FeatureExtractor():
+    def extractFeatures(self, state, action): abstract
+    
+class GridWorldFeatureExtractor(FeatureExtractor):
+    def __init__(self, mdp):
+        self.mdp = mdp
+
+    def initialiseWeights(self):
+        weights = []
+        for action in self.mdp.getActions():
+            weights += [0.0, 0.0, 0.0]
+        return weights
+        
+    def extractFeatures(self, state, action):
+        goal = (self.mdp.width, self.mdp.height)
+        x = 0
+        y = 1
+        featureValues = []
+        for a in self.mdp.getActions():
+            if a == action and state != GridWorld.TERMINAL:
+                featureValues += [1 - ((goal[x] - state[x]) / goal[x])]
+                featureValues += [1 - ((goal[y] - state[y]) / goal[y])]
+                featureValues += [1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))]
+            else:
+                featureValues += [0.0, 0.0, 0.0]
+        return featureValues
+```
+
+Now, we implement our learning using this. Recall that the superclass ``ModelFreeReinforcementLearner`` is used for all of our model-free techniques; unhide to see the code for this below.
+
+```{code-cell} ipython3
+---
+tags: [hide-cell]
+---
+class ModelFreeReinforcementLearner():
+
+    # how many episodes to take an average for determining convergence
+    length = 30
+
+    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None):
+        self.mdp = mdp
+        self.bandit = bandit
+        self.alpha = alpha
+        self.convergenceEpsilon = convergenceEpsilon
+        self.initQValues = initQValues
+
+        self.latestRewards = []
+        self.previousAverage = 0.0
+
+    def execute(self, episodes = 2000): abstract
+
+    def getMaxQ(self, qValues, state):
+        argmaxQ = None
+        maxQ = float('-inf')
+        for action in self.mdp.getActions(state):
+            value = qValues[(state, action)]
+            if maxQ < value:
+                argMaxQ = action
+                maxQ = value
+        return (argmaxQ, maxQ)
+
+    def initialiseQFunction(self):
+        if self.initQValues == None:
+            qValues = dict()
+            for state in self.mdp.getStates():
+                for action in self.mdp.getActions():
+                    qValues.update({(state, action): 0.0})
+            return qValues
+        else:
+            return self.initQValues
+
+    '''
+        Return the Q-values only for this state
+    '''
+    def getQValues(self, state, qValues):
+        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
+```
+
+Our SARSA implementation with a linear Q-function is similar to our first SARSA algorithm, except that we update and retrieve Q-values from the linear function instead of a Q-table:
+
+```{code-cell} ipython3
+class LinearSARSA(ModelFreeReinforcementLearner):
+    def __init__(self, mdp, bandit, featureExtractor, alpha = 0.1, initQValues = None, weights = None):
+        super().__init__(mdp, bandit, alpha = alpha, initQValues = initQValues)
+        self.featureExtractor = featureExtractor
+        self.weights = weights
+        
+    def execute(self, episodes = 100):
+        self.initialiseQFunction()
+
+        for i in range(episodes):
+            state = self.mdp.getInitialState()
+            actions = self.mdp.getActions(state)
+            action = self.bandit.select(actions, self.getQValues(actions, state))
+
+            while not self.mdp.isTerminal(state):
+                (nextState, reward) = self.mdp.execute(state, action)
+                actions = self.mdp.getActions(nextState)
+                nextAction = self.bandit.select(actions, self.getQValues(actions, nextState))
+                newValue = self.update(state, action, nextState, nextAction, reward)
+                state = nextState
+                action = nextAction
+
+    '''
+        Return the Q-value for a state-action pair
+    '''
+    def getQValue(self, state, action):
+        qValue = 0.0
+        featureValues = self.featureExtractor.extractFeatures(state, action)
+        for i in range(len(featureValues)):
+            qValue += featureValues[i] * self.weights[i]
+        return qValue
+    
+    def update(self, state, action, nextState, nextAction, reward):
+        qValue = self.getQValue(state, action)
+        qValueNext = self.getQValue(nextState, nextAction)
+        delta = self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+
+        # update the weights
+        featureValues = self.featureExtractor.extractFeatures(state, action)
+        for i in range(len(self.weights)):
+            self.weights[i] = self.weights[i] + (delta * featureValues[i])
+        
+    def initialiseQFunction(self):
+        if self.weights == None:
+            self.weights = self.featureExtractor.initialiseWeights()
+
+    '''
+        Return the Q-values only for this state
+    '''
+    def getQValues(self, actions, state):
+        qValues = dict()
+        for action in actions:
+            qValues[action] = self.getQValue(state, action)
+        return qValues
+
+    def getQTable(self):
+        qValues = dict()
+        for state in self.mdp.getStates():
+            for action in self.mdp.getActions(state):
+                qValues[(state, action)] = self.getQValue(state, action)
+        return qValues
+```
+
+Let's see how this goes on Gridworld. First, we extract the Q-values:
+
+```{code-cell} ipython3
+from gridworld import *
+from multi_armed_bandits import *
+mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
+featureExtractor = GridWorldFeatureExtractor(mdp)
+linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
+linearSarsa.execute(episodes = 100)
+qFunction = linearSarsa.getQTable()
+print(mdp.qFunctionToString(qFunction))
+```
+
+We can see that this gives quite good Q-values, but these are not optimal (compare them to the Q-values for Q-table-based learning).
+
+Despite this, it still extracts a good policy, albeit not one that is necessarily optimal:
+
+```{code-cell} ipython3
+policy = mdp.extractPolicyFromQFunction(qFunction)
+print(mdp.policyToString(policy))
+```
+
+The choice of features is key to solving the problem. Above, we have define features that assume there is just the goal in the top-right corner. However, if we return to the original GridWorld problem that has another terminating state with reward -1, our features no longer work particularly well:
+
+```{code-cell} ipython3
+from gridworld import *
+from multi_armed_bandits import *
+mdp = GridWorld()
+featureExtractor = GridWorldFeatureExtractor(mdp)
+linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
+linearSarsa.execute(episodes = 100)
+qFunction = linearSarsa.getQTable()
+print(mdp.qFunctionToString(qFunction))
+```
+
+This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent tranisitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including $(2,1)$.
+
+We could solve this by encoding specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. It is fine to encode domain knowledge, but we want to avoid a situation where we have to encode enough knowledge that we may as well encode the entire solution by hand..
 
 ## Summary
 

@@ -90,11 +90,11 @@ This is a *one-step return*.
 
 However, we can estimate a two-step return:
 
-$$ G^2_t = r_t + \gamma r_{t+1} + \gamma^3 V(s_{t+2}) $$ 
+$$ G^2_t = r_t + \gamma r_{t+1} + \gamma^2 V(s_{t+2}) $$ 
 
 a three-step return:
 
-$$ G^3_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} +  \gamma^3 V(s_{t+2}) $$
+$$ G^3_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} +  \gamma^3 V(s_{t+3}) $$
 
 or n-step returns:
 

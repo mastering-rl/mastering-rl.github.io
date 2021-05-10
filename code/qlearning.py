@@ -42,7 +42,7 @@ class ModelFreeReinforcementLearner():
     # how many episodes to take an average for determining convergence
     length = 30
 
-    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = 0.05, initQValues = None):
+    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None):
         self.mdp = mdp
         self.bandit = bandit
         self.alpha = alpha
@@ -117,10 +117,10 @@ class QLearning(ModelFreeReinforcementLearner):
                 episodeReward += reward
 
             if self.isConverged(episodeReward):
+                print("converged at %d episodes" % i)
                 break
             
         return qValues
-
     
     def update(self, qValues, state, action, nextState, reward): 
         (_, maxQValue) = self.getMaxQ(qValues, nextState)
@@ -157,12 +157,9 @@ class SARSA(ModelFreeReinforcementLearner):
         qValueNext = qValues[(nextState, nextAction)]
         return qValue + self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
 
-
-from collections import defaultdict
-
 class LinearSARSA(ModelFreeReinforcementLearner):
-    def __init__(self, mdp, bandit, featureExtractor, alpha = 0.1, initQValues = None, weights = None):
-        super().__init__(mdp, bandit, alpha = alpha, initQValues = initQValues)
+    def __init__(self, mdp, bandit, featureExtractor, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None, weights = None):
+        super().__init__(mdp, bandit, alpha = alpha, convergenceEpsilon = convergenceEpsilon, initQValues = initQValues)
         self.featureExtractor = featureExtractor
         self.weights = weights
         
@@ -178,35 +175,22 @@ class LinearSARSA(ModelFreeReinforcementLearner):
             while not self.mdp.isTerminal(state):
                 (nextState, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.getActions(nextState)
-                if len(actions) == 0:
-                    print("nextState = " + str(nextState))
                 nextAction = self.bandit.select(actions, self.getQValues(actions, nextState))
-                #print("%s -> %s -> " % (action, nextState), end = "")
                 newValue = self.update(state, action, nextState, nextAction, reward)
                 state = nextState
                 action = nextAction
                 episodeReward += reward
 
             if self.isConverged(episodeReward):
-                print("episodes = %d" % i)
+                print("converged at %d episodes" % i)
                 break
-
-        print("TERMINATE")
-        qValues = dict()
-        for state in self.mdp.getStates():
-            for action in self.mdp.getActions(state):
-                qValues[(state, action)] = self.getQValue(state, action)
-                print("Q(%s,%s) = %f" % (str(state), str(action), self.getQValue(state, action)))
-
-        print(self.getLinearFunction())
-        return qValues
     
     '''
         Return the Q-value for a state-action pair
     '''
     def getQValue(self, state, action):
         qValue = 0.0
-        featureValues = self.featureExtractor.extractFeatures(state, action, self.mdp.getActions())
+        featureValues = self.featureExtractor.extractFeatures(state, action)
         for i in range(len(featureValues)):
             qValue += featureValues[i] * self.weights[i]
         return qValue
@@ -215,27 +199,15 @@ class LinearSARSA(ModelFreeReinforcementLearner):
         qValue = self.getQValue(state, action)
         qValueNext = self.getQValue(nextState, nextAction)
         delta = self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
-        featureValues = self.featureExtractor.extractFeatures(state, action, self.mdp.getActions())
-        
- 
-        
+
+        # update the weights
+        featureValues = self.featureExtractor.extractFeatures(state, action)
         for i in range(len(self.weights)):
             self.weights[i] = self.weights[i] + (delta * featureValues[i])
-
-        if False: #(state == (3,1) or state == (2,2)) and nextState == (3,2):
-            print("\nreward = " + str(reward))
-            
-            print("featurevals = " + str(featureValues))
-            print("delta = " + str(delta))
-            print("qValue = " + str(qValue))
-            print("qValueNext from " + str(action) + " = " + str(qValueNext))        
-            print("\t => " + str(self.weights))
-            print()
         
     def initialiseQFunction(self):
         if self.weights == None:
-            actions = self.mdp.getActions()
-            self.weights = self.featureExtractor.initialiseWeights(actions)
+            self.weights = self.featureExtractor.initialiseWeights()
 
     '''
         Return the Q-values only for this state
@@ -254,50 +226,92 @@ class LinearSARSA(ModelFreeReinforcementLearner):
             linearFunction[(action, "height")] = self.weights[i + 1]
             i += 2
         return linearFunction
+
+    def getQTable(self):
+        qValues = dict()
+        for state in self.mdp.getStates():
+            for action in self.mdp.getActions(state):
+                qValues[(state, action)] = self.getQValue(state, action)
+        return qValues
     
 class FeatureExtractor():
-    def extractFeatures(self, state, action, actions): abstract
+    def extractFeatures(self, state, action): abstract
 
-class GridWorldFeatureExtractor(FeatureExtractor):
+class GridWorldStateFeatureExtractor(FeatureExtractor):
     def __init__(self, width, height):
         self.width = width
         self.height = height
 
-    def initialiseWeights(self, actions):
+class GridWorldFeatureExtractor(FeatureExtractor):
+    def __init__(self, mdp):
+        self.mdp = mdp
+
+    def initialiseWeights(self):
         weights = []
-        for action in actions:
-            weights += [0.0, 0.0]
+        for action in self.mdp.getActions():
+            weights += [0.0, 0.0, 0.0]
         return weights
     
-    def extractFeatures(self, state, action, actions):
+    def extractFeatures(self, state, action):
+        goal = (self.mdp.width, self.mdp.height)
+        x = 0
+        y = 1
         featureValues = []
-        for a in actions:
+        for a in self.mdp.getActions():
             if a == action and state != GridWorld.TERMINAL:
-                featureValues += [(self.width - state[0]) / self.width, (self.height - state[1]) / self.height]
-                #featureValues += [1 - (state[0] / self.width), 1 - (state[1] / self.height)]
-                #featureValues += [(self.width - state[0]), (self.height - state[1])]
+                featureValues += [1 - ((goal[x] - state[x]) / goal[x])]
+                featureValues += [1 - ((goal[y] - state[y]) / goal[y])]
+                featureValues += [1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))]
             else:
-                featureValues += [0.0, 0.0]
+                featureValues += [0.0, 0.0, 0.0]
         return featureValues
-    
+
+class RewardShapedQLearning(QLearning):
+    def __init__(self, mdp, bandit, potential, alpha = 0.1, convergenceEpsilon = float('-inf')):
+        super().__init__(mdp, bandit, alpha = alpha, convergenceEpsilon = convergenceEpsilon)
+        self.potential = potential
+        
+    def update(self, qValues, state, action, nextState, reward): 
+        (_, maxQValue) = self.getMaxQ(qValues, nextState)
+        qValue = qValues[(state, action)]
+        shapedReward = 0.1 * self.mdp.discountFactor * self.potential.getPotential(nextState) - self.potential.getPotential(state)
+        print("F(%s, %s) = %f * %f - %f = %f" % (state, nextState, self.mdp.discountFactor, self.potential.getPotential(nextState), self.potential.getPotential(state), shapedReward))
+        return qValue + self.alpha * (reward + shapedReward + self.mdp.discountFactor * maxQValue - qValue)
+
+class PotentialFunction():
+    def getPotential(self, state): abstract
+
+class GridWorldPotentialFunction(PotentialFunction):
+    def __init__(self, mdp):
+        self.mdp = mdp
+        
+    def getPotential(self, state):
+        if state != GridWorld.TERMINAL:
+            goal = (self.mdp.width, self.mdp.height)
+            x = 0
+            y = 1
+            return 1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))
+        else:
+            return 0.0
+        
 
 if __name__ == "__main__":
     from gridworld import *
 
-    '''
+    
     print("==========\nQ-learning\n==========")
     #mdp = GridWorld(discountFactor = 0.9, width = 16, height = 12)
     
     mdp = GridWorld()
     import time
     start = time.time_ns()
-    qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 1000)
+    qFunction = QLearning(mdp, EpsilonGreedy(), convergenceEpsilon = 0.05).execute(episodes = 1000)
     finish = time.time_ns()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
     print("Q-learning execution time = %f" % ((finish - start) / 1000000))
-    
+    '''
     print("=====\nSARSA\n=====")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
     qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
@@ -333,18 +347,34 @@ if __name__ == "__main__":
 
     from plot import Plot
     Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
-
-    '''
+ 
 
     print("==========\nLinearSarsa\n==========")
-    width = 4
-    height = 3
-    mdp = GridWorld(discountFactor = 0.9, noise=0.0, width = width, height = height, goals=[((3,2),1)])
-    #mdp = GridWorld(discountFactor = 0.9, noise = 0.0, blockedStates=[], goals=[((3,2),1)], width = width, height = height)
-    print(mdp.visualise())
-    featureExtractor = GridWorldFeatureExtractor(width = width, height = height)
-    qFunction = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor).execute(episodes = 100)
+    mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
+    featureExtractor = GridWorldFeatureExtractor(mdp)
+    linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
+    linearSarsa.execute(episodes = 200)
+    qFunction = linearSarsa.getQTable()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
 
+    
+    mdp = GridWorld()
+    featureExtractor = GridWorldFeatureExtractor(mdp)
+    linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
+    linearSarsa.execute(episodes = 200)
+    qFunction = linearSarsa.getQTable()
+    policy = mdp.extractPolicyFromQFunction(qFunction)
+    print(mdp.qFunctionToString(qFunction))
+    print(mdp.policyToString(policy))
+
+    '''
+    
+    print("==========\nReward shaping\n==========")
+    mdp = GridWorld()
+    potential = GridWorldPotentialFunction(mdp)
+    qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential, convergenceEpsilon = 0.05).execute(episodes = 1000)
+    policy = mdp.extractPolicyFromQFunction(qFunction)
+    print(mdp.qFunctionToString(qFunction))
+    print(mdp.policyToString(policy))
