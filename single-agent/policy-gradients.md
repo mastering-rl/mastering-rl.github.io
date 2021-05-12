@@ -1,3 +1,7 @@
+# Policy gradients: REINFORCE
+
+As noted earlier, policy-based methods search for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
+
 In contrast to value-based methods, Policy-based methods are targeted to optimize the policy function $\pi$ that maps states to actions directly instead of optimizing the value function. This is done by updating the parameters $\theta$ of the policy $\pi(a|s; \theta)$ via gradient ascent on the expectation of $R_t$, $\mathbb{E}\left[R_{t}\right]$ (i.e. to increase the expected Return). One of the well known example of this is the REINFORCE algorithm \cite{williams1992simple}. In this algorithm the policy parameters $\theta$ are updated in the direction of gradient $\nabla_{\theta} \mathbb{E}\left[R_{t}\right]$, which is estimated by the score function of the log likelihood of actions; $\nabla_{\theta} \log \pi\left(a_{t} | s_{t} ; \theta\right) R_{t}$._
 
 
@@ -9,7 +13,7 @@ $R_t - b_t$ can be considered as the estimation of the Advantage of on an action
 
 Overall, the policy-based approach is more efficient in high dimensional action space and converges faster than value-based methods as the action space typically is more limited than the possible rewards, especially when considering discrete action spaces. Via gradient methods, the policy updates are smoother and will eventually converge to either local or global optimal.
 
-## Applications of Policy Gradients
+## Applications of policy gradient ascent
 
 A great application of using off-policy updates in deep Q-learning for robotic arms to learn how to grasp unknown objects. The only input for the problem is the camera data:
 
