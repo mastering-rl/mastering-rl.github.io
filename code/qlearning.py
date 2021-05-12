@@ -274,14 +274,18 @@ class RewardShapedQLearning(QLearning):
     def update(self, qValues, state, action, nextState, reward): 
         (_, maxQValue) = self.getMaxQ(qValues, nextState)
         qValue = qValues[(state, action)]
-        shapedReward = 0.1 * self.mdp.discountFactor * self.potential.getPotential(nextState) - self.potential.getPotential(state)
-        print("F(%s, %s) = %f * %f - %f = %f" % (state, nextState, self.mdp.discountFactor, self.potential.getPotential(nextState), self.potential.getPotential(state), shapedReward))
-        return qValue + self.alpha * (reward + shapedReward + self.mdp.discountFactor * maxQValue - qValue)
+        statePotential = self.potential.getPotential(state)
+        nextStatePotential = self.potential.getPotential(nextState)
+        potential = reward + self.mdp.discountFactor *  nextStatePotential - statePotential
+        return qValue + self.alpha * (reward + potential + self.mdp.discountFactor * maxQValue - qValue)
 
 class PotentialFunction():
     def getPotential(self, state): abstract
 
 class GridWorldPotentialFunction(PotentialFunction):
+
+    from gridworld import GridWorld
+    
     def __init__(self, mdp):
         self.mdp = mdp
         
@@ -302,15 +306,18 @@ if __name__ == "__main__":
     print("==========\nQ-learning\n==========")
     #mdp = GridWorld(discountFactor = 0.9, width = 16, height = 12)
     
-    mdp = GridWorld()
+    mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+
     import time
     start = time.time_ns()
-    qFunction = QLearning(mdp, EpsilonGreedy(), convergenceEpsilon = 0.05).execute(episodes = 1000)
+    qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
     finish = time.time_ns()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
     print("Q-learning execution time = %f" % ((finish - start) / 1000000))
+    qLearningRewards = mdp.getRewards()
+    
     '''
     print("=====\nSARSA\n=====")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
@@ -318,13 +325,14 @@ if __name__ == "__main__":
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
-
+ 
     print("==========\nQ-learning\n==========")
     mdp = CliffWorld()
     qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
     print(mdp.qFunctionToString(qFunction))
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.policyToString(policy))
+    qLearningRewards = mdp.getRewards()
 
     print("=====\nSARSA\n=====")
     mdp = CliffWorld()
@@ -372,9 +380,16 @@ if __name__ == "__main__":
     '''
     
     print("==========\nReward shaping\n==========")
-    mdp = GridWorld()
+    mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
     potential = GridWorldPotentialFunction(mdp)
-    qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential, convergenceEpsilon = 0.05).execute(episodes = 1000)
+    start = time.time_ns()
+    qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential).execute(episodes = 100)
+    finish = time.time_ns()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
+    print("Reward Shaped Q-learning execution time = %f" % ((finish - start) / 1000000))
+    rewardShapedRewards = mdp.getRewards()
+
+    from plot import Plot
+    Plot.plotEpisodeLength(["Q-learning", "Reward shaping"], [qLearningRewards, rewardShapedRewards])

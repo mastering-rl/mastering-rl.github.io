@@ -1,3 +1,4 @@
+(sec:mdps)=
 # Markov Decision Processes
 
 ## Learning outcomes
@@ -348,6 +349,7 @@ $$
 The two definitions are equivalent, and you may seem them defined in both ways. However, when we move onto Q-learning later, we will use $Q$-values more explicitly.
 
 
+(sec:mdps:policy-extraction)=
 ## Policy extraction
 
 Given a value function $V$, how should we then select the action to play in a given state? It is reasonably straightforward: select the action that maximises our expected utility!

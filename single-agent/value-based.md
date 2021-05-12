@@ -1,4 +1,4 @@
-# Value-based Methods
+# Value-based methods
 
 Techniques for solving MDPs (and POMDPs) can be separated into three categories:
 

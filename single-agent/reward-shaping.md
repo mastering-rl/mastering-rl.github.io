@@ -1,4 +1,13 @@
-
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 # Reward shaping
 
 ## Learning Outcomes
@@ -165,7 +174,93 @@ But! It will not always work. Compare states (0,0) and (0,1). Our potential func
 
 In practice, it is non-trivial to derive a perfect reward function -- it is the same problem as deriving the perfect search heuristic. If we could do this, we would not need to even use reinforcement learning -- we could just do a greedy search over the reward function.
 
-### Q-function initialisation 
+### Implementation
+
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+import sys
+sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
+```
+
+To implement potential-based reward shaping, we need to first implement a potential function. We implement potential functions as subclasses of ``PotentialFunction``. For the GridWorld example, the potential function is 1 minus the normalised distance from the goal:
+
+```{code-cell} ipython3
+class PotentialFunction():
+    def getPotential(self, state): abstract
+
+class GridWorldPotentialFunction(PotentialFunction):
+
+    from gridworld import GridWorld
+
+    def __init__(self, mdp):
+        self.mdp = mdp
+        
+    def getPotential(self, state):
+        if state != GridWorld.TERMINAL:
+            goal = (self.mdp.width, self.mdp.height)
+            x = 0
+            y = 1
+            return 1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))
+        else:
+            return 0.0
+```
+
+Reward shaping for Q-learning is then a simple extension of the ``QLearning`` class, overriding the ``update`` method:
+
+```{code-cell} ipython3
+from qlearning import *
+
+class RewardShapedQLearning(QLearning):
+    def __init__(self, mdp, bandit, potential, alpha = 0.1, convergenceEpsilon = float('-inf')):
+        super().__init__(mdp, bandit, alpha = alpha, convergenceEpsilon = convergenceEpsilon)
+        self.potential = potential
+        
+    def update(self, qValues, state, action, nextState, reward): 
+        (_, maxQValue) = self.getMaxQ(qValues, nextState)
+        qValue = qValues[(state, action)]
+        statePotential = self.potential.getPotential(state)
+        nextStatePotential = self.potential.getPotential(nextState)
+        potential = reward + self.mdp.discountFactor *  nextStatePotential - statePotential
+        return qValue + self.alpha * (reward + potential + self.mdp.discountFactor * maxQValue - qValue)
+```
+
+The small GridWorld example is not sufficient to demonstrate reward shaping, so we instead extend it to a version with that is 15 x 12. The Q-function and policy are as follows:
+
+```{code-cell} ipython3
+from gridworld import *
+```
+
+```{code-cell} ipython3
+mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+```
+
+```{code-cell} ipython3
+potential = GridWorldPotentialFunction(mdp)
+qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential).execute(episodes = 100)
+policy = mdp.extractPolicyFromQFunction(qFunction)
+rewardShapedRewards = mdp.getRewards()
+print(mdp.qFunctionToString(qFunction))
+print(mdp.policyToString(policy))
+```
+
+Now, we compare this with Q-learning without reward shaping:
+
+```{code-cell} ipython3
+mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
+qLearningRewards = mdp.getRewards()
+```
+
+If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal::
+
+```{code-cell} ipython3
+from plot import Plot
+Plot.plotEpisodeLength(["Q-learning", "Reward shaping"], [qLearningRewards, rewardShapedRewards])
+```
+
+## Q-function initialisation 
 
 An approach related to reward shaping is *Q-function initialisation*. Recall that TD learning methods can start
 at any arbitrary Q-function. The closer our Q-function is to the optimal Q-function, the quicker it will converge.
@@ -190,7 +285,7 @@ Once we start learning over episodes, we will select those actions with a higher
 
 :::
 
-### Summary
+## Summary
 
 - A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.
 - Reward shaping takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.

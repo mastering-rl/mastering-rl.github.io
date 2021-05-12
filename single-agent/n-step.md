@@ -1,6 +1,6 @@
-# n-step Reinforcement Learning
+# n-step reinforcement learning
 
-## Learning Outcomes
+## Learning outcomes
 
 1.  Manually apply n-step reinforcement learning approximation to solve
     small-scale MDP problems given a set of

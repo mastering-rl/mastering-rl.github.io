@@ -9,7 +9,7 @@ kernelspec:
   name: python3
 ---
 
-# Model-free Reinforcement Learning
+# Model-free reinforcement learning
 
 ## Learning Outcomes
 
@@ -96,7 +96,7 @@ There are many different techniques for model-free reinforcement learning, all w
     
 -   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
-# Q-Learning: Off-policy Reinforcement Learning
+# Q-Learning: Off-policy reinforcement learning
 
 Q-Learning is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a Q-function that records $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
@@ -297,7 +297,7 @@ policy = mdp.extractPolicyFromQFunction(qFunction)
 print(mdp.policyToString(policy))
 ```
 
-# SARSA: On-Policy Reinforcement Learning
+# SARSA: On-policy reinforcement learning
 
 SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 

@@ -8,7 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
-# Q-Function Approximation
+# Q-function approximation
 
 ## Learning Outcomes
 

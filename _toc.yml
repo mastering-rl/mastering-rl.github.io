@@ -18,6 +18,10 @@
     - file: single-agent/mcts
     - file: single-agent/function-approximation
     - file: single-agent/reward-shaping
+  - file: single-agent/policy-based
+    sections:
+    - file: single-agent/policy-iteration
+    - file: single-agent/policy-gradients
 
 #- part: Multi-agent Reinforcement Learning
 #  chapters:

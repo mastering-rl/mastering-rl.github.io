@@ -36,6 +36,16 @@ class Plot():
             averageRewards += [sum(window)/len(window)]
         return averageRewards
 
+    '''
+        Calculate the length of each episode
+    '''
+    def getEpisodeLength(rewards):
+        episodeLengths = []
+ 
+        for episode in rewards:
+            episodeLengths += [len(episode)]
+
+        return episodeLengths
     
     '''
     Plot the rewards per step of several methods.
@@ -74,5 +84,25 @@ class Plot():
 
         plt.xlabel("Episode")
         plt.ylabel("Average reward per episode")
+        plt.legend()
+        plt.show()
+
+    '''
+    Plot the average length of episode.
+    '''
+    def plotEpisodeLength(labels, rewardList):
+        index = 0
+        linestyles = ['--', '-', ':', '-.']
+        for rewards in rewardList:
+            y = Plot.getEpisodeLength(rewards)
+            x = np.linspace(0, len(y), len(y))
+            y_smoothed = gaussian_filter1d(y, sigma=5)
+            plt.plot(x, y_smoothed,
+                    label = labels[index],
+                    linestyle = linestyles[index % len(linestyles)])
+            index += 1
+
+        plt.xlabel("Episode")
+        plt.ylabel("Episode length")
         plt.legend()
         plt.show()
