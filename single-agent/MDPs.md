@@ -252,6 +252,7 @@ Let's break this down into its parts:
 
 In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
 
+(sec:mdps:policies)=
 ## Policies
 
 The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
@@ -281,7 +282,7 @@ A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$ specifies the *p
 
 To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probablistically such that actions with higher probability are chosen proportionally to their relative probabilities.
 
-We will focus mostly on  deterministic policies, but stochastic policies have their place.
+We will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss [policy gradient methods](sec:policy-based:policy-gradients).
 
 ## Optimal Solutions for MDPs
 

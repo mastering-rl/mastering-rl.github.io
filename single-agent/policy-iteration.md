@@ -17,7 +17,7 @@ The *expected reward* of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted aver
 
 $$V^\pi(s) =  \sum_{s' \in S} P_{\pi{s}} (s'|s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]$$
 
-where $V^\pi(s)=0$ terminal states.
+where $V^\pi(s)=0$ for terminal states.
 :::
 
 Note that this is very similar to the [Bellman equation](sec:mdps:bellman-equation), except that we do not value $V(s)$ as the value of the best action, but instead just as the value for $\pi(s)$, the action that would be chosen in $s$ by the policy $\pi$. Note the expression $P_{\pi(s)}(s' \mid s)$ instead of $P_a(s' \mid s)$, which means we only evaluate the action that the policy defines.

@@ -105,7 +105,7 @@ Q-Learning is perhaps the simplest of reinforcement learning methods, and is bas
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Q-function $Q$
 
-Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
+Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
 Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
@@ -315,7 +315,7 @@ To illustrate how this differs, let's take a look at the SARSA algorithm.
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Q-function $Q$
 
-Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
+Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
 Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\

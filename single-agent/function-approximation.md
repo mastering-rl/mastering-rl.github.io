@@ -65,10 +65,10 @@ The overall process is:
 
 :::{admonition} Example --- Features for *Freeway*
 
-Instead of recording the position of both chickens and whether there is a car in every position, we just record the following features:
+Instead of recording the position of both kangaroos and whether there is a car in every position, we just record the following features:
 
-- the number of columns each chicken is away from the other side of the road in (two features -- one for each chicken); and
-- how far away the *closest* car is in the row above and below each chicken (four features --- two for each chicken).
+- the number of rows each kangaroo is away from the other side of the road in (two features -- one for each kangaroo); and
+- how far away the *closest* car is in the row above and below each kangaroo (four features --- two for each kangaroo).
 
 This requires just six features. 
 
@@ -93,8 +93,8 @@ To represent this, we have two vectors:
         \end{pmatrix}$$
 
     In the Freeway example, we have a vector with six state features
-    times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance chicken 1 is away from the goal. The function $f_{3}(s, Up)$
-     returns the distance to the nearest car in the row above the first chicken. 
+    times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance kangaroo 1 is away from the goal. The function $f_{3}(s, Up)$
+     returns the distance to the nearest car in the row above the first kangaroo. 
 
 2.  A *weight* vector $w$ of size $n \times |A|$: one weight for each
     feature-action pair. $w^a_i$ defines the weight of a feature $i$ for
@@ -161,7 +161,7 @@ $$
 
 :::{admonition} Example --- Approximate Q-function computation for Freeway
 
-For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state $s$ where the chicken is in row 1:
+For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state $s$ where the kangaroo is in row 1:
 
 $$
 \begin{array}{lll}
