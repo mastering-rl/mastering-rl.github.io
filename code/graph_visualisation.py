@@ -32,16 +32,22 @@ class GraphVisualisation():
         for child in environmentNode.children:
             g.node(self.environmentNodeID(environmentNode), self.environmentNodeID(environmentNode), style='filled', shape='point', width='0.25')
             g.edge(self.environmentNodeID(environmentNode), self.stateNodeID(child), str(child.probability))
-            
+
         for child in environmentNode.children:
             self.stateNodeToGraph(g, child, level + 1)
+
+    def nodeToGraph(self, game, node, filename='backward_induction'):
+        graph = Digraph('G', filename=filename, format='png')
+        self.gameNode(graph, game, node, level = 0)
+        return graph
+
+    def gameNode(self, graph, game, node, level):
+        for key in node.children.keys():
+            graph.edge(str(node.id) + "\\n" + game.toString(node.state), str(node.children[key].id) + "\\n" + game.toString(node.children[key].state), str(key))
+            graph.edge(game.toString(node.state), game.toString(node.children[key].state), str(key))
+            #graph.edge(str(node.id), str(node.children[key].id), str(key))
             
 
-if __name__ == "__main__":
-    from gridworld import *
-    mdp = GridWorld()
-    rootNode = MCTS(mdp).mcts(timeout=0.03)
-    print(rootNode.getQFunction())
-    gv = GraphVisualisation(maxLevel = 2)
-    g = gv.singleAgentMCTSToGraph(rootNode)
-    g.view()
+        if level <= self.maxLevel:
+            for key in node.children.keys():
+                self.gameNode(graph, game, node.children[key], level)
