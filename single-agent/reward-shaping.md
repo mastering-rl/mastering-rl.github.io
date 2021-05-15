@@ -278,7 +278,7 @@ $$
  Q((1,2), North) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), South) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
  Q((1,2), East)  & = & \frac{1}{1} - \frac{1}{2} & = & 0.5\\
- Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16^*\\
+ Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16\\
 \end{array}
 $$
 Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster.

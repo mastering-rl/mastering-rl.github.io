@@ -2,8 +2,7 @@
 
 ## Learning outcomes
 
-1.  Manually apply n-step reinforcement learning approximation to solve
-    small-scale MDP problems given a set of
+1.  Manually apply n-step reinforcement learning approximation to solve small-scale MDP problems
 
 2.  Design and implement n-step reinforcement learning to solve
     medium-scale MDP problems automatically

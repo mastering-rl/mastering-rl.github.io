@@ -30,9 +30,9 @@ For example:
 
 MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
 
-:::{admonition} Definition
+:::{admonition} Definition -- Markov Decision Process
 
-** Markov Decision Processes** (MDPs) are *fully observable, probabilistic* state models. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
+A ** Markov Decision Processes** (MDP) is a  *fully observable, probabilistic* state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
 Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ containing:
 
 -   a state space $S$
@@ -60,8 +60,7 @@ What is different between an MDP and the models from classical planning? There a
 
 -   We have a *discount factor*.
 
-The **discount factor**  determines how much a future reward should be
-discounted compared to a current reward.
+The **discount factor**  determines how much a future reward should be discounted compared to a current reward.
 
 For example, would you prefer \$100 today or \$100 in a year's time? We (humans) often *discount* the future and place a higher value on nearer-term rewards.
 
@@ -257,7 +256,7 @@ In later chapters, we will see how to use these code-based models in several way
 
 The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
 
-:::{admonition} Definition
+:::{admonition} Definition -- Policy
 A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
 :::
 
@@ -288,7 +287,7 @@ We will focus mostly on  deterministic policies, but stochastic policies have th
 
 For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
-:::{admonition} Definition
+:::{admonition} Definition -- Expected discounted reward
 The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
 $$
@@ -308,7 +307,7 @@ $$
 \end{array}
 $$
 
-:::{admonition} Definition
+:::{admonition} Definition -- Bellman equation
 The **Bellman equation**, identified by Richard Bellman, describes the
 condition that must hold for a policy to be optimal. The Bellman equation is defined recursively
 as:
@@ -334,7 +333,7 @@ Bellman equations can be described slightly differently, using what are known as
 
 If $V(s)$ is the expected value of being in state $s$ and acting optimally according to our policy, then we can also describe the *Q-value* of being in a state $s$, choosing action $a$ and then acting optimally according to our policy as.
 
-:::{admonition} Definition
+:::{admonition} Definition -- Q-value
 The **Q-value** for action $a$ in state $s$ is defined as:
 
 $$
@@ -373,7 +372,7 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 
 MDPs assume that the agent always knows exactly what state it is in --- the problem is fully-observable. However, this is not valid for many tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone for survivors will by definition not know the location of survivors; a card-playing agent playing solitaire will not know the cards that are face-down;, etc.
 
-:::{admonition} Definition
+:::{admonition} Definition -- Partially-observable MDP
 **Partially-observable MDPs** (POMDPs) relax the assumption of
 full-observability. A POMDP is defined as:
 

@@ -23,6 +23,11 @@
     - file: single-agent/policy-iteration
     - file: single-agent/policy-gradients
 
-#- part: Multi-agent Reinforcement Learning
-#  chapters:
-#    - file: multi-agent/normal-form.md 
+- part: Multi-agent Reinforcement Learning
+  chapters:
+  - file: multi-agent/normal-form
+  - file: multi-agent/extensive-form
+    sections:
+    - file: multi-agent/backward-induction
+    - file: multi-agent/model-free
+    - file: multi-agent/mcts

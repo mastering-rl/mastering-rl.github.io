@@ -15,7 +15,7 @@ The *expected reward* of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted aver
 :::{admonition} Definition
 *Policy evaluation* can be characterised as $V(s)$ as defined by  the following equation:
 
-$$V^\pi(s) =  \sum_{s' \in S} P_{\pi{s}} (s'|s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]$$
+$$V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s'|s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]$$
 
 where $V^\pi(s)=0$ for terminal states.
 :::

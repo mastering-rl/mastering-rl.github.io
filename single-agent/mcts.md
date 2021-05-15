@@ -201,7 +201,7 @@ Does this look familiar?! It is just the Bellman equation. This is why the tree 
 However, in most MCTS frameworks,  we do not use the Bellman equation at all. Instead, we calculate the value of a node as: 
 
 $$
-V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G_{t+1} - V(s) / N(s)
+V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G_{t+1} - V(s)) / N(s)
 $$
 
 where $G_{t+1}$ is the discounted future reward passed up from the child node during simulation and $N(s)$ is the number of times the state $s$ has been visited. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because the Select function selects using $P_a(s' \mid s)$, on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$, so the moving average will correspond to the Bellman equation given an infinite number of executions. 
