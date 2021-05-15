@@ -28,7 +28,10 @@ class BackwardInduction:
             return self.cache[stateKey]
 
         if self.game.isTerminal(state):
-            return GameNode(state, None, self.game.getReward(state))
+            node = GameNode(state, None, self.game.getReward(state))
+            if self.doCache:
+                self.cache[stateKey] = node
+            return node
 
         bestChild = None
         bestAction = None
@@ -43,7 +46,7 @@ class BackwardInduction:
                 child.isBestAction = True
                 bestChild = child
             children[action] = child
-        node = GameNode(state, player, bestChild.equilibrium, isBestAction = True, children = children)
+        node = GameNode(state, player, bestChild.equilibrium, children = children)
         if self.doCache:
             self.cache[stateKey] = node
         return node
@@ -55,28 +58,27 @@ if __name__ == "__main__":
 
     import time
     
-    initialState = [['x', 'x', ' '],
-                    ['o', ' ', ' '],
-                    ['x', 'o', ' ']]
-
     tictactoe = TicTacToe()
     initialState = tictactoe.getInitialState()
     start = time.time_ns()
     backwardInduction = BackwardInduction(tictactoe)
-    solution = backwardInduction.backwardInduction(initialState)
+    #solution = backwardInduction.backwardInduction(initialState)
     finish = time.time_ns()
     print("Non-cached execution time = %f" % ((finish - start) / 1000000))
 
     tictactoe = TicTacToe()
     initialState = tictactoe.getInitialState()
     start = time.time_ns()
-    backwardInduction = BackwardInduction(tictactoe, doCache = True)
+    initialState = [['x', 'x', ' '],
+                    ['o', ' ', ' '],
+                    ['x', 'o', ' ']]
+    backwardInduction = BackwardInduction(tictactoe, doCache = False)
     solution = backwardInduction.backwardInduction(initialState)
     finish = time.time_ns()
     print("Cached execution time = %f" % ((finish - start) / 1000000))
 
     from graph_visualisation import GraphVisualisation
     
-    #gv = GraphVisualisation(maxLevel = 5)
-    #g = gv.nodeToGraph(tictactoe, solution)
-    #g.view()
+    gv = GraphVisualisation(maxLevel = 5)
+    graph = gv.nodeToGraph(tictactoe, solution)
+    graph.view()

@@ -1,6 +1,4 @@
-from mcts import *
-
-from graphviz import Digraph
+from graphviz import Digraph, Graph
 
 class GraphVisualisation():
 
@@ -37,17 +35,24 @@ class GraphVisualisation():
             self.stateNodeToGraph(g, child, level + 1)
 
     def nodeToGraph(self, game, node, filename='backward_induction'):
-        graph = Digraph('G', filename=filename, format='png')
-        self.gameNode(graph, game, node, level = 0)
+        graph = Graph('G', filename=filename, format='png')
+        #for child in node.children.keys():
+        #    self.gameNode(graph, game, node.children[child], level = 0)
+        self.gameNode(graph, game, node, visited = [], level = 0)
         return graph
 
-    def gameNode(self, graph, game, node, level):
-        for key in node.children.keys():
-            graph.edge(str(node.id) + "\\n" + game.toString(node.state), str(node.children[key].id) + "\\n" + game.toString(node.children[key].state), str(key))
-            graph.edge(game.toString(node.state), game.toString(node.children[key].state), str(key))
-            #graph.edge(str(node.id), str(node.children[key].id), str(key))
+    def gameNode(self, graph, game, node, visited, level):
+        graph.node(str(node.id), style='filled', shape='point', width='0.2')
+        if node.id not in visited:
+            for key in node.children.keys():
+                penwidth = '3.0' if node.children[key].isBestAction else '1.0'
+                
+                #graph.edge(str(node.id) + "\\n" + game.toString(node.state), str(node.children[key].id) + "\\n" + game.toString(node.children[key].state), str(key), arrowType="diamond", penwidth = penwidth)
+                #graph.edge(game.toString(node.state), game.toString(node.children[key].state), str(key))
+                graph.edge(str(node.id), str(node.children[key].id), str(key), penwidth = penwidth)
+            visited += [node.id]
             
 
         if level <= self.maxLevel:
             for key in node.children.keys():
-                self.gameNode(graph, game, node.children[key], level)
+                self.gameNode(graph, game, node.children[key], visited, level)
