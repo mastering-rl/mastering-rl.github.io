@@ -2,7 +2,7 @@ from graphviz import Digraph, Graph
 
 class GraphVisualisation():
 
-    def __init__(self, maxLevel = 3):
+    def __init__(self, maxLevel = float('inf')):
         self.maxLevel = maxLevel
 
     def singleAgentMCTSToGraph(self, stateNode, filename='mcts'):
@@ -34,25 +34,32 @@ class GraphVisualisation():
         for child in environmentNode.children:
             self.stateNodeToGraph(g, child, level + 1)
 
-    def nodeToGraph(self, game, node, filename='backward_induction'):
+    def nodeToGraph(self, game, node, filename='backward_induction', printState = False, printValue = False):
         graph = Graph('G', filename=filename, format='png')
-        #for child in node.children.keys():
-        #    self.gameNode(graph, game, node.children[child], level = 0)
-        self.gameNode(graph, game, node, visited = [], level = 0)
+        self.gameNode(graph, game, node, visited = [], level = 1, printState = printState, printValue = printValue)
         return graph
 
-    def gameNode(self, graph, game, node, visited, level):
-        graph.node(str(node.id), style='filled', shape='point', width='0.2')
+    def nodeToString(self, game, node, printState, printValue):
+        result = ""
+        if printState:
+            result += game.toString(node.state) + "\\n"
+        if len(node.children) == 0 or printValue:
+            result += "("
+            result += ", ".join([str(node.value[player]) for player in node.value.keys()])
+            result += ")"
+        return result
+
+    def gameNode(self, graph, game, node, visited, level, printState, printValue):
+        
         if node.id not in visited:
-            for key in node.children.keys():
-                penwidth = '3.0' if node.children[key].isBestAction else '1.0'
-                
-                #graph.edge(str(node.id) + "\\n" + game.toString(node.state), str(node.children[key].id) + "\\n" + game.toString(node.children[key].state), str(key), arrowType="diamond", penwidth = penwidth)
-                #graph.edge(game.toString(node.state), game.toString(node.children[key].state), str(key))
-                graph.edge(str(node.id), str(node.children[key].id), str(key), penwidth = penwidth)
+            graph.node(str(node.id), label=self.nodeToString(game, node, printState, printValue), xlabel = str(node.playerTurn) if node.playerTurn is not None else "")
+            if level <= self.maxLevel:
+                for key in node.children.keys():
+                    child = node.children[key]
+                    self.gameNode(graph, game, child, visited, level + 1, printState, printValue)
+                    penwidth = '3.0' if child.isBestAction else '1.0'
+                    graph.edge(str(node.id), str(child.id), str(key), penwidth = penwidth)
             visited += [node.id]
             
 
-        if level <= self.maxLevel:
-            for key in node.children.keys():
-                self.gameNode(graph, game, node.children[key], visited, level)
+

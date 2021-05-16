@@ -20,3 +20,37 @@ class ExtensiveFormGame:
     
     ''' Return the initial state of this game '''
     def getInitialState(self): abstract
+
+    ''' Return a game tree for this game '''
+    def gameTree(self):
+        return self.stateToNode(self.getInitialState())
+
+    def stateToNode(self, state):
+        if self.isTerminal(state):
+            node = GameNode(state, None, self.getReward(state))
+            return node
+
+        player = self.getPlayerTurn(state)
+        children = dict()
+        for action in self.getActions(state):
+            nextState = self.getTransition(state, action)
+            child = self.stateToNode(nextState)
+            children[action] = child
+        node = GameNode(state, player, None, children = children)
+        return node
+
+class GameNode:
+
+    # record a unique node id to distinguish duplicated states
+    nextNodeID = 0
+
+    def __init__(self, state, playerTurn, value, isBestAction = False, children = dict()):
+        self.state = state
+        self.playerTurn = playerTurn
+        self.value = value
+        self.isBestAction = isBestAction
+        self.children = children
+
+        self.id = GameNode.nextNodeID
+        GameNode.nextNodeID += 1
+        
