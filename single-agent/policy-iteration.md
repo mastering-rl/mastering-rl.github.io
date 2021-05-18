@@ -26,10 +26,8 @@ Once we understand the definition of policy evaluation, the implementation is st
 
 :::{admonition} Algorithm -- Policy evaluation
 
-**Input:** $\pi$ the policy for evaluation, and MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Input:** $\pi$ the policy for evaluation, $V$ value function, and MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Value function $V$
-
-Set $V$ to arbitrary value function; e.g., $V(s)=0$ for all $s$
 
 $\text{Repeat}$\
 $\quad\quad \Delta \leftarrow 0$\
@@ -63,6 +61,8 @@ Pulling together policy evaluation and policy improvement, we can define an *pol
 
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Policy $\pi$
+
+Set $V$ to arbitrary value function; e.g., $V(s)=0$ for all $s$.
 
 Set $\pi$ to arbitrary policy; e.g. $\pi(s) = a$ for all $s$, where $a \in A$ is an arbitrary action.
 
