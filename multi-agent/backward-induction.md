@@ -209,9 +209,12 @@ backwardInduction = BackwardInduction(tictactoe)
 state = [['x', 'o', 'o'],
          [' ', ' ', 'x'],
          [' ', ' ', ' ']]
+
 nextState = tictactoe.getTransition(state, (1, 1))
 solution = backwardInduction.backwardInduction(nextState)
-gv = GraphVisualisation()
+gv = GraphVisualisation(maxLevel = 100)
 tictactoeSubGraph = gv.nodeToGraph(tictactoe, solution, printState = True, printValue = True)
 tictactoeSubGraph
 ```
+
+As a result, the equilibrium of this sub-game is (1, -1). No matter which move player 'o' takes, they cannot draw or win if player 'x' follows the strategy highlighted.

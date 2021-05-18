@@ -68,13 +68,14 @@ Set $\pi$ to arbitrary policy; e.g. $\pi(s) = a$ for all $s$, where $a \in A$ is
 
 $\text{Repeat}$\
 $\quad\quad$ Compute $V(s)$ for all $s$ using policy evaluation\
-$\quad\quad$ $\pi(s) \leftarrow \textrm{max}_{a \in A(s)}Q(s,a)$\
+$\quad\quad \text{For each}~ s \in S$\
+$\quad\quad\quad\quad$ $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)}Q(s,a)$\
 $\text{Until}~ \pi$ does not change
 :::
 
 The policy iteration  algorithm finishes with an optimal $\pi$ after a finite number of iterations, because the number of policies is finite, bounded by $O(|A|^{|S|})$, unlike value iteration, which can theoretically require infinite iterations.
 
-However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence suggests that the most efficient is dependent on the particular MDP model being solved
+However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence suggests that the most efficient is dependent on the particular MDP model being solved, but that surprisingly few iterations are often required for policy iteration.
 
 ## Summary
 

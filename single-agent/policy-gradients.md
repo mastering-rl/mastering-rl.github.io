@@ -38,7 +38,7 @@ $$\theta \leftarrow \theta + \alpha \nabla\ J(\theta)$$
 
 where $\alpha$ is a learning rate parameter that dictates how big the step in the direction of the gradient should be.
 
-The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi(s,a; \theta) that $\nabla J(\theta)$ is:
+The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi(s,a; \theta)$ that $\nabla J(\theta)$ is:
 
 $$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi(s, a; \theta) Q(s,a)]$$
 

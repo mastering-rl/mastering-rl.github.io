@@ -29,5 +29,4 @@
   - file: multi-agent/extensive-form
     sections:
     - file: multi-agent/backward-induction
-    - file: multi-agent/model-free
-    - file: multi-agent/mcts
+    - file: multi-agent/multi-agent-rl

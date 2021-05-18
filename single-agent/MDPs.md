@@ -283,6 +283,7 @@ To execute a stochastic policy, we could just take the action with the maximum $
 
 We will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss [policy gradient methods](sec:policy-based:policy-gradients).
 
+(sec:mdps:bellman-equation)=
 ## Optimal Solutions for MDPs
 
 For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
@@ -291,7 +292,7 @@ For discounted-reward MDPs, optimal solutions maximise the *expected discounted 
 The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
 $$
-V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(a_i,s_i) \ | \ s_0 = s, a_i = \pi(s_i)]\,
+V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(s_i, a_i, s_{i+1}) \ | \ s_0 = s, a_i = \pi(s_i)]\,
 $$
 
 Sp, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
