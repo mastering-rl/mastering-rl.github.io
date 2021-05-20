@@ -68,26 +68,14 @@ if __name__ == "__main__":
     
     tictactoe = TicTacToe()
     initialState = tictactoe.getInitialState()
-    start = time.time_ns()
-    backwardInduction = BackwardInduction(tictactoe)
-    #solution = backwardInduction.backwardInduction(initialState)
-    finish = time.time_ns()
-    print("Non-cached execution time = %f" % ((finish - start) / 1000000))
-
-    tictactoe = TicTacToe()
-    initialState = tictactoe.getInitialState()
-    start = time.time_ns()
     initialState = [['x', 'o', 'o'],
                     [' ', ' ', 'x'],
                     [' ', ' ', ' ']]
     nextState = tictactoe.getTransition(initialState, (1, 1))
     backwardInduction = BackwardInduction(tictactoe, doCache = False)
     solution = backwardInduction.backwardInduction(nextState)
-    finish = time.time_ns()
-    print("Cached execution time = %f" % ((finish - start) / 1000000))
 
     from graph_visualisation import GraphVisualisation
-    
     gv = GraphVisualisation()
     graph = gv.nodeToGraph(tictactoe, solution, printState = True, printValue = True)
     graph.view()

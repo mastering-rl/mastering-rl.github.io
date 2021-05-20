@@ -302,62 +302,48 @@ class GridWorldPotentialFunction(PotentialFunction):
 if __name__ == "__main__":
     from gridworld import *
 
-    
-    print("==========\nQ-learning\n==========")
-    #mdp = GridWorld(discountFactor = 0.9, width = 16, height = 12)
-    
-    mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+    print("==========\nQ-learning: Gridworld\n==========")
+    mdp = GridWorld()
+    #mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 
-    import time
-    start = time.time_ns()
     qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
-    finish = time.time_ns()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
-    print("Q-learning execution time = %f" % ((finish - start) / 1000000))
     qLearningRewards = mdp.getRewards()
-    
-    '''
-    print("=====\nSARSA\n=====")
+
+    print("=====\nSARSA: Gridworld\n=====")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
     qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
- 
-    print("==========\nQ-learning\n==========")
+
+
+    print("==========\nQ-learning: Cliffworld\n==========")
     mdp = CliffWorld()
     qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
     print(mdp.qFunctionToString(qFunction))
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.policyToString(policy))
-    qLearningRewards = mdp.getRewards()
-
-    print("=====\nSARSA\n=====")
-    mdp = CliffWorld()
-    qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-    print(mdp.qFunctionToString(qFunction))
-    policy = mdp.extractPolicyFromQFunction(qFunction)
-    print(mdp.policyToString(policy))
-
-    print("==========\nQ-learning\n==========")
-    mdp = CliffWorld()
-    qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+    # Execute policy (using epsilon greedy with epsilon = 0.0
     QLearning(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
     qLearningRewards = mdp.getRewards()
 
-    print("=====\nSARSA\n=====")
+    print("=====\nSARSA: Cliffworld\n=====")
     mdp = CliffWorld()
     qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
+    print(mdp.qFunctionToString(qFunction))
+    policy = mdp.extractPolicyFromQFunction(qFunction)
+    print(mdp.policyToString(policy))
+    # Execute policy (using epsilon greedy with epsilon = 0.0
     SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
     sarsaRewards = mdp.getRewards()
 
     from plot import Plot
     Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
- 
 
-    print("==========\nLinearSarsa\n==========")
+    print("==========\nLinearSarsa: Gridworld one terminal state\n==========")
     mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
     featureExtractor = GridWorldFeatureExtractor(mdp)
     linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
@@ -367,29 +353,28 @@ if __name__ == "__main__":
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
 
-    
-    mdp = GridWorld()
-    featureExtractor = GridWorldFeatureExtractor(mdp)
-    linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
-    linearSarsa.execute(episodes = 200)
-    qFunction = linearSarsa.getQTable()
-    policy = mdp.extractPolicyFromQFunction(qFunction)
-    print(mdp.qFunctionToString(qFunction))
-    print(mdp.policyToString(policy))
+    #print("==========\nLinearSarsa: Gridworld both terminal states\n==========")
+    #mdp = GridWorld()
+    #featureExtractor = GridWorldFeatureExtractor(mdp)
+    #linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
+    #linearSarsa.execute(episodes = 200)
+    #qFunction = linearSarsa.getQTable()
+    #policy = mdp.extractPolicyFromQFunction(qFunction)
+    #print(mdp.qFunctionToString(qFunction))
+    #print(mdp.policyToString(policy))
 
-    '''
-    
-    print("==========\nReward shaping\n==========")
+    print("=========\nQ-Learning with Reward shaping: Gridworld large\n========")
     mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
     potential = GridWorldPotentialFunction(mdp)
-    start = time.time_ns()
     qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential).execute(episodes = 100)
-    finish = time.time_ns()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
-    print("Reward Shaped Q-learning execution time = %f" % ((finish - start) / 1000000))
     rewardShapedRewards = mdp.getRewards()
+
+    mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+    qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
+    qLearningRewards = mdp.getRewards()
 
     from plot import Plot
     Plot.plotEpisodeLength(["Q-learning", "Reward shaping"], [qLearningRewards, rewardShapedRewards])

@@ -32,7 +32,7 @@ MDPs have been successfully applied to planning in many domains: robot navigatio
 
 :::{admonition} Definition -- Markov Decision Process
 
-A ** Markov Decision Processes** (MDP) is a  *fully observable, probabilistic* state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
+A **Markov Decision Processes** (MDP) is a  *fully observable, probabilistic* state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
 Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ containing:
 
 -   a state space $S$

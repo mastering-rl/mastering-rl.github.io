@@ -1,10 +1,7 @@
-- Add approx Q-function code
-- Policy iteration
-- Policy gradient descent
 
-- Normal form games 
-- Extended form games
-
+- Fix reward shaping graph
+- Consistent learning outcomes
+- Remove hard import code from early chapters (before the pythonpath was working)
 - Add google analytics: https://jupyterbook.org/advanced/html.html
 
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
