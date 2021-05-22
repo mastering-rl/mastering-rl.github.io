@@ -31,7 +31,7 @@ class QTable(QFunction):
         argmaxQ = None
         maxQ = float('-inf')
         for action in actions:
-            value = self.qTable[(state, action)]
+            value = self.getQValue(state, action)
             if maxQ < value:
                 argMaxQ = action
                 maxQ = value
@@ -58,7 +58,7 @@ class ModelFreeReinforcementLearner():
         argmaxQ = None
         maxQ = float('-inf')
         for action in self.mdp.getActions(state):
-            value = qValues[(state, action)]
+            value = self.getQValue(state, action)
             if maxQ < value:
                 argMaxQ = action
                 maxQ = value

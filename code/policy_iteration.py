@@ -103,3 +103,6 @@ if __name__ == "__main__":
         print("After iteration " + str(iterations))
         print(mdp.policyToString(policyIteration.policyIteration(iterations = iterations).policyTable) + "\n")
 
+    mdp = GridWorld(width = 20, height = 15)
+    policyIteration = PolicyIteration(mdp)
+    print(mdp.policyToString(policyIteration.policyIteration(iterations = 100).policyTable) + "\n")

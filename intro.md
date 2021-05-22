@@ -1,5 +1,4 @@
-COMP90054: Reinforcement Learning
-=====
+# COMP90054: Reinforcement Learning
 
 These notes are for the 2nd half of the subject [COMP90054 -- AI Planning for Autonomy](https://handbook.unimelb.edu.au/subjects/comp90054) at [The University of Melbourne](http://www.unimelb.edu.au).
 
@@ -18,3 +17,19 @@ In Part I of these notes, we introduce  *Markov Decision Processes* (MDPs). MDPs
 In Part II of these notes, we look at *game theoretical models*, in which there are multiple (possibly adversarial) actors in a problem, and we need to plan our actions while also considering what the other actors in the environment will do. Again, we look at both model-based and model-free techniques.
 
 These notes should be used in combination with the videos, problem-solving lectures, weekly tutorials, and assignments.
+
+## Code
+
+All code in this book is executable. You can download the code from [here](https://gibberblot.github.io/rl-notes/_static/code.zip).
+
+Once you have downloaded, unzip the code and add the folder to your PYTHONPATH variable if you want to download the Jupyter notebooks.
+
+Most files in the code have a ``main`` function that can be run using just ``python <filename>py``. For most of these, no external libraries are required. However, if you want to plot the graphs or draw the trees, you will need to install:
+
+1. The [Matplotlib library](https://matplotlib.org/) for plotting graphs. You can download from the website or install with ``pip install matplotlib``. 
+
+2. The [Scipy library](https://www.scipy.org/) for helping with the graph plotting. You can download from the website or install with ``pip install scipy``.
+
+3. The [Graphviz Python library](https://graphviz.readthedocs.io/en/stable/) for drawing trees. You can download from the website or use ``pip install graphviz``. To render the generated graphs, you will also need to install [Graphviz the tool](https://www.graphviz.org/download/), which is called by the Python package.
+
+

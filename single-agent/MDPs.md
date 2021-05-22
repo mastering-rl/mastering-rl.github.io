@@ -368,7 +368,7 @@ $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 This is simpler than using the value functions because we do not need to sum over the set of
 possible output states, but we need to store $|A| \times |S|$ values in a Q-function, but just $|S|$ values in a value function.
 
-
+(sec:mdps:pomdps)=
 ## Partially Observable MDPs
 
 MDPs assume that the agent always knows exactly what state it is in --- the problem is fully-observable. However, this is not valid for many tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone for survivors will by definition not know the location of survivors; a card-playing agent playing solitaire will not know the cards that are face-down;, etc.

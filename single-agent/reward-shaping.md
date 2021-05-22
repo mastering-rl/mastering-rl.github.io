@@ -8,6 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
+(sec:single-agent:reward-shaping)=
 # Reward shaping
 
 ## Learning Outcomes
