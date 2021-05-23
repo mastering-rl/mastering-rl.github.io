@@ -31,3 +31,4 @@
     sections:
     - file: multi-agent/backward-induction
     - file: multi-agent/multi-agent-rl
+  - file: multi-agent/modelling-and-abstraction
