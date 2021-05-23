@@ -47,7 +47,6 @@ $\quad\quad V \leftarrow V'$\
 $\text{Until}~ \Delta \leq \theta$
 :::
 
-This set of linear equations can be solved analytically using MATLAB, a procedure like value iteration, or whatever -- we do not care for this subject.
 
 The *optimal expected reward* $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the *optimal policy* is the $\textrm{arg max}$
 
