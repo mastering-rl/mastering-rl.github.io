@@ -241,7 +241,7 @@ So, what strategy should we play? If we were to play this game a number of times
 To do this, we need to define the concepts of *expected utility* and *indifference*. 
 
 :::{admonition} Definition -- Expected utility of a pure strategy
-Expected utility is the weighted average  received by an playing a particular pure strategy. For an action $a_i in A_i$, the expected utility  of that action is:
+Expected utility is the weighted average  received by an playing a particular pure strategy. For an action $a_i \in A_i$, the expected utility  of that action is:
 
 $$
 U_i(a_i) = p_1 \times u_i(a_i,a^1_{-i}) + \ldots p_m \times u_i(a_i, a^m_{-i})
@@ -296,13 +296,13 @@ The difficulty is that the two terminals have different "values" for both the de
                              |
           Terminal 1   5,-3  | -1, 1
     Defender        ---------|---------
-          Terminal 2  -5, 5  |  3,-1
+          Terminal 2  -5, 5  |  2,-1
                              |
 ```
 
 It is clear that having a uniform strategy is not the best strategy, but we can use indifference to determine what is.
 
-If $X$ is the probability that the adversary will attack Terminal 1, then the expected utility of the Defender's two pure strategies is:
+If $Y$ is the probability that the adversary will attack Terminal 1, then the expected utility of the defender's two pure strategies are:
 
 $\quad\quad U_D(T1) = 5Y + -1(1 - Y) = 6Y - 1$
 
@@ -319,8 +319,9 @@ $$
  \end{array}
 $$
 
-So, the adversary should target Terminal 1 with probability $\frac{3}{13}$ and Terminal two with probability $\frac{10}{13}$.
+So, the adversary should target Terminal 1 with probability $\frac{3}{13}$ and Terminal 2 with probability $\frac{10}{13}$.
 
+If $X$ is the probability that the defender will defend Terminal 1, then the expected utility of the adversary's two pure strategies are:
 
 $\quad\quad U_A(T1) = -3X + 5(1-X) = 5 - 8X$
 
@@ -346,4 +347,3 @@ So, the defender should choose to defend Terminal 1 with the probability $\frac{
 
 - Pure strategies and mixed strategies can be used by agents. We analyse which strategies are good and also how these relate to Nash equilibria.
 
-- 
