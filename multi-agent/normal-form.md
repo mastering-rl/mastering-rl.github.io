@@ -135,7 +135,7 @@ First, we look at how to solve games from the perspective of one of the agents, 
 Informally, the concept of a best response refers to the best strategy that an agent  could select *if* it know how all of the other agents in the game were going to play.
 
 :::{admonition} Definition -- Best response
-The *best response* for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_(s^*_i, s_{-i}) \geq u_(s^*_i, s_{-i})$ for all strategies $s_i \in S_i$
+The *best response* for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_(s^*_i, s_{-i}) \geq u_(s'_i, s_{-i})$ for all strategies $s'_i \in S_i$
 :::
 
 Note that for many problems, there can be multiple best responses.
