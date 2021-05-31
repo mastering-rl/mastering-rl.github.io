@@ -61,7 +61,7 @@ Value iteration converges to the optimal policy as iterations continue: $V \maps
 
 Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the *residual*  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The resulting greedy policy $\pi_V$ has it's loss bounded by $2 \gamma  \Delta / 1-\gamma$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
 
 Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
 

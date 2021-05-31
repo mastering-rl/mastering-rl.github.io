@@ -1,4 +1,5 @@
 
+- add prioritised sweeping for value iteration (or approximate value iteration)
 - Fix reward shaping graph
 - Consistent learning outcomes
 - Reward shaping example
