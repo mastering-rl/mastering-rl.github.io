@@ -397,6 +397,6 @@ The sensor model allows the agent to observe the environment. If an agent execut
 Solving POMDPs is similar to solving MDPs. In fact, the same algorithms apply. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
 POMDP is a **belief state**, which defined the probability of being in each state $S$. This leads to an exponentially-larger state space, so POMDPs are typically harder problems to solve.
 
-Like MDPs, solutions are policies that map belief states into actions. Optimal policies minimise the expected reward.
+Like MDPs, solutions are policies that map belief states into actions. Optimal policies maximise the expected reward.
 
 We will not cover this in detail in these notes. However, POMDPs are  a generalisation of MDPs, and they are more suited to practical solutions in  planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.

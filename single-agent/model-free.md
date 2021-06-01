@@ -146,7 +146,7 @@ tags: [remove-input]
 ---
 from tabulate import tabulate
 
-headers=["State", "North", "South", "East", "West"]
+headers=["State", "Up", "Down", "Right", "Left"]
 data = [[(0,0), 0, 0, 0, 0],
         [(0,1), 0, 0, 0, 0],
         ["..."],
@@ -170,12 +170,12 @@ print (tabulate(data, headers))
 ```
 
 :::{note} Example -- Q-learning update
-Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=North$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
+Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
 
 $$
 \begin{array}{lll}
 Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
-           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),East) - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),Right) - Q((2,2),N)]\\
            & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]\\
            & \leftarrow & 0.792\\
 \end{array}
@@ -241,7 +241,7 @@ class ModelFreeReinforcementLearner():
             return qValues
         else:
             return self.initQValues
-
+            
     '''
         Return the Q-values only for this state
     '''
@@ -268,7 +268,7 @@ class QLearning(ModelFreeReinforcementLearner):
                 newValue = self.update(qValues, state, action, nextState, reward)
                 qValues[(state, action)] = newValue
                 state = nextState
-            
+
         return qValues
 
     def update(self, qValues, state, action, nextState, reward): 
@@ -350,7 +350,7 @@ SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next it
 
 For this example, we will use the same Q-table as the earlier Q-learning example.
 
-Assme that in state (2,2), the action 'North' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'West'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
+Assme that in state (2,2), the action 'Up' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'Left'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
 
 $$
 \begin{array}{lll}
@@ -384,7 +384,7 @@ class SARSA(ModelFreeReinforcementLearner):
                 qValues[(state, action)] = newValue
                 state = nextState
                 action = nextAction
-            
+
         return qValues
     
     def update(self, qValues, state, action, nextState, nextAction, reward): 
@@ -458,7 +458,7 @@ We can see that SARSA will instead not go along the cliff, but will take a sub-o
 
 The answer is because SARSA uses a reward from the *actual* next action that is executed. Even with a mature Q-function, with epsilon = 0.2 in the bandit used,, the actual next action with be an exploratory action with probability 0.2, which means some of the time, the next action chosen will be "down", so the agent falls of the cliff.
 
-Cconsider each agent moving from state $(1,1)$ to state $(2,1)$. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the cliff path, including $\max_{a \in A} Q(s,a)$ as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the Q-learning agent. The SARSA agent, on the other hand, selects its next action *before* the update, so in the cases where it chooses an action from state $(2,1)$ that falls off the cliff, the value $Q(s',a')$ will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a "risky" behaviour, so will learn to instead take the safe path away from the cliff: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.
+Consider each agent moving from state $(1,1)$ to state $(2,1)$. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the cliff path, including $\max_{a \in A} Q(s,a)$ as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the Q-learning agent. The SARSA agent, on the other hand, selects its next action *before* the update, so in the cases where it chooses an action from state $(2,1)$ that falls off the cliff, the value $Q(s',a')$ will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a "risky" behaviour, so will learn to instead take the safe path away from the cliff: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.
 
 However, *during* learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off *less* than the Q-learning agent because it takes actions on the safe path more often during learning?
 

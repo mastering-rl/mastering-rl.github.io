@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 # n-step reinforcement learning
 
 ## Learning outcomes
@@ -127,14 +137,13 @@ first.
 
 Then calculate the n-step expected reward:
 
-   $$\text{If } \tau+n < T \text{ then } G \leftarrow G + \gamma^n Q(S_{\tau+n}, A_{\tau+n}).$$
+   $$\text{If } \tau+n < T \text{ then } G \leftarrow G + \gamma^n Q(s_{\tau+n}, a_{\tau+n}).$$
 
-This adds the future expect reward if we are not at the
-end of the episode (if $\tau+n < T$).
+This adds the future expect reward if we are not at the end of the episode (if $\tau+n < T$).
 
 Finally, we update the Q-value:
 
-   $$Q(S_{\tau}, A_{\tau}) \leftarrow  Q(S_{\tau}, A_{\tau}) + \alpha[G - Q(S_{\tau}, A_{\tau}) ]$$
+   $$Q(s_{\tau}, a_{\tau}) \leftarrow  Q(s_{\tau}, a_{\tau}) + \alpha[G - Q(s_{\tau}, a_{\tau}) ]$$
 
 In the update rule above, we are using a SARSA update, but a Q-learning update is similar.
 
@@ -166,10 +175,10 @@ $\quad\quad\quad\quad\quad\quad\quad\quad$ Select & store action $a_{t+1}$ to ap
 $\quad\quad\quad\quad$ $\tau \leftarrow t - n + 1$  (calculate the index of the action to update)\
 $\quad\quad\quad\quad$ If $\tau \geq 0$ then:\
 $\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i$\
-$\quad\quad\quad\quad\quad\quad$ If $\tau+n < T$ then: $G \leftarrow G + \gamma^n Q(S_{\tau+n}, A_{\tau+n})$\
-$\quad\quad\quad\quad\quad\quad$ $Q(S_{\tau}, A_{\tau}) \leftarrow  Q(S_{\tau}, A_{\tau}) + \alpha[G - Q(S_{\tau}, A_{\tau})]$\
+$\quad\quad\quad\quad\quad\quad$ If $\tau+n < T$ then: $G \leftarrow G + \gamma^n Q(s_{\tau+n}, a_{\tau+n})$\
+$\quad\quad\quad\quad\quad\quad$ $Q(s_{\tau}, a_{\tau}) \leftarrow  Q(s_{\tau}, a_{\tau}) + \alpha[G - Q(s_{\tau}, a_{\tau})]$\
 $\quad\quad\quad\quad$ $t \leftarrow t + 1$\
-$\quad\quad$ Until $t = T - 1$
+$\quad\quad$ Until $\tau = T - 1$
 :::
 
 For the first $n-1$ steps of the any episode, we do not update $Q$ at all; that is, if $\tau < 0$.
@@ -180,70 +189,151 @@ Computationally, this is not much worse than 1-step learning. We need to store t
 
 :::{admonition} Example -- $n$-step SARSA update
 
-Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagated this reward back n-steps will be helpful.
+Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagating this reward back n-steps will be helpful.
 
-![image](./figs/MDP-GridWorld-with-episode.png)
+Imagine the first episode consisting of the following (very lucky!) trace:
 
-Assuming $Q(s,a)=0$ for all $s$ and $a$, if we (finally) traverse the episode the labelled episode, what will our Q-function look like for a 5-step update with $\alpha=0.5$ and $\gamma=0.9$?
+```
+  --------------- --------------- --------------- --------------- 
+ |               |               |               |               |
+ |               2               3               6               |
+ |           --------►      --------►        --------► +1.00     |
+ |       ▲       |               |   |      ▲    |               |
+ |       |       |               | 4 |      |    |               |
+  -------|------- --------------- ---|------|---- --------------- 
+ |       | 1     | ############# |   |      | 5  |               |
+ |       |       | ############# |   ▼      |    |               |
+ |               | ############# |               |     -1.00     |
+ |       ▲       | ############# |               |               |
+ |       |       | ############# |               |               |
+  -------|------- --------------- --------------- --------------- 
+ |       | 0     |               |               |               |
+ |       |       |               |               |               |
+ |               |               |               |               |
+ |               |               |               |               |
+ |               |               |               |               |
+  --------------- --------------- --------------- --------------- 
+```
 
-We only receive a reward in the last action, and all other actions give an immediate reward of 0 until then:
+Assuming $Q(s,a)=0$ for all $s$ and $a$, if we traverse the episode the labelled episode, what will our Q-function look like for a 5-step update with $\alpha=0.5$ and $\gamma=0.9$?
+
+For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing. Let's look at those first $n-1 = 4$ steps if we apply n-step SARSA to them:
 
 $$
-\begin{array}{lll}
-  G   &  \leftarrow & \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i\\ 
-  G_1 &  \leftarrow & \gamma^1 \cdot 0 + \ldots + \gamma^5 \cdot 1\\    
-      &  \leftarrow & 0.9^5 \cdot 1\\
-      &  \leftarrow & 0.5905
+\begin{array}{llll}
+\text{For } n = 5\\[2mm]
+ t = 0 & s_0 = (0,0),\ a_0 = Up & r_1 = 0 & s_1 = (0,1)\\
+       & T = \infty\\
+       & \tau = t - n - 1 = -4\\[1mm]
+ t = 1 & s_1 = (0,1),\ a_1 = Up & r_2 = 0 & s_2 = (0,2)\\
+       & T = \infty\\
+       & \tau = t - n - 1 = -3\\[1mm]
+ t = 2 & s_2 = (0,2),\ a_2 = Right & r_3 = 0 & s_3 = (1,2)\\
+       & T = \infty\\
+       & \tau = t - n -1 = -2\\[1mm]
+ t = 3 & s_3 = (1,2),\ a_3 = Right & r_4 = 0 & s_4 = (2,2)\\
+       & T = \infty\\
+       & \tau = t - n -1 = -1
 \end{array}
 $$
 
-So, we update the Q-value for the state $(0,2)$, which is 5 steps back:
+On the next step $t=4$, we reach the end of our n-step window, and we start to update values. At $t=4$, we see that $\tau \geq 0$ becomes true, so we calculate $G$ for $a_0$ and update $Q(s_0, a_0)$, and then similarly for $t=5$:
 
 $$
-\begin{array}{lll}
-  Q((0,2),E) &  \leftarrow &  Q((0,2), E) + \alpha [G_1 - Q((0,2), E)]\\
-             &  \leftarrow &  0 + 0.5 [0.5905 - 0]\\
-             &  \leftarrow &  0.2953\\
+\begin{array}{llll}
+\text{For } n = 5\\[2mm]
+ t = 4 & s_4 = (2,2),\ a_4 = Down & r_5 = 0 & s_5 = (2,1)\\
+       & T = \infty\\
+       & \tau = t - n - 1 = 0\\
+       & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 = 0\\
+       & Q(s_0, a_0) = 0\\[1mm]
+ t = 5 & s_5 = (2,1),\ a_5 = Up & r_6 = 0 & s_6 = (2,2)\\
+       & T = \infty\\
+       & \tau = t - n - 1 = 1\\
+       & G = \gamma^0 r_2 + \ldots + \gamma^4 r_6 = 0\\
+       & Q(s_1, a_1) = 0\\[1mm]
 \end{array}
 $$
+
+We can see that there are no rewards in the first five steps, so $Q(s_0, a_0)$ and $Q(s_1, a_1)$ both remain 0, their original values.
+
+When we reach $t=6$, however, we reach both a terminal state and we receive a reward. We can then update $Q(s_2, a_2)$:
+
+$$
+\begin{array}{llll}
+\text{For } n = 5\\[2mm]
+ t = 6 & s_6 = (2,2),\ a_6 = Right \quad\quad r_7 = 1 \quad s_7 = (3,2)\\
+       & T = t + 1 = 7\\
+       & \tau = t - n - 1 = 2\\
+       & G = \gamma^0 r_3 + \ldots + \gamma^4 r_7 = 0.9^4 \cdot 1 = 0.6561\\
+       & Q(s_2, a_2) = 0 + 0.5[0.9^4 \cdot 1 - 0] = 0.32805
+       \end{array}
+$$
+
+From this point, $t \geq T$, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode:
+
+$$
+\begin{array}{llll}
+ t = 7 & T = 7\\
+       & \tau = t - n - 1 = 3\\
+       & G = \gamma^0 r_4 + \ldots + \gamma^3 r_7 = 0.9^3 \cdot 1 = 0.729\\
+       & Q(s_3, a_3) = 0 + 0.5[0.9^3 \cdot 1 - 0] = 0.3645\\[1mm]
+ t = 8 & T = 7\\
+       & \tau = t - n - 1 = 4\\
+       & G = \gamma^0 r_5 + \ldots + \gamma^2 r_7 = 0.9^2 \cdot 1 = 0.81\\
+       & Q(s_4, a_4) = 0 + 0.5[0.9^2 \cdot 1 - 0] = 0.405\\[1mm]
+ t = 9 & T = 7\\
+       & \tau = t - n - 1 = 5\\
+       & G = \gamma^0 r_6 + \gamma^1 r_7 = 0.9^1 \cdot 1 = 0.9\\
+       & Q(s_5, a_5) = 0 + 0.5[0.9^1  \cdot 1 - 0] = 0.45\\[1mm]
+ t = 10 & T = 7\\
+       & \tau = t - n - 1 = 6\\
+       & G = \gamma^0 r_7 = 0.9^0 \cdot 1 = 1\\
+       & Q(s_6, a_6) = 0 + 0.5[1  \cdot 1 - 0] = 0.5\\[1mm]
+\end{array}
+$$
+
+At this point, $\tau = 6$ and $T=7$, so the inner loop terminates, and we start a new episode.
+:::
 
 The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-step SARSA, reaching the reward only informs the state from which it is reached. Whereas for 5-step, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a non-zero state, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table faster.
 
-$$
-\begin{array}{ccccc}
- & &  \textbf{1-step}\\
-\hline
- \textbf{State} & North & South & East & West\\
-\hline
- (0,0) & 0 & 0 & 0 & 0\\
- (0,1) & 0 & 0 & 0 & 0\\
- (0,2) & 0 & 0 & 0 & 0\\
-  \ldots\\
- (1,2) & 0 & 0 & 0 & 0\\
- (2,1) & 0 & 0 & 0 & 0\\
- (2,2) & 0 & 0 & 0.45 & 0\\
- (2,3) & 0 & 0 & 0 & 0\\
- \ldots\\
-\hline
-\end{array}~~
-\begin{array}{ccccc}
- & & \textbf{5-step}\\
-\hline
- \textbf{State} & North & South & East & West\\
-\hline
- (0,0) & 0 & 0 & 0 & 0\\
- (0,1) & 0 & 0 & 0 & 0\\
- (0,2) & 0 & 0 & 0.2953 & 0\\
-  \ldots\\
- (1,2) & 0 & 0 & 0.3281 & 0\\
- (2,1) & 0.405 & 0 & 0 & 0\\
- (2,2) & 0 & 0.3645 & 0.45 & 0\\
- (2,3) & 0 & 0 & 0 & 0\\ 
- \ldots\\
-\hline
-\end{array}
-$$
-:::
+
+```{code-cell} ipython3
+---
+tags: [remove-input]
+---
+from tabulate import tabulate
+import math
+
+alpha = 0.5
+gamma = 0.9
+headers=["State", "Up", "Down", "Right", "Left"]
+data = [[(0,0), 0, 0, 0, 0],
+        [(0,1), 0, 0, 0, 0],
+        [(0,2), 0, 0, 0, 0],
+        ["..."],
+        [(1,2), 0, 0, 0, 0],
+        [(2,1), 0, 0, 0, 0],
+        [(2,2), 0, 0, alpha * math.pow(gamma, 0), 0]]
+print ("For n = 1")
+print (tabulate(data, headers))
+```
+
+```{code-cell} ipython3
+---
+tags: [remove-input]
+---
+data = [[(0,0), 0, 0, 0, 0],
+        [(0,1), 0, 0, 0, 0],
+        [(0,2), 0, 0, alpha * math.pow(gamma, 4), 0],
+        ["..."],
+        [(1,2), 0, 0, alpha * math.pow(gamma, 3), 0],
+        [(2,1), 0, alpha * math.pow(gamma, 1), 0, 0],
+        [(2,2), 0, alpha * math.pow(gamma, 2), alpha * math.pow(gamma, 0), 0]]
+print ("For n = 5")
+print (tabulate(data, headers))
+```
 
 ## Further Reading
 

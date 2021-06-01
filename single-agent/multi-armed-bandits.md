@@ -377,11 +377,11 @@ Interesting, the UCB formula is not a weighted formula -- that is, there is no p
 
 We want to learn the Q-function, which gives us the average return on each action $a$, such that it approximates the real (unknown) Q-function, which we will call $Q^*$. At each round, we select the action $a$ that maximises the expression inside the brackets. If arm $a$ is optimal, then we want the following to hold for all actions $b \neq a$:
 
-$$Q(b) + sqrt{\frac{2 \ln t}{N(a)}} \leq Q^*(a)$$
+$$Q(b) + sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)$$
 
 If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low for some actions, we do not have this confidence. 
 
-If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to maximise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
+If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to minimise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
 
 #### Implementation
 
