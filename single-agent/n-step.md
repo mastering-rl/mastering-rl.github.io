@@ -187,7 +187,7 @@ Also, we have to continue updating $n-1$ steps after the end of the episode, but
 
 Computationally, this is not much worse than 1-step learning. We need to store the last $n$ states, but the per-step computation is small and uniform for n-step, just as for 1-step.
 
-:::{admonition} Example -- $n$-step SARSA update
+### Example -- $n$-step SARSA update
 
 Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagating this reward back n-steps will be helpful.
 
@@ -241,8 +241,8 @@ On the next step $t=4$, we reach the end of our n-step window, and we start to u
 
 $$
 \begin{array}{llll}
-\text{For } n = 5\\[2mm]
  t = 4 & s_4 = (2,2),\ a_4 = Down & r_5 = 0 & s_5 = (2,1)\\
+\phantom{\text{For }$n = 5$} %for consistent spacy
        & T = \infty\\
        & \tau = t - n - 1 = 0\\
        & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 = 0\\
@@ -261,8 +261,8 @@ When we reach $t=6$, however, we reach both a terminal state and we receive a re
 
 $$
 \begin{array}{llll}
-\text{For } n = 5\\[2mm]
  t = 6 & s_6 = (2,2),\ a_6 = Right \quad\quad r_7 = 1 \quad s_7 = (3,2)\\
+ \phantom{\text{For }$n = 5$}
        & T = t + 1 = 7\\
        & \tau = t - n - 1 = 2\\
        & G = \gamma^0 r_3 + \ldots + \gamma^4 r_7 = 0.9^4 \cdot 1 = 0.6561\\
@@ -275,6 +275,7 @@ From this point, $t \geq T$, so we no longer select and execute actions, nor sto
 $$
 \begin{array}{llll}
  t = 7 & T = 7\\
+\phantom{\text{For }$n = 5$}
        & \tau = t - n - 1 = 3\\
        & G = \gamma^0 r_4 + \ldots + \gamma^3 r_7 = 0.9^3 \cdot 1 = 0.729\\
        & Q(s_3, a_3) = 0 + 0.5[0.9^3 \cdot 1 - 0] = 0.3645\\[1mm]
@@ -294,7 +295,6 @@ $$
 $$
 
 At this point, $\tau = 6$ and $T=7$, so the inner loop terminates, and we start a new episode.
-:::
 
 The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-step SARSA, reaching the reward only informs the state from which it is reached. Whereas for 5-step, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a non-zero state, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table faster.
 
@@ -338,7 +338,5 @@ print (tabulate(data, headers))
 ## Further Reading
 
 -   Chapter 7 of *Introduction to Reinforcement Learning* \[*Sutton and
-    Barto*\]
-
-    Available at:  <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html
+    Barto*\]  https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html
 

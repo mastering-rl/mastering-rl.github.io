@@ -135,21 +135,23 @@ where $G$ refers to the shaped reward for the episode, and $s_0$ is the starting
 
 **However!** While it provides guarantees about the end result, potential-based reward shaping may either increase or decrease the time taken to learn. A well-designed potential function decrease the time to convergence.
 
-:::{admonition} Example -- Reward Shaping for GridWorld 
+###  Example -- Potential Reward Shaping for GridWorld 
 
-For Grid World, we can use 1 over Manhattan distance to define the potential function:
+For Grid World, we use the Manhattan distance to define the potential function, normalised by the size of the grid:
 
-$$\Phi(s) = \frac{1}{|x(g) - x(s)| + |y(g) - y(s)|}$$ 
+$$
+\Phi(s) = 1 - \frac{|x(g) - x(s)| + |y(g) - y(s)|}{width + height - 2}
+$$
 
-in which $x(s)$ and $y(s)$ return the $x$ and $y$ coordinates of the agent respectively, and $g$ is the goal state.
+in which $x(s)$ and $y(s)$ return the $x$ and $y$ coordinates of the agent respectively, $g$ is the goal state. and $width$ and $height$ are the width and height of the grid respectively. Note that the coordinates are indexed from 0, so we subtract 2 from the denominator.
 
-Even on the very first iteration, a greedy policy, such as $\epsilon$-greedy, will feedback those states closer to the +1 reward. From state (1,2) with $\gamma=0.9$ if we go East, we get:
+Even on the very first iteration, a greedy policy such as $\epsilon$-greedy, will feedback those states closer to the +1 reward. From state (1,2) with $\gamma=0.9$ if we go Right, we get:
 
 $$
 \begin{array}{lll}
   F((1,2), (2,2)) & = & \gamma\Phi(2,2) - \Phi(1,2)\\
-                    & = & 0.9 \cdot \frac{1}{1} - \frac{1}{2}\\
-                    & = & 0.4
+                    & = & 0.9 \cdot (1 - \frac{1}{5}) - (1 - \frac{2}{5})\\
+                    & = & 0.12
 \end{array}
 $$
 
@@ -160,30 +162,20 @@ $$
 \hline
  \textbf{Action}  & r & F(s,s') & \gamma \max_{a'}Q(s',a') & \textrm{New}~ Q(s,a)\\
  \hline
- North  & 0 & 0.9\frac{1}{2} - \frac{1}{2} = 0 & 0 & 0\\
- South  & 0 & 0.9\frac{1}{2} - \frac{1}{2} = 0 & 0 & 0\\
- East   & 0 & 0.9\frac{1}{1} - \frac{1}{2} = 0.4 & 0 & 0.4\\
- West   & 0 & 0.9\frac{1}{3} - \frac{1}{2} = -0.2 & 0 & -0.1\\
+ Up    & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.06\\
+ Down  & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.06\\
+ Right & 0 & 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) = \phantom{-}0.12 & 0 & \phantom{-}0.12\\
+ Left  & 0 & 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) = -0.24 & 0 & -0.24\\
  \hline
  \end{array}
 $$
-Thus, we can see that our potential reward function rewards actions that go towards the goal and penalises actions that go away from the goal. Recall that state (1,2) is in the top row, so action North just leaves us in state (1,2) and South similarly because we cannot go into the wall.
-
-:::
+Thus, we can see that our potential reward function rewards actions that go towards the goal and penalises actions that go away from the goal. Recall that state (1,2) is in the top row, so action Up just leaves us in state (1,2) and Down similarly because we cannot go through the walls.
 
 But! It will not always work. Compare states (0,0) and (0,1). Our potential function will reward (0,1) because it is closer to the goal, but we know from from our value iteration example that (0,0) is a higher value state than (0,1). This is because our reward function does not consider the negative reward.
 
 In practice, it is non-trivial to derive a perfect reward function -- it is the same problem as deriving the perfect search heuristic. If we could do this, we would not need to even use reinforcement learning -- we could just do a greedy search over the reward function.
 
 ### Implementation
-
-```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
-```
 
 To implement potential-based reward shaping, we need to first implement a potential function. We implement potential functions as subclasses of ``PotentialFunction``. For the GridWorld example, the potential function is 1 minus the normalised distance from the goal:
 
@@ -270,21 +262,20 @@ Imagine if we happened to initialise our Q-function to the optimal Q-function. I
 
 Q-function initialisation is similar to reward shaping: we use heuristics to assign higher values to 'better' states. If we just define $\Phi(s) = V_0(s)$, then they are equivalent. In fact, if our potential function is *static* (the definition does not change during learning), then Q-function initialisation and reward shaping are equivalent[^1].
 
-::: {admonition} Example -- Q-function Initialisation in GridWorld 
+### Example -- Q-function Initialisation in GridWorld 
 
-Using the idea of inverse Manhattan distance, we can define an initial Q-function as follows for state (1,2):
+Using the idea of  Manhattan distance for a potential function, we can define an initial Q-function as follows for state (1,2) using our potential function:
 
 $$
-\begin{array}{llll}
- Q((1,2), North) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
- Q((1,2), South) & = & \frac{1}{2} - \frac{1}{2} & = & 0\\
- Q((1,2), East)  & = & \frac{1}{1} - \frac{1}{2} & = & 0.5\\
- Q((1,2), West)  & = & \frac{1}{3} - \frac{1}{2} & = & -0.16\\
+\begin{array}{llllr}
+ Q((1,2), Up) & = & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) & = & -0.06\\
+ Q((1,2), Down) & = & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) & = & -0.06\\
+ Q((1,2), Right)  & = & 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) & = & 0.12\\ 
+ Q((1,2), Left)  & = & 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) & = & -0.24
 \end{array}
 $$
-Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster.
 
-:::
+Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential funtion! A poor potential function will give an inaccurate initial Q-function, which may take longer to converge.
 
 ## Summary
 
