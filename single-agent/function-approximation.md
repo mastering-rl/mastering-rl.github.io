@@ -40,11 +40,11 @@ Let us assume that there are 12 rows and about 40 columns. This grossly underest
 
 This leads to:
 
-$$480^2 +  2^{480} = 3.12\times 10^{144} \text{ states}$$ 
+$$480^2 \times  2^{480} \approx 3 \times 10^{147} \text{ states}$$ 
 
 There are four actions: left, right, up, down.
 
-A Q-table would need to store $12.48\times 10^{144}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
+A Q-table would need to store $12\times 10^{147}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
 :::
 
 ## Linear Q-learning (Linear Function Approximation) 
@@ -89,7 +89,7 @@ To represent this, we have two vectors:
         f_1(s,a) \\
         f_2(s,a) \\
         \ldots\\
-        f_n(s,a) \\
+        f_{n \times |A|}(s,a) \\
         \end{pmatrix}$$
 
     In the Freeway example, we have a vector with six state features
@@ -109,7 +109,7 @@ However, for most applications, the weight of a feature is related to the action
 It is straightforward to construct $n \times |A|$ state-pair features from just $n$ state features:
 
 $$
-f_{ik}(s,a) = \Bigg \{
+f_{i,k}(s,a) = \Bigg \{
 \begin{array}{ll}
  f_i(s) & \text{if } a=a_k\\
  0      & \text{otherwise}
@@ -154,10 +154,12 @@ Give a feature vector $f$ and a weight vector $w$, the Q-value of a state is a s
 
 $$
 \begin{array}{lll}
-  Q(s,a) & = & f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_n(s,a) \cdot w^a_n\\
+  Q(s,a) & = & f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_{n}(s,a) \cdot w^a_n\\
          & = & \sum_{i=0}^{n} f_i(s,a) w^a_i
 \end{array}
 $$
+
+In practice, we also multiple the feature vector for weights $w^b_n$ for all actions $b \neq a$, but as the feature values will be 0, we know that it does not influence the result.
 
 :::{admonition} Example --- Approximate Q-function computation for Freeway
 
@@ -165,7 +167,7 @@ For the Freeway example, we would assume that moving up would give a better scor
 
 $$
 \begin{array}{lll}
-  Q(s,Up)   & = &  f_1(s,Up)\cdot 0.31  + \ldots + f_{14}(s,Up) \cdot 0.04
+  Q(s,Up)   & = &  f_1(s,Up)\cdot 0.31  + \ldots + f_{6}(s,Up) \cdot 0.04
 \end{array}
 $$
 :::
@@ -174,12 +176,9 @@ $$
 
 To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
 
-For initialisation, initialise all weights to 0. Alternatively, you can
-try Q-function initialisation and assign weights that you think will be
-`good' weights.
+For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be `good' weights.
 
-For update, we now need to update the weights instead of the actions.
-For Q-learning, the update rule is now:
+For update, we now need to update the weights instead of the actions. For Q-learning, the update rule is now:
 
 $$w^a_i \leftarrow w^a_i + \alpha [r + \gamma max_a' Q(s',a') - Q(s,a)]\ f_i(s,a)$$
 
@@ -198,13 +197,13 @@ In Freeway, for example, if we receive our first reward by crossing the road (go
 ```
 
 ```{admonition} Example --- Q-value update for Freeway
-Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 14 is has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
+Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 6 is has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
 we have:
 
 $$
 \begin{array}{lll}
   w^a_i & \leftarrow & w^a_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)\\
-  w^{Up}_{14} & \leftarrow & 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
+  w^{Up}_{6} & \leftarrow & 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
               & = &5
 \end{array}
 $$

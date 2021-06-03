@@ -44,10 +44,10 @@ class SharingGame(ExtensiveFormGame):
         if state > 4:
             rewards[5] = {BROTHER:0, SISTER:0}
             rewards[6] = {BROTHER:2, SISTER:0}
-            rewards[7] = {BROTHER:0, SISTER:0}
-            rewards[8] = {BROTHER:1, SISTER:1}
-            rewards[9] = {BROTHER:0, SISTER:0}
-            rewards[10] = {BROTHER:0, SISTER:2}
+            rewards[7] = {BROTHER:1, SISTER:1}
+            rewards[8] = {BROTHER:0, SISTER:0}
+            rewards[9] = {BROTHER:0, SISTER:2}
+            rewards[10] = {BROTHER:0, SISTER:0}
             return rewards[state]
         else:
             return {BROTHER:0, SISTER:0}
