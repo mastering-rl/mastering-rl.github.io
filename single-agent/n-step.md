@@ -224,16 +224,16 @@ $$
 \text{For } n = 5\\[2mm]
  t = 0 & s_0 = (0,0),\ a_0 = Up & r_1 = 0 & s_1 = (0,1)\\
        & T = \infty\\
-       & \tau = t - n - 1 = -4\\[1mm]
+       & \tau = t - n + 1 = -4\\[1mm]
  t = 1 & s_1 = (0,1),\ a_1 = Up & r_2 = 0 & s_2 = (0,2)\\
        & T = \infty\\
-       & \tau = t - n - 1 = -3\\[1mm]
+       & \tau = t - n + 1 = -3\\[1mm]
  t = 2 & s_2 = (0,2),\ a_2 = Right & r_3 = 0 & s_3 = (1,2)\\
        & T = \infty\\
-       & \tau = t - n -1 = -2\\[1mm]
+       & \tau = t - n + 1 = -2\\[1mm]
  t = 3 & s_3 = (1,2),\ a_3 = Right & r_4 = 0 & s_4 = (2,2)\\
        & T = \infty\\
-       & \tau = t - n -1 = -1
+       & \tau = t - n + 1 = -1
 \end{array}
 $$
 
@@ -244,12 +244,12 @@ $$
  t = 4 & s_4 = (2,2),\ a_4 = Down & r_5 = 0 & s_5 = (2,1)\\
 \phantom{\text{For }$n = 5$} %for consistent spacy
        & T = \infty\\
-       & \tau = t - n - 1 = 0\\
+       & \tau = t - n + 1 = 0\\
        & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 = 0\\
        & Q(s_0, a_0) = 0\\[1mm]
  t = 5 & s_5 = (2,1),\ a_5 = Up & r_6 = 0 & s_6 = (2,2)\\
        & T = \infty\\
-       & \tau = t - n - 1 = 1\\
+       & \tau = t - n + 1 = 1\\
        & G = \gamma^0 r_2 + \ldots + \gamma^4 r_6 = 0\\
        & Q(s_1, a_1) = 0\\[1mm]
 \end{array}
