@@ -167,7 +167,7 @@ tags: [remove-input]
 from sharing_game import SharingGame
 sharing = SharingGame()
 from graph_visualisation import GraphVisualisation
-    
+
 gv = GraphVisualisation(maxLevel = 5)
 graph = gv.nodeToGraph(sharing, sharing.gameTree())
 graph

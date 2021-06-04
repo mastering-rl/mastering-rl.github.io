@@ -31,8 +31,8 @@ class SharingGame(ExtensiveFormGame):
             transitions["0-2"] = 4
             return transitions[action]
         elif state > 1 and state <= 4:
-            transitions["no"] = state + 3
-            transitions["yes"] = state + 4
+            transitions["no"] = state * 2 + 1
+            transitions["yes"] = state * 2 + 2
             return transitions[action]
         else:
             transitions[action] = []
@@ -44,10 +44,10 @@ class SharingGame(ExtensiveFormGame):
         if state > 4:
             rewards[5] = {BROTHER:0, SISTER:0}
             rewards[6] = {BROTHER:2, SISTER:0}
-            rewards[7] = {BROTHER:1, SISTER:1}
-            rewards[8] = {BROTHER:0, SISTER:0}
-            rewards[9] = {BROTHER:0, SISTER:2}
-            rewards[10] = {BROTHER:0, SISTER:0}
+            rewards[7] = {BROTHER:0, SISTER:0}
+            rewards[8] = {BROTHER:1, SISTER:1}
+            rewards[9] = {BROTHER:0, SISTER:0}
+            rewards[10] = {BROTHER:0, SISTER:2}
             return rewards[state]
         else:
             return {BROTHER:0, SISTER:0}
