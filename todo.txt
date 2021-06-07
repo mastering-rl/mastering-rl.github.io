@@ -1,4 +1,5 @@
 
+- MCTS simulation discount factor = length - 1, not length. Change simulation from 13 to 14.
 - add prioritised sweeping for value iteration (or approximate value iteration)
 - Fix reward shaping graph
 - Consistent learning outcomes

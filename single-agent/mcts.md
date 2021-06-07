@@ -209,20 +209,20 @@ where $G_{t+1}$ is the discounted future reward passed up from the child node du
 :::{admonition} Example: Backpropagation
 
 Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.9$, $r=X$ represents reward $X$ received at a state, N is the number of times the
-state has been visited, and the length of the simulation is 13. After the simulation step, but before backpropagation, our tree would look like this:
+state has been visited, and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example
 ```
 
-In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes.
+In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from $y''$, which terminates after 14 steps. A reward of 100 is received in the terminal state. This would mean that the discounted reward returned at node $y''$ would be $\gamma^{13} \times 100$.
 
 The backpropagation step is then calculated for the nodes $y''$, $t'$, and $s$ as follows:
 
 $$
 \begin{array}{lll}
   V(y'')  & = & \max_{a\in A(y'')} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]\\
-          & = & \gamma^{13} \times 100~~\textrm{(simulation is 13 steps long and receives reward of 100)}\\
+          & = & \gamma^{13} \times 100~~\textrm{(simulation is 14 steps long and receives reward of 100)}\\
           & \approx &   25\\
   ~~\\
   V(t')   & = &  max_{a\in A(t')} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]\\
@@ -236,6 +236,7 @@ $$
           & = & 27\\
 \end{array}
 $$
+
 
 The new tree would look like this:
 

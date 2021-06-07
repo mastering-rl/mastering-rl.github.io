@@ -114,7 +114,7 @@ The basic idea of n-step reinforcement learning is that we do not update the Q-v
 immediately after executing an action: we wait $n$ steps and update it
 based on the n-step return.
 
-If $T$ is the termination step and $t+n>T$, then we just use the full
+If $T$ is the termination step and $t + n \geq T$, then we just use the full
 reward.
 
 In Monte-Carlo methods, we go all the way to the end of an episode.
