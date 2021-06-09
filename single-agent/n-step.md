@@ -243,12 +243,12 @@ $$
 \phantom{\text{For }$n = 5$} %for consistent spacy
        & T = \infty\\
        & \tau = t - n + 1 = 0\\
-       & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 = 0\\
+       & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 + \gamma^5 Q(s_5, a_5) = 0\\
        & Q(s_0, a_0) = 0\\[1mm]
  t = 5 & s_5 = (2,1),\ a_5 = Up & r_6 = 0 & s_6 = (2,2)\\
        & T = \infty\\
        & \tau = t - n + 1 = 1\\
-       & G = \gamma^0 r_2 + \ldots + \gamma^4 r_6 = 0\\
+       & G = \gamma^0 r_2 + \ldots + \gamma^4 r_6 + \gamma^5 Q(s_6, a_6) = 0\\
        & Q(s_1, a_1) = 0\\[1mm]
 \end{array}
 $$
