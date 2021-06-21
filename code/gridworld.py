@@ -153,8 +153,50 @@ class GridWorld(MDP):
     ''' 
     def getRewards(self):
         return self.rewards
-        
 
+    '''
+        Create a gridworld from an array of strings: one for each line
+        - First line is rewards as a dictionary from cell to value: {'A': 1, ...}
+        - space is an empty cell
+        - # is a blocked cell
+        - @ is the agent (initial state)
+        - new 'line' is a new row
+        - a letter is a cell with a reward for transitioning into that cell. The reward defined by the first line.
+    '''
+    @staticmethod
+    def create(string):
+        # Parse the reward on the first line
+        import ast
+        rewards = ast.literal_eval(string[0])
+
+        width = 0
+        height = len(string) - 1
+
+        blockedCells = []
+        initialState = (0,0)
+        goals = []
+        row = 0
+        for nextRow in string[1:]:
+            column = 0
+            for cell in nextRow:
+                if cell == '#':
+                    blockedCells += [(column, row)]
+                elif cell == '@':
+                    initialState = (column, row)
+                elif cell.isalpha():
+                    goals += [((column, row), rewards[cell])]
+                column += 1
+            width = max(width, column)
+            row += 1
+        return GridWorld(width = width, height = height, blockedStates = blockedCells, initialState = initialState, goals = goals)
+
+    @staticmethod
+    def open(file):
+        file = open(file, "r")
+        string = file.read().splitlines()
+        file.close()
+        return GridWorld.create(string)
+        
     ''' Visualise a grid world problem as a formatted string '''
     def visualise(self):
         leftArrow = '\u25C4'
@@ -171,7 +213,7 @@ class GridWorld(MDP):
         line += "\n"
 
         result = line
-        for y in range(self.height - 1, -1, -1):
+        for y in range(self.height):
             for x in range(self.width):
                 if (x, y) in self.getGoalStates().keys():
                     result += space
@@ -244,7 +286,7 @@ class GridWorld(MDP):
     def valueFunctionToString(self, values):
         line = " {:-^{n}}\n".format("", n=len(" | +0.00")*self.width + 1)
         result = line
-        for y in range(self.height - 1, -1, -1):
+        for y in range(self.height): # - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates:
                     result += " | #####"
@@ -270,7 +312,7 @@ class GridWorld(MDP):
         line += "\n"
 
         result = line
-        for y in range(self.height - 1, -1, -1):
+        for y in range(self.height): # - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
@@ -318,13 +360,31 @@ class GridWorld(MDP):
             result += line        
         return result
 
+    ''' Visualise a gridworld problem as a small string '''
+    def visualise_small(self):
+        line = " {:-^{n}}\n".format("", n=len("| N")*self.width + 1)
+        result = line 
+        for y in range(self.height): # - 1, -1, -1):
+            result += " "
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    result += "|##"
+                elif (x, y) in self.goalStates.keys():
+                    result += "|{:+d}".format(self.goalStates[(x,y)])
+                elif (x, y) == self.initialState:
+                    result += "|@@"
+                else:
+                    result += "|  "
+            result += "|\n"
+            result += line
 
+        return result
 
     ''' Convert a grid world policy to a formatted string '''
     def policyToString(self, policy):
         line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
         result = line 
-        for y in range(self.height - 1, -1, -1):
+        for y in range(self.height): # - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates:
                     result += " | ###"
@@ -343,4 +403,10 @@ class CliffWorld(GridWorld):
         super().__init__(noise = noise, discountFactor = discountFactor,
                          width = width, height = height,
                          blockedStates = blockedStates, actionCost = actionCost, goals = goals)
-                     
+
+if __name__ == "__main__":
+    small = GridWorld.open("layouts/small.txt")
+    print(small.visualise_small())
+
+    medium = GridWorld.open("layouts/emplacements.txt")
+    print(medium.visualise_small())
