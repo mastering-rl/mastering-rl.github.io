@@ -1,6 +1,9 @@
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 from mdp import *
+from rendering_utils import drawGridLines, renderGoal, renderBlockedTile, renderAgent
+
 
 class GridWorld(MDP):
 
@@ -11,7 +14,6 @@ class GridWorld(MDP):
     UP  = '\u25B2'
     RIGHT = '\u25BA'
     DOWN = '\u25BC'
-    
     def __init__(self,
                  noise = 0.1,
                  width = 4, height = 3,
@@ -153,7 +155,6 @@ class GridWorld(MDP):
     ''' 
     def getRewards(self):
         return self.rewards
-        
 
     ''' Visualise a grid world problem as a formatted string '''
     def visualise(self):
@@ -335,6 +336,54 @@ class GridWorld(MDP):
             result += line
 
         return result
+
+    ''' visualise the gridworld problem as a matplotlib image '''
+    def visualiseImage(self, tile_size=32):
+        width_px = self.width * tile_size
+        height_px = self.height * tile_size
+
+        img = [[[0, 0, 0] for i in range(width_px)] for i in range(height_px)]
+
+        # Render the grid
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                if (x, y) in self.goalStates:
+                    self.renderTile(x, y, tile_size, img, 'goal')
+                elif (x, y) in self.blockedStates:
+                    self.renderTile(x, y, tile_size, img, 'blocked')
+                elif (x, y) == self.initialState:
+                    self.renderTile(x, y, tile_size, img, 'agent')
+                    pass
+                else:
+                    self.renderTile(x, y, tile_size, img, 'empty')
+
+        plt.imshow(img, origin='lower', interpolation='bilinear')
+        plt.show()
+
+    '''Render each tile individually depending on the current state of the cell'''
+    def renderTile(self, x, y, tile_size, img, tile_type=None):
+        ymin = y * tile_size
+        ymax = (y + 1) * tile_size
+        xmin = x * tile_size
+        xmax = (x + 1) * tile_size
+
+        for i in range(ymin, ymax):
+            for j in range(xmin, xmax):
+                if i == ymin or i == ymax-1 or j == xmin or j == xmax+1:
+                    drawGridLines(i, j, img)
+                else:
+                    if tile_type == 'goal':
+                        renderGoal(i, j, img, reward=self.goalStates[(x, y)], reward_max=max(self.getGoalStates().values()), reward_min=min(self.getGoalStates().values()))
+                    elif tile_type == 'blocked':
+                        renderBlockedTile(i, j, img)
+                    elif tile_type == 'agent':
+                        renderAgent(i, j, img, center_x=(xmax - xmin) / 2, center_y=(ymax - ymin) / 2, radius=tile_size)
+                    elif tile_type == 'empty':
+                        img[i][j] = [0, 0, 0]
+                    else:
+                        raise ValueError("Invalid tile type")
+
+
 
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
