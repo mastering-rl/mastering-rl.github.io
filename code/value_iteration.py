@@ -44,7 +44,7 @@ class ValueIteration():
 
 if __name__ == "__main__":
     mdp = GridWorld(discountFactor=0.9, width = 8, height = 6)
-    mdp.visualiseImage()
+    mdp.visualiseImage(agent_position=(5,0))
     valueIteration = ValueIteration(mdp)
 
     for iterations in [1, 2, 3, 4, 5, 10, 100]:

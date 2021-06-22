@@ -1,5 +1,4 @@
 import math
-from enum import IntEnum
 
 COLOURS = {
     'red': [255, 0, 0],
@@ -27,9 +26,9 @@ def renderBlockedTile(i, j, img):
 
 '''render the agent as a circle'''
 def renderAgent(i, j, img, center_x, center_y, radius):
-    h_dist = math.fabs(center_x - i)
-    v_dist = math.fabs(center_y - j)
-    if math.sqrt(h_dist ** 2 + v_dist ** 2 <= radius):
+    h_dist = math.fabs(center_x - j)
+    v_dist = math.fabs(center_y - i)
+    if h_dist ** 2 + v_dist ** 2 <= radius ** 2:
         img[i][j] = COLOURS['yellow']
     else:
         img[i][j] = COLOURS['black']

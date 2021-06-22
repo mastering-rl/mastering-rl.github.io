@@ -338,11 +338,11 @@ class GridWorld(MDP):
         return result
 
     ''' visualise the gridworld problem as a matplotlib image '''
-    def visualiseImage(self, tile_size=32):
+    def visualiseImage(self, tile_size=32, agent_position=None):
         width_px = self.width * tile_size
         height_px = self.height * tile_size
-
-        img = [[[0, 0, 0] for i in range(width_px)] for i in range(height_px)]
+        current_position = self.getInitialState() if agent_position is None else agent_position
+        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
 
         # Render the grid
         for y in range(0, self.height):
@@ -351,9 +351,8 @@ class GridWorld(MDP):
                     self.renderTile(x, y, tile_size, img, 'goal')
                 elif (x, y) in self.blockedStates:
                     self.renderTile(x, y, tile_size, img, 'blocked')
-                elif (x, y) == self.initialState:
+                elif (x, y) == current_position:
                     self.renderTile(x, y, tile_size, img, 'agent')
-                    pass
                 else:
                     self.renderTile(x, y, tile_size, img, 'empty')
 
@@ -377,7 +376,7 @@ class GridWorld(MDP):
                     elif tile_type == 'blocked':
                         renderBlockedTile(i, j, img)
                     elif tile_type == 'agent':
-                        renderAgent(i, j, img, center_x=(xmax - xmin) / 2, center_y=(ymax - ymin) / 2, radius=tile_size)
+                        renderAgent(i, j, img, center_x=xmin + tile_size/2, center_y= ymin + tile_size/2, radius=tile_size/4)
                     elif tile_type == 'empty':
                         img[i][j] = [0, 0, 0]
                     else:
