@@ -1,4 +1,5 @@
 import math
+import matplotlib.colors as colours
 
 COLOURS = {
     'red': [255, 0, 0],
@@ -44,3 +45,23 @@ def renderGoal(i, j, img, reward, reward_max=1, reward_min=-1):
         img[i][j] = [0, int(255 * reward / reward_max), 0]
     else:
         img[i][j] = [int(255 * reward / reward_min), 0, 0]
+
+
+'''
+Matplotlib doesn't have an inbuilt red to green colour map with white in the middle.
+So we can just make our own.
+'''
+def makeRedWhiteGreenCmap():
+    cdict = {'red': ((0.0, 1.0, 1.0),
+                     (0.5, 1.0, 1.0),
+                     (1.0, 0.0, 0.0)),
+             'green': ((0.0, 0.0, 0.0),
+                       (0.5, 1.0, 1.0),
+                       (1.0, 1.0, 1.0)),
+             'blue': ((0.0, 0.0, 0.0),
+                      (0.5, 1.0, 1.0),
+                      (1.0, 0.0, 0.0))
+             }
+
+    # Create the colormap using the dictionary
+    return colours.LinearSegmentedColormap('GnRd', cdict)

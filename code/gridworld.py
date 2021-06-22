@@ -2,7 +2,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 from mdp import *
-from rendering_utils import drawGridLines, renderGoal, renderBlockedTile, renderAgent
+from rendering_utils import *
 
 
 class GridWorld(MDP):
@@ -382,7 +382,20 @@ class GridWorld(MDP):
                     else:
                         raise ValueError("Invalid tile type")
 
-
+    '''Visualise the value function using a heat-map where green is high value and red is low value'''
+    def visualiseValueFunction(self, valueDict):
+        values = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    values[y][x] = 0
+                    plt.text(x, y, '#', horizontalalignment='center', verticalalignment='center')
+                else:
+                    values[y][x] = valueDict[(x, y)]
+                    plt.text(x, y, f'{values[y][x]:.2f}', horizontalalignment='center', verticalalignment='center')
+        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
+        plt.show()
 
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,

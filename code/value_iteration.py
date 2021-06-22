@@ -44,7 +44,7 @@ class ValueIteration():
 
 if __name__ == "__main__":
     mdp = GridWorld(discountFactor=0.9, width = 8, height = 6)
-    mdp.visualiseImage(agent_position=(5,0))
+    mdp.visualiseImage()
     valueIteration = ValueIteration(mdp)
 
     for iterations in [1, 2, 3, 4, 5, 10, 100]:
@@ -53,6 +53,7 @@ if __name__ == "__main__":
 
     print("Policy after 100 iterations")
     values = valueIteration.valueIteration(iterations = 100)
+    mdp.visualiseValueFunction(values)
     policy = mdp.extractPolicyFromValueFunction(values)
     print(mdp.policyToString(policy))
 
