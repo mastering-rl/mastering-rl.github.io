@@ -45,9 +45,6 @@ def renderGoal(i, j, img, reward, reward_max=1, reward_min=-1):
         img[i][j] = [0, int(255 * reward / reward_max), 0]
     else:
         img[i][j] = [int(255 * reward / reward_min), 0, 0]
-<<<<<<< HEAD
-=======
-
 
 '''
 Matplotlib doesn't have an inbuilt red to green colour map with white in the middle.
