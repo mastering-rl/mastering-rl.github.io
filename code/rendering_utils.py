@@ -1,5 +1,5 @@
 import math
-from enum import IntEnum
+import matplotlib.colors as colours
 
 COLOURS = {
     'red': [255, 0, 0],
@@ -27,9 +27,9 @@ def renderBlockedTile(i, j, img):
 
 '''render the agent as a circle'''
 def renderAgent(i, j, img, center_x, center_y, radius):
-    h_dist = math.fabs(center_x - i)
-    v_dist = math.fabs(center_y - j)
-    if math.sqrt(h_dist ** 2 + v_dist ** 2 <= radius):
+    h_dist = math.fabs(center_x - j)
+    v_dist = math.fabs(center_y - i)
+    if h_dist ** 2 + v_dist ** 2 <= radius ** 2:
         img[i][j] = COLOURS['yellow']
     else:
         img[i][j] = COLOURS['black']
@@ -45,3 +45,25 @@ def renderGoal(i, j, img, reward, reward_max=1, reward_min=-1):
         img[i][j] = [0, int(255 * reward / reward_max), 0]
     else:
         img[i][j] = [int(255 * reward / reward_min), 0, 0]
+<<<<<<< HEAD
+=======
+
+
+'''
+Matplotlib doesn't have an inbuilt red to green colour map with white in the middle.
+So we can just make our own.
+'''
+def makeRedWhiteGreenCmap():
+    cdict = {'red': ((0.0, 1.0, 1.0),
+                     (0.5, 1.0, 1.0),
+                     (1.0, 0.0, 0.0)),
+             'green': ((0.0, 0.0, 0.0),
+                       (0.5, 1.0, 1.0),
+                       (1.0, 1.0, 1.0)),
+             'blue': ((0.0, 0.0, 0.0),
+                      (0.5, 1.0, 1.0),
+                      (1.0, 0.0, 0.0))
+             }
+
+    # Create the colormap using the dictionary
+    return colours.LinearSegmentedColormap('GnRd', cdict)

@@ -2,7 +2,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 from mdp import *
-from rendering_utils import drawGridLines, renderGoal, renderBlockedTile, renderAgent
+from rendering_utils import *
 
 
 class GridWorld(MDP):
@@ -336,11 +336,11 @@ class GridWorld(MDP):
         return result
 
     ''' visualise the gridworld problem as a matplotlib image '''
-    def visualiseImage(self, tile_size=32):
+    def visualiseImage(self, tile_size=32, agent_position=None):
         width_px = self.width * tile_size
         height_px = self.height * tile_size
-
-        img = [[[0, 0, 0] for i in range(width_px)] for i in range(height_px)]
+        current_position = self.getInitialState() if agent_position is None else agent_position
+        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
 
         # Render the grid
         for y in range(0, self.height):
@@ -349,9 +349,8 @@ class GridWorld(MDP):
                     self.renderTile(x, y, tile_size, img, 'goal')
                 elif (x, y) in self.blockedStates:
                     self.renderTile(x, y, tile_size, img, 'blocked')
-                elif (x, y) == self.initialState:
+                elif (x, y) == current_position:
                     self.renderTile(x, y, tile_size, img, 'agent')
-                    pass
                 else:
                     self.renderTile(x, y, tile_size, img, 'empty')
 
@@ -375,12 +374,26 @@ class GridWorld(MDP):
                     elif tile_type == 'blocked':
                         renderBlockedTile(i, j, img)
                     elif tile_type == 'agent':
-                        renderAgent(i, j, img, center_x=(xmax - xmin) / 2, center_y=(ymax - ymin) / 2, radius=tile_size)
+                        renderAgent(i, j, img, center_x=xmin + tile_size/2, center_y= ymin + tile_size/2, radius=tile_size/4)
                     elif tile_type == 'empty':
                         img[i][j] = [0, 0, 0]
                     else:
                         raise ValueError("Invalid tile type")
 
+    '''Visualise the value function using a heat-map where green is high value and red is low value'''
+    def visualiseValueFunction(self, valueDict):
+        values = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    values[y][x] = 0
+                    plt.text(x, y, '#', horizontalalignment='center', verticalalignment='center')
+                else:
+                    values[y][x] = valueDict[(x, y)]
+                    plt.text(x, y, f'{values[y][x]:.2f}', horizontalalignment='center', verticalalignment='center')
+        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
+        plt.show()
 
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
@@ -389,8 +402,8 @@ class CliffWorld(GridWorld):
         super().__init__(noise = noise, discountFactor = discountFactor,
                          width = width, height = height,
                          blockedStates = blockedStates, actionCost = actionCost, goals = goals)
-                     
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     gridworld = GridWorld(width = 8, height = 6)
     #gridworld.visualiseImage()
 
