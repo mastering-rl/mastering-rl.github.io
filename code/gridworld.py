@@ -319,8 +319,6 @@ class GridWorld(MDP):
             result += line        
         return result
 
-
-
     ''' Convert a grid world policy to a formatted string '''
     def policyToString(self, policy):
         line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
@@ -384,7 +382,6 @@ class GridWorld(MDP):
                         raise ValueError("Invalid tile type")
 
 
-
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
                  blockedStates = [], actionCost = -0.05,
@@ -393,3 +390,9 @@ class CliffWorld(GridWorld):
                          width = width, height = height,
                          blockedStates = blockedStates, actionCost = actionCost, goals = goals)
                      
+if __name__ == "__main__": 
+    gridworld = GridWorld(width = 8, height = 6)
+    #gridworld.visualiseImage()
+
+    cliffworld = CliffWorld()
+    cliffworld.visualiseImage()
