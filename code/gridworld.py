@@ -357,6 +357,7 @@ class GridWorld(MDP):
                     self.renderTile(x, y, tile_size, img, 'empty')
 
         plt.imshow(img, origin='lower', interpolation='bilinear')
+        plt.axis('off')
         plt.show()
 
     '''Render each tile individually depending on the current state of the cell'''
