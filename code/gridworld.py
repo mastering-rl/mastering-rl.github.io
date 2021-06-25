@@ -319,8 +319,6 @@ class GridWorld(MDP):
             result += line        
         return result
 
-
-
     ''' Convert a grid world policy to a formatted string '''
     def policyToString(self, policy):
         line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
@@ -405,4 +403,10 @@ class CliffWorld(GridWorld):
         super().__init__(noise = noise, discountFactor = discountFactor,
                          width = width, height = height,
                          blockedStates = blockedStates, actionCost = actionCost, goals = goals)
-                     
+
+if __name__ == "__main__":
+    gridworld = GridWorld(width = 8, height = 6)
+    #gridworld.visualiseImage()
+
+    cliffworld = CliffWorld()
+    cliffworld.visualiseImage()
