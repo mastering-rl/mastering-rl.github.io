@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     print("Policy after 100 iterations")
     values = valueIteration.valueIteration(iterations = 100)
-    mdp.visualiseValueFunction(values)
+    mdp.visualiseValueFunction(values, title="100 iterations")
     policy = mdp.extractPolicyFromValueFunction(values)
     print(mdp.policyToString(policy))
 
