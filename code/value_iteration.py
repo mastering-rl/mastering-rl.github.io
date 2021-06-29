@@ -43,7 +43,7 @@ class ValueIteration():
         return values
 
 if __name__ == "__main__":
-    mdp = GridWorld(discountFactor=0.9, width = 8, height = 6)
+    mdp = GridWorld()
     mdp.visualiseImage()
     valueIteration = ValueIteration(mdp)
 
