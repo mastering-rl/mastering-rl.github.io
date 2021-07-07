@@ -101,8 +101,11 @@ if __name__ == "__main__":
 
     for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
         print("After iteration " + str(iterations))
-        print(mdp.policyToString(policyIteration.policyIteration(iterations = iterations).policyTable) + "\n")
-
+        policy = policyIteration.policyIteration(iterations = iterations).policyTable
+        print(mdp.policyToString(policy) + "\n")
+        mdp.visualisePolicy(policy, title=f'num iterations={iterations}')
     mdp = GridWorld(width = 20, height = 15)
     policyIteration = PolicyIteration(mdp)
-    print(mdp.policyToString(policyIteration.policyIteration(iterations = 100).policyTable) + "\n")
+    policy = policyIteration.policyIteration(iterations=100).policyTable
+    print(mdp.policyToString(policy) + "\n")
+    mdp.visualisePolicy(policy, title=f'num iterations=100')

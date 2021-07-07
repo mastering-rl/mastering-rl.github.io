@@ -494,6 +494,34 @@ class GridWorld(MDP):
         plt.axis('off')
         plt.show()
 
+    ''' Visualise the policy of the agent with a matplotlib visual '''
+    def visualisePolicy(self, policy, title):
+        # make values negative -1 to get a white background with the 'Greys' cmap matplotlib. Values have no actual
+        # meaning in this visualisation.
+        result = [[-1 for _ in range(self.width)] for _ in range(self.height)]
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in self.blockedStates:
+                    plt.text(x, y, '\u2592', horizontalalignment='center', verticalalignment='center')
+                else:
+                    action = "T" if policy[(x, y)] == self.TERMINATE else policy[(x, y)]
+                    plt.text(x, y, action, horizontalalignment='center', verticalalignment='center')
+        plt.imshow(result, cmap='Greys', origin='lower')
+        ax = plt.gca()
+
+        # set the ticks to get a clear grid lines
+        ax.set_xticks([i for i in range(self.width)])
+        ax.set_yticks([j for j in range(self.height)])
+        ax.set_xticks([i+0.5 for i in range(self.width)], minor=True)
+        ax.set_yticks([j+0.5 for j in range(self.height)], minor=True)
+
+
+        ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
+        plt.title(f'Policy: {title}')
+        # plt.axis('off')
+        plt.show()
+
+
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
                  blockedStates = [], actionCost = -0.05,
