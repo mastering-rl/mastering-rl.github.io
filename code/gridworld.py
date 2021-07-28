@@ -6,7 +6,6 @@ from rendering_utils import *
 
 
 class GridWorld(MDP):
-
     # labels for terminate action and terminal state
     TERMINATE = 'terminate'
     TERMINAL = ('terminal', 'terminal')
@@ -149,7 +148,6 @@ class GridWorld(MDP):
             return True
         return False
 
-
     '''
         Returns a list of lists, which records all rewards given at each step
         for each episodeof a simulated gridworld
@@ -244,7 +242,6 @@ class GridWorld(MDP):
                     result += space
             result += " |\n"
 
-            
             for x in range(self.width):
                 if (x, y) == self.getInitialState():
                     result += " | {}  ||  * |  {}".format(leftArrow, rightArrow)
@@ -464,6 +461,7 @@ class GridWorld(MDP):
         plt.show()
 
     ''' Visualise the Q-function with a matplotlib visual'''
+
     def visualiseQFunction(self, qValues, title, tileSize=32, showText=False):
         widthPx = self.width * tileSize
         heightPx = self.height * tileSize
@@ -484,10 +482,14 @@ class GridWorld(MDP):
 
                 # draw the action value for action available in each cell
                 # Break the grid up into 4 sections, using triangles that meet in the middle. The base of the triangle points toward the direction of the action
-                renderActionQValue(tileSize, x, y, self.UP, qValues, img, showText, v_text_offset=8, rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.DOWN, qValues, img, showText, v_text_offset=-8, rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.LEFT, qValues, img, showText, h_text_offset=-8, rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.RIGHT, qValues, img, showText, h_text_offset=8, rewardMax=rewardMax, rewardMin=rewardMin)
+                renderActionQValue(tileSize, x, y, self.UP, qValues, img, showText, v_text_offset=8,
+                                   rewardMax=rewardMax, rewardMin=rewardMin)
+                renderActionQValue(tileSize, x, y, self.DOWN, qValues, img, showText, v_text_offset=-8,
+                                   rewardMax=rewardMax, rewardMin=rewardMin)
+                renderActionQValue(tileSize, x, y, self.LEFT, qValues, img, showText, h_text_offset=-8,
+                                   rewardMax=rewardMax, rewardMin=rewardMin)
+                renderActionQValue(tileSize, x, y, self.RIGHT, qValues, img, showText, h_text_offset=8,
+                                   rewardMax=rewardMax, rewardMin=rewardMin)
 
         plt.imshow(img, origin='lower', interpolation='bilinear')
         plt.title(f'Q Function: {title}')
@@ -515,7 +517,6 @@ class GridWorld(MDP):
         ax.set_xticks([i+0.5 for i in range(self.width)], minor=True)
         ax.set_yticks([j+0.5 for j in range(self.height)], minor=True)
 
-
         ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
         plt.title(f'Policy: {title}')
         # plt.axis('off')
@@ -529,6 +530,33 @@ class CliffWorld(GridWorld):
         super().__init__(noise = noise, discountFactor = discountFactor,
                          width = width, height = height,
                          blockedStates = blockedStates, actionCost = actionCost, goals = goals)
+
+
+class OneDimensionalGridWorld(GridWorld):
+    """
+    A one dimensional GridWorld class to use with the Logistic regression policy gradient.
+    This allows actions [left, right] and terminates when the agent reaches the goal state without having to use a
+    terminate action.
+    """
+
+    def __init__(self, noise=0.1, width=4, discountFactor=0.9, actionCost=0.0, initialState=(0, 0),
+                 goals=[((3, 2), 1), ((3, 1), -1)]):
+        super().__init__(noise=noise, width=width, height=1, blockedStates=[], discountFactor=discountFactor,
+                         actionCost=actionCost,
+                         initialState=initialState, goals=goals)
+
+    # def isTerminal(self, state):
+    #     if state in self.goalStates:
+    #         self.rewards += [self.episodeRewards]
+    #         return True
+    #     return False
+
+    def execute(self, state, action):
+        # if we are in a goal state then terminate automatically execute a terminate action to immediately terminate
+        if state in self.goalStates:
+            return MDP.execute(self, state=state, action=self.TERMINATE)
+        return super().execute(state, action)
+
 
 if __name__ == "__main__":
     small = GridWorld(width = 8, height = 6)

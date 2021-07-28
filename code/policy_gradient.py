@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 import random
 from mdp import *
 import math
-import numpy as np
 
 
 class PolicyGradient(ABC):
@@ -36,7 +35,7 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
     can update the policy using the policy gradient mechanism!
     """
 
-    def __init__(self, mdp, num_params=4, alpha=0.1, gamma=0.95) -> None:
+    def __init__(self, mdp, num_params=2, alpha=0.1, gamma=0.95) -> None:
         super().__init__()
         self.mdp = mdp
         self.theta = [random.random() for _ in range(num_params)]  # a vector of policy parameters
@@ -55,8 +54,10 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
             state = states[t]
             action = actions[t]
             discounted_future_reward = discounted_future_rewards[t]
-            gradient_log_pi = self.gradient_log_pi(state)[action]
-            self.theta += self.alpha * (self.gamma ** t) * discounted_future_reward * gradient_log_pi
+            gradient_log_pi = self.gradient_log_pi(state, action)
+            # update each parameter
+            for i in range(len(self.theta)):
+                self.theta[i] += self.alpha * (self.gamma ** t) * discounted_future_reward * gradient_log_pi[i]
 
     def discounted_rewards(self, rewards):
         """
@@ -75,9 +76,9 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         T = len(rewards)
         discounted_future_rewards = [0 for _ in range(T)]
         # the final discounted reward is just the reward you get at that step
-        discounted_future_rewards[T-1] = rewards[T-1]
-        for t in reversed(range(0, T-1)):
-            discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t+1] * self.gamma
+        discounted_future_rewards[T - 1] = rewards[T - 1]
+        for t in reversed(range(0, T - 1)):
+            discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t + 1] * self.gamma
         return discounted_future_rewards
 
     def act(self, state):
@@ -85,10 +86,9 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         To determine an action, we use our logistic function to generate probabilities given the state. We then use
         these probabilities sample our action stochastically.
         """
-        actions = self.mdp.getActions(state)
         prob_left, prob_right = self.get_probabilities(state)
 
-        # with a probability of prob_left go left (action=0), otherwise go right (action=1)
+        # with a probability of prob_left go left, otherwise go right
         if random.random() < prob_left:
             return self.mdp.LEFT
         else:
@@ -113,16 +113,16 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
                 actions.append(action)
                 rewards.append(reward)
 
+                state = next_state
                 episode_reward += reward
 
             self.update(states=states, actions=actions, rewards=rewards)
-
 
     def logistic_function(self, y):
         """
         Standard logistic function which we will use to transform our policy values into probabilties.
         """
-        return 1 / (1 + math.exp(y))
+        return 1 / (1 + math.exp(-y))
 
     def get_probabilities(self, state):
         """
@@ -136,7 +136,7 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
 
         return p, 1 - p
 
-    def gradient_log_pi(self, state):
+    def gradient_log_pi(self, state, action):
         """
         This computes the gradient of the log of the policy (pi) which is needed to get the gradient of the objective
         (J).
@@ -148,9 +148,10 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
                   grad_log_pi(right|state) = - state * pi(0|state)
         """
         y = self.dot_product(state, self.theta)
-        grad_log_pi_left = state - state * self.logistic_function(y)
-        grad_log_pi_right = - state * self.logistic_function(y)
-
+        if action == self.mdp.LEFT:
+            return [s_i - s_i * self.logistic_function(y) for s_i in state]
+        else:
+            return [- s_i * self.logistic_function(y) for s_i in state]
 
     @staticmethod
     def dot_product(vec1, vec2):
@@ -160,10 +161,15 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         """
         return sum([v1 * v2 for v1, v2 in zip(vec1, vec2)])
 
-
 if __name__ == '__main__':
-    from gridworld import CliffWorld
+    from gridworld import OneDimensionalGridWorld
 
     print("==========\nLogistic Policy Regression: Cliffworld\n==========")
-    mdp = CliffWorld()
-    pgAgent = LogisticRegressionPolicyGradient(mdp, num_params=4, alpha=0.1, gamma=0.95)
+    # make a GridWorld that only has two dimensions
+    mdp = OneDimensionalGridWorld(width=11, initialState=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
+    mdp.visualiseImage()
+    pgAgent = LogisticRegressionPolicyGradient(mdp,
+                                               num_params=len(mdp.getInitialState()),  # need a weight for each part of the state-space
+                                               alpha=0.1,
+                                               gamma=0.95)
+    pgAgent.execute(episodes=1000)
