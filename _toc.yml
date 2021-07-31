@@ -1,12 +1,7 @@
-# Table of content
-# Learn more at https://jupyterbook.org/customize/toc.html
-#
-- file: intro
-#  numbered: true
-#  chapters:
-#  - file: intro
-
-- part: Single-agent Reinforcement Learning
+format: jb-book
+root: intro
+parts:
+- caption: Single-agent Reinforcement Learning
   chapters:
   - file: single-agent/MDPs
   - file: single-agent/value-based
@@ -23,8 +18,7 @@
     - file: single-agent/policy-iteration
     - file: single-agent/policy-gradients
   - file: single-agent/modelling-and-abstraction
-
-- part: Multi-agent Reinforcement Learning
+- caption: Multi-agent Reinforcement Learning
   chapters:
   - file: multi-agent/normal-form
   - file: multi-agent/extensive-form

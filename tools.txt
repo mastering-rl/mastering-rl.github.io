@@ -9,7 +9,7 @@ Including code from a file:
 
 pandoc for converting tex to markdown:
 
-- command: pandoc -f markdown -t latex filename.tex -o filename.md
+- command: pandoc -t markdown -f latex filename.tex -o filename.md
 
 
 Tikz magic (not currently used): 
