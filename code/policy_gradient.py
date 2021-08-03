@@ -3,7 +3,6 @@ import random
 from mdp import *
 import math
 
-
 class PolicyGradient(ABC):
 
     @abstractmethod
@@ -118,11 +117,6 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
 
             self.update(states=states, actions=actions, rewards=rewards)
 
-    def logistic_function(self, y):
-        """
-        Standard logistic function which we will use to transform our policy values into probabilties.
-        """
-        return 1 / (1 + math.exp(-y))
 
     def get_probabilities(self, state):
         """
@@ -135,7 +129,6 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         p = self.logistic_function(y)
 
         return p, 1 - p
-
     def gradient_log_pi(self, state, action):
         """
         This computes the gradient of the log of the policy (pi) which is needed to get the gradient of the objective
@@ -152,6 +145,13 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
             return [s_i - s_i * self.logistic_function(y) for s_i in state]
         else:
             return [- s_i * self.logistic_function(y) for s_i in state]
+
+    @staticmethod
+    def logistic_function(y):
+        """
+        Standard logistic function which we will use to transform our policy values into probabilties.
+        """
+        return 1 / (1 + math.exp(-y))
 
     @staticmethod
     def dot_product(vec1, vec2):
@@ -172,4 +172,12 @@ if __name__ == '__main__':
                                                num_params=len(mdp.getInitialState()),  # need a weight for each part of the state-space
                                                alpha=0.1,
                                                gamma=0.95)
+    mdp.visualise_policy_probabilities(pgAgent)
+    pgAgent.execute(episodes=10)
+    mdp.visualise_policy_probabilities(pgAgent)
+    pgAgent.execute(episodes=100)
+    mdp.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=1000)
+    mdp.visualise_policy_probabilities(pgAgent)
+    pgAgent.execute(episodes=10000)
+    mdp.visualise_policy_probabilities(pgAgent)

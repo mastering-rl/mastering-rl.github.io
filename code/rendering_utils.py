@@ -59,6 +59,12 @@ def renderActionQValue(tileSize, x, y, action, qValues, img, showText=False, tex
                  s=f'{value:.2f}', size=text_size, verticalalignment='center', horizontalalignment='center', color='white')
 
 
+''' Render each Q value which forms a triangle in the grid representation of the Q-function.'''
+def renderActionProbability(tileSize, x, y, action, prob, text_size=6, h_text_offset=0, v_text_offset=0):
+    plt.text(x=x * tileSize + tileSize // 2 + h_text_offset, y=y * tileSize + tileSize // 2 + v_text_offset,
+             s=f'{prob:.2f}\n{action}', size=text_size, verticalalignment='center', horizontalalignment='center', color='white')
+
+
 '''render blocked tile as a black and white criss-cross'''
 def renderBlockedTile(i, j, img):
     if i % 2 == 0 or j % 2 == 0:
