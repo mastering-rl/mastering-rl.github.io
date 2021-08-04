@@ -540,22 +540,36 @@ class OneDimensionalGridWorld(GridWorld):
     """
 
     def __init__(self, noise=0.1, width=4, discountFactor=0.9, actionCost=0.0, initialState=(0, 0),
-                 goals=[((3, 2), 1), ((3, 1), -1)]):
+                 goals=[((0, 0), -1), ((10, 0), 1)]):
         super().__init__(noise=noise, width=width, height=1, blockedStates=[], discountFactor=discountFactor,
                          actionCost=actionCost,
                          initialState=initialState, goals=goals)
-
-    # def isTerminal(self, state):
-    #     if state in self.goalStates:
-    #         self.rewards += [self.episodeRewards]
-    #         return True
-    #     return False
 
     def execute(self, state, action):
         # if we are in a goal state then terminate automatically execute a terminate action to immediately terminate
         if state in self.goalStates:
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
+
+    def visualise_policy_probabilities(self, agent, tileSize=32, title='Action Probabilities'):
+        widthPx = self.width * tileSize
+        heightPx = 1 * tileSize
+        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
+
+        # Render the grid
+        for x in range(0, self.width):
+            prob_left, prob_right = agent.get_probabilities((x, 0))
+            if (x, 0) in self.goalStates:
+                self.renderTile(x, 0, tileSize, img, 'goal')
+            else:
+                self.renderTile(x, 0, tileSize, img, 'empty')
+                renderActionProbability(tileSize, x, 0, self.LEFT, prob_left, h_text_offset=-8)
+                renderActionProbability(tileSize, x, 0, self.RIGHT, prob_right, h_text_offset=8)
+
+        plt.imshow(img, origin='lower', interpolation='bilinear')
+        plt.axis('off')
+        plt.title(f'Grid World {title}')
+        plt.show()
 
 
 if __name__ == "__main__":
