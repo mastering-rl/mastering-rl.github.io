@@ -2,61 +2,38 @@ from abc import ABC, abstractmethod
 import random
 from mdp import *
 import math
+import torch
+import torch.nn as nn
+from torch.distributions.categorical import Categorical
+from torch.optim import Adam
 
 class PolicyGradient(ABC):
+    def __init__(self, mdp, gamma, alpha) -> None:
+        super().__init__()
+        self.alpha = alpha  # learning rate (gradient update step-size)
+        self.gamma = gamma  # discount rate
+        self.mdp = mdp
 
     @abstractmethod
-    def update(self, state, action, reward):
+    def update(self, states, actions, rewards):
         """
         Update the policy
         """
         raise NotImplementedError
 
+    @abstractmethod
     def act(self, state):
         """
         Select and action based on the policy of the agent
         """
         raise NotImplementedError
 
+    @abstractmethod
     def execute(self, episodes=100):
         """
         Generate and store an entire episode trajectory to use to update the agent
         """
         raise NotImplementedError
-
-
-class LogisticRegressionPolicyGradient(PolicyGradient):
-    """
-    Logistic regression based policy gradient agent used to make decision where there are only two possible actions. Our
-    goal is to learn parameters to the logistic function that optimises decision-making in the environment. Since the
-    output of a logistic regression function is between 0 and 1, it represents the policy of taking an action. 1 minus
-    that probability is the probability of taking the other action. Importantly, it is differentiable, so we
-    can update the policy using the policy gradient mechanism!
-    """
-
-    def __init__(self, mdp, num_params=2, alpha=0.1, gamma=0.95) -> None:
-        super().__init__()
-        self.mdp = mdp
-        self.theta = [random.random() for _ in range(num_params)]  # a vector of policy parameters
-        self.alpha = alpha  # learning rate (gradient update step-size)
-        self.gamma = gamma  # discount rate
-
-    def update(self, states, actions, rewards):
-        """
-        Update our policy parameters according to the gradient descent formula:
-            theta <- theta + alpha * gamma^t * G * nabla J(theta)
-        G is the total future discounted reward received in the episode:
-            G <- gamma^0 * r_{t+1} + ... +  gamma^(T - t) * r_{T+1}
-        """
-        discounted_future_rewards = self.discounted_rewards(rewards)
-        for t in range(len(states)):
-            state = states[t]
-            action = actions[t]
-            discounted_future_reward = discounted_future_rewards[t]
-            gradient_log_pi = self.gradient_log_pi(state, action)
-            # update each parameter
-            for i in range(len(self.theta)):
-                self.theta[i] += self.alpha * (self.gamma ** t) * discounted_future_reward * gradient_log_pi[i]
 
     def discounted_rewards(self, rewards):
         """
@@ -79,6 +56,37 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         for t in reversed(range(0, T - 1)):
             discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t + 1] * self.gamma
         return discounted_future_rewards
+
+
+class LogisticRegressionPolicyGradient(PolicyGradient):
+    """
+    Logistic regression based policy gradient agent used to make decision where there are only two possible actions. Our
+    goal is to learn parameters to the logistic function that optimises decision-making in the environment. Since the
+    output of a logistic regression function is between 0 and 1, it represents the policy of taking an action. 1 minus
+    that probability is the probability of taking the other action. Importantly, it is differentiable, so we
+    can update the policy using the policy gradient mechanism!
+    """
+
+    def __init__(self, mdp, num_params=2, alpha=0.1, gamma=0.95) -> None:
+        super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
+        self.theta = [random.random() for _ in range(num_params)]  # a vector of policy parameters
+
+    def update(self, states, actions, rewards):
+        """
+        Update our policy parameters according to the gradient descent formula:
+            theta <- theta + alpha * gamma^t * G * nabla J(theta)
+        G is the total future discounted reward received in the episode:
+            G <- gamma^0 * r_{t+1} + ... +  gamma^(T - t) * r_{T+1}
+        """
+        discounted_future_rewards = self.discounted_rewards(rewards)
+        for t in range(len(states)):
+            state = states[t]
+            action = actions[t]
+            discounted_future_reward = discounted_future_rewards[t]
+            gradient_log_pi = self.gradient_log_pi(state, action)
+            # update each parameter
+            for i in range(len(self.theta)):
+                self.theta[i] += self.alpha * (self.gamma ** t) * discounted_future_reward * gradient_log_pi[i]
 
     def act(self, state):
         """
@@ -117,7 +125,6 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
 
             self.update(states=states, actions=actions, rewards=rewards)
 
-
     def get_probabilities(self, state):
         """
         Determines the probability distribution given the state and current policy
@@ -129,6 +136,7 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         p = self.logistic_function(y)
 
         return p, 1 - p
+
     def gradient_log_pi(self, state, action):
         """
         This computes the gradient of the log of the policy (pi) which is needed to get the gradient of the objective
@@ -161,6 +169,112 @@ class LogisticRegressionPolicyGradient(PolicyGradient):
         """
         return sum([v1 * v2 for v1, v2 in zip(vec1, vec2)])
 
+
+class DeepPolicyGradient(PolicyGradient):
+    """
+    A policy gradient agent using a neural network to represent the agent's policy. One of the restrictions of the
+    logistic regression agent is that it can only make decisions when the size of the action space is two. Neural
+    networks allow us to handle higher dimensional action-spaces. Additionally it allows us to represent non-linear
+    policies.
+    This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
+    """
+
+    def __init__(self, mdp, hidden_dim=64, alpha=0.1, gamma=0.95) -> None:
+        super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
+        self.mdp = mdp
+        self.state_space = len(mdp.getStates()[0])
+        self.action_space = 2
+
+        # we want to define our policy network in the instantiation. Use a sequential neural network as follows:
+        #   1) First layer takes in the state vector. Therefore it needs to be the size of the state space
+        #   2) We need to add hidden layers as passed in the __init__ function. The hidden layers allows for non-linear
+        #      policy representation.
+        #   3) We need non-linear activation function between layers. Also important for non-linearity.
+        #   4) We need to output a categorical distribution which has the same size as the action-space.
+        self.policy_network = nn.Sequential(
+            nn.Linear(in_features=self.state_space, out_features=hidden_dim),
+            nn.ReLU(),  # have a non-linear activation function between layers
+            nn.Linear(in_features=hidden_dim, out_features=hidden_dim),
+            nn.ReLU(),
+            nn.Linear(in_features=hidden_dim, out_features=self.action_space)
+        )
+        # make optimisers for the policy network. This will be used to update the weights using gradient descent during
+        # the update stage.
+        self.optimiser = Adam(self.policy_network.parameters(), lr=self.alpha)
+
+    def act(self, state):
+        """
+        This function allows us to do a forward pass through the network in order to get our action logits which we will
+        turn into a categorical distribution. We can then use this distribution to draw an action from the action-space
+        """
+        action_logits = self.policy_network(state)
+        action_distribution = Categorical(logits=action_logits)
+        action = action_distribution.sample()
+        log_prob = action_distribution.log_prob(action)  # we also want to get the log prob of the action for the policy gradient update step
+        return action, log_prob
+
+    def evaluate_actions(self, states, actions):
+        action_logits = self.policy_network(states)
+        action_distribution = Categorical(logits=action_logits)
+        log_prob = action_distribution.log_prob(actions.squeeze(-1))
+        return log_prob.view(1, -1)
+
+    def execute(self, episodes=100):
+        for i in range(episodes):
+            actions = []
+            states = []
+            rewards = []
+            action_log_probs = []
+
+            state = self.mdp.getInitialState()
+            episode_reward = 0
+            while not self.mdp.isTerminal(state):
+                # turn the state into a tensor such that it can be passed into the network, which requires a tensor of
+                # floats
+                state_tensor = torch.as_tensor(state, dtype=torch.float32)
+
+                action, action_log_prob = self.act(state_tensor)
+                # take the action (which is a tensor) and convert it into an action for the mdp
+                next_state, reward = self.mdp.execute(state, self.convert_from_tensor_to_action(action))
+
+                # store the information from that step of the trajectory
+                states.append(state)
+                actions.append(action)
+                rewards.append(reward)
+                action_log_probs.append(action_log_prob)
+
+                state = next_state
+                episode_reward += reward
+
+            self.update(states=states, actions=actions, rewards=rewards)
+
+    def update(self, states, actions, rewards):
+        # convert to tensors such that we can use torch mechanisms to compute the gradient and update the node weights
+        # in the network.
+        returns = torch.as_tensor(self.discounted_rewards(rewards), dtype=torch.float32)
+        states = torch.as_tensor(states, dtype=torch.float32)
+        actions = torch.as_tensor(actions)
+
+        action_log_probs = self.evaluate_actions(states, actions)
+
+        loss = -(action_log_probs * returns).mean()
+        self.optimiser.zero_grad()
+        loss.backward()
+        self.optimiser.step()  # make a gradient descent step
+
+    def convert_from_tensor_to_action(self, action):
+        if action == 0:
+            return self.mdp.LEFT
+        if action == 1:
+            return self.mdp.RIGHT
+        if action == 2:
+            return self.mdp.UP
+        if action == 3:
+            return self.mdp.DOWN
+        if action == 4:
+            return self.mdp.TERMINATE
+
+
 if __name__ == '__main__':
     from gridworld import OneDimensionalGridWorld
 
@@ -172,12 +286,17 @@ if __name__ == '__main__':
                                                num_params=len(mdp.getInitialState()),  # need a weight for each part of the state-space
                                                alpha=0.1,
                                                gamma=0.95)
+    deepPgAgent = DeepPolicyGradient(mdp)
     mdp.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=10)
+    deepPgAgent.execute(episodes=10)
     mdp.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=100)
+    deepPgAgent.execute(episodes=100)
     mdp.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=1000)
+    deepPgAgent.execute(episodes=1000)
     mdp.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=10000)
+    deepPgAgent.execute(episodes=10000)
     mdp.visualise_policy_probabilities(pgAgent)
