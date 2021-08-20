@@ -179,11 +179,11 @@ class DeepPolicyGradient(PolicyGradient):
     This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
     """
 
-    def __init__(self, mdp, hidden_dim=64, alpha=0.1, gamma=0.95) -> None:
+    def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.1, gamma=0.95) -> None:
         super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
         self.mdp = mdp
-        self.state_space = len(mdp.getStates()[0])
-        self.action_space = 2
+        self.state_space = state_space
+        self.action_space = action_space
 
         # we want to define our policy network in the instantiation. Use a sequential neural network as follows:
         #   1) First layer takes in the state vector. Therefore it needs to be the size of the state space
@@ -246,6 +246,7 @@ class DeepPolicyGradient(PolicyGradient):
                 state = next_state
                 episode_reward += reward
 
+            # print(f"episode reward = {episode_reward}")
             self.update(states=states, actions=actions, rewards=rewards)
 
     def update(self, states, actions, rewards):
@@ -276,27 +277,32 @@ class DeepPolicyGradient(PolicyGradient):
 
 
 if __name__ == '__main__':
-    from gridworld import OneDimensionalGridWorld
+    from gridworld import OneDimensionalGridWorld, GridWorld
 
-    print("==========\nLogistic Policy Regression: Cliffworld\n==========")
+    print("==========\nLogistic Regression Policy Gradient: 1D Gridworld\n==========")
     # make a GridWorld that only has two dimensions
-    mdp = OneDimensionalGridWorld(width=11, initialState=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
-    mdp.visualiseImage()
-    pgAgent = LogisticRegressionPolicyGradient(mdp,
-                                               num_params=len(mdp.getInitialState()),  # need a weight for each part of the state-space
+    one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initialState=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
+    one_dimensional_gridworld.visualiseImage()
+    pgAgent = LogisticRegressionPolicyGradient(one_dimensional_gridworld,
+                                               num_params=len(one_dimensional_gridworld.getInitialState()),  # need a weight for each part of the state-space
                                                alpha=0.1,
                                                gamma=0.95)
-    deepPgAgent = DeepPolicyGradient(mdp)
-    mdp.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=10)
-    deepPgAgent.execute(episodes=10)
-    mdp.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=100)
-    deepPgAgent.execute(episodes=100)
-    mdp.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=1000)
-    deepPgAgent.execute(episodes=1000)
-    mdp.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
     pgAgent.execute(episodes=10000)
+    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+
+    print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
+    two_dimensional_gridworld = GridWorld()
+    two_dimensional_gridworld.visualiseImage()
+    deepPgAgent = DeepPolicyGradient(two_dimensional_gridworld,
+                                         state_space=len(two_dimensional_gridworld.getInitialState()), action_space=4)
+    deepPgAgent.execute(episodes=10)
+    deepPgAgent.execute(episodes=100)
+    deepPgAgent.execute(episodes=1000)
     deepPgAgent.execute(episodes=10000)
-    mdp.visualise_policy_probabilities(pgAgent)

@@ -522,6 +522,10 @@ class GridWorld(MDP):
         # plt.axis('off')
         plt.show()
 
+    def execute(self, state, action):
+        if state in self.goalStates:
+            return MDP.execute(self, state=state, action=self.TERMINATE)
+        return super().execute(state, action)
 
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
