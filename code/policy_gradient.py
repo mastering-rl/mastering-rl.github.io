@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 from torch.distributions.categorical import Categorical
 from torch.optim import Adam
+import torch.nn.functional as F
+
 
 class PolicyGradient(ABC):
     def __init__(self, mdp, gamma, alpha) -> None:
@@ -179,7 +181,7 @@ class DeepPolicyGradient(PolicyGradient):
     This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
     """
 
-    def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.1, gamma=0.95) -> None:
+    def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001, gamma=0.95) -> None:
         super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
         self.mdp = mdp
         self.state_space = state_space
@@ -210,8 +212,22 @@ class DeepPolicyGradient(PolicyGradient):
         action_logits = self.policy_network(state)
         action_distribution = Categorical(logits=action_logits)
         action = action_distribution.sample()
-        log_prob = action_distribution.log_prob(action)  # we also want to get the log prob of the action for the policy gradient update step
+        log_prob = action_distribution.log_prob(
+            action)  # we also want to get the log prob of the action for the policy gradient update step
         return action, log_prob
+
+    def get_probabilities(self, state):
+        """
+        Return the probabilities of each action given the state of the environment. This is used for the stochastic
+        policy visualisation tool.
+        """
+        state = torch.as_tensor(state, dtype=torch.float32)
+        with torch.no_grad():
+            action_logits = self.policy_network(state)
+        # a softmax layer turns action logits into probabilities
+        probabilities = F.softmax(input=action_logits, dim=-1).tolist()
+        # probabilities are in the order: prob_left, prob_right, prob_up, prob_down
+        return probabilities
 
     def evaluate_actions(self, states, actions):
         action_logits = self.policy_network(states)
@@ -287,22 +303,26 @@ if __name__ == '__main__':
                                                num_params=len(one_dimensional_gridworld.getInitialState()),  # need a weight for each part of the state-space
                                                alpha=0.1,
                                                gamma=0.95)
-    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
     pgAgent.execute(episodes=10)
-    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
     pgAgent.execute(episodes=100)
-    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
     pgAgent.execute(episodes=1000)
-    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
     pgAgent.execute(episodes=10000)
-    one_dimensional_gridworld.visualise_policy_probabilities(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
 
     print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
     two_dimensional_gridworld = GridWorld()
     two_dimensional_gridworld.visualiseImage()
     deepPgAgent = DeepPolicyGradient(two_dimensional_gridworld,
-                                         state_space=len(two_dimensional_gridworld.getInitialState()), action_space=4)
+                                     state_space=len(two_dimensional_gridworld.getInitialState()), action_space=4)
     deepPgAgent.execute(episodes=10)
+    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
     deepPgAgent.execute(episodes=100)
+    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
     deepPgAgent.execute(episodes=1000)
+    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
     deepPgAgent.execute(episodes=10000)
+    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
