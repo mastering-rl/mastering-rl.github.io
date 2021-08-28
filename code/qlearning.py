@@ -58,7 +58,7 @@ class ModelFreeReinforcementLearner():
         argmaxQ = None
         maxQ = float('-inf')
         for action in self.mdp.getActions(state):
-            value = self.getQValue(state, action)
+            value = qValues.get((state, action))
             if maxQ < value:
                 argMaxQ = action
                 maxQ = value
@@ -336,6 +336,7 @@ if __name__ == "__main__":
     print(mdp.qFunctionToString(qFunction))
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.policyToString(policy))
+    mdp.visualiseQFunction(qFunction, title="SARSA: Cliffworld", showText=True)
     # Execute policy (using epsilon greedy with epsilon = 0.0
     SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
     sarsaRewards = mdp.getRewards()
@@ -351,6 +352,7 @@ if __name__ == "__main__":
     qFunction = linearSarsa.getQTable()
     policy = mdp.extractPolicyFromQFunction(qFunction)
     print(mdp.qFunctionToString(qFunction))
+    mdp.visualiseQFunction(qFunction, title="LinearSarsa: Gridworld one terminal state", showText=True)
     print(mdp.policyToString(policy))
 
     #print("==========\nLinearSarsa: Gridworld both terminal states\n==========")
