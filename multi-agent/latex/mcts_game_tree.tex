@@ -1,0 +1,61 @@
+\input{../../latex/tikz-macros}
+
+\begin{document}
+\begin{tikzpicture}[->,>=stealth',level/.style={sibling distance = 9.5cm/#1,
+	level distance = 1.6cm},scale=0.7] 
+
+%\tikzstyle{level 1}=[sibling distance=9cm]
+%\tikzstyle{level 2}=[sibling distance=4cm]
+\tikzstyle{level 3}=[sibling distance=3cm]
+\tikzstyle{level 4}=[sibling distance=1.5cm]
+\tikzstyle{level 5}=[sibling distance=1cm]
+\node [idle] {$s_0$}
+child{ node [opponent_n] {$l$} 
+	child{ node [idle] {$t$} 
+		child{ node [opponent_n] {$n$}	
+				child{ node [idle] {$v$} 
+				edge from parent node[left] {g'}
+			} 
+			child{ node [idle] {$v'$}         
+				edge from parent node[right] {h'}    
+			}
+			edge from parent node[left] {c}
+		}
+		edge from parent node[anchor=south] {a'}
+	}
+	child{ node [idle] {$t'$}
+		edge from parent node[anchor=south] {b'}
+	}                            
+	edge from parent node[above left] {a} 
+}   
+child{ node [opponent_n] {$m$}
+	child{ node [idle] {$u$} 
+		child{ node [opponent_n] {$o$}
+			child{ node [idle] {$w$}
+				edge from parent node[left] {g'}
+			}
+			child{ node [idle] {$w'$}
+				edge from parent node[right] {h'}
+			}
+			edge from parent node[above left] {d}
+		}
+		child{ node [opponent_n] {$p$} 
+			child{ node [idle] {$x$}
+				edge from parent node[left] {h'}
+			}
+			child{ node [idle] {$x'$}
+				edge from parent node[right] {c'}
+			}
+			edge from parent node[above right] {e}
+		}
+		edge from parent node[anchor=south] {a'}
+	} 
+	child{ node [idle] {$u'$}         
+		edge from parent node[anchor=south] {b'}    
+	}
+	edge from parent node[above right] {b}
+}
+
+; 
+\end{tikzpicture}
+\end{document}

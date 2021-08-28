@@ -214,7 +214,7 @@ class GridWorld(MDP):
         line += "\n"
 
         result = line
-        for y in range(self.height):
+        for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.getGoalStates().keys():
                     result += space
@@ -242,6 +242,7 @@ class GridWorld(MDP):
                     result += space
             result += " |\n"
 
+            
             for x in range(self.width):
                 if (x, y) == self.getInitialState():
                     result += " | {}  ||  * |  {}".format(leftArrow, rightArrow)
@@ -286,7 +287,7 @@ class GridWorld(MDP):
     def valueFunctionToString(self, values):
         line = " {:-^{n}}\n".format("", n=len(" | +0.00")*self.width + 1)
         result = line
-        for y in range(self.height): # - 1, -1, -1):
+        for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates:
                     result += " | #####"
@@ -312,7 +313,7 @@ class GridWorld(MDP):
         line += "\n"
 
         result = line
-        for y in range(self.height): # - 1, -1, -1):
+        for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
@@ -360,31 +361,11 @@ class GridWorld(MDP):
             result += line        
         return result
 
-    ''' Visualise a gridworld problem as a small string '''
-    def visualise_small(self):
-        line = " {:-^{n}}\n".format("", n=len("| N")*self.width + 1)
-        result = line
-        for y in range(self.height): # - 1, -1, -1):
-            result += " "
-            for x in range(self.width):
-                if (x, y) in self.blockedStates:
-                    result += "|##"
-                elif (x, y) in self.goalStates.keys():
-                    result += "|{:+d}".format(self.goalStates[(x,y)])
-                elif (x, y) == self.initialState:
-                    result += "|@@"
-                else:
-                    result += "|  "
-            result += "|\n"
-            result += line
-
-        return result
-
     ''' Convert a grid world policy to a formatted string '''
     def policyToString(self, policy):
         line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
-        result = line
-        for y in range(self.height): # - 1, -1, -1):
+        result = line 
+        for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 if (x, y) in self.blockedStates:
                     result += " | ###"

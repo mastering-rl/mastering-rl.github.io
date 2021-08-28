@@ -304,6 +304,7 @@ if __name__ == "__main__":
 
     print("==========\nQ-learning: Gridworld\n==========")
     mdp = GridWorld()
+    print(mdp.visualise())
     #mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 
     qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
@@ -311,7 +312,7 @@ if __name__ == "__main__":
     print(mdp.qFunctionToString(qFunction))
     print(mdp.policyToString(policy))
     qLearningRewards = mdp.getRewards()
-
+    
     print("=====\nSARSA: Gridworld\n=====")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
     qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
@@ -343,7 +344,7 @@ if __name__ == "__main__":
 
     from plot import Plot
     Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
-
+    '''
     print("==========\nLinearSarsa: Gridworld one terminal state\n==========")
     mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
     featureExtractor = GridWorldFeatureExtractor(mdp)
@@ -380,3 +381,4 @@ if __name__ == "__main__":
 
     from plot import Plot
     Plot.plotEpisodeLength(["Q-learning", "Reward shaping"], [qLearningRewards, rewardShapedRewards])
+    '''
