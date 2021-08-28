@@ -299,7 +299,7 @@ class GridWorld(MDP):
         return result
 
     ''' Convert a grid world Q function to a formatted string '''
-    def qFunctionToString(self, qValues):
+    def qFunctionToString(self, qfunction):
         leftArrow = '\u25C4'
         upArrow = '\u25B2'
         rightArrow = '\u25BA'
@@ -325,7 +325,7 @@ class GridWorld(MDP):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y), self.UP))
+                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y), self.UP))
             result += " |\n"
             
             for x in range(self.width):
@@ -336,9 +336,9 @@ class GridWorld(MDP):
                 if (x, y) in self.blockedStates:
                     result += " |     #####     "
                 elif (x, y) in self.getGoalStates().keys():
-                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y), self.TERMINATE))
+                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y), self.TERMINATE))
                 else:
-                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, MDP.getQValue(qValues, (x, y), self.LEFT), MDP.getQValue(qValues, (x, y), self.RIGHT), rightArrow)
+                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, qfunction.getQValue((x, y), self.LEFT), qfunction.getQValue((x, y), self.RIGHT), rightArrow)
             result += " |\n"
 
             for x in range(self.width):
@@ -349,7 +349,7 @@ class GridWorld(MDP):
                 if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(MDP.getQValue(qValues, (x, y),  self.DOWN))
+                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y),  self.DOWN))
             result += " |\n"
 
             for x in range(self.width):
@@ -546,8 +546,7 @@ class CliffWorld(GridWorld):
 
 
 class OneDimensionalGridWorld(GridWorld):
-    """
-    A one dimensional GridWorld class to use with the Logistic regression policy gradient.
+    """    A one dimensional GridWorld class to use with the Logistic regression policy gradient.
     This allows actions [left, right] and terminates when the agent reaches the goal state without having to use a
     terminate action.
     """

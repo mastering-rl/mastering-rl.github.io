@@ -1,160 +1,47 @@
-from collections import defaultdict
-
-class QFunction():
-
-    '''
-        Update this Q-Function with a new value
-    '''
-    def update(self, state, action, value): abstract
-
-    '''
-        Get a Q value for a given state-action pair
-    '''
-    def getQValue(self, state, action): abstract
-
-    '''
-        Get the best action and its Q-value for this state
-    '''
-    def getMaxQ(self, state, actions): abstract
-
-class QTable(QFunction):
-    def __init__(self, default = 0.0):
-        self.qTable = defaultdict(lambda : 0.0)
-
-    def update(self, state, action, value):
-        self.qTable[(state, action)] = value
-
-    def getQValue(self, state, action):
-        return self.qTable[(state, action)]
-
-    def getMaxQ(self, state, actions):
-        argmaxQ = None
-        maxQ = float('-inf')
-        for action in actions:
-            value = self.getQValue(state, action)
-            if maxQ < value:
-                argMaxQ = action
-                maxQ = value
-        return (argmaxQ, maxQ)
+from qtable import QTable
 
 class ModelFreeReinforcementLearner():
 
-    # how many episodes to take an average for determining convergence
-    length = 30
-
-    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None):
+    def __init__(self, mdp, bandit, qfunction = QTable(), alpha = 0.1):
         self.mdp = mdp
         self.bandit = bandit
         self.alpha = alpha
-        self.convergenceEpsilon = convergenceEpsilon
-        self.initQValues = initQValues
+        self.qfunction = qfunction
 
-        self.latestRewards = []
-        self.previousAverage = 0.0
-
-    def execute(self, episodes = 2000): abstract
-
-    def getMaxQ(self, qValues, state):
-        argmaxQ = None
-        maxQ = float('-inf')
-        for action in self.mdp.getActions(state):
-            value = qValues.get((state, action))
-            if maxQ < value:
-                argMaxQ = action
-                maxQ = value
-        return (argmaxQ, maxQ)
-
-    def initialiseQFunction(self):
-        if self.initQValues == None:
-            qValues = dict()
-            for state in self.mdp.getStates():
-                for action in self.mdp.getActions():
-                    qValues.update({(state, action): 0.0})
-            return qValues
-        else:
-            return self.initQValues
-
-    '''
-        Return the Q-values only for this state
-    '''
-    def getQValues(self, state, qValues):
-        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
-
-
-    '''
-        Return true if and only if this has converged, defined as the last self.length episodes
-        having an average reward within self.convergenceEpsilon of the previous 30 episodes
-    '''
-    def isConverged(self, episodeReward):
-        converged = False
-        if len(self.latestRewards) == self.length:
-            average = sum(self.latestRewards) / self.length
-            if abs(self.previousAverage - average) < self.convergenceEpsilon:
-                converged = True
-            self.previousAverage = average
-            self.latestRewards = []
-        else:
-            self.latestRewards += [episodeReward]
-        return converged
-
-from multi_armed_bandits import EpsilonGreedy
-
-class QLearning(ModelFreeReinforcementLearner):
     def execute(self, episodes = 100):
-        qValues = self.initialiseQFunction()
-
-        for i in range(episodes):
-            state = self.mdp.getInitialState()
-
-            episodeReward = 0 
-            while not self.mdp.isTerminal(state):
-                actions = self.mdp.getActions(state)
-                action = self.bandit.select(actions, self.getQValues(state, qValues))
-                (nextState, reward) = self.mdp.execute(state, action)
-                newValue = self.update(qValues, state, action, nextState, reward)
-                qValues[(state, action)] = newValue
-                state = nextState
-                episodeReward += reward
-
-            if self.isConverged(episodeReward):
-                print("converged at %d episodes" % i)
-                break
-            
-        return qValues
-    
-    def update(self, qValues, state, action, nextState, reward): 
-        (_, maxQValue) = self.getMaxQ(qValues, nextState)
-        qValue = qValues[(state, action)]
-        return qValue + self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
-
-class SARSA(ModelFreeReinforcementLearner):
-    def execute(self, episodes = 100):
-        qValues = self.initialiseQFunction()
 
         for i in range(episodes):
             state = self.mdp.getInitialState()
             actions = self.mdp.getActions(state)
-            action = self.bandit.select(actions, self.getQValues(state, qValues))
+            action = self.bandit.select(state, actions, self.qfunction)
 
-            episodeReward = 0
             while not self.mdp.isTerminal(state):
                 (nextState, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.getActions(nextState)
-                nextAction = self.bandit.select(actions, self.getQValues(nextState, qValues))
-                newValue = self.update(qValues, state, action, nextState, nextAction, reward)
-                qValues[(state, action)] = newValue
+                nextAction = self.bandit.select(nextState, actions, self.qfunction)
+                newQValue = self.update(state, action, nextState, nextAction, reward)
+                self.qfunction.update(state, action, newQValue)
                 state = nextState
                 action = nextAction
-                episodeReward += reward
 
-            if self.isConverged(episodeReward):
-                break
+    '''
+        Update a Q-function with a new delta
+    '''
+    def update(self, state, action, nextState, reward): abstract
 
-        return qValues
 
-    def update(self, qValues, state, action, nextState, nextAction, reward): 
-        qValue = qValues[(state, action)]
-        qValueNext = qValues[(nextState, nextAction)]
+from multi_armed_bandits import EpsilonGreedy
+
+class QLearning(ModelFreeReinforcementLearner):
+    def update(self, state, action, nextState, nextAction, reward): 
+        (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
+        qValue = self.qfunction.getQValue(state, action)
+        return qValue + self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+    
+class SARSA(ModelFreeReinforcementLearner):
+    def update(self, state, action, nextState, nextAction, reward): 
+        qValue = self.qfunction.getQValue(state, action)
+        qValueNext = self.qfunction.getQValue(nextState, nextAction)
         return qValue + self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
 
 class LinearSARSA(ModelFreeReinforcementLearner):
@@ -301,49 +188,54 @@ class GridWorldPotentialFunction(PotentialFunction):
 
 if __name__ == "__main__":
     from gridworld import *
-
     print("==========\nQ-learning: Gridworld\n==========")
     mdp = GridWorld()
     print(mdp.visualise())
     #mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 
-    qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
-    policy = mdp.extractPolicyFromQFunction(qFunction)
-    print(mdp.qFunctionToString(qFunction))
+    qfunction = QTable()
+    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes = 1000)
+    policy = mdp.extractPolicyFromQFunction(qfunction)
+    print(mdp.qFunctionToString(qfunction))
     print(mdp.policyToString(policy))
     qLearningRewards = mdp.getRewards()
-    
+
+      
     print("=====\nSARSA: Gridworld\n=====")
     mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
-    qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
-    policy = mdp.extractPolicyFromQFunction(qFunction)
-    print(mdp.qFunctionToString(qFunction))
+    qfunction = QTable()
+    SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes = 1000)
+    policy = mdp.extractPolicyFromQFunction(qfunction)
+    print(mdp.qFunctionToString(qfunction))
     print(mdp.policyToString(policy))
-
 
     print("==========\nQ-learning: Cliffworld\n==========")
+    
     mdp = CliffWorld()
-    qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-    print(mdp.qFunctionToString(qFunction))
-    policy = mdp.extractPolicyFromQFunction(qFunction)
+    qfunction = QTable()
+    QLearning(mdp, EpsilonGreedy(epsilon = 0.2), qfunction).execute(episodes = 2000)
+    print(mdp.qFunctionToString(qfunction))
+    policy = mdp.extractPolicyFromQFunction(qfunction)
     print(mdp.policyToString(policy))
     # Execute policy (using epsilon greedy with epsilon = 0.0
-    QLearning(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
+    QLearning(mdp, EpsilonGreedy(epsilon = 0.0), qfunction = qfunction).execute(episodes = 2000)
     qLearningRewards = mdp.getRewards()
 
-    print("=====\nSARSA: Cliffworld\n=====")
+    print("=====\nSARSA: Cliffworld\n=====")    
     mdp = CliffWorld()
-    qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-    print(mdp.qFunctionToString(qFunction))
-    policy = mdp.extractPolicyFromQFunction(qFunction)
+    qfunction = QTable()
+    SARSA(mdp, EpsilonGreedy(epsilon = 0.2), qfunction).execute(episodes = 2000)
+    print(mdp.qFunctionToString(qfunction))
+    policy = mdp.extractPolicyFromQFunction(qfunction)
     print(mdp.policyToString(policy))
-    mdp.visualiseQFunction(qFunction, title="SARSA: Cliffworld", showText=True)
+    #mdp.visualiseQFunction(qFunction, title="SARSA: Cliffworld", showText=True)
     # Execute policy (using epsilon greedy with epsilon = 0.0
-    SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
+    SARSA(mdp, EpsilonGreedy(epsilon = 0.0), qfunction = qfunction).execute(episodes = 2000)
     sarsaRewards = mdp.getRewards()
 
     from plot import Plot
     Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
+
     '''
     print("==========\nLinearSarsa: Gridworld one terminal state\n==========")
     mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])

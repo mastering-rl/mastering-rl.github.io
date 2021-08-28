@@ -1,12 +1,16 @@
+from collections import defaultdict
+
 import random
 import math
+
+from qtable import QTable
 
 class MultiArmedBandit():
 
     '''
-        Select an action given Q-values for each action.
+        Select an action for this state given from a list given a Q-function
     '''
-    def select(self, actions, qValues): abstract
+    def select(self, state, actions, qfunction): abstract
 
     '''
         Reset a multi-armed bandit to its initial configuration.
@@ -23,6 +27,9 @@ class MultiArmedBandit():
         #the actions available
         actions = [0, 1, 2, 3, 4]
 
+        #a dummy state
+        state = 1
+
         rewards = []
         for episode in range(0, episodes):
             self.reset()
@@ -30,11 +37,8 @@ class MultiArmedBandit():
             # The probability of receiving a payoff of 1 for each action
             probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]
 
-            qValues = dict()
-            N = dict()
-            for action in actions:
-                qValues[action] = 0.0
-                N[action] = 0
+            N = defaultdict(lambda: 0)
+            qtable = QTable()
 
             episodeRewards = []
             for step in range(0, episodeLength):
@@ -44,7 +48,7 @@ class MultiArmedBandit():
                     probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]
 
                 #select an action
-                action = self.select(actions, qValues)
+                action = self.select(state, actions, qtable)
 
                 r = random.random()
                 reward = 0
@@ -54,9 +58,8 @@ class MultiArmedBandit():
                 episodeRewards += [reward]
 
                 N[action] = N[action] + 1
-
-                qValues[action] = qValues[action] - (qValues[action] / N[action])
-                qValues[action] = qValues[action] + reward / N[action]
+                newValue = qtable.getQValue(state, action) - (qtable.getQValue(state, action) / N[action]) + (reward / N[action])
+                qtable.update(state, action, newValue)
 
             rewards += [episodeRewards]
 
@@ -70,28 +73,14 @@ class EpsilonGreedy(MultiArmedBandit):
     def reset(self):
         None
 
-    def select(self, actions, qValues):
+    def select(self, state, actions, qfunction):
         r = random.random()
         # select a random action with epsilon probability
         if r < self.epsilon:
             return random.choice(actions)
         else:
-            maxActions = []
-            maxValue = float('-inf')
-            for action in actions:
-                value = qValues[action]
-                if value > maxValue:
-                    maxActions = [action]
-                    maxValue = value
-                elif value == maxValue:
-                    maxActions += [action]
-
-            # if there are multiple actions with the highest value
-            # choose one randomly
-            if len(maxActions) == 0:
-                print("actions = " + str(actions))
-                print("qValues = " + str(qValues))
-            return random.choice(maxActions)
+            (argMaxQ, _) = qfunction.getMaxQ(state, actions)
+            return argMaxQ
 
 class EpsilonDecreasing(MultiArmedBandit):
 
@@ -103,8 +92,8 @@ class EpsilonDecreasing(MultiArmedBandit):
     def reset(self):
         self.epsilonGreedyBandit = EpsilonGreedy(self.initialEpsilon)
 
-    def select(self, actions, qValues):
-        result = self.epsilonGreedyBandit.select(actions, qValues)
+    def select(self, state, actions, qfunction):
+        result = self.epsilonGreedyBandit.select(state, actions, qfunction)
         self.epsilonGreedyBandit.epsilon *= self.alpha
         return result
 
@@ -116,18 +105,18 @@ class Softmax(MultiArmedBandit):
     def reset(self):
         None
 
-    def select(self, actions, qValues):
+    def select(self, state, actions, qfunction):
 
         # calculate the denominator for the softmax strategy
         sum = 0.0
         for action in actions:
-            sum += math.exp(qValues[action] / self.tau)
+            sum += math.exp(qfunction.getQValue(state, action) / self.tau)
 
         r = random.random()
         cumulativeProbability = 0.0
         result = None
         for action in actions:
-            probability = math.exp(qValues[action] / self.tau) / sum
+            probability = math.exp(qfunction.getQValue(state, action) / self.tau) / sum
             if r >= cumulativeProbability and r <= cumulativeProbability + probability:
                 result = action
             cumulativeProbability += probability
@@ -141,7 +130,7 @@ class UpperConfidenceBounds(MultiArmedBandit):
         self.total = 0
         self.N = dict() #number of times each action has been chosen
 
-    def select(self, actions, qValues):
+    def select(self, state, actions, qfunction):
 
         # First execute each action one time
         for action in actions:
@@ -154,7 +143,7 @@ class UpperConfidenceBounds(MultiArmedBandit):
         maxValue = float('-inf')
         for action in actions:
             N = self.N[action]
-            value = qValues[action] + math.sqrt((2 * math.log(self.total)) / N)
+            value = qfunction.getQValue(state, action) + math.sqrt((2 * math.log(self.total)) / N)
             if value > maxValue:
                 maxActions = [action]
                 maxValue = value
@@ -170,6 +159,7 @@ class UpperConfidenceBounds(MultiArmedBandit):
 
 
 def plotEpsilonGreedy(drift = False):
+    epsilon000 = EpsilonGreedy(epsilon = 0.00).runBandit(drift = drift)
     epsilon005 = EpsilonGreedy(epsilon = 0.05).runBandit(drift = drift)
     epsilon01 = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
     epsilon02 = EpsilonGreedy(epsilon = 0.2).runBandit(drift = drift)
@@ -177,8 +167,9 @@ def plotEpsilonGreedy(drift = False):
     epsilon08 = EpsilonGreedy(epsilon = 0.8).runBandit(drift = drift)
     epsilon10 = EpsilonGreedy(epsilon = 1.0).runBandit(drift = drift)
 
-    Plot.plotRewards(["epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
-                     [epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
+    Plot.plotRewards(["epsilon = 0.0", "epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", 
+                      "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
+                     [epsilon000, epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
 
 
 def plotEpsilonDecreasing(drift = False):

@@ -28,12 +28,6 @@ class MDP:
     ''' Return all goal states of this MDP '''
     def getGoalStates(self): abstract
 
-    def getQValue(qValues, state, action):
-        qValue = 0.0
-        if (state, action) in qValues.keys():
-            qValue = qValues[(state, action)]
-        return qValue
-    
     ''' Return a policy given a value function '''
     def extractPolicyFromValueFunction(self, values):
         policy = dict()
@@ -54,7 +48,7 @@ class MDP:
         return policy
 
     ''' Return a policy given a Q function '''
-    def extractPolicyFromQFunction(self, qValues):
+    def extractPolicyFromQFunction(self, qfunction):
         policy = dict()
         for state in self.getStates():
 
@@ -62,7 +56,7 @@ class MDP:
             maxQ = float('-inf')
             for action in self.getActions(state):
                # if this is the maximum Q-value so far, set the policy for this state
-                qValue = MDP.getQValue(qValues, state, action)
+                qValue = qfunction.getQValue(state, action)
             
                 if qValue > maxQ:
                     policy.update({state: action})
