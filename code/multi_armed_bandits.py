@@ -22,7 +22,7 @@ class MultiArmedBandit():
         Run a bandit algorithm for a number of episodes, with each
         episode being a set length.
     '''
-    def runBandit(self, episodes = 50, episodeLength = 1000, drift = True):
+    def runBandit(self, episodes = 20, episodeLength = 1000, drift = True):
 
         #the actions available
         actions = [0, 1, 2, 3, 4]
@@ -59,8 +59,8 @@ class MultiArmedBandit():
 
                 N[action] = N[action] + 1
                 newValue = qtable.getQValue(state, action) - (qtable.getQValue(state, action) / N[action]) + (reward / N[action])
-                qtable.update(state, action, newValue)
-
+                qtable.update(state, action, (reward / N[action]) - (qtable.getQValue(state, action) / N[action]) )
+                
             rewards += [episodeRewards]
 
         return rewards

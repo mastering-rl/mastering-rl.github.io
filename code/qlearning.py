@@ -36,13 +36,17 @@ class QLearning(ModelFreeReinforcementLearner):
     def update(self, state, action, nextState, nextAction, reward): 
         (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
         qValue = self.qfunction.getQValue(state, action)
-        return qValue + self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+        delta = self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+        #return qValue + delta
+        return delta
     
 class SARSA(ModelFreeReinforcementLearner):
     def update(self, state, action, nextState, nextAction, reward): 
         qValue = self.qfunction.getQValue(state, action)
         qValueNext = self.qfunction.getQValue(nextState, nextAction)
-        return qValue + self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+        delta = self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+        #return qValue + delta
+        return delta
 
 class LinearSARSA(ModelFreeReinforcementLearner):
     def __init__(self, mdp, bandit, featureExtractor, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None, weights = None):

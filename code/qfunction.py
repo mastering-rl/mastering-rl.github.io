@@ -3,9 +3,9 @@ import random
 class QFunction():
 
     '''
-        Update this Q-Function with a new value
+        Update the Q-value of (state, action) by delta
     '''
-    def update(self, state, action, value): abstract
+    def update(self, state, action, delta): abstract
 
     '''
         Get a Q value for a given state-action pair
