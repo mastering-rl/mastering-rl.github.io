@@ -522,6 +522,38 @@ class GridWorld(MDP):
         # plt.axis('off')
         plt.show()
 
+    def execute(self, state, action):
+        if state in self.goalStates:
+            return MDP.execute(self, state=state, action=self.TERMINATE)
+        return super().execute(state, action)
+
+    def visualise_stochastic_policy(self, agent, tileSize=32, twoDimensional=False, title='Action Probabilities'):
+        widthPx = self.width * tileSize
+        heightPx = self.height * tileSize
+        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
+
+        # Render the grid
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                if twoDimensional:
+                    prob_left, prob_right, prob_up, prob_down = agent.get_probabilities((x,y))
+                else:
+                    prob_left, prob_right = agent.get_probabilities((x, y))
+                if (x, y) in self.goalStates:
+                    self.renderTile(x, y, tileSize, img, 'goal')
+                else:
+                    self.renderTile(x, y, tileSize, img, 'empty')
+                    if twoDimensional:
+                        renderActionProbability(tileSize, x, y, self.UP, prob_up, v_text_offset=8)
+                        renderActionProbability(tileSize, x, y, self.DOWN, prob_down, v_text_offset=-8)
+                    renderActionProbability(tileSize, x, y, self.LEFT, prob_left, h_text_offset=-8)
+                    renderActionProbability(tileSize, x, y, self.RIGHT, prob_right, h_text_offset=8)
+
+        plt.imshow(img, origin='lower', interpolation='bilinear')
+        plt.axis('off')
+        plt.title(f'Grid World {title}')
+        plt.show()
+
 
 class CliffWorld(GridWorld):
     def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
@@ -550,26 +582,6 @@ class OneDimensionalGridWorld(GridWorld):
         if state in self.goalStates:
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
-
-    def visualise_policy_probabilities(self, agent, tileSize=32, title='Action Probabilities'):
-        widthPx = self.width * tileSize
-        heightPx = 1 * tileSize
-        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
-
-        # Render the grid
-        for x in range(0, self.width):
-            prob_left, prob_right = agent.get_probabilities((x, 0))
-            if (x, 0) in self.goalStates:
-                self.renderTile(x, 0, tileSize, img, 'goal')
-            else:
-                self.renderTile(x, 0, tileSize, img, 'empty')
-                renderActionProbability(tileSize, x, 0, self.LEFT, prob_left, h_text_offset=-8)
-                renderActionProbability(tileSize, x, 0, self.RIGHT, prob_right, h_text_offset=8)
-
-        plt.imshow(img, origin='lower', interpolation='bilinear')
-        plt.axis('off')
-        plt.title(f'Grid World {title}')
-        plt.show()
 
 
 if __name__ == "__main__":
