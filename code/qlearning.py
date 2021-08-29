@@ -33,9 +33,9 @@ class ModelFreeReinforcementLearner():
 from multi_armed_bandits import EpsilonGreedy
 
 class QLearning(ModelFreeReinforcementLearner):
-    def update(self, state, action, nextState, nextAction, reward): 
-        (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
+    def update(self, state, action, nextState, nextAction, reward):
         qValue = self.qfunction.getQValue(state, action)
+        (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
         delta = self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
         return delta
     
@@ -95,7 +95,7 @@ class RewardShapedQLearning(QLearning):
         qValue = self.qfunction.getQValue(state, action)
         statePotential = self.potential.getPotential(state)
         nextStatePotential = self.potential.getPotential(nextState)
-        potential = reward + self.mdp.discountFactor *  nextStatePotential - statePotential
+        potential = self.mdp.discountFactor *  nextStatePotential - statePotential
         delta = self.alpha * (reward + potential + self.mdp.discountFactor * maxQValue - qValue)
         return delta
 
