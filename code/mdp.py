@@ -38,7 +38,7 @@ class MDP:
                qValue = 0.0
                for (newState, probability) in self.getTransitions(state, action):
                    reward = self.getReward(state, action, newState)
-                   qValue += probability * (reward + (self.getDiscountFactor() * values[newState]))
+                   qValue += probability * (reward + (self.getDiscountFactor() * values.getValue(newState)))
 
                # if this is the maximum Q-value so far, set the policy for this state
                if qValue > maxQ:

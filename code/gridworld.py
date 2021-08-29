@@ -295,7 +295,7 @@ class GridWorld(MDP):
                 if (x, y) in self.blockedStates:
                     result += " | #####"
                 else:
-                    result += " | {:+0.2f}".format(values[(x, y)])
+                    result += " | {:+0.2f}".format(values.getValue((x, y)))
             result += " |\n"
             result += line
 
@@ -429,7 +429,7 @@ class GridWorld(MDP):
                         raise ValueError("Invalid tile type")
 
     '''Visualise the value function using a heat-map where green is high value and red is low value'''
-    def visualiseValueFunction(self, valueDict, title=''):
+    def visualiseValueFunction(self, valueFunction, title=''):
         values = [[0 for _ in range(self.width)] for _ in range(self.height)]
         plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
         for y in range(self.height):
@@ -438,7 +438,7 @@ class GridWorld(MDP):
                     values[y][x] = 0
                     plt.text(x, y, '#', horizontalalignment='center', verticalalignment='center')
                 else:
-                    values[y][x] = valueDict[(x, y)]
+                    values[y][x] = valueFunction.getValue((x, y))
                     plt.text(x, y, f'{values[y][x]:.2f}', horizontalalignment='center', verticalalignment='center')
         plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
         plt.axis('off')

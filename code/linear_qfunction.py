@@ -11,7 +11,7 @@ class LinearQFunction(QFunction):
         # update the weights
         featureValues = self.features.extract(state, action)
         for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] + (delta * featureValues[i])        
+            self.weights[i] = self.weights[i] + (delta * featureValues[i])
 
     def getQValue(self, state, action):
         qValue = 0.0
@@ -19,13 +19,3 @@ class LinearQFunction(QFunction):
         for i in range(len(featureValues)):
             qValue += featureValues[i] * self.weights[i]
         return qValue
-    
-    def linearEquation(self, mdp):
-        i = 0
-        for action in mdp.getActions():
-            print("f_x(%s) = %f" % (action, self.weights[i]))
-            print("f_y(%s) = %f" % (action, self.weights[i+1]))
-            print("f_m(%s) = %f" % (action, self.weights[i+2]))
-            print("f_xc(%s) = %f" % (action, self.weights[i+3]))
-            print("f_yc(%s) = %f" % (action, self.weights[i+4]))
-            i += 2
