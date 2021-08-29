@@ -58,7 +58,7 @@ class MultiArmedBandit():
                 episodeRewards += [reward]
 
                 N[action] = N[action] + 1
-                newValue = qtable.getQValue(state, action) - (qtable.getQValue(state, action) / N[action]) + (reward / N[action])
+                #newValue = qtable.getQValue(state, action) - (qtable.getQValue(state, action) / N[action]) + (reward / N[action])
                 qtable.update(state, action, (reward / N[action]) - (qtable.getQValue(state, action) / N[action]) )
                 
             rewards += [episodeRewards]

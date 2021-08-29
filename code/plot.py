@@ -41,8 +41,9 @@ class Plot():
     '''
     def getEpisodeLength(rewards):
         episodeLengths = []
- 
-        for episode in rewards:
+
+        # Omit the first episode as it is (usually) random
+        for episode in rewards[1:]:
             episodeLengths += [len(episode)]
 
         return episodeLengths
@@ -96,7 +97,7 @@ class Plot():
         for rewards in rewardList:
             y = Plot.getEpisodeLength(rewards)
             x = np.linspace(0, len(y), len(y))
-            y_smoothed = gaussian_filter1d(y, sigma=5)
+            y_smoothed = gaussian_filter1d(y, sigma=2)
             plt.plot(x, y_smoothed,
                     label = labels[index],
                     linestyle = linestyles[index % len(linestyles)])

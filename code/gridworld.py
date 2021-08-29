@@ -21,7 +21,7 @@ class GridWorld(MDP):
                  blockedStates = [(1,1)],
                  actionCost = 0.0,
                  initialState = (0, 0),
-                 goals = [((3,2), 1), ((3,1), -1)]):
+                 goals = None):
         self.noise = noise
         self.width = width
         self.height = height
@@ -29,7 +29,10 @@ class GridWorld(MDP):
         self.discountFactor = discountFactor
         self.actionCost = actionCost
         self.initialState = initialState
-        self.goalStates = dict(goals)
+        if goals == None:
+            self.goalStates = dict([((width - 1, height - 1), 1), ((width - 1, height - 2), -1)])
+        else:   
+            self.goalStates = dict(goals)
 
         # A list of lists that  records all rewards given at each step for each episode of a simulated gridworld
         self.rewards = []
@@ -369,9 +372,10 @@ class GridWorld(MDP):
             for x in range(self.width):
                 if (x, y) in self.blockedStates:
                     result += " | ###"
+                elif policy[(x,y)] == self.TERMINATE:
+                    result += " | {:+0d} ".format(self.goalStates[(x,y)])
                 else:
-                    action = "T" if policy[(x, y)] == self.TERMINATE else policy[(x, y)]
-                    result += " |  " + action + " "
+                    result += " |  " + policy[(x, y)] + " "
             result += " |\n"
             result += line
 

@@ -1,5 +1,6 @@
 - MDP: terminating state is one with no outgoing states.
 - add prioritised sweeping for value iteration (or approximate value iteration)
+- add linear q-function policy; and exercise to prevent going right/up incorrectly when in last column
 - Fix reward shaping graph
 - Consistent learning outcomes
 - Reward shaping example
@@ -9,6 +10,10 @@
 
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
 
+- Read code cells from path:
+```{code-cell} ipython3
+:load: <path>
+```
 
 
 Part I: Introduction

@@ -17,9 +17,9 @@ class QFunction():
         action has the maximum Q-value in state
     '''
     def getMaxQ(self, state, actions):
-        argmaxQ = None
+        argMaxQ = None
         maxQ = float('-inf')
-        for action in actions:
+        for action in actions:            
             value = self.getQValue(state, action)
             if maxQ < value:
                 argMaxQ = action
