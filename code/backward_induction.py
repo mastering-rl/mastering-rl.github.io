@@ -1,61 +1,61 @@
 from extensive_form_game import GameNode
 
 class BackwardInduction:
-    def __init__(self, game, doCache = False):
+    def __init__(self, game, do_cache = False):
         self.game = game
-        self.doCache = doCache
+        self.do_cache = do_cache
         self.cache = dict()
 
-    def backwardInduction(self, state):
+    def backward_induction(self, state):
 
-        if self.game.isTerminal(state):
-            node = GameNode(state, None, self.game.getReward(state))
+        if self.game.is_terminal(state):
+            node = GameNode(state, None, self.game.get_reward(state))
             return node
 
-        bestChild = None
-        bestAction = None
-        player = self.game.getPlayerTurn(state)
+        best_child = None
+        best_action = None
+        player = self.game.get_player_turn(state)
         children = dict()
-        for action in self.game.getActions(state):
-            nextState = self.game.getTransition(state, action)
-            child = self.backwardInduction(nextState)
-            if bestChild is None or child.value[player] > bestChild.value[player]:
-                if bestChild is not None:
-                    bestChild.isBestAction = False
-                child.isBestAction = True
-                bestChild = child
+        for action in self.game.get_actions(state):
+            next_state = self.game.get_transition(state, action)
+            child = self.backward_induction(next_state)
+            if best_child is None or child.value[player] > best_child.value[player]:
+                if best_child is not None:
+                    best_child.is_best_action = False
+                child.is_best_action = True
+                best_child = child
             children[action] = child
-        node = GameNode(state, player, bestChild.value, children = children)
+        node = GameNode(state, player, best_child.value, children = children)
         return node
 
-    def backwardInductionWithCache(self, state):
+    def backward_induction_with_cache(self, state):
 
-        stateKey = self.game.toString(state)
-        if self.doCache and stateKey in self.cache.keys():
-            return self.cache[stateKey]
+        state_key = self.game.to_string(state)
+        if self.do_cache and state_key in self.cache.keys():
+            return self.cache[state_key]
 
-        if self.game.isTerminal(state):
-            node = GameNode(state, None, self.game.getReward(state))
-            if self.doCache:
-                self.cache[stateKey] = node
+        if self.game.is_terminal(state):
+            node = GameNode(state, None, self.game.get_reward(state))
+            if self.do_cache:
+                self.cache[state_key] = node
             return node
 
-        bestChild = None
-        bestAction = None
-        player = self.game.getPlayerTurn(state)
+        best_child = None
+        best_action = None
+        player = self.game.get_player_turn(state)
         children = dict()
-        for action in self.game.getActions(state):
-            nextState = self.game.getTransition(state, action)
-            child = self.backwardInduction(nextState)
-            if bestChild is None or child.value[player] > bestChild.value[player]:
-                if bestChild is not None:
-                    bestChild.isBestAction = False
-                child.isBestAction = True
-                bestChild = child
+        for action in self.game.get_actions(state):
+            next_state = self.game.get_transition(state, action)
+            child = self.backward_induction(next_state)
+            if best_child is None or child.value[player] > best_child.value[player]:
+                if best_child is not None:
+                    best_child.is_best_action = False
+                child.is_best_action = True
+                best_child = child
             children[action] = child
-        node = GameNode(state, player, bestChild.value, children = children)
-        if self.doCache:
-            self.cache[stateKey] = node
+        node = GameNode(state, player, best_child.value, children = children)
+        if self.do_cache:
+            self.cache[state_key] = node
         return node
 
 
@@ -67,15 +67,15 @@ if __name__ == "__main__":
     import time
     
     tictactoe = TicTacToe()
-    initialState = tictactoe.getInitialState()
-    initialState = [['x', 'o', 'o'],
+    initial_state = tictactoe.get_initial_state()
+    initial_state = [['x', 'o', 'o'],
                     [' ', ' ', 'x'],
                     [' ', ' ', ' ']]
-    nextState = tictactoe.getTransition(initialState, (1, 1))
-    backwardInduction = BackwardInduction(tictactoe, doCache = False)
-    solution = backwardInduction.backwardInduction(nextState)
+    next_state = tictactoe.get_transition(initial_state, (1, 1))
+    backward_induction = BackwardInduction(tictactoe, do_cache = False)
+    solution = backward_induction.backward_induction(next_state)
 
     from graph_visualisation import GraphVisualisation
     gv = GraphVisualisation()
-    graph = gv.nodeToGraph(tictactoe, solution, printState = True, printValue = True)
+    graph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
     graph.view()

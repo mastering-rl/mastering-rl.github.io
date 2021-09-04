@@ -22,7 +22,7 @@ class MultiArmedBandit():
         Run a bandit algorithm for a number of episodes, with each
         episode being a set length.
     '''
-    def runBandit(self, episodes = 20, episodeLength = 1000, drift = True):
+    def run_bandit(self, episodes = 20, episode_length = 1000, drift = True):
 
         #the actions available
         actions = [0, 1, 2, 3, 4]
@@ -40,11 +40,11 @@ class MultiArmedBandit():
             N = defaultdict(lambda: 0)
             qtable = QTable()
 
-            episodeRewards = []
-            for step in range(0, episodeLength):
+            episode_rewards = []
+            for step in range(0, episode_length):
 
                 # Halfway through the episode, change the probabilities
-                if drift and step == episodeLength / 2:
+                if drift and step == episode_length / 2:
                     probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]
 
                 #select an action
@@ -55,13 +55,13 @@ class MultiArmedBandit():
                 if r < probabilities[action]:
                     reward = 5
 
-                episodeRewards += [reward]
+                episode_rewards += [reward]
 
                 N[action] = N[action] + 1
                 #newValue = qtable.getQValue(state, action) - (qtable.getQValue(state, action) / N[action]) + (reward / N[action])
-                qtable.update(state, action, (reward / N[action]) - (qtable.getQValue(state, action) / N[action]) )
+                qtable.update(state, action, (reward / N[action]) - (qtable.get_q_value(state, action) / N[action]) )
                 
-            rewards += [episodeRewards]
+            rewards += [episode_rewards]
 
         return rewards
 
@@ -79,22 +79,22 @@ class EpsilonGreedy(MultiArmedBandit):
         if r < self.epsilon:
             return random.choice(actions)
         else:
-            (argMaxQ, _) = qfunction.getMaxQ(state, actions)
-            return argMaxQ
+            (arg_max_q, _) = qfunction.get_max_q(state, actions)
+            return arg_max_q
 
 class EpsilonDecreasing(MultiArmedBandit):
 
     def __init__(self, epsilon = 0.2, alpha = 0.999):
-        self.epsilonGreedyBandit = EpsilonGreedy(epsilon)
-        self.initialEpsilon = epsilon
+        self.epsilon_greedy_bandit = EpsilonGreedy(epsilon)
+        self.initial_epsilon = epsilon
         self.alpha = alpha
 
     def reset(self):
-        self.epsilonGreedyBandit = EpsilonGreedy(self.initialEpsilon)
+        self.epsilon_greedy_bandit = EpsilonGreedy(self.initial_epsilon)
 
     def select(self, state, actions, qfunction):
-        result = self.epsilonGreedyBandit.select(state, actions, qfunction)
-        self.epsilonGreedyBandit.epsilon *= self.alpha
+        result = self.epsilon_greedy_bandit.select(state, actions, qfunction)
+        self.epsilon_greedy_bandit.epsilon *= self.alpha
         return result
 
 class Softmax(MultiArmedBandit):
@@ -113,13 +113,13 @@ class Softmax(MultiArmedBandit):
             sum += math.exp(qfunction.getQValue(state, action) / self.tau)
 
         r = random.random()
-        cumulativeProbability = 0.0
+        cumulative_probability = 0.0
         result = None
         for action in actions:
             probability = math.exp(qfunction.getQValue(state, action) / self.tau) / sum
-            if r >= cumulativeProbability and r <= cumulativeProbability + probability:
+            if r >= cumulative_probability and r <= cumulative_probability + probability:
                 result = action
-            cumulativeProbability += probability
+            cumulative_probability += probability
 
         return result
 
@@ -139,74 +139,74 @@ class UpperConfidenceBounds(MultiArmedBandit):
                 self.total += 1
                 return action
 
-        maxActions = []
-        maxValue = float('-inf')
+        max_actions = []
+        max_value = float('-inf')
         for action in actions:
             N = self.N[action]
             value = qfunction.getQValue(state, action) + math.sqrt((2 * math.log(self.total)) / N)
-            if value > maxValue:
-                maxActions = [action]
-                maxValue = value
-            elif value == maxValue:
-                maxActions += [action]
+            if value > max_value:
+                max_actions = [action]
+                max_value = value
+            elif value == max_value:
+                max_actions += [action]
 
         # if there are multiple actions with the highest value
         # choose one randomly
-        result = random.choice(maxActions)
+        result = random.choice(max_actions)
         self.N[result] = self.N[result] + 1
         self.total += 1
         return result
 
 
-def plotEpsilonGreedy(drift = False):
-    epsilon000 = EpsilonGreedy(epsilon = 0.00).runBandit(drift = drift)
-    epsilon005 = EpsilonGreedy(epsilon = 0.05).runBandit(drift = drift)
-    epsilon01 = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
-    epsilon02 = EpsilonGreedy(epsilon = 0.2).runBandit(drift = drift)
-    epsilon04 = EpsilonGreedy(epsilon = 0.4).runBandit(drift = drift)
-    epsilon08 = EpsilonGreedy(epsilon = 0.8).runBandit(drift = drift)
-    epsilon10 = EpsilonGreedy(epsilon = 1.0).runBandit(drift = drift)
+def plot_epsilon_greedy(drift = False):
+    epsilon000 = EpsilonGreedy(epsilon = 0.00).run_bandit(drift = drift)
+    epsilon005 = EpsilonGreedy(epsilon = 0.05).run_bandit(drift = drift)
+    epsilon01 = EpsilonGreedy(epsilon = 0.1).run_bandit(drift = drift)
+    epsilon02 = EpsilonGreedy(epsilon = 0.2).run_bandit(drift = drift)
+    epsilon04 = EpsilonGreedy(epsilon = 0.4).run_bandit(drift = drift)
+    epsilon08 = EpsilonGreedy(epsilon = 0.8).run_bandit(drift = drift)
+    epsilon10 = EpsilonGreedy(epsilon = 1.0).run_bandit(drift = drift)
 
-    Plot.plotRewards(["epsilon = 0.0", "epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", 
+    Plot.plot_rewards(["epsilon = 0.0", "epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", 
                       "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
                      [epsilon000, epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
 
 
-def plotEpsilonDecreasing(drift = False):
-    alpha09 = EpsilonDecreasing(alpha = 0.9).runBandit(drift = drift)
-    alpha099 = EpsilonDecreasing(alpha = 0.99).runBandit(drift = drift)
-    alpha0999 = EpsilonDecreasing(alpha = 0.999).runBandit(drift = drift)
-    alpha1 = EpsilonDecreasing(alpha = 1.0).runBandit(drift = drift)
+def plot_epsilon_decreasing(drift = False):
+    alpha09 = EpsilonDecreasing(alpha = 0.9).run_bandit(drift = drift)
+    alpha099 = EpsilonDecreasing(alpha = 0.99).run_bandit(drift = drift)
+    alpha0999 = EpsilonDecreasing(alpha = 0.999).run_bandit(drift = drift)
+    alpha1 = EpsilonDecreasing(alpha = 1.0).run_bandit(drift = drift)
 
-    Plot.plotRewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
+    Plot.plot_rewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
                      [alpha09, alpha099, alpha0999, alpha1])
 
 
-def plotSoftmax(drift = False):
-    tau10 = Softmax(tau = 1.0).runBandit(drift = drift)
-    tau11 = Softmax(tau = 1.1).runBandit(drift = drift)
-    tau15 = Softmax(tau = 1.5).runBandit(drift = drift)
-    tau20 = Softmax(tau = 2.0).runBandit(drift = drift)
+def plot_softmax(drift = False):
+    tau10 = Softmax(tau = 1.0).run_bandit(drift = drift)
+    tau11 = Softmax(tau = 1.1).run_bandit(drift = drift)
+    tau15 = Softmax(tau = 1.5).run_bandit(drift = drift)
+    tau20 = Softmax(tau = 2.0).run_bandit(drift = drift)
 
-    Plot.plotRewards(["tau = 1.0", "tau = 1.1", "tau = 1.5", "tau = 2.0"],
+    Plot.plot_rewards(["tau = 1.0", "tau = 1.1", "tau = 1.5", "tau = 2.0"],
                      [tau10, tau11, tau15, tau20])
 
-def plotComparison(drift = False):
-    epsilonGreedy = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
-    epsilonDecreasing = EpsilonDecreasing(alpha = 0.99).runBandit(drift = drift)
-    softmax = Softmax(tau = 1.0).runBandit(drift = drift)
-    ucb = UpperConfidenceBounds().runBandit(drift = drift)
+def plot_comparison(drift = False):
+    epsilon_greedy = EpsilonGreedy(epsilon = 0.1).run_bandit(drift = drift)
+    epsilon_decreasing = EpsilonDecreasing(alpha = 0.99).run_bandit(drift = drift)
+    softmax = Softmax(tau = 1.0).run_bandit(drift = drift)
+    ucb = UpperConfidenceBounds().run_bandit(drift = drift)
 
-    Plot.plotRewards(["Epsilon Greedy (epsilon = 0.1)", "Epsilon Decreasing (alpha = 0.99)", "Softmax (tau = 1.0)", "UCB"],
-                     [epsilonGreedy, epsilonDecreasing, softmax, ucb])
+    Plot.plot_rewards(["Epsilon Greedy (epsilon = 0.1)", "Epsilon Decreasing (alpha = 0.99)", "Softmax (tau = 1.0)", "UCB"],
+                     [epsilon_greedy, epsilon_decreasing, softmax, ucb])
 
 if __name__ == "__main__":
 
     from plot import Plot
 
-    plotEpsilonGreedy()
-    plotEpsilonDecreasing()
-    plotSoftmax(drift = False)
-    plotSoftmax(drift = True)
-    plotComparison(drift = False)
-    plotComparison(drift = True)
+    plot_epsilon_greedy()
+    plot_epsilon_decreasing()
+    plot_softmax(drift = False)
+    plot_softmax(drift = True)
+    plot_comparison(drift = False)
+    plot_comparison(drift = True)

@@ -23,7 +23,7 @@ class DeepPolicyGradientBase(PolicyGradientBase):
         self.action_space = action_space
 
         # we want to define our policy network in the instantiation. Use a sequential neural network as follows:
-        #   1) First layer takes in the state vector. Therefore it needs to be the size of the state space
+        #   1) First layer takes in the state vector. Therefore it needs to be the size of the number of state features
         #   2) We need to add hidden layers as passed in the __init__ function. The hidden layers allows for non-linear
         #      policy representation.
         #   3) We need non-linear activation function between layers. Also important for non-linearity.
@@ -77,9 +77,9 @@ class DeepPolicyGradientBase(PolicyGradientBase):
             rewards = []
             action_log_probs = []
 
-            state = self.mdp.getInitialState()
+            state = self.mdp.get_initial_state()
             episode_reward = 0
-            while not self.mdp.isTerminal(state):
+            while not self.mdp.is_terminal(state):
                 # turn the state into a tensor such that it can be passed into the network, which requires a tensor of
                 # floats
                 state_tensor = torch.as_tensor(state, dtype=torch.float32)
@@ -132,14 +132,14 @@ if __name__ == '__main__':
 
     print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
     two_dimensional_gridworld = GridWorld()
-    two_dimensional_gridworld.visualiseImage()
-    deepPgAgent = DeepPolicyGradientBase(two_dimensional_gridworld,
-                                         state_space=len(two_dimensional_gridworld.getInitialState()), action_space=4)
-    deepPgAgent.execute(episodes=10)
-    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
-    deepPgAgent.execute(episodes=100)
-    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
-    deepPgAgent.execute(episodes=1000)
-    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
-    deepPgAgent.execute(episodes=10000)
-    two_dimensional_gridworld.visualise_stochastic_policy(deepPgAgent, twoDimensional=True)
+    two_dimensional_gridworld.visualise_image()
+    deep_pg_agent = DeepPolicyGradientBase(two_dimensional_gridworld,
+                                         state_space=len(two_dimensional_gridworld.get_initial_state()), action_space=4)
+    deep_pg_agent.execute(episodes=10)
+    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
+    deep_pg_agent.execute(episodes=100)
+    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
+    deep_pg_agent.execute(episodes=1000)
+    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
+    deep_pg_agent.execute(episodes=10000)
+    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)

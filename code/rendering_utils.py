@@ -21,12 +21,12 @@ RIGHT = '\u25BA'
 DOWN = '\u25BC'
 
 '''Draw the grid lines to differentiate discrete states'''
-def drawGridLines(i, j, img):
+def draw_grid_lines(i, j, img):
     img[i][j] = COLOURS['grey']
 
 
 '''Draw a triangle based on size, center, direction and colour'''
-def drawTriangle(tile_origin, tile_size, img, colour='red', direction='up'):
+def draw_triangle(tile_origin, tile_size, img, colour='red', direction='up'):
     origin_x, origin_y = tile_origin
     for x in range(origin_x + 1, origin_x + tile_size - 1):
         for y in range(origin_y + 1, origin_y + tile_size -1):
@@ -47,33 +47,33 @@ def drawTriangle(tile_origin, tile_size, img, colour='red', direction='up'):
 
 
 ''' Render each Q value which forms a triangle in the grid representation of the Q-function.'''
-def renderActionQValue(tileSize, x, y, action, qValues, img, showText=False, text_size=12, h_text_offset=0, v_text_offset=0, rewardMax=1, rewardMin=1):
-    value = MDP.getQValue(qValues, (x, y), action=action)
+def render_action_q_value(tileSize, x, y, action, q_values, img, show_text=False, text_size=12, h_text_offset=0, v_text_offset=0, rewardMax=1, rewardMin=1):
+    value = MDP.getQValue(q_values, (x, y), action=action)
     colour = COLOURS['red'] if value < 0 else COLOURS['green']  # make colour red if value is negative, otherwise make it green
-    scalingFactor = rewardMin if value < 0 else rewardMax
-    colour = list(map(lambda c: int(c * math.fabs(value/scalingFactor)),
+    scaling_factor = rewardMin if value < 0 else rewardMax
+    colour = list(map(lambda c: int(c * math.fabs(value/scaling_factor)),
                       colour))  # scale the colour by the reward (make extremes more vivid)
-    drawTriangle((x * tileSize, y * tileSize), tileSize, img, colour=colour, direction=action)
-    if showText:
+    draw_triangle((x * tileSize, y * tileSize), tileSize, img, colour=colour, direction=action)
+    if show_text:
         plt.text(x=x * tileSize + tileSize // 2 + h_text_offset, y=y * tileSize + tileSize // 2 + v_text_offset,
                  s=f'{value:.2f}', size=text_size, verticalalignment='center', horizontalalignment='center', color='white')
 
 
 ''' Render each Q value which forms a triangle in the grid representation of the Q-function.'''
-def renderActionProbability(tileSize, x, y, action, prob, text_size=6, h_text_offset=0, v_text_offset=0):
+def render_action_probability(tileSize, x, y, action, prob, text_size=6, h_text_offset=0, v_text_offset=0):
     plt.text(x=x * tileSize + tileSize // 2 + h_text_offset, y=y * tileSize + tileSize // 2 + v_text_offset,
              s=f'{prob:.2f}\n{action}', size=text_size, verticalalignment='center', horizontalalignment='center', color='white')
 
 
 '''render blocked tile as a black and white criss-cross'''
-def renderBlockedTile(i, j, img):
+def render_blocked_tile(i, j, img):
     if i % 2 == 0 or j % 2 == 0:
         img[i][j] = COLOURS['black']
     else:
         img[i][j] = COLOURS['white']
 
 
-def renderFullBlockedTile(x, y, tile_size, img):
+def render_full_blocked_tile(x, y, tile_size, img):
     for i in range(x, x+tile_size):
         for j in range(y, y+tile_size):
             if i % 2 == 0 or j % 2 == 0:
@@ -82,7 +82,7 @@ def renderFullBlockedTile(x, y, tile_size, img):
                 img[j][i] = COLOURS['white']
 
 
-def renderFullGoalTile(x, y, tile_size, img, reward, rewardMax, rewardMin):
+def render_full_goal_tile(x, y, tile_size, img, reward, rewardMax, rewardMin):
     for i in range(x, x+tile_size):
         for j in range(y, y+tile_size):
             if reward > 0:
@@ -92,7 +92,7 @@ def renderFullGoalTile(x, y, tile_size, img, reward, rewardMax, rewardMin):
 
 
 '''render the agent as a circle'''
-def renderAgent(i, j, img, center_x, center_y, radius):
+def render_agent(i, j, img, center_x, center_y, radius):
     h_dist = math.fabs(center_x - j)
     v_dist = math.fabs(center_y - i)
     if h_dist ** 2 + v_dist ** 2 <= radius ** 2:
@@ -106,7 +106,7 @@ Render the goal as a coloured cell. THe color depend on the value of the goal.
 Positive values are green, with brighter green representing higher reward.
 Negative values are red, with brighter red representing lower reward. 
 '''
-def renderGoal(i, j, img, reward, reward_max=1, reward_min=-1):
+def render_goal(i, j, img, reward, reward_max=1, reward_min=-1):
     if reward > 0:
         img[i][j] = [0, int(255 * reward / reward_max), 0]
     else:
@@ -116,7 +116,7 @@ def renderGoal(i, j, img, reward, reward_max=1, reward_min=-1):
 Matplotlib doesn't have an inbuilt red to green colour map with white in the middle.
 So we can just make our own.
 '''
-def makeRedWhiteGreenCmap():
+def make_red_white_green_cmap():
     cdict = {'red': ((0.0, 1.0, 1.0),
                      (0.5, 1.0, 1.0),
                      (1.0, 0.0, 0.0)),

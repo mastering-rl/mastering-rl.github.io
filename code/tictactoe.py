@@ -13,11 +13,11 @@ class TicTacToe(ExtensiveFormGame):
         self.players = [CROSS, NOUGHT]
     
     ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self):
+    def get_players(self):
         return self.players
 
     ''' Get the valie actions at a state '''
-    def getActions(self, state):
+    def get_actions(self, state):
 
         #use a nicer variable name for this implementation
         board = state
@@ -33,23 +33,23 @@ class TicTacToe(ExtensiveFormGame):
         Deep copy this state
     '''
     def copy(self, state):
-        nextState = []
+        next_state = []
         for x in range(len(state)):
-            newRow = []
+            new_row = []
             for y in range(len(state[x])):
-                 newRow += [state[x][y]]
-            nextState += [newRow]
-        return nextState
+                 new_row += [state[x][y]]
+            next_state += [new_row]
+        return next_state
 
     ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action):
-        nextState = self.copy(state)
-        nextState[action[0]][action[1]] = self.getPlayerTurn(state)
-        return nextState
+    def get_transition(self, state, action):
+        next_state = self.copy(state)
+        next_state[action[0]][action[1]] = self.get_player_turn(state)
+        return next_state
 
     ''' Return the reward for a state '''
-    def getReward(self, state):
-        winner = self.getWinner(state)
+    def get_reward(self, state):
+        winner = self.get_winner(state)
         if winner == None:
             return {CROSS:0, NOUGHT:0}
         elif winner == CROSS:
@@ -57,7 +57,7 @@ class TicTacToe(ExtensiveFormGame):
         elif winner == NOUGHT:
             return {CROSS:-1, NOUGHT:1}
         
-    def countEmpty(self, board):
+    def count_empty(self, board):
         empty = 0
         for x in range(len(board)):
             for y in range(len(board[x])):
@@ -66,17 +66,17 @@ class TicTacToe(ExtensiveFormGame):
         return empty
     
     ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state):
-        return self.countEmpty(state) == 0 or self.getWinner(state) is not None
+    def is_terminal(self, state):
+        return self.count_empty(state) == 0 or self.get_winner(state) is not None
 
 
     ''' Return the player who selects the action at the current state (whose turn it is) '''
-    def getPlayerTurn(self, state):
+    def get_player_turn(self, state):
 
         #use a nicer variable name for this implementation
         board = state
         
-        empty = self.countEmpty(board)
+        empty = self.count_empty(board)
         
         #crosses starts the game, so if there is an odd number of empty cells, it is crosses turn
         if empty % 2 == 0:
@@ -85,13 +85,13 @@ class TicTacToe(ExtensiveFormGame):
             return CROSS
     
     ''' Return the initial state of this game '''
-    def getInitialState(self):
+    def get_initial_state(self):
         board = [[EMPTY, EMPTY, EMPTY],
                  [EMPTY, EMPTY, EMPTY],
                  [EMPTY, EMPTY, EMPTY]]
         return board
 
-    def getWinner(self, state):
+    def get_winner(self, state):
 
         #use a nicer variable name for this implementation
         board = state
@@ -140,7 +140,7 @@ class TicTacToe(ExtensiveFormGame):
         return None
             
 
-    def toString(self, state):
+    def to_string(self, state):
         """
         Formats a board as a string replacing cell values with enum names.
         Args:
@@ -155,27 +155,27 @@ class TicTacToe(ExtensiveFormGame):
 
 if __name__ == "__main__":
     tictactoe = TicTacToe()
-    state = tictactoe.getInitialState()
-    state = tictactoe.getTransition(state, (0,0))
-    state = tictactoe.getTransition(state, (1,2))
-    state = tictactoe.getTransition(state, (1,1))
-    state = tictactoe.getTransition(state, (2,1))
-    assert tictactoe.getWinner(state) is None
-    assert tictactoe.getReward(state) == {CROSS:0, NOUGHT:0}
+    state = tictactoe.get_initial_state()
+    state = tictactoe.get_transition(state, (0,0))
+    state = tictactoe.get_transition(state, (1,2))
+    state = tictactoe.get_transition(state, (1,1))
+    state = tictactoe.get_transition(state, (2,1))
+    assert tictactoe.get_winner(state) is None
+    assert tictactoe.get_reward(state) == {CROSS:0, NOUGHT:0}
     
-    state = tictactoe.getTransition(state, (2,2))
-    print(tictactoe.toString(state))
-    assert tictactoe.getWinner(state) == CROSS
-    assert tictactoe.getReward(state) == {CROSS:1, NOUGHT:-1}
+    state = tictactoe.get_transition(state, (2,2))
+    print(tictactoe.to_string(state))
+    assert tictactoe.get_winner(state) == CROSS
+    assert tictactoe.get_reward(state) == {CROSS:1, NOUGHT:-1}
 
     # play a random game
     import random
-    state = tictactoe.getInitialState()
-    while not tictactoe.isTerminal(state):
-        actions = tictactoe.getActions(state)
-        state = tictactoe.getTransition(state, random.choice(actions))
-        print(tictactoe.toString(state) + "\n")
-    print("winner is %s" % tictactoe.getWinner(state))
+    state = tictactoe.get_initial_state()
+    while not tictactoe.is_terminal(state):
+        actions = tictactoe.get_actions(state)
+        state = tictactoe.get_transition(state, random.choice(actions))
+        print(tictactoe.to_string(state) + "\n")
+    print("winner is %s" % tictactoe.get_winner(state))
         
     
     

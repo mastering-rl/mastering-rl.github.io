@@ -121,18 +121,18 @@ if __name__ == '__main__':
 
     print("==========\nLogistic Regression Policy Gradient: 1D Gridworld\n==========")
     # make a GridWorld that only has two dimensions
-    one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initialState=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
-    one_dimensional_gridworld.visualiseImage()
-    pgAgent = LogisticRegressionPolicyGradientBase(one_dimensional_gridworld,
-                                                   num_params=len(one_dimensional_gridworld.getInitialState()),  # need a weight for each part of the state-space
+    one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
+    one_dimensional_gridworld.visualise_image()
+    pg_agent = LogisticRegressionPolicyGradientBase(one_dimensional_gridworld,
+                                                   num_params=len(one_dimensional_gridworld.get_initial_state()),  # need a weight for each part of the state-space
                                                    alpha=0.1,
                                                    gamma=0.95)
-    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
-    pgAgent.execute(episodes=10)
-    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
-    pgAgent.execute(episodes=100)
-    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
-    pgAgent.execute(episodes=1000)
-    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
-    pgAgent.execute(episodes=10000)
-    one_dimensional_gridworld.visualise_stochastic_policy(pgAgent)
+    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+    pg_agent.execute(episodes=10)
+    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+    pg_agent.execute(episodes=100)
+    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+    pg_agent.execute(episodes=1000)
+    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+    pg_agent.execute(episodes=10000)
+    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)

@@ -77,84 +77,36 @@ It is clear to see that the value iteration can be easily parallelised by updati
 Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
-```
-
-```{code-cell} ipython3
-from gridworld import *
-
-class ValueIteration():
-
-    def __init__(self, mdp):
-        self.mdp = mdp
-
-    ''' Implmentation of value iteration '''
-    def valueIteration(self, iterations = 100, theta = 0.001):
-
-        # Initialise the value function V with all 0s
-        values = self.initialiseValueFunction()
-        for _ in range(iterations):
-            delta = 0.0
-            newValues = dict()
-            for state in mdp.getStates():
-                qValues = dict()
-                for action in mdp.getActions(state):
-                    # Calculate the value of Q(s,a)
-                    newValue = 0.0
-                    for (newState, probability) in mdp.getTransitions(state, action):
-                        reward = mdp.getReward(state, action, newState)
-                        newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-                    qValues.update({action: newValue})
-
-                # V(s) = max_a Q(s,a)
-                maxQ = max(qValues.values())
-                delta = max(delta, abs(values[state] - maxQ))
-                newValues.update({state: maxQ})
-
-            values.update(newValues)
-
-            # terminate if the value function has converged
-            if delta < theta:
-                break
-
-        return values
-
-    def initialiseValueFunction(self):
-        values = dict()
-        for state in self.mdp.getStates():
-            values.update({state: 0.0})
-        return values
+:load: "../code/value_iteration.py"
 ```
 
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below prints the value function for value iteration after 1, 2, 3, 4, 5, 10, and 100 iterations:
 
 ```{code-cell} ipython3
-mdp = GridWorld(discountFactor=0.9, width = 4, height = 3)
-valueIteration = ValueIteration(mdp)
+mdp = GridWorld()
 
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
+    values = TabularValueFunction()
+    ValueIteration(mdp, values).value_iteration(iterations=iterations)
     print("After iteration " + str(iterations))
-    print(mdp.valueFunctionToString(valueIteration.valueIteration(iterations = iterations)) + "\n")
+    print(mdp.value_function_to_string(values) + "\n")
 ```
 
 From the policy, we extract a policy:
 
 ```{code-cell} ipython3
+values = TabularValueFunction()
+ValueIteration(mdp, values).value_iteration(iterations=100)
+policy = values.extract_policy(mdp)
 print("Policy after 100 iterations")
-values = valueIteration.valueIteration(iterations = 100)
-policy = mdp.extractPolicyFromValueFunction(values)
-print(mdp.policyToString(policy))
+print(mdp.policy_to_string(policy))
 ```
 
 ## Strengths and Limitations
 
 **Guarantees** Value iteration is guaranteed to converge to the optimal policy, given an infinite amount of time. In practice, for problems with a small-to-medium size state space, value iteration converges in a "reasonable" amount of time, returning a close-to-optimal value function, and quite often an optimal policy.
 
-**The Curse of Dimensionality** Solving MDPs using value iteration is polynomial  in the size of the state space, but exponential in the number of variables if we use a factored representation such as a PDDL-like language to represent our problem. If there are $N$ number of variables, each a Boolean, there are $2^N$ number of states. Value iteration requires us to keep a vector of size $|2^N|$.
+**The Curse of Dimensionality** Solving MDPs using value iteration is polynomial  in the size of the state space, but exponential in the number of variables we use to model the problem. For example, if there are $N$ number of Boolean variables, there are $2^N$ number of states and value iteration requires us to keep a vector of size $|2^N|$.
 
 **Question:** Can we do better?
 

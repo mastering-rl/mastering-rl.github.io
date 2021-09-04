@@ -6,11 +6,11 @@ from extensive_form_game import ExtensiveFormGame
 class SharingGame(ExtensiveFormGame):
 
     ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self):
+    def get_players(self):
         return [BROTHER, SISTER]
 
     ''' Get the valid actions at a state '''
-    def getActions(self, state):
+    def get_actions(self, state):
         actions = dict()
         actions[1] = ["2-0", "1-1", "0-2"]
         actions[2] = ["yes", "no"]
@@ -23,7 +23,7 @@ class SharingGame(ExtensiveFormGame):
             return []
 
     ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action):
+    def get_transition(self, state, action):
         transitions = dict()
         if state == 1:
             transitions["2-0"] = 2
@@ -39,7 +39,7 @@ class SharingGame(ExtensiveFormGame):
         return transitions[action]
 
     ''' Return the reward for a state, return as a dictionary mapping players to rewards '''
-    def getReward(self, state):
+    def get_reward(self, state):
         rewards = dict()
         if state > 4:
             rewards[5] = {BROTHER:0, SISTER:0}
@@ -53,32 +53,32 @@ class SharingGame(ExtensiveFormGame):
             return {BROTHER:0, SISTER:0}
 
     ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state):
+    def is_terminal(self, state):
         return state > 4
 
     ''' Return the player who selects the action at this state (whose turn it is) '''
-    def getPlayerTurn(self, state):
+    def get_player_turn(self, state):
         if state == 1:
             return BROTHER
         else:
             return SISTER
     
     ''' Return the initial state of this game '''
-    def getInitialState(self):
+    def get_initial_state(self):
         return 1
 
-    def toString(self, state):
+    def to_string(self, state):
         return str(state)
 
 if __name__ == "__main__":
     from backward_induction import BackwardInduction
 
     sharing = SharingGame()
-    backwardInduction = BackwardInduction(sharing)
-    solution = backwardInduction.backwardInduction(sharing.getInitialState())
+    backward_induction = BackwardInduction(sharing)
+    solution = backward_induction.backward_induction(sharing.get_initial_state())
     from graph_visualisation import GraphVisualisation
     
-    gv = GraphVisualisation(maxLevel = 5)
-    graph = gv.nodeToGraph(sharing, sharing.gameTree())
+    gv = GraphVisualisation(max_level = 5)
+    graph = gv.node_to_graph(sharing, sharing.game_tree())
     graph.view()
     

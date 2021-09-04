@@ -7,83 +7,90 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
-    TERMINATE = 'terminate'
-    TERMINAL = ('terminal', 'terminal')
-    LEFT = '\u25C4'
-    UP  = '\u25B2'
-    RIGHT = '\u25BA'
-    DOWN = '\u25BC'
+    TERMINATE = "terminate"
+    TERMINAL = ("terminal", "terminal")
+    LEFT = "\u25C4"
+    UP = "\u25B2"
+    RIGHT = "\u25BA"
+    DOWN = "\u25BC"
 
-    def __init__(self,
-                 noise = 0.1,
-                 width = 4, height = 3,
-                 discountFactor = 0.9, 
-                 blockedStates = [(1,1)],
-                 actionCost = 0.0,
-                 initialState = (0, 0),
-                 goals = None):
+    def __init__(
+        self,
+        noise=0.1,
+        width=4,
+        height=3,
+        discount_factor=0.9,
+        blocked_states=[(1, 1)],
+        action_cost=0.0,
+        initial_state=(0, 0),
+        goals=None,
+    ):
         self.noise = noise
         self.width = width
         self.height = height
-        self.blockedStates = blockedStates
-        self.discountFactor = discountFactor
-        self.actionCost = actionCost
-        self.initialState = initialState
-        if goals == None:
-            self.goalStates = dict([((width - 1, height - 1), 1), ((width - 1, height - 2), -1)])
-        else:   
-            self.goalStates = dict(goals)
+        self.blocked_states = blocked_states
+        self.discount_factor = discount_factor
+        self.action_cost = action_cost
+        self.initial_state = initial_state
+        if goals is None:
+            self.goal_states = dict(
+                [((width - 1, height - 1), 1), ((width - 1, height - 2), -1)]
+            )
+        else:
+            self.goal_states = dict(goals)
 
-        # A list of lists that  records all rewards given at each step for each episode of a simulated gridworld
+        # A list of lists thatrecords all rewards given at each step
+        # for each episode of a simulated gridworld
         self.rewards = []
-        self.episodeRewards = []  # The rewards for the current episode
+        # The rewards for the current episode
+        self.episode_rewards = []
 
-    def getStates(self):
+    def get_states(self):
         states = [self.TERMINAL]
         for x in range(self.width):
             for y in range(self.height):
-                if not (x, y) in self.blockedStates:
-                    states.append((x,y))
+                if not (x, y) in self.blocked_states:
+                    states.append((x, y))
         return states
 
-    def getActions(self, state=None):
+    def get_actions(self, state=None):
 
         actions = [self.UP, self.DOWN, self.LEFT, self.RIGHT, self.TERMINATE]
-        if state == None:
+        if state is None:
             return actions
 
-        validActions = []
+        valid_actions = []
         for action in actions:
-            for (newState, probability) in self.getTransitions(state, action):
+            for (new_state, probability) in self.get_transitions(state, action):
                 if probability > 0:
-                    validActions.append(action)
+                    valid_actions.append(action)
                     break
-        return validActions
+        return valid_actions
 
-    def getInitialState(self):
-        self.episodeRewards = []
-        return self.initialState
+    def get_initial_state(self):
+        self.episode_rewards = []
+        return self.initial_state
 
-    def getGoalStates(self):
-        return self.goalStates
+    def get_goal_states(self):
+        return self.goal_states
 
-    def validAdd(self, state, newState, probability):
-        # if the next state is blocked, stay in the same state
+    def valid_add(self, state, new_state, probability):
+        # If the next state is blocked, stay in the same state
         if probability == 0.0:
             return []
 
-        if newState in self.blockedStates:
+        if new_state in self.blocked_states:
             return [(state, probability)]
 
-        # move to the next space if it is not off the grid
-        (x, y) = newState
-        if (x >= 0 and x < self.width and y >= 0 and y < self.height):
+        # Move to the next space if it is not off the grid
+        (x, y) = new_state
+        if x >= 0 and x < self.width and y >= 0 and y < self.height:
             return [((x, y), probability)]
- 
-        # if off the grid, state in the same state
+
+        # If off the grid, state in the same state
         return [(state, probability)]
 
-    def getTransitions(self, state, action):
+    def get_transitions(self, state, action):
         transitions = []
 
         if state == self.TERMINAL:
@@ -92,36 +99,35 @@ class GridWorld(MDP):
             else:
                 return []
 
-        # probability of not slipping left or right
+        # Probability of not slipping left or right
         straight = 1 - (2 * self.noise)
 
         (x, y) = state
-        if state in self.getGoalStates().keys():
+        if state in self.get_goal_states().keys():
             if action == self.TERMINATE:
                 transitions += [(self.TERMINAL, 1.0)]
 
         elif action == self.UP:
-            transitions += self.validAdd(state, (x, y + 1), straight)
-            transitions += self.validAdd(state, (x - 1, y), self.noise)
-            transitions += self.validAdd(state, (x + 1, y), self.noise)
+            transitions += self.valid_add(state, (x, y + 1), straight)
+            transitions += self.valid_add(state, (x - 1, y), self.noise)
+            transitions += self.valid_add(state, (x + 1, y), self.noise)
 
         elif action == self.DOWN:
-            transitions += self.validAdd(state, (x, y - 1), straight)
-            transitions += self.validAdd(state, (x - 1, y), self.noise)
-            transitions += self.validAdd(state, (x + 1, y), self.noise)
+            transitions += self.valid_add(state, (x, y - 1), straight)
+            transitions += self.valid_add(state, (x - 1, y), self.noise)
+            transitions += self.valid_add(state, (x + 1, y), self.noise)
 
         elif action == self.RIGHT:
-            transitions += self.validAdd(state, (x + 1, y), straight)
-            transitions += self.validAdd(state, (x, y - 1), self.noise)
-            transitions += self.validAdd(state, (x, y + 1), self.noise)
+            transitions += self.valid_add(state, (x + 1, y), straight)
+            transitions += self.valid_add(state, (x, y - 1), self.noise)
+            transitions += self.valid_add(state, (x, y + 1), self.noise)
 
         elif action == self.LEFT:
-            transitions += self.validAdd(state, (x - 1, y), straight)
-            transitions += self.validAdd(state, (x, y - 1), self.noise)
-            transitions += self.validAdd(state, (x, y + 1), self.noise)
+            transitions += self.valid_add(state, (x - 1, y), straight)
+            transitions += self.valid_add(state, (x, y - 1), self.noise)
+            transitions += self.valid_add(state, (x, y + 1), self.noise)
 
-        # merge any duplicate outcomes
-        # TODO: change the transitions data structure into a dictionary
+        # Merge any duplicate outcomes
         merged = defaultdict(lambda: 0.0)
         for (state, probability) in transitions:
             merged[state] = merged[state] + probability
@@ -132,67 +138,77 @@ class GridWorld(MDP):
 
         return transitions
 
-    def getReward(self, state, action, newState):
+    def get_reward(self, state, action, new_state):
         reward = 0.0
-        if state in self.getGoalStates().keys() and newState == self.TERMINAL:
-            reward = self.getGoalStates().get(state)
+        if state in self.get_goal_states().keys() and new_state == self.TERMINAL:
+            reward = self.get_goal_states().get(state)
         else:
-            reward = self.actionCost
-        step = len(self.episodeRewards)
-        self.episodeRewards += [reward * (self.discountFactor ** step)]
+            reward = self.action_cost
+        step = len(self.episode_rewards)
+        self.episode_rewards += [reward * (self.discount_factor ** step)]
         return reward
 
-    def getDiscountFactor(self):
-        return self.discountFactor
+    def get_discount_factor(self):
+        return self.discount_factor
 
-    def isTerminal(self, state):
+    def is_terminal(self, state):
         if state == self.TERMINAL:
-            self.rewards += [self.episodeRewards]
+            self.rewards += [self.episode_rewards]
             return True
         return False
 
-    '''
+    """
         Returns a list of lists, which records all rewards given at each step
         for each episodeof a simulated gridworld
-    ''' 
-    def getRewards(self):
+    """
+
+    def get_rewards(self):
         return self.rewards
 
-    '''
+    """
         Create a gridworld from an array of strings: one for each line
         - First line is rewards as a dictionary from cell to value: {'A': 1, ...}
         - space is an empty cell
         - # is a blocked cell
         - @ is the agent (initial state)
         - new 'line' is a new row
-        - a letter is a cell with a reward for transitioning into that cell. The reward defined by the first line.
-    '''
+        - a letter is a cell with a reward for transitioning
+          into that cell. The reward defined by the first line.
+    """
+
     @staticmethod
     def create(string):
         # Parse the reward on the first line
         import ast
+
         rewards = ast.literal_eval(string[0])
 
         width = 0
         height = len(string) - 1
 
-        blockedCells = []
-        initialState = (0,0)
+        blocked_cells = []
+        initial_state = (0, 0)
         goals = []
         row = 0
-        for nextRow in string[1:]:
+        for next_row in string[1:]:
             column = 0
-            for cell in nextRow:
-                if cell == '#':
-                    blockedCells += [(column, row)]
-                elif cell == '@':
-                    initialState = (column, row)
+            for cell in next_row:
+                if cell == "#":
+                    blocked_cells += [(column, row)]
+                elif cell == "@":
+                    initial_state = (column, row)
                 elif cell.isalpha():
                     goals += [((column, row), rewards[cell])]
                 column += 1
             width = max(width, column)
             row += 1
-        return GridWorld(width = width, height = height, blockedStates = blockedCells, initialState = initialState, goals = goals)
+        return GridWorld(
+            width=width,
+            height=height,
+            blocked_states=blocked_cells,
+            initial_state=initial_state,
+            goals=goals,
+        )
 
     @staticmethod
     def open(file):
@@ -201,13 +217,14 @@ class GridWorld(MDP):
         file.close()
         return GridWorld.create(string)
 
-    ''' Visualise a grid world problem as a formatted string '''
+    """ Visualise a grid world problem as a formatted string """
+
     def visualise(self):
-        leftArrow = '\u25C4'
-        upArrow = '\u25B2'
-        rightArrow = '\u25BA'
-        downArrow = '\u25BC'
-        
+        left_arrow = "\u25C4"
+        up_arrow = "\u25B2"
+        right_arrow = "\u25BA"
+        down_arrow = "\u25BC"
+
         space = " |              "
         block = " | #############"
 
@@ -219,95 +236,98 @@ class GridWorld(MDP):
         result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
-                if (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.get_goal_states().keys():
                     result += space
-                elif (x, y) in self.blockedStates:
+                elif (x, y) in self.blocked_states:
                     result += block
                 else:
-                    result += " |       {}      ".format(upArrow)
+                    result += " |       {}      ".format(up_arrow)
             result += " |\n"
 
             for x in range(self.width):
-                if (x, y) == self.getInitialState():
+                if (x, y) == self.get_initial_state():
                     result += " |     _____    "
-                elif (x, y) in self.blockedStates:
+                elif (x, y) in self.blocked_states:
                     result += block
                 else:
                     result += space
             result += " |\n"
-            
+
             for x in range(self.width):
-                if (x, y) == self.getInitialState():
+                if (x, y) == self.get_initial_state():
                     result += " |    ||o  o|   "
-                elif (x, y) in self.blockedStates:
-                    result += block
-                else:
-                    result += space
-            result += " |\n"
-
-            
-            for x in range(self.width):
-                if (x, y) == self.getInitialState():
-                    result += " | {}  ||  * |  {}".format(leftArrow, rightArrow)
-                elif (x, y) in self.blockedStates:
-                    result += block
-                elif (x, y) in self.getGoalStates().keys():
-                    result += " |     {:+0.2f}    ".format(self.getGoalStates()[(x,y)])
-                else:
-                    result += " | {}           {}".format(leftArrow, rightArrow)
-            result += " |\n"
-
-            for x in range(self.width):
-                if (x, y) == self.getInitialState():
-                    result += " |    ||====|   ".format(leftArrow, rightArrow)
-                elif (x, y) in self.blockedStates:
+                elif (x, y) in self.blocked_states:
                     result += block
                 else:
                     result += space
             result += " |\n"
 
             for x in range(self.width):
-                if (x, y) == self.getInitialState():
+                if (x, y) == self.get_initial_state():
+                    result += " | {}  ||  * |  {}".format(left_arrow, right_arrow)
+                elif (x, y) in self.blocked_states:
+                    result += block
+                elif (x, y) in self.get_goal_states().keys():
+                    result += " |     {:+0.2f}    ".format(
+                        self.get_goal_states()[(x, y)]
+                    )
+                else:
+                    result += " | {}           {}".format(left_arrow, right_arrow)
+            result += " |\n"
+
+            for x in range(self.width):
+                if (x, y) == self.get_initial_state():
+                    result += " |    ||====|   ".format(left_arrow, right_arrow)
+                elif (x, y) in self.blocked_states:
+                    result += block
+                else:
+                    result += space
+            result += " |\n"
+
+            for x in range(self.width):
+                if (x, y) == self.get_initial_state():
                     result += " |     -----    "
-                elif (x, y) in self.blockedStates:
+                elif (x, y) in self.blocked_states:
                     result += block
                 else:
                     result += space
             result += " |\n"
 
             for x in range(self.width):
-                if (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.get_goal_states().keys():
                     result += space
-                elif (x, y) in self.blockedStates:
+                elif (x, y) in self.blocked_states:
                     result += block
                 else:
-                    result += " |       {}      ".format(downArrow)
+                    result += " |       {}      ".format(down_arrow)
             result += " |\n"
-            result += line        
+            result += line
         return result
 
-    ''' Convert a grid world value function to a formatted string '''
-    def valueFunctionToString(self, values):
-        line = " {:-^{n}}\n".format("", n=len(" | +0.00")*self.width + 1)
+    """ Convert a grid world value function to a formatted string """
+
+    def value_function_to_string(self, values):
+        line = " {:-^{n}}\n".format("", n=len(" | +0.00") * self.width + 1)
         result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
-                if (x, y) in self.blockedStates:
+                if (x, y) in self.blocked_states:
                     result += " | #####"
                 else:
-                    result += " | {:+0.2f}".format(values.getValue((x, y)))
+                    result += " | {:+0.2f}".format(values.get_value((x, y)))
             result += " |\n"
             result += line
 
         return result
 
-    ''' Convert a grid world Q function to a formatted string '''
-    def qFunctionToString(self, qfunction):
-        leftArrow = '\u25C4'
-        upArrow = '\u25B2'
-        rightArrow = '\u25BA'
-        downArrow = '\u25BC'
-        
+    """ Convert a grid world Q function to a formatted string """
+
+    def q_function_to_string(self, qfunction):
+        left_arrow = "\u25C4"
+        up_arrow = "\u25B2"
+        right_arrow = "\u25BA"
+        down_arrow = "\u25BC"
+
         space = " |               "
 
         line = "  "
@@ -318,30 +338,45 @@ class GridWorld(MDP):
         result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
-                if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.blocked_states or (
+                    x,
+                    y,
+                ) in self.get_goal_states().keys():
                     result += space
                 else:
-                    result += " |       {}       ".format(upArrow)
+                    result += " |       {}       ".format(up_arrow)
             result += " |\n"
-            
+
             for x in range(self.width):
-                if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.blocked_states or (
+                    x,
+                    y,
+                ) in self.get_goal_states().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y), self.UP))
+                    result += " |     {:+0.2f}     ".format(
+                        qfunction.get_q_value((x, y), self.UP)
+                    )
             result += " |\n"
-            
+
             for x in range(self.width):
                 result += space
             result += " |\n"
-            
+
             for x in range(self.width):
-                if (x, y) in self.blockedStates:
+                if (x, y) in self.blocked_states:
                     result += " |     #####     "
-                elif (x, y) in self.getGoalStates().keys():
-                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y), self.TERMINATE))
+                elif (x, y) in self.get_goal_states().keys():
+                    result += " |     {:+0.2f}     ".format(
+                        qfunction.get_q_value((x, y), self.TERMINATE)
+                    )
                 else:
-                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(leftArrow, qfunction.getQValue((x, y), self.LEFT), qfunction.getQValue((x, y), self.RIGHT), rightArrow)
+                    result += " | {}{:+0.2f}  {:+0.2f}{}".format(
+                        left_arrow,
+                        qfunction.get_q_value((x, y), self.LEFT),
+                        qfunction.get_q_value((x, y), self.RIGHT),
+                        right_arrow,
+                    )
             result += " |\n"
 
             for x in range(self.width):
@@ -349,230 +384,382 @@ class GridWorld(MDP):
             result += " |\n"
 
             for x in range(self.width):
-                if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.blocked_states or (
+                    x,
+                    y,
+                ) in self.get_goal_states().keys():
                     result += space
                 else:
-                    result += " |     {:+0.2f}     ".format(qfunction.getQValue((x, y),  self.DOWN))
+                    result += " |     {:+0.2f}     ".format(
+                        qfunction.get_q_value((x, y), self.DOWN)
+                    )
             result += " |\n"
 
             for x in range(self.width):
-                if (x, y) in self.blockedStates or (x, y) in self.getGoalStates().keys():
+                if (x, y) in self.blocked_states or (
+                    x,
+                    y,
+                ) in self.get_goal_states().keys():
                     result += space
                 else:
-                    result += " |       {}       ".format(downArrow)
+                    result += " |       {}       ".format(down_arrow)
             result += " |\n"
-            result += line        
+            result += line
         return result
 
-    ''' Convert a grid world policy to a formatted string '''
-    def policyToString(self, policy):
-        line = " {:-^{n}}\n".format("", n=len(" |  N ")*self.width + 1)
-        result = line 
+    """ Convert a grid world policy to a formatted string """
+
+    def policy_to_string(self, policy):
+        line = " {:-^{n}}\n".format("", n=len(" |  N ") * self.width + 1)
+        result = line
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
-                if (x, y) in self.blockedStates:
+                if (x, y) in self.blocked_states:
                     result += " | ###"
-                elif policy[(x,y)] == self.TERMINATE:
-                    result += " | {:+0d} ".format(self.goalStates[(x,y)])
+                elif policy.select_action((x, y)) == self.TERMINATE:
+                    result += " | {:+0d} ".format(self.goal_states[(x, y)])
                 else:
-                    result += " |  " + policy[(x, y)] + " "
+                    result += " |  " + policy.select_action((x, y)) + " "
             result += " |\n"
             result += line
 
         return result
 
-    ''' visualise the gridworld problem as a matplotlib image '''
-    def visualiseImage(self, tileSize=32, agentPosition=None, title=""):
-        widthPx = self.width * tileSize
-        heightPx = self.height * tileSize
-        currentPosition = self.getInitialState() if agentPosition is None else agentPosition
-        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
+    """ visualise the gridworld problem as a matplotlib image """
+
+    def visualise_image(self, tile_size=32, agent_position=None, title=""):
+        width_px = self.width * tile_size
+        height_px = self.height * tile_size
+        current_position = (
+            self.get_initial_state() if agent_position is None else agent_position
+        )
+        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
-                if (x, y) in self.goalStates:
-                    self.renderTile(x, y, tileSize, img, 'goal')
-                elif (x, y) in self.blockedStates:
-                    self.renderTile(x, y, tileSize, img, 'blocked')
-                elif (x, y) == currentPosition:
-                    self.renderTile(x, y, tileSize, img, 'agent')
+                if (x, y) in self.goal_states:
+                    self.render_tile(x, y, tile_size, img, "goal")
+                elif (x, y) in self.blocked_states:
+                    self.render_tile(x, y, tile_size, img, "blocked")
+                elif (x, y) == current_position:
+                    self.render_tile(x, y, tile_size, img, "agent")
                 else:
-                    self.renderTile(x, y, tileSize, img, 'empty')
+                    self.render_tile(x, y, tile_size, img, "empty")
 
-        plt.imshow(img, origin='lower', interpolation='bilinear')
-        plt.axis('off')
-        plt.title(f'Grid World {title}')
+        plt.imshow(img, origin="lower", interpolation="bilinear")
+        plt.axis("off")
+        plt.title(f"Grid World {title}")
         plt.show()
 
-    '''Render each tile individually depending on the current state of the cell'''
-    def renderTile(self, x, y, tileSize, img, tileType=None):
-        ymin = y * tileSize
-        ymax = (y + 1) * tileSize
-        xmin = x * tileSize
-        xmax = (x + 1) * tileSize
+    """Render each tile individually depending on the current state of the cell"""
+
+    def render_tile(self, x, y, tile_size, img, tile_type=None):
+        ymin = y * tile_size
+        ymax = (y + 1) * tile_size
+        xmin = x * tile_size
+        xmax = (x + 1) * tile_size
 
         for i in range(ymin, ymax):
             for j in range(xmin, xmax):
-                if i == ymin or i == ymax-1 or j == xmin or j == xmax+1:
-                    drawGridLines(i, j, img)
+                if i == ymin or i == ymax - 1 or j == xmin or j == xmax + 1:
+                    draw_grid_lines(i, j, img)
                 else:
-                    if tileType == 'goal':
-                        renderGoal(i, j, img, reward=self.goalStates[(x, y)], reward_max=max(self.getGoalStates().values()), reward_min=min(self.getGoalStates().values()))
-                    elif tileType == 'blocked':
-                        renderBlockedTile(i, j, img)
-                    elif tileType == 'agent':
-                        renderAgent(i, j, img, center_x=xmin + tileSize / 2, center_y=ymin + tileSize / 2, radius=tileSize / 4)
-                    elif tileType == 'empty':
+                    if tile_type == "goal":
+                        render_goal(
+                            i,
+                            j,
+                            img,
+                            reward=self.goal_states[(x, y)],
+                            reward_max=max(self.get_goal_states().values()),
+                            reward_min=min(self.get_goal_states().values()),
+                        )
+                    elif tile_type == "blocked":
+                        render_blocked_tile(i, j, img)
+                    elif tile_type == "agent":
+                        render_agent(
+                            i,
+                            j,
+                            img,
+                            center_x=xmin + tile_size / 2,
+                            center_y=ymin + tile_size / 2,
+                            radius=tile_size / 4,
+                        )
+                    elif tile_type == "empty":
                         img[i][j] = [0, 0, 0]
                     else:
                         raise ValueError("Invalid tile type")
 
-    '''Visualise the value function using a heat-map where green is high value and red is low value'''
-    def visualiseValueFunction(self, valueFunction, title=''):
+    """ Visualise the value function using a heat-map where green is high value and
+    red is low value
+    """
+
+    def visualise_value_function(self, value_function, title=""):
         values = [[0 for _ in range(self.width)] for _ in range(self.height)]
-        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
+        plt.imshow(values, origin="lower", cmap=make_red_white_green_cmap())
         for y in range(self.height):
             for x in range(self.width):
-                if (x, y) in self.blockedStates:
+                if (x, y) in self.blocked_states:
                     values[y][x] = 0
-                    plt.text(x, y, '#', horizontalalignment='center', verticalalignment='center')
+                    plt.text(
+                        x,
+                        y,
+                        "#",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
                 else:
-                    values[y][x] = valueFunction.getValue((x, y))
-                    plt.text(x, y, f'{values[y][x]:.2f}', horizontalalignment='center', verticalalignment='center')
-        plt.imshow(values, origin='lower', cmap=makeRedWhiteGreenCmap())
-        plt.axis('off')
-        plt.title(f'Value Function {title}')
+                    values[y][x] = value_function.get_value((x, y))
+                    plt.text(
+                        x,
+                        y,
+                        f"{values[y][x]:.2f}",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+        plt.imshow(values, origin="lower", cmap=make_red_white_green_cmap())
+        plt.axis("off")
+        plt.title(f"Value Function {title}")
         plt.show()
 
-    ''' Visualise the Q-function with a matplotlib visual'''
+    """ Visualise the Q-function with a matplotlib visual"""
 
-    def visualiseQFunction(self, qValues, title, tileSize=32, showText=False):
-        widthPx = self.width * tileSize
-        heightPx = self.height * tileSize
-        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
-        rewardMax = max(self.getGoalStates().values())  # provide these to scale the colours between the highest and lowest value
-        rewardMin = min(self.getGoalStates().values())
+    def visualise_q_function(self, q_values, title, tile_size=32, show_text=False):
+        width_px = self.width * tile_size
+        height_px = self.height * tile_size
+        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
+
+        # provide these to scale the colours between the highest and lowest value
+        rewardMax = max(
+            self.get_goal_states().values()
+        )
+        rewardMin = min(self.get_goal_states().values())
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
-                # draw in the blocked states as a black and white mesh
-                if (x, y) in self.blockedStates:
-                    renderFullBlockedTile(x * tileSize, y * tileSize, tileSize, img)
+                # Draw in the blocked states as a black and white mesh
+                if (x, y) in self.blocked_states:
+                    render_full_blocked_tile(
+                        x * tile_size, y * tile_size, tile_size, img
+                    )
                     continue
-                # draw goal states
-                if (x, y) in self.goalStates:
-                    renderFullGoalTile(x * tileSize, y * tileSize, tileSize, img, reward=self.goalStates[(x, y)], rewardMax=rewardMax, rewardMin=rewardMin)
+                # Draw goal states
+                if (x, y) in self.goal_states:
+                    render_full_goal_tile(
+                        x * tile_size,
+                        y * tile_size,
+                        tile_size,
+                        img,
+                        reward=self.goal_states[(x, y)],
+                        rewardMax=rewardMax,
+                        rewardMin=rewardMin,
+                    )
                     continue
 
-                # draw the action value for action available in each cell
-                # Break the grid up into 4 sections, using triangles that meet in the middle. The base of the triangle points toward the direction of the action
-                renderActionQValue(tileSize, x, y, self.UP, qValues, img, showText, v_text_offset=8,
-                                   rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.DOWN, qValues, img, showText, v_text_offset=-8,
-                                   rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.LEFT, qValues, img, showText, h_text_offset=-8,
-                                   rewardMax=rewardMax, rewardMin=rewardMin)
-                renderActionQValue(tileSize, x, y, self.RIGHT, qValues, img, showText, h_text_offset=8,
-                                   rewardMax=rewardMax, rewardMin=rewardMin)
+                # Draw the action value for action available in each cell
+                # Break the grid up into 4 sections, using triangles that meet
+                # in the middle. The base of the triangle points toward the
+                # direction of the action
+                render_action_q_value(
+                    tile_size,
+                    x,
+                    y,
+                    self.UP,
+                    q_values,
+                    img,
+                    show_text,
+                    v_text_offset=8,
+                    rewardMax=rewardMax,
+                    rewardMin=rewardMin,
+                )
+                render_action_q_value(
+                    tile_size,
+                    x,
+                    y,
+                    self.DOWN,
+                    q_values,
+                    img,
+                    show_text,
+                    v_text_offset=-8,
+                    rewardMax=rewardMax,
+                    rewardMin=rewardMin,
+                )
+                render_action_q_value(
+                    tile_size,
+                    x,
+                    y,
+                    self.LEFT,
+                    q_values,
+                    img,
+                    show_text,
+                    h_text_offset=-8,
+                    rewardMax=rewardMax,
+                    rewardMin=rewardMin,
+                )
+                render_action_q_value(
+                    tile_size,
+                    x,
+                    y,
+                    self.RIGHT,
+                    q_values,
+                    img,
+                    show_text,
+                    h_text_offset=8,
+                    rewardMax=rewardMax,
+                    rewardMin=rewardMin,
+                )
 
-        plt.imshow(img, origin='lower', interpolation='bilinear')
-        plt.title(f'Q Function: {title}')
-        plt.axis('off')
+        plt.imshow(img, origin="lower", interpolation="bilinear")
+        plt.title(f"Q Function: {title}")
+        plt.axis("off")
         plt.show()
 
-    ''' Visualise the policy of the agent with a matplotlib visual '''
-    def visualisePolicy(self, policy, title):
-        # make values negative -1 to get a white background with the 'Greys' cmap matplotlib. Values have no actual
-        # meaning in this visualisation.
+    """ Visualise the policy of the agent with a matplotlib visual """
+
+    def visualise_policy(self, policy, title):
+        # make values negative -1 to get a white background with the
+        # 'Greys' cmap matplotlib. Values have no actual meaning in this visualisation.
         result = [[-1 for _ in range(self.width)] for _ in range(self.height)]
         for y in range(self.height):
             for x in range(self.width):
-                if (x, y) in self.blockedStates:
-                    plt.text(x, y, '\u2592', horizontalalignment='center', verticalalignment='center')
+                if (x, y) in self.blocked_states:
+                    plt.text(
+                        x,
+                        y,
+                        "\u2592",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
                 else:
-                    action = "T" if policy[(x, y)] == self.TERMINATE else policy[(x, y)]
-                    plt.text(x, y, action, horizontalalignment='center', verticalalignment='center')
-        plt.imshow(result, cmap='Greys', origin='lower')
+                    action = "T" if policy.selet_action((x, y)) == self.TERMINATE else policy.select_action((x, y))
+                    plt.text(
+                        x,
+                        y,
+                        action,
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+        plt.imshow(result, cmap="Greys", origin="lower")
         ax = plt.gca()
 
         # set the ticks to get a clear grid lines
         ax.set_xticks([i for i in range(self.width)])
         ax.set_yticks([j for j in range(self.height)])
-        ax.set_xticks([i+0.5 for i in range(self.width)], minor=True)
-        ax.set_yticks([j+0.5 for j in range(self.height)], minor=True)
+        ax.set_xticks([i + 0.5 for i in range(self.width)], minor=True)
+        ax.set_yticks([j + 0.5 for j in range(self.height)], minor=True)
 
-        ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
-        plt.title(f'Policy: {title}')
+        ax.grid(which="minor", color="k", linestyle="-", linewidth=2)
+        plt.title(f"Policy: {title}")
         # plt.axis('off')
         plt.show()
 
     def execute(self, state, action):
-        if state in self.goalStates:
+        if state in self.goal_states:
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy(self, agent, tileSize=32, twoDimensional=False, title='Action Probabilities'):
-        widthPx = self.width * tileSize
-        heightPx = self.height * tileSize
-        img = [[[0, 0, 0] for _ in range(widthPx)] for _ in range(heightPx)]
+    def visualise_stochastic_policy(
+        self, agent, tile_size=32, two_dimensional=False, title="Action Probabilities"
+    ):
+        width_px = self.width * tile_size
+        height_px = self.height * tile_size
+        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
-                if twoDimensional:
-                    prob_left, prob_right, prob_up, prob_down = agent.get_probabilities((x,y))
+                if two_dimensional:
+                    prob_left, prob_right, prob_up, prob_down = agent.get_probabilities(
+                        (x, y)
+                    )
                 else:
                     prob_left, prob_right = agent.get_probabilities((x, y))
-                if (x, y) in self.goalStates:
-                    self.renderTile(x, y, tileSize, img, 'goal')
+                if (x, y) in self.goal_states:
+                    self.render_tile(x, y, tile_size, img, "goal")
                 else:
-                    self.renderTile(x, y, tileSize, img, 'empty')
-                    if twoDimensional:
-                        renderActionProbability(tileSize, x, y, self.UP, prob_up, v_text_offset=8)
-                        renderActionProbability(tileSize, x, y, self.DOWN, prob_down, v_text_offset=-8)
-                    renderActionProbability(tileSize, x, y, self.LEFT, prob_left, h_text_offset=-8)
-                    renderActionProbability(tileSize, x, y, self.RIGHT, prob_right, h_text_offset=8)
+                    self.render_tile(x, y, tile_size, img, "empty")
+                    if two_dimensional:
+                        render_action_probability(
+                            tile_size, x, y, self.UP, prob_up, v_text_offset=8
+                        )
+                        render_action_probability(
+                            tile_size, x, y, self.DOWN, prob_down, v_text_offset=-8
+                        )
+                    render_action_probability(
+                        tile_size, x, y, self.LEFT, prob_left, h_text_offset=-8
+                    )
+                    render_action_probability(
+                        tile_size, x, y, self.RIGHT, prob_right, h_text_offset=8
+                    )
 
-        plt.imshow(img, origin='lower', interpolation='bilinear')
-        plt.axis('off')
-        plt.title(f'Grid World {title}')
+        plt.imshow(img, origin="lower", interpolation="bilinear")
+        plt.axis("off")
+        plt.title(f"Grid World {title}")
         plt.show()
 
 
 class CliffWorld(GridWorld):
-    def __init__(self, noise = 0.0, discountFactor = 1.0, width = 6, height = 4,
-                 blockedStates = [], actionCost = -0.05,
-                 goals = [((1,0), -5), ((2,0), -5), ((3,0), -5), ((4,0), -5), ((5,0), 0)]):
-        super().__init__(noise = noise, discountFactor = discountFactor,
-                         width = width, height = height,
-                         blockedStates = blockedStates, actionCost = actionCost, goals = goals)
+    def __init__(
+        self,
+        noise=0.0,
+        discount_factor=1.0,
+        width=6,
+        height=4,
+        blocked_states=[],
+        action_cost=-0.05,
+        goals=[((1, 0), -5), ((2, 0), -5), ((3, 0), -5), ((4, 0), -5), ((5, 0), 0)],
+    ):
+        super().__init__(
+            noise=noise,
+            discount_factor=discount_factor,
+            width=width,
+            height=height,
+            blocked_states=blocked_states,
+            action_cost=action_cost,
+            goals=goals,
+        )
 
 
 class OneDimensionalGridWorld(GridWorld):
-    """    A one dimensional GridWorld class to use with the Logistic regression policy gradient.
-    This allows actions [left, right] and terminates when the agent reaches the goal state without having to use a
-    terminate action.
+    """ A one dimensional GridWorld class to use with the
+    Logistic regression policy gradient.
+    This allows actions [left, right] and terminates when the agent reaches the
+    goal state without having to use a terminate action.
     """
 
-    def __init__(self, noise=0.1, width=4, discountFactor=0.9, actionCost=0.0, initialState=(0, 0),
-                 goals=[((0, 0), -1), ((10, 0), 1)]):
-        super().__init__(noise=noise, width=width, height=1, blockedStates=[], discountFactor=discountFactor,
-                         actionCost=actionCost,
-                         initialState=initialState, goals=goals)
+    def __init__(
+        self,
+        noise=0.1,
+        width=4,
+        discount_factor=0.9,
+        action_cost=0.0,
+        initial_state=(0, 0),
+        goals=[((0, 0), -1), ((10, 0), 1)],
+    ):
+        super().__init__(
+            noise=noise,
+            width=width,
+            height=1,
+            blocked_states=[],
+            discount_factor=discount_factor,
+            action_cost=action_cost,
+            initial_state=initial_state,
+            goals=goals,
+        )
 
     def execute(self, state, action):
-        # if we are in a goal state then terminate automatically execute a terminate action to immediately terminate
-        if state in self.goalStates:
+        # If we are in a goal state then terminate automatically execute
+        # a terminate action to immediately terminate
+        if state in self.goal_states:
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
 
 if __name__ == "__main__":
-    small = GridWorld(width = 8, height = 6)
+    small = GridWorld(width=8, height=6)
     print(small.visualise_small())
-    small.visualiseImage(title="Small")
+    small.visualise_image(title="Small")
 
-    medium = gridworld = GridWorld(width = 16, height = 12)
+    medium = gridworld = GridWorld(width=16, height=12)
     print(medium.visualise_small())
-    medium.visualiseImage(title="Medium")
+    medium.visualise_image(title="Medium")

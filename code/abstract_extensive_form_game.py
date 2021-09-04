@@ -6,11 +6,11 @@ TWO = "2"
 class AbstractExtensiveFormGame(ExtensiveFormGame):
 
     ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self):
+    def get_players(self):
         return [ONE, TWO]
 
     ''' Get the valid actions at a state '''
-    def getActions(self, state):
+    def get_actions(self, state):
         actions = dict()
         actions[1] = ["A", "B"]
         actions[2] = ["C", "D"]
@@ -23,7 +23,7 @@ class AbstractExtensiveFormGame(ExtensiveFormGame):
             return []
 
     ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action):
+    def get_transition(self, state, action):
         transitions = dict()
         if state == 1:
             transitions["A"] = 2
@@ -42,7 +42,7 @@ class AbstractExtensiveFormGame(ExtensiveFormGame):
         return transitions[action]
 
     ''' Return the reward for a state, return as a dictionary mapping players to rewards '''
-    def getReward(self, state):
+    def get_reward(self, state):
         rewards = dict()
         if state in [4,5,6,8,9]:
             rewards[4] = {ONE:3, TWO: 8}
@@ -55,31 +55,31 @@ class AbstractExtensiveFormGame(ExtensiveFormGame):
             return {ONE:0, TWO:0}
 
     ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state):
+    def is_terminal(self, state):
         return state in [4,5,6,8,9]
 
     ''' Return the player who selects the action at this state (whose turn it is) '''
-    def getPlayerTurn(self, state):
+    def get_player_turn(self, state):
         if state in [1,7]:
             return ONE
         else:
             return TWO
     
     ''' Return the initial state of this game '''
-    def getInitialState(self):
+    def get_initial_state(self):
         return 1
 
-    def toString(self, state):
+    def to_string(self, state):
         return str(state)
 
 if __name__ == "__main__":
     from backward_induction import BackwardInduction
 
     game = AbstractExtensiveFormGame()
-    backwardInduction = BackwardInduction(game)
-    solution = backwardInduction.backwardInduction(game.getInitialState())
+    backward_induction = BackwardInduction(game)
+    solution = backward_induction.backward_induction(game.get_initial_state())
     from graph_visualisation import GraphVisualisation
     
-    gv = GraphVisualisation(maxLevel = 5)
-    graph = gv.nodeToGraph(game, game.gameTree(), printValues = False)
+    gv = GraphVisualisation(max_level = 5)
+    graph = gv.node_to_graph(game, game.game_tree(), printValues = False)
     graph.view()

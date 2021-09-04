@@ -1,111 +1,89 @@
+from tabular_policy import TabularPolicy
+from tabular_value_function import TabularValueFunction
 
-class Policy(): pass
-
-class DeterministicPolicy(Policy):
-    def selectAction(state): abstract
-    def update(state, action, something): abstract
-
-import random
-
-class TabularPolicy(DeterministicPolicy):
-    def __init__(self, mdp, initialPolicy = None):
-        self.mdp = mdp
-        if initialPolicy is not None: 
-            self.policyTable = initialPolicy
-        else:
-            self.policyTable = self.initialise()
-
-    def initialise(self):
-        action = random.choice(self.mdp.getActions())
-        return defaultdict(lambda: action)
-
-    def selectAction(self, state):
-        return self.policyTable[state]
-
-    def update(self, state, action):
-        self.policyTable[state] = action
-
-from collections import defaultdict
-
-class PolicyIteration():
-
+class PolicyIteration:
     def __init__(self, mdp):
         self.mdp = mdp
 
-    ''' Calculate Q(s,a) of an action '''
-    def qValue(self, state, action, values):
-        newValue = 0.0
-        for (newState, probability) in mdp.getTransitions(state, action):
-            reward = mdp.getReward(state, action, newState)
-            newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-        return newValue
+    """ Calculate Q(s,a) of an action """
 
-    ''' Implmentation of policy iteration iteration '''
-    def policyEvaluation(self, policy, values, theta = 0.001):
+    def q_value(self, state, action, values):
+        new_value = 0.0
+        for (new_state, probability) in self.mdp.get_transitions(state, action):
+            reward = self.mdp.get_reward(state, action, new_state)
+            new_value += probability * (
+                reward + (self.mdp.get_discount_factor() * values[new_state])
+            )
+        return new_value
+
+    def policy_evaluation(self, policy, values, theta=0.001):
 
         while True:
             delta = 0.0
-            newValues = dict()
-            for state in mdp.getStates():
+            new_values = dict()
+            for state in self.mdp.get_states():
                 # Calculate the value of V(s)
-                oldValue = values[state]
-                values[state] = self.qValue(state, policy.selectAction(state), values)
-                delta = max(delta, abs(oldValue - values[state]))
-            
+                old_value = values[state]
+                values.update(state, self.q_value(state, policy.select_action(state), values))
+                delta = max(delta, abs(old_value - values[state]))
+
             # terminate if the value function has converged
             if delta < theta:
                 break
 
         return values
 
+    """ Implmentation of policy iteration iteration """
 
-    ''' Implmentation of policy iteration iteration '''
-    def policyIteration(self, iterations = 100, theta = 0.001):
+    def policy_iteration(self, iterations=100, theta=0.001):
 
         # Initialise the value function V and policy function pi
-        values = self.initialiseValueFunction()
-        policy = TabularPolicy(self.mdp)
-        
+        values = TabularValueFunction()
+        policy = TabularPolicy(default_action=self.mdp.get_actions()[0])
+
         for i in range(iterations):
-            policyChanged = False
-            values = self.policyEvaluation(policy, values, theta)
-            for state in mdp.getStates():
-                oldAction = policy.selectAction(state)
-                
-                qValues = dict()
-                for action in mdp.getActions(state):
+            policy_changed = False
+            values = self.policy_evaluation(policy, values, theta)
+            for state in self.mdp.get_states():
+                old_action = policy.select_action(state)
+
+                q_values = dict()
+                for action in self.mdp.get_actions(state):
                     # Calculate the value of Q(s,a)
-                    newValue = self.qValue(state, action, values)
-                    qValues.update({action: newValue})
+                    new_value = self.q_value(state, action, values)
+                    q_values.update({action: new_value})
 
                 # V(s) = argmax_a Q(s,a)
-                newAction = max(qValues, key = lambda i: qValues[i])
-                policy.update(state, newAction)
+                new_action = max(q_values, key=lambda i: q_values[i])
+                policy.update(state, new_action)
 
-                policyChanged = True if newAction is not oldAction else policyChanged
+                policy_changed = (
+                    True if new_action is not old_action else policy_changed
+                )
 
-            if not policyChanged:
+            if not policy_changed:
                 print("iterations = %d" % i)
                 break
-                
+
         return policy
 
-    def initialiseValueFunction(self):
+    def initialise_value_function(self):
         return defaultdict(lambda: 0.0)
-        
+
 
 if __name__ == "__main__":
     from gridworld import GridWorld
-    mdp = GridWorld(width = 8, height = 6)
-    policyIteration = PolicyIteration(mdp)
+
+    mdp = GridWorld(width=8, height=6)
+    policy_iteration = PolicyIteration(mdp)
 
     for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
         print("After iteration " + str(iterations))
-        policy = policyIteration.policyIteration(iterations = iterations).policyTable
-        print(mdp.policyToString(policy) + "\n")
-        mdp.visualisePolicy(policy, title=f'num iterations={iterations}')
-    mdp = GridWorld(width = 20, height = 15)
-    policyIteration = PolicyIteration(mdp)
-    policy = policyIteration.policyIteration(iterations=100).policyTable
-    print(mdp.policyToString(policy) + "\n")
-    mdp.visualisePolicy(policy, title=f'num iterations=100')
+        policy = policy_iteration.policy_iteration(iterations=iterations).policy_table
+        print(mdp.policy_to_string(policy) + "\n")
+        mdp.visualise_policy(policy, title=f"num iterations={iterations}")
+    mdp = GridWorld(width=20, height=15)
+    policy_iteration = PolicyIteration(mdp)
+    policy = policy_iteration.policy_iteration(iterations=100).policy_table
+    print(mdp.policy_to_string(policy) + "\n")
+    mdp.visualise_policy(policy, title=f"num iterations=100")

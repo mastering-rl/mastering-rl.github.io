@@ -11,44 +11,44 @@ class ModelFreeReinforcementLearner():
     def execute(self, episodes = 100):
 
         for i in range(episodes):
-            state = self.mdp.getInitialState()
-            actions = self.mdp.getActions(state)
+            state = self.mdp.get_initial_state()
+            actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction)
 
-            while not self.mdp.isTerminal(state):
-                (nextState, reward) = self.mdp.execute(state, action)
-                actions = self.mdp.getActions(nextState)
-                nextAction = self.bandit.select(nextState, actions, self.qfunction)
-                newQValue = self.update(state, action, nextState, nextAction, reward)
-                self.qfunction.update(state, action, newQValue)
-                state = nextState
-                action = nextAction
+            while not self.mdp.is_terminal(state):
+                (next_state, reward) = self.mdp.execute(state, action)
+                actions = self.mdp.get_actions(next_state)
+                next_action = self.bandit.select(next_state, actions, self.qfunction)
+                new_q_value = self.update(state, action, next_state, next_action, reward)
+                self.qfunction.update(state, action, new_q_value)
+                state = next_state
+                action = next_action
 
     '''
         Update a Q-function with a new delta
     '''
-    def update(self, state, action, nextState, reward): abstract
+    def update(self, state, action, next_state, reward): abstract
 
 
 from multi_armed_bandits import EpsilonGreedy
 
 class QLearning(ModelFreeReinforcementLearner):
-    def update(self, state, action, nextState, nextAction, reward):
-        qValue = self.qfunction.getQValue(state, action)
-        (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
-        delta = self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
+    def update(self, state, action, next_state, next_action, reward):
+        q_value = self.qfunction.get_q_value(state, action)
+        (_, max_q_value) = self.qfunction.get_max_q(next_state, self.mdp.get_actions(next_state))
+        delta = self.alpha * (reward + self.mdp.discount_factor * max_q_value - q_value)
         return delta
     
 class SARSA(ModelFreeReinforcementLearner):
-    def update(self, state, action, nextState, nextAction, reward): 
-        qValue = self.qfunction.getQValue(state, action)
-        qValueNext = self.qfunction.getQValue(nextState, nextAction)
-        delta = self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+    def update(self, state, action, next_state, next_action, reward): 
+        q_value = self.qfunction.get_q_value(state, action)
+        q_value_next = self.qfunction.get_q_value(next_state, next_action)
+        delta = self.alpha * (reward + self.mdp.discount_factor * q_value_next - q_value)
         return delta
 
 
 class FeatureExtractor():
-    def extractFeatures(self, state, action): abstract
+    def extract_features(self, state, action): abstract
 
 class GridWorldStateFeatureExtractor(FeatureExtractor):
     def __init__(self, width, height):
@@ -59,54 +59,54 @@ class GridWorldFeatureExtractor(FeatureExtractor):
     def __init__(self, mdp):
         self.mdp = mdp
 
-    def numFeatures(self):
+    def num_features(self):
         return 5
 
-    def numActions(self):
-        return len(self.mdp.getActions())
+    def num_actions(self):
+        return len(self.mdp.get_actions())
     
     def extract(self, state, action):
         goal = (self.mdp.width - 1, self.mdp.height - 1)
         x = 0
         y = 1
         e = 0.01
-        featureValues = []
-        for a in self.mdp.getActions():
+        feature_values = []
+        for a in self.mdp.get_actions():
             if a == action and state != GridWorld.TERMINAL:
                 #featureValues += [1 - ((goal[x] - state[x]) / goal[x]) + 0.01]
                 #featureValues += [1 - ((goal[y] - state[y]) / goal[y]) + 0.01]
                 #featureValues += [1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y])) + 0.01]
-                featureValues += [(state[x] + e)/(goal[x] + e)]
-                featureValues += [(state[y] + e)/(goal[y] + e)]
-                featureValues += [(goal[x] - state[x] + goal[y] - state[y] + e) / (goal[x] + goal[y] + e)]
-                featureValues += [1 if goal[x] == state[x] else 0]
-                featureValues += [1 if goal[y] == state[y] else 0]
+                feature_values += [(state[x] + e)/(goal[x] + e)]
+                feature_values += [(state[y] + e)/(goal[y] + e)]
+                feature_values += [(goal[x] - state[x] + goal[y] - state[y] + e) / (goal[x] + goal[y] + e)]
+                feature_values += [1 if goal[x] == state[x] else 0]
+                feature_values += [1 if goal[y] == state[y] else 0]
                 #featureValues += [1 if 0 == state[x] else 0]
                 #featureValues += [1 if goal[y] - 1 == state[y] else 0]
                 #featureValues += [1 if state == (goal[x], goal[y]) else 0]
                 #featureValues += [1 if state == (0, goal[y] - 1)else 0]
             else:
-                for _ in range(0, self.numFeatures()):
-                    featureValues += [0.0]
-        return featureValues
+                for _ in range(0, self.num_features()):
+                    feature_values += [0.0]
+        return feature_values
 
 class RewardShapedQLearning(QLearning):
     def __init__(self, mdp, bandit, potential, qfunction = QTable(), alpha = 0.1):
         super().__init__(mdp, bandit, qfunction = qfunction, alpha = alpha)
         self.potential = potential
 
-    def update(self, state, action, nextState, nextAction, reward): 
-        (_, maxQValue) = self.qfunction.getMaxQ(nextState, self.mdp.getActions(nextState))
-        qValue = self.qfunction.getQValue(state, action)
-        statePotential = self.potential.getPotential(state)
-        nextStatePotential = self.potential.getPotential(nextState)
-        potential = self.mdp.discountFactor *  nextStatePotential - statePotential
-        delta = self.alpha * (reward + potential + self.mdp.discountFactor * maxQValue - qValue)
+    def update(self, state, action, next_state, next_action, reward): 
+        (_, max_q_value) = self.qfunction.get_max_q(next_state, self.mdp.get_actions(next_state))
+        q_value = self.qfunction.get_q_value(state, action)
+        state_potential = self.potential.get_potential(state)
+        next_state_potential = self.potential.get_potential(next_state)
+        potential = self.mdp.discount_factor *  next_state_potential - state_potential
+        delta = self.alpha * (reward + potential + self.mdp.discount_factor * max_q_value - q_value)
         return delta
 
 
 class PotentialFunction():
-    def getPotential(self, state): abstract
+    def get_potential(self, state): abstract
 
 from gridworld import GridWorld
 
@@ -115,7 +115,7 @@ class GridWorldPotentialFunction(PotentialFunction):
     def __init__(self, mdp):
         self.mdp = mdp
         
-    def getPotential(self, state):
+    def get_potential(self, state):
         if state != GridWorld.TERMINAL:
             goal = (self.mdp.width, self.mdp.height)
             x = 0
@@ -138,15 +138,15 @@ if __name__ == "__main__":
     #mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
     qfunction = QTable()
     QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes = episodes)
-    policy = mdp.extractPolicyFromQFunction(qfunction)
-    print(mdp.qFunctionToString(qfunction))
-    print(mdp.policyToString(policy))
-    qLearningRewards = mdp.getRewards()
-    print(qLearningRewards)
+    policy = mdp.extract_policy_from_q_function(qfunction)
+    print(mdp.q_function_to_string(qfunction))
+    print(mdp.policy_to_string(policy))
+    q_learning_rewards = mdp.get_rewards()
+    print(q_learning_rewards)
     '''
       
     print("=====\nSARSA: Gridworld\n=====")
-    mdp = GridWorld(discountFactor = 0.9, width = 4, height = 3)
+    mdp = GridWorld(discount_factor = 0.9, width = 4, height = 3)
     qfunction = QTable()
     SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes = 1000)
     policy = mdp.extractPolicyFromQFunction(qfunction)
@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
     print("==========\nLinearSarsa: Gridworld one terminal state\n==========")
     from linear_qfunction import LinearQFunction
-    mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
+    mdp = GridWorld(discount_factor = 0.9, noise=0.1, goals=[((3,2),1)])
     features = GridWorldFeatureExtractor(mdp)
     qfunction = LinearQFunction(features)
     SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes = 2000)
@@ -197,26 +197,26 @@ if __name__ == "__main__":
     features = GridWorldFeatureExtractor(mdp)
     qfunction = LinearQFunction(features)
     QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes = episodes)
-    policy = mdp.extractPolicyFromQFunction(qfunction)
-    print(mdp.qFunctionToString(qfunction))
-    print(mdp.policyToString(policy))
-    linearQLearningRewards = mdp.getRewards()
+    policy = mdp.extract_policy_from_q_function(qfunction)
+    print(mdp.q_function_to_string(qfunction))
+    print(mdp.policy_to_string(policy))
+    linear_q_learning_rewards = mdp.get_rewards()
     
     print("=========\nQ-Learning with Reward shaping: Gridworld\n========")
     mdp = GridWorld(width = width, height = height, goals = goals)
-    #mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
+    #mdp = GridWorld(discount_factor = 0.9, noise=0.1, goals=[((3,2),1)])
     #mdp = GridWorld(noise = 0.0, width = 6, height = 5, blockedStates = [], goals = [((5,4), 1), ((5,3),-1)])
     potential = GridWorldPotentialFunction(mdp)
     #qfunction = QTable()
     qfunction = LinearQFunction(features)
     RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute(episodes = episodes)
-    policy = mdp.extractPolicyFromQFunction(qfunction)
-    print(mdp.qFunctionToString(qfunction))
-    print(mdp.policyToString(policy))
-    rewardShapedRewards = mdp.getRewards()
+    policy = mdp.extract_policy_from_q_function(qfunction)
+    print(mdp.q_function_to_string(qfunction))
+    print(mdp.policy_to_string(policy))
+    reward_shaped_rewards = mdp.get_rewards()
 
     
 
     from plot import Plot
-    Plot.plotEpisodeLength(["Tabular Q-learning", "Reward shaping", "Linear Q-Learning"], 
-                            [qLearningRewards, rewardShapedRewards, linearQLearningRewards])
+    Plot.plot_episode_length(["Tabular Q-learning", "Reward shaping", "Linear Q-Learning"], 
+                            [q_learning_rewards, reward_shaped_rewards, linear_q_learning_rewards])

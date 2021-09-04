@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 (sec:mdps)=
 # Markov Decision Processes
 
@@ -26,9 +36,11 @@ For example:
 -   When trying to pick up an object with a robot arm, there could be
     two outcomes: successful ($\frac{4}{5}$) and unsuccessful
     ($\frac{1}{5}$)
--   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.s
+-   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.
 
 MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
+
+## Markov Decision Processes
 
 :::{admonition} Definition -- Markov Decision Process
 
@@ -148,37 +160,51 @@ First, we have an interface that defines what an MDP is:
 
 ```
 class MDP:
-    ''' Return all states of this MDP '''
-    def getStates(self): abstract
+    """ Return all states of this MDP """
+    def get_states(self):
+        abstract
 
-    ''' Return all actions with non-zero probability from this state '''
-    def getActions(self, state): abstract
+    """ Return all actions with non-zero probability from this state """
+    def get_actions(self, state):
+        abstract
 
-    ''' Return all non-zero probability transitions for this action from this state '''
-    def getTransitions(self, state, action): abstract
+    """ Return all non-zero probability transitions for this action
+        from this state, as a list of (state, probability) pairs
+    """
+    def get_transitions(self, state, action):
+        abstract
 
-    ''' Return the reward for transitioning from state to nextState via action '''
-    def getReward(self, state, action, nextState): abstract
+    """ Return the reward for transitioning from state to
+        nextState via action
+    """
+    def get_reward(self, state, action, next_state):
+        abstract
 
-    ''' Return the discount factor for this MDP '''
-    def getDiscountFactor(self): abstract
+    """ Return true if and only if state is a terminal state of this MDP """
+    def is_terminal(self, state):
+        abstract
 
-    ''' Return the initial state of this MDP '''
-    def getInitialState(self): abstract
+    """ Return the discount factor for this MDP """
+    def get_discount_factor(self):
+        abstract
 
-    ''' Return all goal states of this MDP '''
-    def getGoalStates(self): abstract
+    """ Return the initial state of this MDP """
+    def get_initial_state(self):
+        abstract
+
+    """ Return all goal states of this MDP """
+    def get_goal_states(self):
+        abstract
 ```
 
-Then, we need to implement this interface to create an MDP. Below is the implementation for ``getTransitions`` and ``getReward`` for GridWorld:
+Then, we need to implement this interface to create an MDP. Below is the implementation for `getTransitions` and `getReward` for GridWorld:
 
 ```
 class GridWorld(MDP):
 
     ...
 
-    def getTransitions(self, state, action):
-    
+    def get_transitions(self, state, action):
         transitions = []
 
         if state == self.TERMINAL:
@@ -187,50 +213,69 @@ class GridWorld(MDP):
             else:
                 return []
 
+        # Probability of not slipping left or right
+        straight = 1 - (2 * self.noise)
+
         (x, y) = state
-        if state in self.getGoalStates().keys():
+        if state in self.get_goal_states().keys():
             if action == self.TERMINATE:
                 transitions += [(self.TERMINAL, 1.0)]
 
         elif action == self.UP:
-            transitions += self.validAdd(state, (x, y + 1), 0.8)
-            transitions += self.validAdd(state, (x - 1, y), 0.1)
-            transitions += self.validAdd(state, (x + 1, y), 0.1)
+            transitions += self.valid_add(state, (x, y + 1), straight)
+            transitions += self.valid_add(state, (x - 1, y), self.noise)
+            transitions += self.valid_add(state, (x + 1, y), self.noise)
 
         elif action == self.DOWN:
-            transitions += self.validAdd(state, (x, y - 1), 0.8)
-            transitions += self.validAdd(state, (x - 1, y), 0.1)
-            transitions += self.validAdd(state, (x + 1, y), 0.1)
+            transitions += self.valid_add(state, (x, y - 1), straight)
+            transitions += self.valid_add(state, (x - 1, y), self.noise)
+            transitions += self.valid_add(state, (x + 1, y), self.noise)
 
         elif action == self.RIGHT:
-            transitions += self.validAdd(state, (x + 1, y), 0.8)
-            transitions += self.validAdd(state, (x, y - 1), 0.1)
-            transitions += self.validAdd(state, (x, y + 1), 0.1)
+            transitions += self.valid_add(state, (x + 1, y), straight)
+            transitions += self.valid_add(state, (x, y - 1), self.noise)
+            transitions += self.valid_add(state, (x, y + 1), self.noise)
 
         elif action == self.LEFT:
-            transitions += self.validAdd(state, (x - 1, y), 0.8)
-            transitions += self.validAdd(state, (x, y - 1), 0.1)
-            transitions += self.validAdd(state, (x, y + 1), 0.1)
+            transitions += self.valid_add(state, (x - 1, y), straight)
+            transitions += self.valid_add(state, (x, y - 1), self.noise)
+            transitions += self.valid_add(state, (x, y + 1), self.noise)
+
+        # Merge any duplicate outcomes
+        merged = defaultdict(lambda: 0.0)
+        for (state, probability) in transitions:
+            merged[state] = merged[state] + probability
+
+        transitions = []
+        for outcome in merged.keys():
+            transitions += [(outcome, merged[outcome])]
 
         return transitions
 
-    def validAdd(self, state, newState, probability):
-        # if the next state is blocked, stay in the same state
-        if newState in self.blockedStates:
+    def valid_add(self, state, new_state, probability):
+        # If the next state is blocked, stay in the same state
+        if probability == 0.0:
+            return []
+
+        if new_state in self.blocked_states:
             return [(state, probability)]
 
-        # move to the next space if it is not off the grid
-        (x, y) = newState
-        if (x >= 0 and x < self.width and y >= 0 and y < self.height):
+        # Move to the next space if it is not off the grid
+        (x, y) = new_state
+        if x >= 0 and x < self.width and y >= 0 and y < self.height:
             return [((x, y), probability)]
- 
-        # if off the grid, state in the same state
+
+        # If off the grid, state in the same state
         return [(state, probability)]
 
-    def getReward(self, state, action, newState):
+    def get_reward(self, state, action, new_state):
         reward = 0.0
-        if state in self.getGoalStates().keys() and newState == self.TERMINAL:
-            reward = self.getGoalStates().get(state)
+        if state in self.get_goal_states().keys() and new_state == self.TERMINAL:
+            reward = self.get_goal_states().get(state)
+        else:
+            reward = self.action_cost
+        step = len(self.episode_rewards)
+        self.episode_rewards += [reward * (self.discount_factor ** step)]
         return reward
 ```
 :::
@@ -260,10 +305,13 @@ The planning problem for discounted-reward MDPs is different to that of classica
 A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
 :::
 
-A *deterministic policy* $\pi : S \rightarrow A$ is a *mapping* from states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
+### Deterministic vs.\ stochastic policies
+
+A *deterministic policy* $\pi : S \rightarrow A$ is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
 A graphical representation of the policy for Grid World is:
 
-$$\begin{array}{|c|c|c|c|}
+$$
+\begin{array}{|c|c|c|c|}
 \hline
 \rightarrow & \rightarrow & \rightarrow & +1\\
 \hline
@@ -271,7 +319,8 @@ $$\begin{array}{|c|c|c|c|}
 \hline
 \uparrow & \leftarrow & \uparrow  & \leftarrow\\
 \hline
-\end{array}$$
+\end{array}
+$$
 
 So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidently slips right, it should go left again to return to the initial state.
 
@@ -279,9 +328,25 @@ Of course, agents do not work with graphical policies. The output from a plannin
 
 A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$ specifies the *probability distribution* from which an agent should select an action. Intuitively, $\pi(s,a)$ specifies the probability that action $a$ should be executed in state $s$.
 
-To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probablistically such that actions with higher probability are chosen proportionally to their relative probabilities.
+To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probabilistically such that actions with higher probability are chosen proportionally to their relative probabilities.
 
 We will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss [policy gradient methods](sec:policy-based:policy-gradients).
+
+### Representing policies
+
+Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
+
+```{code-cell} ipython3
+:load: "../code/policy.py"
+```
+
+The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
+
+```{code-cell} ipython3
+:load: "../code/tabular_policy.py"
+```
+
+As we see later in the section on [policy gradients](sec:policy-based:policy-gradients), policies can be represented using other means, such as machine learning models, which do not require us to keep an explicit answer for every state.
 
 (sec:mdps:bellman-equation)=
 ## Optimal Solutions for MDPs
@@ -367,6 +432,16 @@ $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
 This is simpler than using the value functions because we do not need to sum over the set of
 possible output states, but we need to store $|A| \times |S|$ values in a Q-function, but just $|S|$ values in a value function.
+
+### Implementation
+
+Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
+
+```{code-cell} ipython3
+:load: "../code/value_function.py"
+```
+
+For each state, we find the best action in the state (the action that maximises the Q-value from that state); and for that state, we set that max action as the action to select in that state.
 
 (sec:mdps:pomdps)=
 ## Partially Observable MDPs

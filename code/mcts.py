@@ -6,14 +6,14 @@ from multi_armed_bandits import *
 class Node():    
 
     # record a unique node id to distinguish duplicated states
-    nextNodeID = 0
+    next_node_id = 0
     
     def __init__(self, mdp, parent, state):
         self.mdp = mdp  
         self.parent = parent
         self.state = state
-        self.id = Node.nextNodeID
-        Node.nextNodeID += 1
+        self.id = Node.next_node_id
+        Node.next_node_id += 1
 
         # the value and the total visits to this node
         self.visits = 0
@@ -22,7 +22,7 @@ class Node():
     '''
     Return the value of this node
     '''
-    def getValue(self):
+    def get_value(self):
         return self.value
 
 class StateNode(Node):
@@ -45,24 +45,24 @@ class StateNode(Node):
     '''
     Return true if and only if all child actions have been expanded
     '''
-    def isFullyExpanded(self):
-        validActions = self.mdp.getActions(self.state)
-        if len(validActions) == len(self.children):
+    def is_fully_expanded(self):
+        valid_actions = self.mdp.get_actions(self.state)
+        if len(valid_actions) == len(self.children):
             return True
         else:
             return False
 
     def select(self):
-        if not self.isFullyExpanded():
+        if not self.is_fully_expanded():
             return self
         else:
             actions = list(self.children.keys())    
-            qValues = dict()
+            q_values = dict()
             for action in actions:
                 #get the Q values from all outcome nodes
-                qValues[action] = self.children[action].getValue()
-            bestAction = self.bandit.select(actions, qValues)
-            return self.children[bestAction].select()
+                q_values[action] = self.children[action].getValue()
+            best_action = self.bandit.select(actions, q_values)
+            return self.children[best_action].select()
 
     def expand(self):
         #randomly select an unexpanded action to expand
@@ -70,23 +70,23 @@ class StateNode(Node):
         action = random.choice(list(actions))
 
         #choose an outcome
-        newChild = EnvironmentNode(self.mdp, self, self.state, action)
-        newStateNode = newChild.expand()
-        self.children[action] = newChild
-        return newStateNode
+        new_child = EnvironmentNode(self.mdp, self, self.state, action)
+        new_state_node = new_child.expand()
+        self.children[action] = new_child
+        return new_state_node
 
-    def backPropagate(self, reward):
+    def back_propagate(self, reward):
         self.visits += 1
         self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
         
         if self.parent != None:
             self.parent.backPropagate(reward)
 
-    def getQFunction(self):
-        qValues = {}
+    def get_q_function(self):
+        q_values = {}
         for action in self.children.keys():
-            qValues[(self.state, action)] = round(self.children[action].getValue(), 3)
-        return qValues
+            q_values[(self.state, action)] = round(self.children[action].getValue(), 3)
+        return q_values
 
 class EnvironmentNode(Node):
     
@@ -100,33 +100,33 @@ class EnvironmentNode(Node):
 
     def select(self):
         # choose one outcome based on transition probabilities
-        (newState, reward) = self.mdp.execute(self.state, self.action)
+        (new_state, reward) = self.mdp.execute(self.state, self.action)
 
         #find the corresponding state
         for child in self.children:
-            if newState == child.state:
+            if new_state == child.state:
                 return child.select()
 
-    def addChild(self, action, newState, reward, probability):
-        child = StateNode(self.mdp, self, newState, reward, probability)
+    def add_child(self, action, new_state, reward, probability):
+        child = StateNode(self.mdp, self, new_state, reward, probability)
         self.children += [child]
         return child
 
     def expand(self):
         # choose one outcome based on transition probabilities
-        (newState, reward) = self.mdp.execute(self.state, self.action)
+        (new_state, reward) = self.mdp.execute(self.state, self.action)
 
         # expand all outcomes
         selected = None
         transitions = self.mdp.getTransitions(self.state, self.action)
         for (outcome, probability) in transitions:
-            newChild = self.addChild(self.action, outcome, reward, probability)
+            new_child = self.add_child(self.action, outcome, reward, probability)
             # find the child node correponding to the new state
-            if outcome == newState:
-                selected = newChild
+            if outcome == new_state:
+                selected = new_child
         return selected
 
-    def backPropagate(self, reward):
+    def back_propagate(self, reward):
         self.visits += 1
         self.value = self.value + ((reward - self.value) / self.visits)
         self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
@@ -140,54 +140,54 @@ class MCTS():
     Execute the MCTS algorithm from the initial state given, with timeout in seconds
     '''
     def mcts(self, timeout = 1):
-        rootNode = StateNode(self.mdp, None, self.mdp.getInitialState())
+        root_node = StateNode(self.mdp, None, self.mdp.get_initial_state())
         
-        startTime = int(time.time() * 1000)
-        currentTime = int(time.time() * 1000)
-        while currentTime < startTime + timeout * 1000:
+        start_time = int(time.time() * 1000)
+        current_time = int(time.time() * 1000)
+        while current_time < start_time + timeout * 1000:
             # find a state node to expand
-            selectedNode = rootNode.select()
-            if not self.mdp.isTerminal(selectedNode):
-                child = selectedNode.expand()
+            selected_node = root_node.select()
+            if not self.mdp.is_terminal(selected_node):
+                child = selected_node.expand()
                 reward = self.simulate(child)
-                child.backPropagate(reward)
+                child.back_propagate(reward)
                 
-            currentTime = int(time.time() * 1000)
+            current_time = int(time.time() * 1000)
 
-        return rootNode
+        return root_node
 
     '''
         Choose a random action. Heustics can be used here to improve simulations.
     '''
     def choose(self, state):
-        return random.choice(self.mdp.getActions(state))
+        return random.choice(self.mdp.get_actions(state))
 
     '''
         Simulate until a terminal state
     '''
     def simulate(self, node):
         state = node.state
-        cumulativeReward = 0.0
+        cumulative_reward = 0.0
         depth = 0
-        while not self.mdp.isTerminal(state):
+        while not self.mdp.is_terminal(state):
             #choose an action to execute
             action = self.choose(state)
             
             # execute the action
-            (newState, reward) = self.mdp.execute(state, action)
+            (new_state, reward) = self.mdp.execute(state, action)
 
             # discount the reward 
-            cumulativeReward += pow(self.mdp.getDiscountFactor(), depth) * reward
+            cumulative_reward += pow(self.mdp.get_discount_factor(), depth) * reward
             depth += 1
 
-            state = newState
+            state = new_state
             
-        return cumulativeReward
+        return cumulative_reward
 
 if __name__ == "__main__":
     from gridworld import *
     
     mdp = GridWorld()
-    rootNode = MCTS(mdp).mcts(timeout=10.0)
+    root_node = MCTS(mdp).mcts(timeout=10.0)
     print("mcts")
-    print(rootNode.getQFunction())
+    print(root_node.get_q_function())
