@@ -278,14 +278,6 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 In this section, we present an implementation of linear Q-function approximation for SARSA and run it on a modified GridWorld problem. For simplicity, we will first demonstrate this on the GridWorld with just one goal state: the one in the top right that returns +1. The -1 will just become a normal cell. We will see later that the original GridWorld problem is not easy to define features for given a linear approximation.
 
-```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
-```
-
 The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here: 
 
 1. The distance from the goal on the X-axis.

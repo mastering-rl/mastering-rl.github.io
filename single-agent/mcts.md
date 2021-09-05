@@ -299,14 +299,6 @@ The advantage of this is that it is more general: as long as we have a simulator
 (sec:mcts:implementation)=
 ## Implementation
 
-```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code/')
-```
-
 Below is an implementation of MCTS in Python. This is a simulation-based implementation as it simulates outcomes and uses a moving average to calculate a value. However, the implementation keeps track of probabilities for the purpose of visualisation.
 
 First, we create a class `Node`, which forms the basis for the tree:

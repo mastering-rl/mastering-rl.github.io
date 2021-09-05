@@ -26,10 +26,10 @@ class Plot():
     '''
     def get_average_rewards_per_episode(rewards):
         summed_rewards = []
- 
+
         for episode in rewards:
             summed_rewards += [sum(episode)]
-            
+
         average_rewards = []
         for i in range(len(summed_rewards)):
             window = summed_rewards[max(0, i - Plot.window_size): i + 1]
@@ -47,7 +47,7 @@ class Plot():
             episode_lengths += [len(episode)]
 
         return episode_lengths
-    
+
     '''
     Plot the rewards per step of several methods.
     '''

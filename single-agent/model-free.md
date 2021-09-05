@@ -198,14 +198,6 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 ## Implementation
 
-```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
-```
-
 To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains some simple helper functions. You can view this via the "Click to show" on the right:
 
 ```{code-cell} ipython3

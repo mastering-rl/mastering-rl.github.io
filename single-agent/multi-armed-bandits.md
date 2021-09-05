@@ -75,92 +75,25 @@ Informally: If I take action $b$, my regret is the *best possible expected rewar
 
 A *zero-regret* strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.
 
+### Implementation
+
+The implementation for each strategy we discuss inherits from the class `MultiArmedBandit`:
+
+```{code-cell} ipython3
+:load: "../code/multi_armed_bandit/multi_armed_bandit.py"
+```
+
+Each strategy must implement the  `select` method, which takes the list of available actions and their Q-values. The `reset`  method resets to the bandit to its initial configuration, and is used for demonstration purposes later.
+
 (sec:multi-agent-bandit:simulation)=
 ### Simulation
 
-In the next section, we evaluate the different multi-armed bandit strategies on a simple simulation, outlined in this section.
-
-The simulation is an implementation of a simple multi-armed bandit problem with five actions, ```actions = [0, 1, 2, 3, 4]```.  Each action has a probability associated with it: ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]```. The simulation runs  2000 *episodes* of a bandit problem, with each episode being 1000 *steps* long. At each step, the agent must chose an action. For the action ```a``` it chooses,  it receives a reward of 5 with a probability ```probability[a]```.  With a probability of ```1 - probability[a]``` it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.
+To demonstrate the effect of different multi-armed bandit strategies and their parameters, we use the following simple simulation. The simulation is an implementation of a simple multi-armed bandit problem with five actions, ```actions = [0, 1, 2, 3, 4]```.  Each action has a probability associated with it: ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]```. The simulation runs  2000 *episodes* of a bandit problem, with each episode being 1000 *steps* long. At each step, the agent must chose an action. For the action `a` it chooses,  it receives a reward of 5 with a probability `probability[a]`.  With a probability of ```1 - probability[a]``` it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.
 
 The simulation returns a list of lists, representing the reward received at each step of each episode. The aim for the bandit is to maximise the expected rewards over each episode.
 
-The code for this simulation can be seen by clicking "Click to show" on the right.
-
 ```{code-cell} ipython3
----
-tags: [remove-cell]
----
-import sys
-sys.path.append('/mnt/c/Users/tmiller/OneDrive - The University of Melbourne/Documents/subjects/COMP90054/rl-notes/code')
-```
-
-```{code-cell} ipython3
----
-tags: [hide-cell]
----
-import random
-import math
-
-class MultiArmedBandit():
-
-    '''
-        Select an action given Q-values for each action.
-    '''
-    def select(self, actions, qValues): abstract
-    
-    '''
-        Reset a multi-armed bandit to its initial configuration.
-    '''
-    def reset(self):
-        self.__init__()
-
-    '''
-        Run a bandit algorithm for a number of episodes, with each
-        episode being a set length.
-    '''
-    def runBandit(self, episodes = 2000, episodeLength = 1000, drift = True):
-
-        #the actions available
-        actions = [0, 1, 2, 3, 4]
-
-        rewards = []
-        for episode in range(0, episodes):
-            self.reset()
-
-            # The probability of receiving a payoff of 1 for each action
-            probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]
-        
-            qValues = dict()
-            N = dict()
-            for action in actions:
-                qValues[action] = 0.0
-                N[action] = 0
-
-            episodeRewards = []
-            for step in range(0, episodeLength):
-
-                # Halfway through the episode, change the probabilities
-                if drift and step == episodeLength / 2:
-                    probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]
-                
-                #select an action
-                action = self.select(actions, qValues)
-
-                r = random.random()
-                reward = 0
-                if r < probabilities[action]:
-                    reward = 5
-
-                episodeRewards += [reward]
-
-                N[action] = N[action] + 1
-
-                qValues[action] = qValues[action] - (qValues[action] / N[action])
-                qValues[action] = qValues[action] + reward / N[action]
-
-            rewards += [episodeRewards]
-
-        return rewards
+:load: "../code/book/multi_armed_bandit_run_bandit.py"
 ```
 
 ## Solutions for minimising regret
@@ -180,61 +113,16 @@ The best value for $\epsilon$ depends on the particular problem, but typically, 
 
 #### Implementation
 
-The implementation for each strategy we discuss inherits from the class ```MultiArmedBandit```, shown in the [](sec:multi-agent-bandit:simulation) section.  Each strategy must implement the  ```select``` method, which takes the list of available actions and their Q-values.
-
-The implementation for epsilon greedy uses ```random()``` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If r is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
+The implementation for epsilon greedy uses `random()` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If r is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
 
 ```{code-cell} ipython3
-class EpsilonGreedy(MultiArmedBandit):
-
-    def __init__(self, epsilon = 0.1):
-        self.epsilon = epsilon
-
-    def reset(self):
-        None
-
-    def select(self, actions, qValues):
-        r = random.random()
-        # select a random action with epsilon probability
-        if r < self.epsilon:
-            return random.choice(actions)
-        else:
-            maxActions = []
-            maxValue = float('-inf')
-            for action in actions:
-                value = qValues[action]
-                if value > maxValue:
-                    maxActions = [action]
-                    maxValue = value
-                elif value == maxValue:
-                    maxActions += [action]
-                    
-            # if there are multiple actions with the highest value
-            # choose one randomly
-            return random.choice(maxActions)
+:load: "../code/multi_armed_bandit/epsilon_greedy.py"
 ```
-
-The ```reset``` method is used to run the simulations for the plots in this section.
 
 The following plot shows the reward for each step, averaged over 2000 episodes, over the simulation described in the [](sec:multi-agent-bandit:simulation) section. Each episode is 1000 steps long. We evaluate different values of epsilon:
 
 ```{code-cell} ipython3
-from plot import Plot
-
-def plotEpsilonGreedy(drift = False):
-    epsilon000 = EpsilonGreedy(epsilon = 0.00).runBandit(drift = drift)
-    epsilon005 = EpsilonGreedy(epsilon = 0.05).runBandit(drift = drift)
-    epsilon01 = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
-    epsilon02 = EpsilonGreedy(epsilon = 0.2).runBandit(drift = drift)
-    epsilon04 = EpsilonGreedy(epsilon = 0.4).runBandit(drift = drift)
-    epsilon08 = EpsilonGreedy(epsilon = 0.8).runBandit(drift = drift)
-    epsilon10 = EpsilonGreedy(epsilon = 1.0).runBandit(drift = drift)
-
-    Plot.plotRewards(["epsilon = 0.0", "epsilon = 0.05", "epsilon = 0.1", "epsilon = 0.2", 
-                      "epsilon = 0.4", "epsilon = 0.8", "epsilon = 1.0"],
-                     [epsilon000, epsilon005, epsilon01, epsilon02, epsilon04, epsilon08, epsilon10])
-                     
-plotEpsilonGreedy()
+:load: "../code/book/multi_armed_bandit_plot_epsilon_greedy.py"
 ```
 
 As we can see, higher  values of epsilon tend to have a lower reward over time, except that we need some non-zero value of epsilon. Higher values mean more exploration, so the bandit spends more time exploring less valuable actions, even after it has a good estimate of the value of actions. The actual choice of the epsilon parameter is entirely dependent on the particular application: there is no magic number. However, as in this particular case, an epsilon between 0.05-0.1 is usually a reasonable choice.
@@ -254,37 +142,13 @@ The selection mechanism is the same as epsilon greedy, but then after each selec
 The following implementation for the epsilon-decreasing strategy uses the epsilon-greedy strategy, just decreasing the epsilon value each step:
 
 ```{code-cell} ipython3
-class EpsilonDecreasing(MultiArmedBandit):
-
-    def __init__(self, epsilon = 0.2, alpha = 0.999):
-        self.epsilonGreedyBandit = EpsilonGreedy(epsilon)
-        self.initialEpsilon = epsilon
-        self.alpha = alpha
-
-    def reset(self):
-        self.epsilonGreedyBandit = EpsilonGreedy(self.initialEpsilon)
-    
-    def select(self, actions, qValues):
-        
-        result = self.epsilonGreedyBandit.select(actions, qValues)
-        self.epsilonGreedyBandit.epsilon *= self.alpha
-        return result
+:load: "../code/multi_armed_bandit/epsilon_decreasing.py"
 ```
 
 The following plot shows the average reward over our simulation, varying the value of $\alpha$:
 
 ```{code-cell} ipython3
-def plotEpsilonDecreasing(drift = False):
-    alpha09 = EpsilonDecreasing(alpha = 0.9).runBandit(drift = drift)
-    alpha099 = EpsilonDecreasing(alpha = 0.99).runBandit(drift = drift)
-    alpha0999 = EpsilonDecreasing(alpha = 0.999).runBandit(drift = drift)
-    alpha1 = EpsilonDecreasing(alpha = 1.0).runBandit(drift = drift)
-    
-
-    Plot.plotRewards(["alpha = 0.9", "alpha = 0.99", "alpha= 0.999", "alpha = 1.0"],
-                     [alpha09, alpha099, alpha0999, alpha1])
-                     
-plotEpsilonDecreasing()
+:load: "../code/book/multi_armed_bandit_plot_epsilon_decreasing.py"
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
@@ -304,46 +168,13 @@ As with the epsilon-decreasing strategy, we can add a decay parameter $\alpha$ t
 The following implementation of the softmax strategy uses ```random()``` to generate a random number between 0 and 1, and divides this space 0-1 among the set of actions based on the value of $e^{Q(a)/\tau}$:
 
 ```{code-cell} ipython3
-class Softmax(MultiArmedBandit):
-    
-    def __init__(self, tau = 1.0):
-        self.tau = tau
-
-    def reset(self):
-        None
-    
-    def select(self, actions, qValues):
-
-        # calculate the denominator for the softmax strategy
-        sum = 0.0
-        for action in actions:
-            sum += math.exp(qValues[action] / self.tau)
-
-        r = random.random()
-        cumulativeProbability = 0.0
-        result = None
-        for action in actions:
-            probability = math.exp(qValues[action] / self.tau) / sum
-            if r >= cumulativeProbability and r <= cumulativeProbability + probability:
-                result = action
-            cumulativeProbability += probability
-
-        return result
+:load: "../code/multi_armed_bandit/softmax.py"
 ```
 
 As before, we plot the average reward at each step of our simulation, this time varying values of tau:
 
 ```{code-cell} ipython3
-def plotSoftmax(drift = False):
-    tau10 = Softmax(tau = 1.0).runBandit(drift = drift)
-    tau11 = Softmax(tau = 1.1).runBandit(drift = drift)
-    tau15 = Softmax(tau = 1.5).runBandit(drift = drift)
-    tau20 = Softmax(tau = 2.0).runBandit(drift = drift)
-
-    Plot.plotRewards(["tau = 1.0", "tau = 1.1", "tau = 1.5", "tau = 2.0"],
-                     [tau10, tau11, tau15, tau20])
-                    
-plotSoftmax()
+:load: "../code/book/multi_armed_bandit_plot_softmax.py"
 ```
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
@@ -355,7 +186,7 @@ So, what happens if we change the value of our underlying probabilities? In the 
 If we plot the performance of the softmax algorithm with this, the results are as follows:
 
 ```{code-cell} ipython3
-plotSoftmax(drift = True)
+plot_softmax(drift=True)
 ```
 As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
 
@@ -386,38 +217,7 @@ If by chance the above expression does NOT hold for the optimal action $a$, then
 #### Implementation
 
 ```{code-cell} ipython3 
-class UpperConfidenceBounds(MultiArmedBandit):
-
-    def __init__(self):
-        self.total = 0  #number of times a choice has been made
-        self.N = dict() #number of times each action has been chosen
-
-    def select(self, actions, qValues):
-
-        # First execute each action one time
-        for action in actions:
-            if not action in self.N.keys():
-                self.N[action] = 1
-                self.total += 1
-                return action
-
-        maxActions = []
-        maxValue = float('-inf')
-        for action in actions:
-            N = self.N[action]
-            value = qValues[action] + math.sqrt((2 * math.log(self.total)) / N)
-            if value > maxValue:
-                maxActions = [action]
-                maxValue = value
-            elif value == maxValue:
-                maxActions += [action]
-                    
-        # if there are multiple actions with the highest value
-        # choose one randomly
-        result = random.choice(maxActions)
-        self.N[result] = self.N[result] + 1
-        self.total += 1
-        return result
+:load: "../code/multi_armed_bandit/ucb.py"
 ```
 
 Because UCB does not have parameters, there is no exploration to be done, however, in the next section we compare UCB with the other three strategies.
@@ -425,25 +225,15 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 ### Comparison
 
 ```{code-cell} ipython3
-def plotComparison(drift = False):
-    epsilonGreedy = EpsilonGreedy(epsilon = 0.1).runBandit(drift = drift)
-    epsilonDecreasing = EpsilonDecreasing(alpha = 0.99).runBandit(drift = drift)
-    softmax = Softmax(tau = 1.0).runBandit(drift = drift)
-    ucb = UpperConfidenceBounds().runBandit(drift = drift)
-
-    Plot.plotRewards(["Epsilon greedy (epsilon = 0.1)", "Epsilon decreasing (alpha = 0.99)", 
-                      "Softmax (tau = 1.0)", "UCB1"],
-                     [epsilonGreedy, epsilonDecreasing, softmax, ucb])
-
-
-plotComparison()
+:load: "../code/book/multi_armed_bandit_compare.py"
 ```
+
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.
 
 From this, we may answer the question why softmax is considered a good strategy at all: it clearly does not perform well compared to the others. However, as noted already, softmax is able to adjust to drift more quickly, as is demonstrated when we suddenly change the probabilities as we did earlier:
 
 ```{code-cell} ipython3
-plotComparison(drift = True)
+plot_comparison(drift=True)
 ```
 
 From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previous good are no longer good, thus encouraging exploration to other actions, but also, those that had poor Q-values but are now good actions would not have been visited as much previously, which also encourages exploration. Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.
