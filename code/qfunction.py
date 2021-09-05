@@ -37,7 +37,7 @@ class QFunction:
         policy = TabularPolicy()
         for state in mdp.get_states():
             # Find the action with maximum Q-value and make this the
-            (_, q_value) = self.get_max_q(state, mdp.get_actions(state))
+            (action, _) = self.get_max_q(state, mdp.get_actions(state))
             policy.update(state, action)
 
         return policy
