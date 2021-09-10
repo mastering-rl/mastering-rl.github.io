@@ -1,9 +1,9 @@
-from multi_armed_bandit_run_bandit import run_bandit
 from plot import Plot
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
 from multi_armed_bandit.softmax import Softmax
 from multi_armed_bandit.ucb import UpperConfidenceBounds
+from tests.multi_armed_bandit.run_bandit import run_bandit
 
 
 def plot_comparison(drift=False):

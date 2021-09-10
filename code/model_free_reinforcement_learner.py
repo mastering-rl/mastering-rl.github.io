@@ -16,10 +16,12 @@ class ModelFreeReinforcementLearner:
                 (next_state, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.get_actions(next_state)
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
-                new_q_value = self.update(
-                    state, action, next_state, next_action, reward
+                q_value = self.qfunction.get_q_value(state, action)
+                next_state_value = self.state_value(next_state, next_action)
+                delta = self.alpha * (
+                    reward + self.mdp.discount_factor * next_state_value - q_value
                 )
-                self.qfunction.update(state, action, new_q_value)
+                self.qfunction.update(state, action, delta)
                 state = next_state
                 action = next_action
 

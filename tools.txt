@@ -21,3 +21,8 @@ Tikz magic (not currently used):
 Convert PDF to PNG:
 - pdftoppm -png input.pdf output  (don't add extension -- auto-generated)
 - convert input.pdf -quality 300 -colorspace RGB output.png  (blurry result) 
+
+Code formatting:
+- camel-snake-pep8 for converting camel variables to snake to be consistent with pep8
+- black for code formatting for pep8
+- pycodestyle for checking formating

@@ -15,6 +15,7 @@
 :load: <path>
 ```
 
+- implement basic freeway simulator using gridworld extension
 
 Part I: Introduction
  - Overview

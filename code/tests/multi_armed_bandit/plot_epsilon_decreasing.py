@@ -1,6 +1,6 @@
-from multi_armed_bandit_run_bandit import run_bandit
 from plot import Plot
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
+from tests.multi_armed_bandit.run_bandit import run_bandit
 
 
 def plot_epsilon_decreasing(drift=False):

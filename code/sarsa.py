@@ -1,14 +1,15 @@
 from model_free_reinforcement_learner import ModelFreeReinforcementLearner
 
+
 class SARSA(ModelFreeReinforcementLearner):
-    def update(self, state, action, next_state, next_action, reward):
-        q_value = self.qfunction.get_q_value(state, action)
-        q_value_next = self.qfunction.get_q_value(next_state, next_action)
-        delta = self.alpha * (reward + self.mdp.discount_factor * q_value_next - q_value)
-        return delta
+
+    def state_value(self, state, action):
+        return self.qfunction.get_q_value(state, action)
 
 if __name__ == "__main__":
-    from gridworld import *
+    from gridworld import CliffWorld
+    from gridworld import GridWorld
+    from qlearning import QLearning
     from qtable import QTable
     from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
@@ -20,3 +21,28 @@ if __name__ == "__main__":
     print(mdp.policy_to_string(policy))
     sarsa_rewards = mdp.get_rewards()
     print(sarsa_rewards)
+
+    print("==========\nQ-learning: Cliffworld\n==========")
+
+    mdp = CliffWorld()
+    qfunction = QTable()
+    QLearning(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+    # Execute policy (using epsilon greedy with epsilon = 0.0
+    QLearning(mdp, EpsilonGreedy(epsilon=0.0), qfunction=qfunction).execute(
+        episodes=2000
+    )
+    q_learning_rewards = mdp.get_rewards()
+
+    print("=====\nSARSA: Cliffworld\n=====")
+    mdp = CliffWorld()
+    qfunction = QTable()
+    SARSA(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+    # Execute policy (using epsilon greedy with epsilon = 0.0
+    SARSA(mdp, EpsilonGreedy(epsilon=0.0), qfunction=qfunction).execute(episodes=2000)
+    sarsa_rewards = mdp.get_rewards()
+
+    from plot import Plot
+
+    Plot.plot_rewards_per_episode(
+        ["Q-learning", "SARSA"], [q_learning_rewards, sarsa_rewards]
+    )

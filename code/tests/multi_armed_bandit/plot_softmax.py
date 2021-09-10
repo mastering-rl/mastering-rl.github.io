@@ -1,6 +1,6 @@
-from multi_armed_bandit_run_bandit import run_bandit
 from plot import Plot
 from multi_armed_bandit.softmax import Softmax
+from tests.multi_armed_bandit.run_bandit import run_bandit
 
 
 def plot_softmax(drift=False):
