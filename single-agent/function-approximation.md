@@ -268,7 +268,7 @@ This is because our linear approximation learns one weight for going right, left
 
 The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward. 
 
-We can solve this in several ways. One is to encode specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. A slightly better solution is to add two new features that true 1 if and only if we are in the same column (or row respectively) as the goal:
+We can solve this by improving our feature engineering. One way is to encode specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. A slightly better solution (because it is more general) is to add two new features that true 1 if and only if we are in the same column (or row respectively) as the goal:
 
 ```{code-cell} ipython3
 :load: '../code/gridworld_better_feature_extractor.py'
