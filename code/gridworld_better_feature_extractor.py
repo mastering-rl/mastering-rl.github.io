@@ -2,13 +2,13 @@ from feature_extractor import FeatureExtractor
 from gridworld import GridWorld
 
 
-class GridWorldFeatureExtractor(FeatureExtractor):
+class GridWorldBetterFeatureExtractor(FeatureExtractor):
 
     def __init__(self, mdp):
         self.mdp = mdp
 
     def num_features(self):
-        return 3
+        return 5
 
     def num_actions(self):
         return len(self.mdp.get_actions())
@@ -27,6 +27,9 @@ class GridWorldFeatureExtractor(FeatureExtractor):
                     (goal[x] - state[x] + goal[y] - state[y] + e)
                     / (goal[x] + goal[y] + e)
                 ]
+                # Features to determine if we are in goal row or column
+                feature_values += [1 if goal[x] == state[x] else 0]
+                feature_values += [1 if goal[y] == state[y] else 0]
             else:
                 for _ in range(0, self.num_features()):
                     feature_values += [0.0]

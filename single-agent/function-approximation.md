@@ -71,7 +71,6 @@ Instead of recording the position of both kangaroos and whether there is a car i
 - how far away the *closest* car is in the row above and below each kangaroo (four features --- two for each kangaroo).
 
 This requires just six features. 
-
 :::
 
 ### Linear Q-function Representation 
@@ -149,7 +148,8 @@ f_{2,a_3}(s,a) \\
 \end{pmatrix}~~\ldots
 $$
 
-### Linear Q-function Computation 
+(sec:single-agent:q-function-approximation:linear-q-values)=
+### Q-values from linear Q-functions
 Give a feature vector $f$ and a weight vector $w$, the Q-value of a state is a simple linear combination of features and weights:
 
 $$
@@ -172,21 +172,19 @@ $$
 $$
 :::
 
+(sec:single-agent:q-function-approximation:linear-update)=
 ### Linear Q-function Update 
 
 To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
 
-For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be `good' weights.
+For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be "good" weights.
 
-For update, we now need to update the weights instead of the actions. For Q-learning, the update rule is now:
+For update, we now need to update the weights instead of the Q-table values. The update rule is now:
 
-$$w^a_i \leftarrow w^a_i + \alpha [r + \gamma max_a' Q(s',a') - Q(s,a)]\ f_i(s,a)$$
+$\quad\quad$ For each state-action feature $i$\
+$\quad\quad\quad\quad w^a_i \leftarrow w^a_i + \alpha \cdot \delta \cdot \ f_i(s,a)$
 
-For SARSA:
-
-$$w^a_i \leftarrow w^a_i + \alpha [r + \gamma Q(s',a') - Q(s,a)]\ f_i(s,a)$$
-
-Note: we need to update for each feature $i$ for the last executed action $a$.
+where $\delta$ depends on which algorithm we are using; e.g. Q-learning, SARSA; and $n$ is the number of state-action features.
 
 As this is linear, it is therefore convex, so the weights will converge.
 
@@ -210,12 +208,96 @@ $$
 
 From this, we now can get an estimate of $Q(s,Up)$ from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).
 ```
+### Implementation
+
+To implement linear function approximation, we implement a new class that inherits from `QFunction` called `LinearQFunction`:
+
+```{code-cell} ipython3
+:load: '../code/linear_qfunction.py'
+```
+
+A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
+
+To use on an example, we need a feature extractor. The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here: 
+
+1. The distance from the goal on the X-axis.
+2. The distance from the goal on the Y-axis.
+3. The total distance from the goal as a Manhattan distance.
+
+As noted above, normalising features is important to ensure that they are in the same magnitude. So, given the current position $(x,y)$ as the state, we extract the values of the state features as follows:
+
+1. $(x(s) + \epsilon) / (x(g) + \epsilon)$
+2. $(y(s) + \epsilon) / (y(g) + \epsilon)$
+1. $(x(g) - x(s) + y(g) - y(s) + \epsilon) / (x(g) + y(g) + \epsilon)$
+
+where $x(s)$ and $y(s)$ return the x and y coordinates of the agent respectively, and $g$ is the goal state. These expressions normalise the feature values to the range $[0,1]$ by dividing by the goal state. The $\epsilon$ is some small value such as $0.01$ to ensure two things: (1) that we do not divide by 0 if the goal is at a coordinator where x or y are 0; and (2) that the state (0,0) has a non-zero value, otherwise there will be no Q-value for it.
+
+Then, to extract state-action features, we need to define these as $f(s,a)$ is defined from $f(s)$ above.
+
+We can implement these in a feature extractor class:
+
+```{code-cell} ipython3
+:load: '../code/feature_extractor.py'
+```
+
+```{code-cell} ipython3
+:load: '../code/gridworld_feature_extractor.py'
+```
+
+Now, we just simply pass this as a feature extractor to our implementation of `LinearQFunction`, and use this as the Q-function instead of a Q-table:
+
+```{code-cell} ipython3
+from gridworld import GridWorld
+from qlearning import QLearning
+from linear_qfunction import LinearQFunction
+from gridworld_feature_extractor import GridWorldFeatureExtractor
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+mdp = GridWorld()
+features = GridWorldFeatureExtractor(mdp)
+qfunction = LinearQFunction(features)
+QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+policy = qfunction.extract_policy(mdp)
+print(mdp.q_function_to_string(qfunction))
+print(mdp.policy_to_string(policy))
+```
+
+We can see that this gives ok Q-values and an ok policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
+
+This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent tranisitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including the state $(2,1)$. As such, we learn that going right at (2,1) is good when it is not.
+
+The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward. 
+
+We can solve this in several ways. One is to encode specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. A slightly better solution is to add two new features that true 1 if and only if we are in the same column (or row respectively) as the goal:
+
+```{code-cell} ipython3
+:load: '../code/gridworld_better_feature_extractor.py'
+```
+
+If we now run this on the GridWorld, we get better results:
+
+```{code-cell} ipython3
+from gridworld_better_feature_extractor import GridWorldBetterFeatureExtractor
+
+mdp = GridWorld()
+features = GridWorldBetterFeatureExtractor(mdp)
+qfunction = LinearQFunction(features)
+QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+policy = qfunction.extract_policy(mdp)
+print(mdp.q_function_to_string(qfunction))
+print(mdp.policy_to_string(policy))
+```
+
+However, this is still not perfect. As we see, the policy recommends going up in state (1,0), which runs straight into the blocked cell. This is the downside of using linear function approximation. While it comes with convergence guarantees, it will not produce optimal policies if the underlying problem is non-linear.
+
+We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
+
 
 ### Challenges and tips
 
 The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.
 
-**Tip:** Note that to be effective, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
+**Tip:** Note that to make analysis and debugging easier,, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
 
 ## Deep Q-learning
 
@@ -233,17 +315,12 @@ A further advantage is that states can be non-structured (or less structured), r
 
 The update rule for deep Q-learning looks similar to that of updating a linear Q-function.
 
-The deep Q-learning  TD update for Q-learning is just:
+The deep reinforcement learning, TD update is:
 
-$$\theta \leftarrow \theta + \alpha[r + \gamma \max_{a'} Q(s',a'; \theta) - Q(s,a ;\theta)]
-\nabla_{\theta} Q(s,a; \theta)$$
+$$\theta \leftarrow \theta + \alpha \cdot \delta \cdot \nabla_{\theta} Q(s,a; \theta)$$
 
 where $\nabla_{\theta} Q(s,a; \theta)$ is the *gradient* of the Q-function. In these notes, we will not cover how to calculate the gradient of the Q-function: there are many excellent text books that cover gradients.
 
-For SARSA, the TD update is:
-
-$$\theta \leftarrow \theta + \alpha[r + \gamma Q(s',a'; \theta) - Q(s,a ;\theta)]
-\nabla_{\theta} Q(s,a; \theta)$$
 
 
 ### Advantages and disadvantages
@@ -274,213 +351,7 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 -   The Q-function is now only an approximation of the real Q-function: states that share feature values will have the same Q-value according to the Q-function, but the actual Q-value according to the (unknown) optimal Q-function may be different.
 
-## Implementation
 
-In this section, we present an implementation of linear Q-function approximation for SARSA and run it on a modified GridWorld problem. For simplicity, we will first demonstrate this on the GridWorld with just one goal state: the one in the top right that returns +1. The -1 will just become a normal cell. We will see later that the original GridWorld problem is not easy to define features for given a linear approximation.
-
-The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here: 
-
-1. The distance from the goal on the X-axis.
-2. The distance from the goal on the Y-axis.
-3. The total distance from the goal as a Manhattan distance.
-
-As noted above, normalising features is important to ensure that they are in the same magnitude. So, given the current position $(x,y)$ as the state, we extract the values of the state features as follows:
-
-1. $1 - ((x(g) - x(s)) / width)$
-2. $1 - ((y(g) - y(s)) / height)$
-3. $1 - ((x(g) - x(s) + y(g) - y(s) / (x(g) + y(g))$
-
-where $x(s)$ and $y(s)$ return the x and y coordinates of the agent respectively, and $g$ is the goal state.
-
-These expressions normalise the feature values to the range $[0,1]$. Subtracting from 1 means that states that are closer to the goal have a higher value, which is intuitively easier to consider, but is technically not necessary.
-
-Then, to extract state-action features, we need to define these as $f(s,a)$ is defined from $f(s)$ above.
-
-We can implement these in a feature extractor class:
-
-```{code-cell} ipython3
-class FeatureExtractor():
-    def extractFeatures(self, state, action): abstract
-    
-class GridWorldFeatureExtractor(FeatureExtractor):
-    def __init__(self, mdp):
-        self.mdp = mdp
-
-    def initialiseWeights(self):
-        weights = []
-        for action in self.mdp.getActions():
-            weights += [0.0, 0.0, 0.0]
-        return weights
-        
-    def extractFeatures(self, state, action):
-        goal = (self.mdp.width, self.mdp.height)
-        x = 0
-        y = 1
-        featureValues = []
-        for a in self.mdp.getActions():
-            if a == action and state != GridWorld.TERMINAL:
-                featureValues += [1 - ((goal[x] - state[x]) / goal[x])]
-                featureValues += [1 - ((goal[y] - state[y]) / goal[y])]
-                featureValues += [1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))]
-            else:
-                featureValues += [0.0, 0.0, 0.0]
-        return featureValues
-```
-
-Now, we implement our learning using this. Recall that the superclass ``ModelFreeReinforcementLearner`` is used for all of our model-free techniques; unhide to see the code for this below.
-
-```{code-cell} ipython3
----
-tags: [hide-cell]
----
-class ModelFreeReinforcementLearner():
-
-    # how many episodes to take an average for determining convergence
-    length = 30
-
-    def __init__(self, mdp, bandit, alpha = 0.1, convergenceEpsilon = float('-inf'), initQValues = None):
-        self.mdp = mdp
-        self.bandit = bandit
-        self.alpha = alpha
-        self.convergenceEpsilon = convergenceEpsilon
-        self.initQValues = initQValues
-
-        self.latestRewards = []
-        self.previousAverage = 0.0
-
-    def execute(self, episodes = 2000): abstract
-
-    def getMaxQ(self, qValues, state):
-        argmaxQ = None
-        maxQ = float('-inf')
-        for action in self.mdp.getActions(state):
-            value = qValues[(state, action)]
-            if maxQ < value:
-                argMaxQ = action
-                maxQ = value
-        return (argmaxQ, maxQ)
-
-    def initialiseQFunction(self):
-        if self.initQValues == None:
-            qValues = dict()
-            for state in self.mdp.getStates():
-                for action in self.mdp.getActions():
-                    qValues.update({(state, action): 0.0})
-            return qValues
-        else:
-            return self.initQValues
-
-    '''
-        Return the Q-values only for this state
-    '''
-    def getQValues(self, state, qValues):
-        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
-```
-
-Our SARSA implementation with a linear Q-function is similar to our first SARSA algorithm, except that we update and retrieve Q-values from the linear function instead of a Q-table:
-
-```{code-cell} ipython3
-class LinearSARSA(ModelFreeReinforcementLearner):
-    def __init__(self, mdp, bandit, featureExtractor, alpha = 0.1, initQValues = None, weights = None):
-        super().__init__(mdp, bandit, alpha = alpha, initQValues = initQValues)
-        self.featureExtractor = featureExtractor
-        self.weights = weights
-        
-    def execute(self, episodes = 100):
-        self.initialiseQFunction()
-
-        for i in range(episodes):
-            state = self.mdp.getInitialState()
-            actions = self.mdp.getActions(state)
-            action = self.bandit.select(actions, self.getQValues(actions, state))
-
-            while not self.mdp.isTerminal(state):
-                (nextState, reward) = self.mdp.execute(state, action)
-                actions = self.mdp.getActions(nextState)
-                nextAction = self.bandit.select(actions, self.getQValues(actions, nextState))
-                newValue = self.update(state, action, nextState, nextAction, reward)
-                state = nextState
-                action = nextAction
-
-    '''
-        Return the Q-value for a state-action pair
-    '''
-    def getQValue(self, state, action):
-        qValue = 0.0
-        featureValues = self.featureExtractor.extractFeatures(state, action)
-        for i in range(len(featureValues)):
-            qValue += featureValues[i] * self.weights[i]
-        return qValue
-    
-    def update(self, state, action, nextState, nextAction, reward):
-        qValue = self.getQValue(state, action)
-        qValueNext = self.getQValue(nextState, nextAction)
-        delta = self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
-
-        # update the weights
-        featureValues = self.featureExtractor.extractFeatures(state, action)
-        for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] + (delta * featureValues[i])
-        
-    def initialiseQFunction(self):
-        if self.weights == None:
-            self.weights = self.featureExtractor.initialiseWeights()
-
-    '''
-        Return the Q-values only for this state
-    '''
-    def getQValues(self, actions, state):
-        qValues = dict()
-        for action in actions:
-            qValues[action] = self.getQValue(state, action)
-        return qValues
-
-    def getQTable(self):
-        qValues = dict()
-        for state in self.mdp.getStates():
-            for action in self.mdp.getActions(state):
-                qValues[(state, action)] = self.getQValue(state, action)
-        return qValues
-```
-
-Let's see how this goes on Gridworld. First, we extract the Q-values:
-
-```{code-cell} ipython3
-from gridworld import *
-from multi_armed_bandits import *
-mdp = GridWorld(discountFactor = 0.9, noise=0.1, goals=[((3,2),1)])
-featureExtractor = GridWorldFeatureExtractor(mdp)
-linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
-linearSarsa.execute(episodes = 100)
-qFunction = linearSarsa.getQTable()
-print(mdp.qFunctionToString(qFunction))
-```
-
-We can see that this gives quite good Q-values, but these are not optimal (compare them to the Q-values for Q-table-based learning).
-
-Despite this, it still extracts a good policy, albeit not one that is necessarily optimal:
-
-```{code-cell} ipython3
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.policyToString(policy))
-```
-
-The choice of features is key to solving the problem. Above, we have define features that assume there is just the goal in the top-right corner. However, if we return to the original GridWorld problem that has another terminating state with reward -1, our features no longer work particularly well:
-
-```{code-cell} ipython3
-from gridworld import *
-from multi_armed_bandits import *
-mdp = GridWorld()
-featureExtractor = GridWorldFeatureExtractor(mdp)
-linearSarsa = LinearSARSA(mdp, EpsilonGreedy(), featureExtractor)
-linearSarsa.execute(episodes = 100)
-qFunction = linearSarsa.getQTable()
-print(mdp.qFunctionToString(qFunction))
-```
-
-This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent tranisitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including $(2,1)$.
-
-We could solve this by encoding specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. It is fine to encode domain knowledge, but we want to avoid a situation where we have to encode enough knowledge that we may as well encode the entire solution by hand..
 
 ## Summary
 

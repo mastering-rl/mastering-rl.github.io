@@ -111,11 +111,12 @@ Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
 Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Repeat (for each step in episode $e)$\
-$\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
-$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha\cdot [r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)]$\
+$\quad\quad$ Repeat (for each step in episode $e$)\
+$\quad\quad\quad\quad$Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad$Execute action $a$ in state $s$\
+$\quad\quad\quad\quad$Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)$\
+$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
 $\quad\quad\quad\quad s \leftarrow s'$\
 $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 :::
@@ -124,13 +125,14 @@ $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 
 Updating the Q-function is where the learning happens:
 
+$$\delta \leftarrow [\underbrace{r}_{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \underbrace{\max_{a'} Q(s',a')}_{\text{TD target}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
+
 $$Q(s,a) \leftarrow 
-\underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot
-[\underbrace{r}_{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \underbrace{\max_{a'} Q(s',a')}_{\text{estimate of optimal future value}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
+\underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot \underbrace{\delta}_{\text{delta value}}$$
 
-We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information. The new information is weighted by a parameter $alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
+We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information.  The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
 
-The estimate from the new observations is given by $r + \gamma \cdot \max_{a'} Q(s',a')$, where $r$ is the reward that was received by executing action $a$ in state $s$, and $\gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* value. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The part of the equation inside the square brackets is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference value. The last part in the square brackets where we subtract the old value of $Q(s,a)$ ensures that the old value is weighted $1 - \alpha$.
+The estimate from the new observations is given by $\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')$, where $\delta$ (pronounced "delta") is the difference between the previous estimate and the most recent observation, $r$ is the reward that was received by executing action $a$ in state $s$, and $\gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* target. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The definition of $\delta$ is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference target. The last part where we subtract the old value of $Q(s,a)$ ensures that the old value is weighted $1 - \alpha$.
 
 Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
 
@@ -270,7 +272,8 @@ $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
 $\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha\cdot [r + \gamma \cdot Q(s',a') - Q(s,a)]$\
+$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)$\
+$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
 $\quad\quad\quad\quad s \leftarrow s'$\
 $\quad\quad\quad\quad a \leftarrow a'$\
 $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
