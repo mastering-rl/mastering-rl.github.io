@@ -169,6 +169,12 @@ data = [[(0,0), 0.53, 0.36, 0.36, 0.21],
 print (tabulate(data, headers))
 ```
 
+The following is an implementation of a Q-table using a Python dictionary:
+
+```{code-cell} ipython3
+:load: "../code/qtable.py"
+```    
+
 :::{note} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
 
@@ -190,7 +196,7 @@ Using Q-tables to represent Q-functions, Q-learning will converge to the optimal
 
 We iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
 
-Once we have such a Q-function, we stop exploring and just exploit. We use *policy extraction*, which is exactly as we do for value iteration:
+Once we have such a Q-function, we stop exploring and just exploit. We use [policy extraction](sec:mdps:policy-extraction), exactly as we do for value iteration, except we extract from the Q-function instead of the value function:
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
@@ -198,88 +204,33 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 ## Implementation
 
-To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains some simple helper functions. You can view this via the "Click to show" on the right:
+To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains most of the code we need:
 
 ```{code-cell} ipython3
----
-tags: [hide-cell]
----
-class ModelFreeReinforcementLearner():
-
-    def __init__(self, mdp, bandit, alpha = 0.2, initQValues = None):
-        self.mdp = mdp
-        self.bandit = bandit
-        self.alpha = alpha
-        self.initQValues = initQValues
-
-    def execute(self, episodes = 2000): abstract
-
-    def getMaxQ(self, qValues, state):
-        argmaxQ = None
-        maxQ = float('-inf')
-        for action in self.mdp.getActions(state):
-            value = qValues[(state, action)]
-            if maxQ < value:
-                argMaxQ = action
-                maxQ = value
-        return (argmaxQ, maxQ)
-
-    def initialiseQFunction(self):
-        if self.initQValues == None:
-            qValues = dict()
-            for state in self.mdp.getStates():
-                for action in self.mdp.getActions():
-                    qValues.update({(state, action): 0.0})
-            return qValues
-        else:
-            return self.initQValues
-            
-    '''
-        Return the Q-values only for this state
-    '''
-    def getQValues(self, state, qValues):
-        return {k[1]:v for (k,v) in qValues.items() if k[0] == state}   
-```
+:load: "../code/model_free_reinforcement_learner.py"
+```    
 
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
-from multi_armed_bandits import EpsilonGreedy
+:load: "../code/qlearning.py"
+```  
 
-class QLearning(ModelFreeReinforcementLearner):
-    def execute(self, episodes = 100):
-        qValues = self.initialiseQFunction()
+We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$,, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
 
-        for i in range(episodes):
-            state = self.mdp.getInitialState()
-
-            while not self.mdp.isTerminal(state):
-                actions = self.mdp.getActions(state)
-                action = self.bandit.select(actions, self.getQValues(state, qValues))
-                (nextState, reward) = self.mdp.execute(state, action)
-                newValue = self.update(qValues, state, action, nextState, reward)
-                qValues[(state, action)] = newValue
-                state = nextState
-
-        return qValues
-
-    def update(self, qValues, state, action, nextState, reward): 
-        (_, maxQValue) = self.getMaxQ(qValues, nextState)
-        qValue = qValues[(state, action)]
-        return qValue + self.alpha * (reward + self.mdp.discountFactor * maxQValue - qValue)
-```
-
-First, we need a [multi-armed bandit](sec:multi-armed-bandits) strategy to help us explore. In this case, we use epsilon greedy, but it could be any bandit strategy.
-
-The ```execute``` method then implements the Q-learning algorithm. We use a simple Python dictionary for a Q-table, where the keys are state-action pairs, such as: ```((0,1), ◄)```.
-
-Using this, we execute 1000 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
+Using this implementation, we execute 1000 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
 
 ```{code-cell} ipython3
-from gridworld import *
+from gridworld import GridWorld
+from qtable import QTable
+from qlearning import QLearning
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+
 mdp = GridWorld()
-qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 1000)
-print(mdp.qFunctionToString(qFunction))
+qfunction = QTable()
+QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+print(mdp.q_function_to_string(qfunction))
 ```
 
 If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
@@ -287,8 +238,8 @@ If we compare this to the value function for the [value iteration implementation
 Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:
 
 ```{code-cell} ipython3
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.policyToString(policy))
+policy = qfunction.extract_policy(mdp)
+print(mdp.policy_to_string(policy))
 ```
 
 (sec:model-free:sarsa)=
@@ -356,49 +307,34 @@ $$
 
 ## Implementation
 
-As with the Q-learning agent, we inherit from the ```ModelFreeReinforcementLearner``` class to implement SARSA:
+As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
-class SARSA(ModelFreeReinforcementLearner):
-    def execute(self, episodes = 100):
-        qValues = self.initialiseQFunction()
-
-        for i in range(episodes):
-            state = self.mdp.getInitialState()
-            actions = self.mdp.getActions(state)
-            action = self.bandit.select(actions, self.getQValues(state, qValues))
-            
-            while not self.mdp.isTerminal(state):
-                (nextState, reward) = self.mdp.execute(state, action)
-                actions = self.mdp.getActions(nextState)
-                nextAction = self.bandit.select(actions, self.getQValues(nextState, qValues))
-                newValue = self.update(qValues, state, action, nextState, nextAction, reward)
-                qValues[(state, action)] = newValue
-                state = nextState
-                action = nextAction
-
-        return qValues
-    
-    def update(self, qValues, state, action, nextState, nextAction, reward): 
-        qValue = qValues[(state, action)]
-        qValueNext = qValues[(nextState, nextAction)]
-        return qValue + self.alpha * (reward + self.mdp.discountFactor * qValueNext - qValue)
+:load: '../code/sarsa.py'
 ```
 
-Note the ordering of the action selection and execution is different.
+So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a \in A} Q(s,a)$.
 
 As before, we can execute SARSA for 1000 episodes:
 
 ```{code-cell} ipython3
-qFunction = SARSA(mdp, EpsilonGreedy()).execute(episodes = 1000)
-print(mdp.qFunctionToString(qFunction))
+from gridworld import GridWorld
+from qtable import QTable
+from sarsa import SARSA
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+
+mdp = GridWorld()
+qfunction = QTable()
+SARSA(mdp, EpsilonGreedy(), qfunction).execute()
+print(mdp.q_function_to_string(qfunction))
 ```
 
-Again, we get an approximate Q-function. In this particular run, the policy is no optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
+Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
 
 ```{code-cell} ipython3
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.policyToString(policy))
+policy = qfunction.extract_policy(mdp)
+print(mdp.policy_to_string(policy))
 ```
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
@@ -408,24 +344,25 @@ This is (probably!) not because the SARSA implementation, but is because of the 
 Consider the example below called "Cliff World". The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
 
 ```{code-cell} ipython3
+from gridworld import CliffWorld
+
 mdp = CliffWorld()
 print(mdp.visualise())
 ```
 
-Let's try training this with Q-learning for 500 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
+Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
 
 ```{code-cell} ipython3
 mdp = CliffWorld()
-qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-qLearningRewards = mdp.getRewards()
-print(mdp.qFunctionToString(qFunction))
+qfunction = QTable()
+QLearning(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 From this, we extract the following policy:
 
 ```{code-cell} ipython3
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.policyToString(policy))
+policy = qfunction.extract_policy(mdp)
+print(mdp.policy_to_string(policy))
 ```
 
 We can see that the policy will take from initially up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
@@ -434,16 +371,15 @@ Now, let's try training the same problem with SARSA:
 
 ```{code-cell} ipython3
 mdp = CliffWorld()
-qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-sarsaRewards = mdp.getRewards()
-print(mdp.qFunctionToString(qFunction))
+qfunction = QTable()
+SARSA(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 Extracting the policy, we get:
 
 ```{code-cell} ipython3
-policy = mdp.extractPolicyFromQFunction(qFunction)
-print(mdp.policyToString(policy))
+policy = qfunction.extract_policy(mdp)
+print(mdp.policy_to_string(policy))
 ```
 
 We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*
@@ -457,24 +393,7 @@ However, *during* learning, the agent will still fall off the cliff sometimes wh
 Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode::
 
 ```{code-cell} ipython3
-# Train using Q-learning
-mdp = CliffWorld()
-qFunction = QLearning(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-
-# Execute using the policy
-QLearning(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
-qLearningRewards = mdp.getRewards()
-                    
-#train using SARSA
-mdp = CliffWorld()
-qFunction = SARSA(mdp, EpsilonGreedy(epsilon = 0.2)).execute(episodes = 2000)
-
-# Execute using the policy
-SARSA(mdp, EpsilonGreedy(epsilon = 0.0), initQValues = qFunction).execute(episodes = 2000)
-sarsaRewards = mdp.getRewards()
-
-from plot import *
-Plot.plotRewardsPerEpisode(["Q-learning", "SARSA"], [qLearningRewards, sarsaRewards])
+:load: '../code/tests/qlearning_sarsa_cliffworld.py'
 ```
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,

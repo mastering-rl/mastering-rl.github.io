@@ -1,6 +1,6 @@
-from plot import Plot
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from tests.multi_armed_bandit.run_bandit import run_bandit
+from tests.multi_armed_bandit_tests.run_bandit import run_bandit
+from tests.plot import Plot
 
 
 def plot_epsilon_greedy(drift=False):

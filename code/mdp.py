@@ -73,3 +73,13 @@ class MDP:
             + " from "
             + str(state)
         )
+
+    """ Execute a policy on this mdp for a number of episodes """
+
+    def execute_policy(self, policy, episodes=100):
+        for _ in range(episodes):
+            state = self.get_initial_state()
+            while not self.is_terminal(state):
+                action = policy.select_action(state)
+                (next_state, reward) = self.execute(state, action)
+                state = next_state

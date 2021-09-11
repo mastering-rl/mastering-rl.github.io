@@ -25,4 +25,4 @@ Convert PDF to PNG:
 Code formatting:
 - camel-snake-pep8 for converting camel variables to snake to be consistent with pep8
 - black for code formatting for pep8
-- pycodestyle for checking formating
+- pylint for code linting
