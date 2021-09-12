@@ -4,6 +4,8 @@ from tabular_value_function import TabularValueFunction
 
 
 mdp = GridWorld()
+mdp.visualise_image()
+
 
 for iterations in [1, 2, 3, 4, 5, 10, 100]:
     values = TabularValueFunction()
@@ -18,3 +20,4 @@ mdp.visualise_value_function(values, title="100 iterations")
 policy = values.extract_policy(mdp)
 print("Policy after 100 iterations")
 print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy, "")

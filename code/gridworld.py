@@ -1,4 +1,5 @@
 from collections import defaultdict
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from mdp import *
@@ -425,30 +426,51 @@ class GridWorld(MDP):
 
         return result
 
-    """ visualise the gridworld problem as a matplotlib image """
 
-    def visualise_image(self, tile_size=32, agent_position=None, title=""):
-        width_px = self.width * tile_size
-        height_px = self.height * tile_size
-        current_position = (
-            self.get_initial_state() if agent_position is None else agent_position
-        )
-        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
+    """ Initialise a gridworld grid """
+    def initialise_grid(self):
+        fig = plt.figure(figsize=(self.width*1.5, self.height*1.5))
+        ax = fig.add_subplot(1, 1, 1)
+
+        # Initialise the map to all white
+        img = [[COLOURS['white'] for _ in range(self.width)] for _ in range(self.height)]
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
                 if (x, y) in self.goal_states:
-                    self.render_tile(x, y, tile_size, img, "goal")
+                    plt.text(
+                        x,
+                        y,
+                        f"{self.get_goal_states()[(x, y)]:+0.2f}",
+                        fontsize="x-large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
                 elif (x, y) in self.blocked_states:
-                    self.render_tile(x, y, tile_size, img, "blocked")
-                elif (x, y) == current_position:
-                    self.render_tile(x, y, tile_size, img, "agent")
-                else:
-                    self.render_tile(x, y, tile_size, img, "empty")
+                    img[y][x] = COLOURS['grey']
+                    
+        ax.xaxis.set_ticklabels([])  # clear x tick labels
+        ax.axes.yaxis.set_ticklabels([])  # clear y tick labels
+        ax.tick_params(which='both', top=False, left=False, right=False, bottom=False)
+        ax.set_xticks([w - 0.5 for w in range(0, self.width, 1)])
+        ax.set_yticks([h - 0.5 for h in range(0, self.height, 1)])
+        ax.grid(color='lightgrey')
+        return plt, ax, img
+        
+    """ visualise the gridworld problem as a matplotlib image """
 
-        plt.imshow(img, origin="lower", interpolation="bilinear")
-        plt.axis("off")
+    def visualise_image(self, agent_position=None, title=""):
+        fig, ax, img = self.initialise_grid()
+        current_position = (
+            self.get_initial_state() if agent_position is None else agent_position
+        )
+        # Render the grid
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                if (x, y) == current_position:
+                    ax.scatter(x, y, s=2000, marker='o', edgecolors='none')
+        plt.imshow(img, origin="lower")
         plt.title(f"Grid World {title}")
         plt.show()
 
@@ -486,21 +508,40 @@ class GridWorld(MDP):
                             radius=tile_size / 4,
                         )
                     elif tile_type == "empty":
-                        img[i][j] = [0, 0, 0]
+                        img[i][j] = [255, 255, 255]
                     else:
                         raise ValueError("Invalid tile type")
+
+    """ Visualise the value function """
+
+    def visualise_value_function(self, value_function, title=""):
+        fig, ax, img = self.initialise_grid()
+        
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
+                    plt.text(
+                        x,
+                        y,
+                        f"{value_function.get_value((x, y)):+0.2f}",
+                        fontsize="x-large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+        plt.imshow(img, origin="lower")
+        plt.title(f"Value Function {title}")
+        plt.show()
 
     """ Visualise the value function using a heat-map where green is high value and
     red is low value
     """
 
-    def visualise_value_function(self, value_function, title=""):
+    def visualise_value_function_as_heatmap(self, value_function, title=""):
         values = [[0 for _ in range(self.width)] for _ in range(self.height)]
-        plt.imshow(values, origin="lower", cmap=make_red_white_green_cmap())
+        fig, ax = self.initialise_grid()
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) in self.blocked_states:
-                    values[y][x] = 0
                     plt.text(
                         x,
                         y,
@@ -518,7 +559,6 @@ class GridWorld(MDP):
                         verticalalignment="center",
                     )
         plt.imshow(values, origin="lower", cmap=make_red_white_green_cmap())
-        plt.axis("off")
         plt.title(f"Value Function {title}")
         plt.show()
 
@@ -617,40 +657,30 @@ class GridWorld(MDP):
     """ Visualise the policy of the agent with a matplotlib visual """
 
     def visualise_policy(self, policy, title):
-        # make values negative -1 to get a white background with the
-        # 'Greys' cmap matplotlib. Values have no actual meaning in this visualisation.
-        result = [[-1 for _ in range(self.width)] for _ in range(self.height)]
+        # Map from basic unicode to prettier arrows
+        arrow_map = {self.UP:'\u2191',
+                     self.DOWN:'\u2193',
+                     self.LEFT:'\u2190',
+                     self.RIGHT:'\u2192',
+                    }
+
+        fig, ax, img = self.initialise_grid()
         for y in range(self.height):
             for x in range(self.width):
-                if (x, y) in self.blocked_states:
-                    plt.text(
-                        x,
-                        y,
-                        "\u2592",
-                        horizontalalignment="center",
-                        verticalalignment="center",
-                    )
-                else:
-                    action = "T" if policy.selet_action((x, y)) == self.TERMINATE else policy.select_action((x, y))
+                if (x, y) not in self.blocked_states and (x, y) not in self.goal_states:
+                    if policy.select_action((x, y)) != self.TERMINATE:
+                        action = arrow_map[policy.select_action((x, y))]
+                        fontsize = "xx-large"
                     plt.text(
                         x,
                         y,
                         action,
+                        fontsize=fontsize,
                         horizontalalignment="center",
                         verticalalignment="center",
                     )
-        plt.imshow(result, cmap="Greys", origin="lower")
-        ax = plt.gca()
-
-        # set the ticks to get a clear grid lines
-        ax.set_xticks([i for i in range(self.width)])
-        ax.set_yticks([j for j in range(self.height)])
-        ax.set_xticks([i + 0.5 for i in range(self.width)], minor=True)
-        ax.set_yticks([j + 0.5 for j in range(self.height)], minor=True)
-
-        ax.grid(which="minor", color="k", linestyle="-", linewidth=2)
+        plt.imshow(img, origin="lower")
         plt.title(f"Policy: {title}")
-        # plt.axis('off')
         plt.show()
 
     def execute(self, state, action):

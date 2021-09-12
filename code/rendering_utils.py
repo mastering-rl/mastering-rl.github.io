@@ -22,7 +22,7 @@ DOWN = '\u25BC'
 
 '''Draw the grid lines to differentiate discrete states'''
 def draw_grid_lines(i, j, img):
-    img[i][j] = COLOURS['grey']
+    img[i][j] = COLOURS['black']
 
 
 '''Draw a triangle based on size, center, direction and colour'''
@@ -67,11 +67,14 @@ def render_action_probability(tileSize, x, y, action, prob, text_size=6, h_text_
 
 '''render blocked tile as a black and white criss-cross'''
 def render_blocked_tile(i, j, img):
+    img[i][j] = COLOURS['grey']
+    """
+    EDIT
     if i % 2 == 0 or j % 2 == 0:
         img[i][j] = COLOURS['black']
     else:
         img[i][j] = COLOURS['white']
-
+    """
 
 def render_full_blocked_tile(x, y, tile_size, img):
     for i in range(x, x+tile_size):
@@ -98,7 +101,7 @@ def render_agent(i, j, img, center_x, center_y, radius):
     if h_dist ** 2 + v_dist ** 2 <= radius ** 2:
         img[i][j] = COLOURS['yellow']
     else:
-        img[i][j] = COLOURS['black']
+        img[i][j] = COLOURS['white']
 
 
 '''
@@ -107,10 +110,18 @@ Positive values are green, with brighter green representing higher reward.
 Negative values are red, with brighter red representing lower reward. 
 '''
 def render_goal(i, j, img, reward, reward_max=1, reward_min=-1):
+    """
+    EDIT
     if reward > 0:
         img[i][j] = [0, int(255 * reward / reward_max), 0]
     else:
         img[i][j] = [int(255 * reward / reward_min), 0, 0]
+    """
+    img[i][j] = COLOURS['white']
+    tileSize = 32
+    plt.text(x = i* tileSize/2 , y=j* tileSize/2 , s=f'{reward:.2f}', size=12)
+    #plt.text(x=i * tileSize + tileSize // 2 + 8, y=j * tileSize + tileSize // 2 + 8,
+    #             s=f'{reward:.2f}', size=12, verticalalignment='center', horizontalalignment='center', color='white')
 
 '''
 Matplotlib doesn't have an inbuilt red to green colour map with white in the middle.

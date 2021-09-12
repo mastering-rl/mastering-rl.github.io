@@ -17,11 +17,17 @@ class ModelFreeReinforcementLearner:
                 actions = self.mdp.get_actions(next_state)
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
                 q_value = self.qfunction.get_q_value(state, action)
-                next_state_value = self.state_value(next_state, next_action)
-                delta = reward + self.mdp.discount_factor * next_state_value - q_value
+                delta = self.get_delta(reward, q_value, state, next_state, next_action)
                 self.qfunction.update(state, action, self.alpha * delta)
                 state = next_state
                 action = next_action
+
+    """ Calculate the delta for the update """
+
+    def get_delta(self, reward, q_value, state, next_state, next_action):
+        next_state_value = self.state_value(next_state, next_action)
+        delta = reward + self.mdp.discount_factor * next_state_value - q_value
+        return delta
 
     """ Get the value of a state """
 
