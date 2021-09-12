@@ -428,8 +428,8 @@ class GridWorld(MDP):
 
 
     """ Initialise a gridworld grid """
-    def initialise_grid(self):
-        fig = plt.figure(figsize=(self.width*1.5, self.height*1.5))
+    def initialise_grid(self, grid_size=1.5):
+        fig = plt.figure(figsize=(self.width * grid_size, self.height * grid_size))
         ax = fig.add_subplot(1, 1, 1)
 
         # Initialise the map to all white
@@ -439,6 +439,7 @@ class GridWorld(MDP):
         for y in range(0, self.height):
             for x in range(0, self.width):
                 if (x, y) in self.goal_states:
+                    img[y][x] = COLOURS['red'] if self.goal_states[(x, y)] < 0 else COLOURS['green']
                     plt.text(
                         x,
                         y,
@@ -460,8 +461,8 @@ class GridWorld(MDP):
         
     """ visualise the gridworld problem as a matplotlib image """
 
-    def visualise_image(self, agent_position=None, title=""):
-        fig, ax, img = self.initialise_grid()
+    def visualise_image(self, agent_position=None, title="", grid_size=1.5):
+        fig, ax, img = self.initialise_grid(grid_size=grid_size)
         current_position = (
             self.get_initial_state() if agent_position is None else agent_position
         )
@@ -514,8 +515,8 @@ class GridWorld(MDP):
 
     """ Visualise the value function """
 
-    def visualise_value_function(self, value_function, title=""):
-        fig, ax, img = self.initialise_grid()
+    def visualise_value_function(self, value_function, title="", grid_size=1.5):
+        fig, ax, img = self.initialise_grid(grid_size=grid_size)
         
         for y in range(self.height):
             for x in range(self.width):
@@ -562,18 +563,62 @@ class GridWorld(MDP):
         plt.title(f"Value Function {title}")
         plt.show()
 
+    """ Visualise the Q-function with matplotlib """
+
+    def visualise_q_function(self, qfunction, title, grid_size=2.0):
+        fig, ax, img = self.initialise_grid(grid_size=grid_size)
+        
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
+                    plt.text(
+                        x,
+                        y + 0.35,
+                        f"{qfunction.get_q_value((x, y), self.UP):+0.2f}",
+                        fontsize="large",
+                        horizontalalignment="center",
+                        verticalalignment="top",
+                    )
+                    plt.text(
+                        x,
+                        y - 0.35,
+                        f"{qfunction.get_q_value((x, y), self.DOWN):+0.2f}",
+                        fontsize="large",
+                        horizontalalignment="center",
+                        verticalalignment="bottom",
+                    )
+                    plt.text(
+                        x - 0.45,
+                        y,
+                        f"{qfunction.get_q_value((x, y), self.LEFT):+0.2f}",
+                        fontsize="large",
+                        horizontalalignment="left",
+                        verticalalignment="center",
+                    )
+                    plt.text(
+                        x + 0.45,
+                        y,
+                        f"{qfunction.get_q_value((x, y), self.RIGHT):+0.2f}",
+                        fontsize="large",
+                        horizontalalignment="right",
+                        verticalalignment="center",
+                    )
+                    plt.arrow(x - 0.5, y - 0.5, 1, 1, color='lightgrey')
+                    plt.arrow(x - 0.5, y + 0.5, 1, -1, color='lightgrey')
+        plt.imshow(img, origin="lower")
+        plt.title(f"{title} Q-Function")
+        plt.show()
+
     """ Visualise the Q-function with a matplotlib visual"""
 
-    def visualise_q_function(self, q_values, title, tile_size=32, show_text=False):
+    def visualise_q_function_rendered(self, q_values, title, tile_size=32, show_text=False):
         width_px = self.width * tile_size
         height_px = self.height * tile_size
         img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
 
         # provide these to scale the colours between the highest and lowest value
-        rewardMax = max(
-            self.get_goal_states().values()
-        )
-        rewardMin = min(self.get_goal_states().values())
+        reward_max = max(self.get_goal_states().values())
+        reward_min = min(self.get_goal_states().values())
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
@@ -591,8 +636,8 @@ class GridWorld(MDP):
                         tile_size,
                         img,
                         reward=self.goal_states[(x, y)],
-                        rewardMax=rewardMax,
-                        rewardMin=rewardMin,
+                        rewardMax=reward_max,
+                        rewardMin=reward_min,
                     )
                     continue
 
@@ -609,8 +654,8 @@ class GridWorld(MDP):
                     img,
                     show_text,
                     v_text_offset=8,
-                    rewardMax=rewardMax,
-                    rewardMin=rewardMin,
+                    rewardMax=reward_max,
+                    rewardMin=reward_min,
                 )
                 render_action_q_value(
                     tile_size,
@@ -621,8 +666,8 @@ class GridWorld(MDP):
                     img,
                     show_text,
                     v_text_offset=-8,
-                    rewardMax=rewardMax,
-                    rewardMin=rewardMin,
+                    rewardMax=reward_max,
+                    rewardMin=reward_min,
                 )
                 render_action_q_value(
                     tile_size,
@@ -633,8 +678,8 @@ class GridWorld(MDP):
                     img,
                     show_text,
                     h_text_offset=-8,
-                    rewardMax=rewardMax,
-                    rewardMin=rewardMin,
+                    rewardMax=reward_max,
+                    rewardMin=reward_min,
                 )
                 render_action_q_value(
                     tile_size,
@@ -645,8 +690,8 @@ class GridWorld(MDP):
                     img,
                     show_text,
                     h_text_offset=8,
-                    rewardMax=rewardMax,
-                    rewardMin=rewardMin,
+                    rewardMax=reward_max,
+                    rewardMin=reward_min,
                 )
 
         plt.imshow(img, origin="lower", interpolation="bilinear")
@@ -656,7 +701,7 @@ class GridWorld(MDP):
 
     """ Visualise the policy of the agent with a matplotlib visual """
 
-    def visualise_policy(self, policy, title):
+    def visualise_policy(self, policy, title, grid_size=1.5):
         # Map from basic unicode to prettier arrows
         arrow_map = {self.UP:'\u2191',
                      self.DOWN:'\u2193',
@@ -664,7 +709,7 @@ class GridWorld(MDP):
                      self.RIGHT:'\u2192',
                     }
 
-        fig, ax, img = self.initialise_grid()
+        fig, ax, img = self.initialise_grid(grid_size=grid_size)
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.blocked_states and (x, y) not in self.goal_states:

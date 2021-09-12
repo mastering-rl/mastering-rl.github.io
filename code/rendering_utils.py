@@ -4,8 +4,8 @@ from mdp import *
 import matplotlib.pyplot as plt
 
 COLOURS = {
-    'red': [255, 0, 0],
-    'green': [0, 255, 0],
+    'red': [255, 100, 0],
+    'green': [0, 255, 100],
     'blue': [0, 0, 255],
     'purple': [112, 39, 195],
     'grey': [100, 100, 100],
@@ -48,7 +48,7 @@ def draw_triangle(tile_origin, tile_size, img, colour='red', direction='up'):
 
 ''' Render each Q value which forms a triangle in the grid representation of the Q-function.'''
 def render_action_q_value(tileSize, x, y, action, q_values, img, show_text=False, text_size=12, h_text_offset=0, v_text_offset=0, rewardMax=1, rewardMin=1):
-    value = MDP.getQValue(q_values, (x, y), action=action)
+    value = q_values.get_q_value((x, y), action) #MDP.get_q_value(q_values, (x, y), action=action)
     colour = COLOURS['red'] if value < 0 else COLOURS['green']  # make colour red if value is negative, otherwise make it green
     scaling_factor = rewardMin if value < 0 else rewardMax
     colour = list(map(lambda c: int(c * math.fabs(value/scaling_factor)),

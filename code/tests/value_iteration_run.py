@@ -21,3 +21,12 @@ policy = values.extract_policy(mdp)
 print("Policy after 100 iterations")
 print(mdp.policy_to_string(policy))
 mdp.visualise_policy(policy, "")
+
+
+mdp = GridWorld.open('layouts/room.txt')
+mdp.visualise_image(grid_size=0.8)
+values = TabularValueFunction()
+ValueIteration(mdp, values).value_iteration(iterations=100)
+mdp.visualise_value_function(values, grid_size=0.8, title="100 iterations")
+policy = values.extract_policy(mdp)
+mdp.visualise_policy(policy, "", grid_size=0.8)
