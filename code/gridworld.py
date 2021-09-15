@@ -450,7 +450,7 @@ class GridWorld(MDP):
                     )
                 elif (x, y) in self.blocked_states:
                     img[y][x] = COLOURS['grey']
-                    
+
         ax.xaxis.set_ticklabels([])  # clear x tick labels
         ax.axes.yaxis.set_ticklabels([])  # clear y tick labels
         ax.tick_params(which='both', top=False, left=False, right=False, bottom=False)
@@ -458,7 +458,7 @@ class GridWorld(MDP):
         ax.set_yticks([h - 0.5 for h in range(0, self.height, 1)])
         ax.grid(color='lightgrey')
         return plt, ax, img
-        
+
     """ visualise the gridworld problem as a matplotlib image """
 
     def visualise_image(self, agent_position=None, title="", grid_size=1.5):
@@ -517,7 +517,7 @@ class GridWorld(MDP):
 
     def visualise_value_function(self, value_function, title="", grid_size=1.5):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
-        
+
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
@@ -565,9 +565,9 @@ class GridWorld(MDP):
 
     """ Visualise the Q-function with matplotlib """
 
-    def visualise_q_function(self, qfunction, title, grid_size=2.0):
+    def visualise_q_function(self, qfunction, title="", grid_size=2.0):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
-        
+
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
@@ -611,7 +611,7 @@ class GridWorld(MDP):
 
     """ Visualise the Q-function with a matplotlib visual"""
 
-    def visualise_q_function_rendered(self, q_values, title, tile_size=32, show_text=False):
+    def visualise_q_function_rendered(self, q_values, title="", tile_size=32, show_text=False):
         width_px = self.width * tile_size
         height_px = self.height * tile_size
         img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
@@ -701,7 +701,7 @@ class GridWorld(MDP):
 
     """ Visualise the policy of the agent with a matplotlib visual """
 
-    def visualise_policy(self, policy, title, grid_size=1.5):
+    def visualise_policy(self, policy, title="", grid_size=1.5):
         # Map from basic unicode to prettier arrows
         arrow_map = {self.UP:'\u2191',
                      self.DOWN:'\u2193',
