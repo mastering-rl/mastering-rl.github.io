@@ -369,7 +369,7 @@ class GridWorld(MDP):
                     result += " |     #####     "
                 elif (x, y) in self.get_goal_states().keys():
                     result += " |     {:+0.2f}     ".format(
-                        qfunction.get_q_value((x, y), self.TERMINATE)
+                        self.get_goal_states()[(x, y)]
                     )
                 else:
                     result += " | {}{:+0.2f}  {:+0.2f}{}".format(
@@ -571,37 +571,45 @@ class GridWorld(MDP):
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
+                    up_value = qfunction.get_q_value((x, y), self.UP)
+                    down_value = qfunction.get_q_value((x, y), self.DOWN)
+                    left_value = qfunction.get_q_value((x, y), self.LEFT)
+                    right_value = qfunction.get_q_value((x, y), self.RIGHT)
                     plt.text(
                         x,
                         y + 0.35,
-                        f"{qfunction.get_q_value((x, y), self.UP):+0.2f}",
+                        f"{up_value:+0.2f}",
                         fontsize="large",
                         horizontalalignment="center",
                         verticalalignment="top",
+                        color='lightgrey' if up_value == 0.0 else 'black',
                     )
                     plt.text(
                         x,
                         y - 0.35,
-                        f"{qfunction.get_q_value((x, y), self.DOWN):+0.2f}",
+                        f"{down_value:+0.2f}",
                         fontsize="large",
                         horizontalalignment="center",
                         verticalalignment="bottom",
+                        color='lightgrey' if down_value == 0.0 else 'black',
                     )
                     plt.text(
                         x - 0.45,
                         y,
-                        f"{qfunction.get_q_value((x, y), self.LEFT):+0.2f}",
+                        f"{left_value:+0.2f}",
                         fontsize="large",
                         horizontalalignment="left",
                         verticalalignment="center",
+                        color='lightgrey' if left_value == 0.0 else 'black'
                     )
                     plt.text(
                         x + 0.45,
                         y,
-                        f"{qfunction.get_q_value((x, y), self.RIGHT):+0.2f}",
+                        f"{right_value:+0.2f}",
                         fontsize="large",
                         horizontalalignment="right",
                         verticalalignment="center",
+                        color='lightgrey' if right_value == 0.0 else 'black'
                     )
                     plt.arrow(x - 0.5, y - 0.5, 1, 1, color='lightgrey')
                     plt.arrow(x - 0.5, y + 0.5, 1, -1, color='lightgrey')

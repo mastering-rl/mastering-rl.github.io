@@ -11,6 +11,7 @@ pandoc for converting tex to markdown:
 
 - command: pandoc -t markdown -f latex filename.tex -o filename.md
 
+Overview of networkx: https://andrewmellor.co.uk/blog/articles/2014/12/14/d3-networks/
 
 Tikz magic (not currently used): 
 - https://github.com/mkrphys/ipython-tikzmagic
