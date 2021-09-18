@@ -89,39 +89,24 @@ If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1
 
 In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+from myst_nb import glue
+from gridworld import GridWorld
+
+mdp = GridWorld()
+gridworld_image = mdp.visualise_image()
+glue("gridworld_image", gridworld_image, display=False)
+```
+
 :::{admonition} Example MDP: Grid World
 
 An agent is in the bottom left cell of a grid. The cell containing '#'s  is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately below.
 
+```{glue:} gridworld_image
 ```
-  --------------- --------------- --------------- --------------- 
- |       ▲       |       ▲       |       ▲       |               |
- |               |               |               |               |
- |               |               |               |               |
- | ◄           ► | ◄           ► | ◄           ► |     +1.00     |
- |               |               |               |               |
- |               |               |               |               |
- |       ▼       |       ▼       |       ▼       |               |
-  --------------- --------------- --------------- --------------- 
- |       ▲       | ############# |       ▲       |               |
- |               | ############# |               |               |
- |               | ############# |               |               |
- | ◄           ► | ############# | ◄           ► |     -1.00     |
- |               | ############# |               |               |
- |               | ############# |               |               |
- |       ▼       | ############# |       ▼       |               |
-  --------------- --------------- --------------- --------------- 
- |       ▲       |       ▲       |       ▲       |       ▲       |
- |     _____     |               |               |               |
- |    ||o  o|    |               |               |               |
- | ◄  ||  * |  ► | ◄           ► | ◄           ► | ◄           ► |
- |    ||====|    |               |               |               |
- |     -----     |               |               |               |
- |       ▼       |       ▼       |       ▼       |       ▼       |
-  --------------- --------------- --------------- --------------- 
-```
-
-
 
 But! Things can go wrong --- sometimes the effects of the actions are not what we want:
 
@@ -305,22 +290,23 @@ The planning problem for discounted-reward MDPs is different to that of classica
 A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
 :::
 
-### Deterministic vs.\ stochastic policies
+### Deterministic vs. stochastic policies
 
 A *deterministic policy* $\pi : S \rightarrow A$ is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
 A graphical representation of the policy for Grid World is:
 
-$$
-\begin{array}{|c|c|c|c|}
-\hline
-\rightarrow & \rightarrow & \rightarrow & +1\\
-\hline
-\uparrow &   & \uparrow  & -1\\
-\hline
-\uparrow & \leftarrow & \uparrow  & \leftarrow\\
-\hline
-\end{array}
-$$
+```{code-cell} ipython3
+:tags: [remove-input]
+from gridworld import GridWorld
+from value_iteration import ValueIteration
+from tabular_value_function import TabularValueFunction
+
+mdp = GridWorld()
+values = TabularValueFunction()
+ValueIteration(mdp, values).value_iteration(iterations=100)
+policy = values.extract_policy(mdp)
+mdp.visualise_policy(policy, "")
+```
 
 So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidently slips right, it should go left again to return to the initial state.
 

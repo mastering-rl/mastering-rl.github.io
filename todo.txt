@@ -14,6 +14,35 @@
 :load: <path>
 ```
 
+How to animate a gif with a small player:
+<div class="section" id="container" markdown="1">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+	<script type="text/javascript" src="../_static/libgif.js"></script>
+	<center>
+	<img id="gridworld_value_function" src="../single-agent/example_gifs/rub_test_preview.jpg" rel:animated_src="../single-agent/example_gifs/rub_test.gif" rel:auto_play="0" width="467" height="375" />
+	<br>
+	<script type="text/javascript">
+		var sup1 = new SuperGif({ gif: document.getElementById('gridworld_value_function') } );
+		sup1.load();
+	</script>
+        <div class="buttons">
+           <button title="First frame" aria-label="asdasd frame" onclick="sup1.move_to(0); return false;">
+             <i class="fa fa-fast-backward"></i></button>
+           <button title="Previous frame" aria-label="Previous frame" onclick="sup1.move_relative(-1); return false;">
+               <i class="fa fa-step-backward"></i></button>
+           <button title="Pause" aria-label="Pause" onclick="sup1.pause(); return false;">
+               <i class="fa fa-pause"></i></button>
+           <button title="Play" aria-label="Play" onclick="sup1.play(); return false;">
+               <i class="fa fa-play"></i></button>
+           <button title="Next frame" aria-label="Next frame" onclick="sup1.move_relative(1); return false;">
+               <i class="fa fa-step-forward"></i></button>
+           <button title="Last frame" aria-label="Last frame" onclick="sup1.move_to(sup1.get_length()); return false;">
+               <i class="fa fa-fast-forward"></i></button>
+        </div>
+	</center>
+</div>
+
+
 - implement basic freeway simulator using gridworld extension
 
 Part I: Introduction

@@ -46,6 +46,9 @@ class GridWorld(MDP):
         # The rewards for the current episode
         self.episode_rewards = []
 
+        # The sequence of plots to visualise a value function
+        self.image_buffer = []
+
     def get_states(self):
         states = [self.TERMINAL]
         for x in range(self.width):
@@ -440,14 +443,6 @@ class GridWorld(MDP):
             for x in range(0, self.width):
                 if (x, y) in self.goal_states:
                     img[y][x] = COLOURS['red'] if self.goal_states[(x, y)] < 0 else COLOURS['green']
-                    plt.text(
-                        x,
-                        y,
-                        f"{self.get_goal_states()[(x, y)]:+0.2f}",
-                        fontsize="x-large",
-                        horizontalalignment="center",
-                        verticalalignment="center",
-                    )
                 elif (x, y) in self.blocked_states:
                     img[y][x] = COLOURS['grey']
 
@@ -457,7 +452,7 @@ class GridWorld(MDP):
         ax.set_xticks([w - 0.5 for w in range(0, self.width, 1)])
         ax.set_yticks([h - 0.5 for h in range(0, self.height, 1)])
         ax.grid(color='lightgrey')
-        return plt, ax, img
+        return fig, ax, img
 
     """ visualise the gridworld problem as a matplotlib image """
 
@@ -471,9 +466,18 @@ class GridWorld(MDP):
             for x in range(0, self.width):
                 if (x, y) == current_position:
                     ax.scatter(x, y, s=2000, marker='o', edgecolors='none')
+                elif (x, y) in self.goal_states:
+                    plt.text(
+                        x,
+                        y,
+                        f"{self.get_goal_states()[(x, y)]:+0.2f}",
+                        fontsize="x-large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
         plt.imshow(img, origin="lower")
-        plt.title(f"Grid World {title}")
-        plt.show()
+        plt.title(title)
+        return fig
 
     """Render each tile individually depending on the current state of the cell"""
 
@@ -520,17 +524,19 @@ class GridWorld(MDP):
 
         for y in range(self.height):
             for x in range(self.width):
-                if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
+                value = value_function.get_value((x, y))
+                if (x, y) not in self.blocked_states:
                     plt.text(
                         x,
                         y,
-                        f"{value_function.get_value((x, y)):+0.2f}",
+                        f"{value:+0.2f}",
                         fontsize="x-large",
                         horizontalalignment="center",
                         verticalalignment="center",
+                        color='lightgrey' if value == 0.0 else 'black',
                     )
-        plt.imshow(img, origin="lower")
-        plt.title(f"Value Function {title}")
+        ax.imshow(img, origin="lower")
+        plt.title(title)
         plt.show()
 
     """ Visualise the value function using a heat-map where green is high value and
@@ -560,7 +566,7 @@ class GridWorld(MDP):
                         verticalalignment="center",
                     )
         plt.imshow(values, origin="lower", cmap=make_red_white_green_cmap())
-        plt.title(f"Value Function {title}")
+        plt.title(title)
         plt.show()
 
     """ Visualise the Q-function with matplotlib """
@@ -613,8 +619,8 @@ class GridWorld(MDP):
                     )
                     plt.arrow(x - 0.5, y - 0.5, 1, 1, color='lightgrey')
                     plt.arrow(x - 0.5, y + 0.5, 1, -1, color='lightgrey')
-        plt.imshow(img, origin="lower")
-        plt.title(f"{title} Q-Function")
+        ax.imshow(img, origin="lower")
+        plt.title(title)
         plt.show()
 
     """ Visualise the Q-function with a matplotlib visual"""
@@ -702,8 +708,8 @@ class GridWorld(MDP):
                     rewardMin=reward_min,
                 )
 
-        plt.imshow(img, origin="lower", interpolation="bilinear")
-        plt.title(f"Q Function: {title}")
+        ax.imshow(img, origin="lower", interpolation="bilinear")
+        plt.title(title)
         plt.axis("off")
         plt.show()
 
@@ -732,8 +738,17 @@ class GridWorld(MDP):
                         horizontalalignment="center",
                         verticalalignment="center",
                     )
-        plt.imshow(img, origin="lower")
-        plt.title(f"Policy: {title}")
+                elif (x, y) in self.goal_states:
+                    plt.text(
+                        x,
+                        y,
+                        f"{self.get_goal_states()[(x, y)]:+0.2f}",
+                        fontsize="x-large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+        ax.imshow(img, origin="lower")
+        plt.title(title)
         plt.show()
 
     def execute(self, state, action):
@@ -777,7 +792,7 @@ class GridWorld(MDP):
 
         plt.imshow(img, origin="lower", interpolation="bilinear")
         plt.axis("off")
-        plt.title(f"Grid World {title}")
+        plt.title(title)
         plt.show()
 
 
