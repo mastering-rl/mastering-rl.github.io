@@ -1,7 +1,10 @@
 import math
 import random
 import time
-from multi_armed_bandits import *
+
+from qtable import QTable
+from multi_armed_bandit.ucb import UpperConfidenceBounds
+
 
 class Node():    
 
@@ -57,16 +60,16 @@ class StateNode(Node):
             return self
         else:
             actions = list(self.children.keys())    
-            q_values = dict()
+            qfunction = QTable()
             for action in actions:
                 #get the Q values from all outcome nodes
-                q_values[action] = self.children[action].getValue()
-            best_action = self.bandit.select(actions, q_values)
+                qfunction.update(self.state, action, self.children[action].get_value())
+            best_action = self.bandit.select(self.state, actions, qfunction)
             return self.children[best_action].select()
 
     def expand(self):
         #randomly select an unexpanded action to expand
-        actions = self.mdp.getActions(self.state) - self.children.keys()
+        actions = self.mdp.get_actions(self.state) - self.children.keys()
         action = random.choice(list(actions))
 
         #choose an outcome
@@ -80,12 +83,12 @@ class StateNode(Node):
         self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
         
         if self.parent != None:
-            self.parent.backPropagate(reward)
+            self.parent.back_propagate(reward)
 
     def get_q_function(self):
         q_values = {}
         for action in self.children.keys():
-            q_values[(self.state, action)] = round(self.children[action].getValue(), 3)
+            q_values[(self.state, action)] = round(self.children[action].get_value(), 3)
         return q_values
 
 class EnvironmentNode(Node):
@@ -118,7 +121,7 @@ class EnvironmentNode(Node):
 
         # expand all outcomes
         selected = None
-        transitions = self.mdp.getTransitions(self.state, self.action)
+        transitions = self.mdp.get_transitions(self.state, self.action)
         for (outcome, probability) in transitions:
             new_child = self.add_child(self.action, outcome, reward, probability)
             # find the child node correponding to the new state
@@ -129,7 +132,7 @@ class EnvironmentNode(Node):
     def back_propagate(self, reward):
         self.visits += 1
         self.value = self.value + ((reward - self.value) / self.visits)
-        self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
+        self.parent.back_propagate(reward * self.mdp.get_discount_factor())
 
 class MCTS():
 
@@ -186,8 +189,12 @@ class MCTS():
 
 if __name__ == "__main__":
     from gridworld import *
+    from graph_visualisation import GraphVisualisation
     
     mdp = GridWorld()
-    root_node = MCTS(mdp).mcts(timeout=10.0)
+    root_node = MCTS(mdp).mcts(timeout=0.1)
     print("mcts")
     print(root_node.get_q_function())
+    gv = GraphVisualisation(max_level = 2)
+    graph = gv.single_agent_mcts_to_graph(root_node, filename = 'mcts')
+    graph.view()

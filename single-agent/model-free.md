@@ -175,7 +175,7 @@ The following is an implementation of a Q-table using a Python dictionary:
 
 ```{code-cell} ipython3
 :load: "../code/qtable.py"
-```    
+```
 
 :::{note} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
@@ -210,13 +210,13 @@ To implement Q-learning, we first implement an abstract superclass ```ModelFreeR
 
 ```{code-cell} ipython3
 :load: "../code/model_free_reinforcement_learner.py"
-```    
+```
 
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
 :load: "../code/qlearning.py"
-```  
+```
 
 We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$,, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
 
@@ -232,7 +232,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 mdp = GridWorld()
 qfunction = QTable()
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
-print(mdp.q_function_to_string(qfunction))
+mdp.visualise_q_function(qfunction, "Q-Function")
 ```
 
 If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
@@ -241,7 +241,7 @@ Despite this, if we extract a policy from this, we still see that the policy cor
 
 ```{code-cell} ipython3
 policy = qfunction.extract_policy(mdp)
-print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy)
 ```
 
 (sec:model-free:sarsa)=
@@ -330,14 +330,14 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 mdp = GridWorld()
 qfunction = QTable()
 SARSA(mdp, EpsilonGreedy(), qfunction).execute()
-print(mdp.q_function_to_string(qfunction))
+mdp.visualise_q_function(qfunction)
 ```
 
 Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
 
 ```{code-cell} ipython3
 policy = qfunction.extract_policy(mdp)
-print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy)
 ```
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
@@ -350,7 +350,7 @@ Consider the example below called "Cliff World". The bottom-left cell is the sta
 from gridworld import CliffWorld
 
 mdp = CliffWorld()
-print(mdp.visualise())
+mdp.visualise_image()
 ```
 
 Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
@@ -365,7 +365,7 @@ From this, we extract the following policy:
 
 ```{code-cell} ipython3
 policy = qfunction.extract_policy(mdp)
-print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy)
 ```
 
 We can see that the policy will take from initially up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
@@ -382,7 +382,7 @@ Extracting the policy, we get:
 
 ```{code-cell} ipython3
 policy = qfunction.extract_policy(mdp)
-print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy)
 ```
 
 We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*

@@ -11,11 +11,11 @@ class GraphVisualisation():
         return g
 
     def state_node_id(self, state_node):
-        return "V(" + str(state_node.state) + "." + str(state_node.id) + ") = " + str(round(state_node.getValue(), 3)) +\
+        return "V(" + str(state_node.state) + "." + str(state_node.id) + ") = " + str(round(state_node.get_value(), 3)) +\
                "\\nN = " + str(state_node.visits)
 
     def environment_node_id(self, environment_node):
-        return "V(" + str(environment_node.id) + ") = " + str(round(environment_node.getValue(), 3)) +\
+        return "V(" + str(environment_node.id) + ") = " + str(round(environment_node.get_value(), 3)) +\
                "\\nN = " + str(environment_node.visits)
     
     def state_node_to_graph(self, g, state_node, level):
