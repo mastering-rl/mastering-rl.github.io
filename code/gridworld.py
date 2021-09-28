@@ -576,7 +576,16 @@ class GridWorld(MDP):
 
         for y in range(self.height):
             for x in range(self.width):
-                if (x, y) not in self.goal_states and (x, y) not in self.blocked_states:
+                if (x, y) in self.goal_states:
+                    plt.text(
+                        x,
+                        y,
+                        f"{self.get_goal_states()[(x,y)]:+0.2f}",
+                        fontsize="large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+                elif (x, y) not in self.blocked_states:
                     up_value = qfunction.get_q_value((x, y), self.UP)
                     down_value = qfunction.get_q_value((x, y), self.DOWN)
                     left_value = qfunction.get_q_value((x, y), self.LEFT)

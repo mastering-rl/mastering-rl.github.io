@@ -4,11 +4,11 @@ from mdp import *
 import matplotlib.pyplot as plt
 
 COLOURS = {
-    'red': [255, 100, 0],
-    'green': [0, 255, 100],
+    'red': [200, 50, 50],
+    'green': [90, 165, 90],
     'blue': [0, 0, 255],
     'purple': [112, 39, 195],
-    'grey': [100, 100, 100],
+    'grey': [150, 150, 150],
     'white': [255, 255, 255],
     'black': [0, 0, 0],
     'yellow': [255, 255, 0]

@@ -185,6 +185,40 @@ Also, we have to continue updating $n-1$ steps after the end of the episode, but
 
 Computationally, this is not much worse than 1-step learning. We need to store the last $n$ states, but the per-step computation is small and uniform for n-step, just as for 1-step.
 
+
+:::{admonition} Algorithm -- n-step SARSA
+
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\, number of steps $n$\
+**Output:** Q-function $Q$
+
+Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
+
+Repeat (for each episode)\
+$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad$ $ss = \langle s\rangle$\
+$\quad\quad$ $as = \langle a\rangle$\
+$\quad\quad$ $rs = \langle \rangle$\
+$\quad\quad$ Repeat (for each step in episode $e$)\
+$\quad\quad\quad\quad$ If $s$ is not a terminal state then:\
+$\quad\quad\quad\quad\quad\quad$ Execute action $a$ in state $s$\
+$\quad\quad\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad\quad\quad$ $rs \leftarrow rs + \langle r\rangle$\
+$\quad\quad\quad\quad\quad\quad$ If $s'$ is not a terminal state then:\
+$\quad\quad\quad\quad\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using $Q$ and a multi-armed bandit algorithm\
+$\quad\quad\quad\quad\quad\quad\quad\quad$ $ss \leftarrow ss + \langle s' \rangle$\
+$\quad\quad\quad\quad\quad\quad\quad\quad$ $as \leftarrow ss + \langle a' \rangle$\
+$\quad\quad\quad\quad$ If $|rs| = n$ or $s$ is a terminal state then:\
+$\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}r_i$\
+$\quad\quad\quad\quad\quad\quad$ If $s$ is not a terminal state then: $G \leftarrow G + \gamma^n Q(s', a')$\
+$\quad\quad\quad\quad\quad\quad$ $Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]$\
+$\quad\quad\quad\quad\quad\quad$ $rs \leftarrow rs_{[1 : n + 1]}$\
+$\quad\quad\quad\quad\quad\quad$ $ss \leftarrow ss_{[1 : n + 1]}$\
+$\quad\quad\quad\quad\quad\quad$ $as \leftarrow as_{[1 : n + 1]}$\
+$\quad\quad\quad\quad$ $s \leftarrow s'$\
+$\quad\quad\quad\quad$ $a \leftarrow a'$
+:::
+
+
 ### Example -- $n$-step SARSA update
 
 Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagating this reward back n-steps will be helpful.
