@@ -1,9 +1,7 @@
 import math
-import random
 import time
-
-from qtable import QTable
-from multi_armed_bandit.ucb import UpperConfidenceBounds
+import random
+from collections import defaultdict
 
 
 class Node:
@@ -11,171 +9,96 @@ class Node:
     # Record a unique node id to distinguish duplicated states
     next_node_id = 0
 
-    def __init__(self, mdp, parent, state):
+    # Records the number of times states have been visited
+    visits = defaultdict(lambda: 0)
+
+    def __init__(self, mdp, parent, state, qfunction, bandit, reward=0.0, action=None):
         self.mdp = mdp
         self.parent = parent
         self.state = state
         self.id = Node.next_node_id
         Node.next_node_id += 1
 
-        # The value and the total visits to this node
-        self.visits = 0
-        self.value = 0.0
-
-    """ Return the value of this node """
-
-    def get_value(self):
-        return self.value
-
-
-class StateNode(Node):
-    def __init__(
-        self,
-        mdp,
-        parent,
-        state,
-        reward=0,
-        probability=1.0,
-        bandit=UpperConfidenceBounds(),
-    ):
-        super().__init__(mdp, parent, state)
-
-        # A dictionary from actions to an environment node
-        self.children = {}
-
-        # The reward received for this state
-        self.reward = reward
-
-        # The probability of this node being chosen from its parent
-        self.probability = probability
+        # The Q function used to store state-action values
+        self.qfunction = qfunction
 
         # A multi-armed bandit for this node
         self.bandit = bandit
 
-    """ Return true if and only if all child actions have been expanded """
+        # The immediate reward received for reaching this state, used for backpropagation
+        self.reward = reward
 
-    def is_fully_expanded(self):
-        valid_actions = self.mdp.get_actions(self.state)
-        if len(valid_actions) == len(self.children):
-            return True
-        else:
-            return False
-
-    def select(self):
-        if not self.is_fully_expanded():
-            return self
-        else:
-            actions = list(self.children.keys())
-            qfunction = QTable()
-            for action in actions:
-                # Get the Q values from all outcome nodes
-                qfunction.update(self.state, action, self.children[action].get_value())
-            best_action = self.bandit.select(self.state, actions, qfunction)
-            return self.children[best_action].select()
-
-    def expand(self):
-        # Randomly select an unexpanded action to expand
-        actions = self.mdp.get_actions(self.state) - self.children.keys()
-        action = random.choice(list(actions))
-
-        # Choose an outcome
-        new_child = EnvironmentNode(self.mdp, self, self.state, action)
-        new_state_node = new_child.expand()
-        self.children[action] = new_child
-        return new_state_node
-
-    def back_propagate(self, reward):
-        self.visits += 1
-        self.value = self.value + ((self.reward + reward - self.value) / self.visits)
-
-        if self.parent != None:
-            self.parent.back_propagate(reward)
-
-    def get_q_function(self):
-        q_function = QTable()
-        for action in self.children.keys():
-            q_function.update(self.state, action, round(self.children[action].get_value(), 3))
-        return q_function
-
-
-class EnvironmentNode(Node):
-    def __init__(self, mdp, parent, state, action):
-        super().__init__(mdp, parent, state)
-        self.outcmes = {}
+        # The action that generated this node
         self.action = action
 
-        # A set of outcomes
-        self.children = []
+    """ Select a node that is not fully expanded """
 
-    def select(self):
-        # Choose one outcome based on transition probabilities
-        (new_state, reward) = self.mdp.execute(self.state, self.action)
+    def select(self): abstract
 
-        # Find the corresponding state
-        for child in self.children:
-            if new_state == child.state:
-                return child.select()
 
-    def add_child(self, action, new_state, reward, probability):
-        child = StateNode(self.mdp, self, new_state, reward, probability)
-        self.children += [child]
-        return child
+    """ Expand a node if it is not a terminal node """
 
-    def expand(self):
-        # Choose one outcome based on transition probabilities
-        (new_state, reward) = self.mdp.execute(self.state, self.action)
+    def expand(self): abstract
 
-        # Expand all outcomes
-        selected = None
-        transitions = self.mdp.get_transitions(self.state, self.action)
-        for (outcome, probability) in transitions:
-            new_child = self.add_child(self.action, outcome, reward, probability)
-            # Find the child node correponding to the new state
-            if outcome == new_state:
-                selected = new_child
-        return selected
 
-    def back_propagate(self, reward):
-        self.visits += 1
-        self.value = self.value + ((reward - self.value) / self.visits)
-        self.parent.back_propagate(reward * self.mdp.get_discount_factor())
+    """ Backpropogate the reward back to the parent node """
+
+    def back_propagate(self, reward, child): abstract
+
+
+    """ Return the value of this node """
+
+    def get_value(self):
+        (_, max_q_value) = self.qfunction.get_max_q(
+            self.state, self.mdp.get_actions(self.state)
+        )
+        return max_q_value
+
+    """ Get the number of visits to this state """
+
+    def get_visits(self):
+        return Node.visits[self.state]
 
 
 class MCTS:
-    def __init__(self, mdp):
+    def __init__(self, mdp, qfunction, bandit):
         self.mdp = mdp
+        self.qfunction = qfunction
+        self.bandit = bandit
 
     """
     Execute the MCTS algorithm from the initial state given, with timeout in seconds
     """
 
     def mcts(self, timeout=1):
-        root_node = StateNode(self.mdp, None, self.mdp.get_initial_state())
+        root_node = self.create_root_node()
 
-        start_time = int(time.time() * 1000)
-        current_time = int(time.time() * 1000)
-        while current_time < start_time + timeout * 1000:
+        start_time = time.time()
+        current_time = time.time()
+        while current_time < start_time + timeout:
+
             # Find a state node to expand
             selected_node = root_node.select()
             if not self.mdp.is_terminal(selected_node):
                 child = selected_node.expand()
                 reward = self.simulate(child)
-                child.back_propagate(reward)
+                selected_node.back_propagate(reward, child)
 
-            current_time = int(time.time() * 1000)
+            current_time = time.time()
 
         return root_node
 
-    """
-        Choose a random action. Heustics can be used here to improve simulations.
-    """
+    """ Create a root node representing an initial state """
+
+    def create_root_node(self): abstract
+
+
+    """ Choose a random action. Heustics can be used here to improve simulations. """
 
     def choose(self, state):
         return random.choice(self.mdp.get_actions(state))
 
-    """
-        Simulate until a terminal state
-    """
+    """ Simulate until a terminal state """
 
     def simulate(self, node):
         state = node.state
@@ -186,25 +109,14 @@ class MCTS:
             action = self.choose(state)
 
             # Execute the action
-            (new_state, reward) = self.mdp.execute(state, action)
+            (next_state, reward) = self.mdp.execute(state, action)
 
             # Discount the reward
             cumulative_reward += pow(self.mdp.get_discount_factor(), depth) * reward
             depth += 1
 
-            state = new_state
+            state = next_state
 
         return cumulative_reward
 
 
-if __name__ == "__main__":
-    from gridworld import *
-    from graph_visualisation import GraphVisualisation
-
-    mdp = GridWorld()
-    root_node = MCTS(mdp).mcts(timeout=0.1)
-    print("mcts")
-    print(mdp.visualise_q_function(root_node.get_q_function()))
-    gv = GraphVisualisation(max_level=2)
-    graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
-    graph.view()

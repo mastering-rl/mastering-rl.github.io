@@ -26,7 +26,7 @@ kernelspec:
 
 6.  Discuss the strengths and weaknesses of the MCTS family of algorithms.
 
-## Offline Planning & Online Planning forMDPs
+## Offline Planning & Online Planning for MDPs
 
 We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. These offline planning methods derive a policy $\pi$ such that:
 

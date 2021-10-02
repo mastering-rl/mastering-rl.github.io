@@ -122,7 +122,7 @@ if __name__ == '__main__':
     print("==========\nLogistic Regression Policy Gradient: 1D Gridworld\n==========")
     # make a GridWorld that only has two dimensions
     one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
-    one_dimensional_gridworld.visualise_image()
+    one_dimensional_gridworld.visualise_as_image()
     pg_agent = LogisticRegressionPolicyGradientBase(one_dimensional_gridworld,
                                                    num_params=len(one_dimensional_gridworld.get_initial_state()),  # need a weight for each part of the state-space
                                                    alpha=0.1,

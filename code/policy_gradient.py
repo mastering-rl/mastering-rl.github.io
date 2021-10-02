@@ -132,7 +132,7 @@ if __name__ == '__main__':
 
     print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
     two_dimensional_gridworld = GridWorld()
-    two_dimensional_gridworld.visualise_image()
+    two_dimensional_gridworld.visualise_as_image()
     deep_pg_agent = DeepPolicyGradientBase(two_dimensional_gridworld,
                                          state_space=len(two_dimensional_gridworld.get_initial_state()), action_space=4)
     deep_pg_agent.execute(episodes=10)
