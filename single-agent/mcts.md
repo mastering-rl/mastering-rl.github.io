@@ -89,7 +89,7 @@ The basic framework is to build up a tree using simulation. The states that have
     
 -   *Expand*: Expand this node by applying one available action (as defined by the MDP) from the node.
     
--   *Simulation*: From one of the new nodes, perform a complete random simulation of the MDP to a terminating state. This therefore assumes that the search tree is finite, but versions for infinitely large trees exist in which we just execute for some time and then estimate the outcome.
+-   *Simulation*: From one of the outcomes of the expanded, perform a complete random simulation of the MDP to a terminating state. This therefore assumes that the simulation is finite, but versions of MCTS exist in which we just execute for some time and then estimate the outcome.
     
 -   *Backpropagate*: Finally, the value of the node is *backpropagated* to the root node, updating the value of each ancestor node on the way using expected value.
 
@@ -113,8 +113,6 @@ Unless the node we end up at is a terminating state, expand the children of the 
 caption
 ```
 
-Alternatively, one may expand just one of the children nodes (one outcome). 
-
 ### Simulation
 
 Choose one of the new nodes and perform a random simulation of the MDP to the terminating state:
@@ -137,7 +135,11 @@ caption
 
 ## Algorithm
 
-**Input**: MDP $M$, with initial state $s_0$ and time limit $T$.
+In a basic MCTS algorithm we incrementally build of the search tree. Each node in the tree stores:
+
+1.  $V(s)$ (an estimate of the value of the state) for its state;
+2.  a set of children nodes; and
+3.  a pointer to their parent node.
 
 :::{admonition} Algorithm -- Monte-Carlo Tree Search
 
@@ -145,66 +147,58 @@ caption
 **Output:** selected action $a$
 
 **while** $currentTime < T$\
-$\quad\quad selectedNode \leftarrow \textrm{Select}(root)$\
-$\quad\quad child \leftarrow \textrm{Expand}(selectedNode)$ -- expand and choose a child to simulate\
+$\quad\quad selected\_node \leftarrow \textrm{Select}(s_0)$\
+$\quad\quad child \leftarrow \textrm{Expand}(selected\_node)$ -- expand and choose a child to simulate\
 $\quad\quad reward \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
-$\quad\quad \textrm{Backpropagate}(child, reward)$\
+$\quad\quad \textrm{Backpropagate}(selected\_node, child, reward)$\
 **return** $\textrm{argmax}_{a} Q(s_0, a)$
 :::
 
-Each node stores four items:
+:::{admonition} Algorithm -- Monte-Carlo Tree Search
 
-1.  $V(s)$ (an estimate of the value of the state) for its state;
-2.  the number of times $N$ the state has been visited; 
-3.  a set of children nodes; and
-4.  a pointer to their parent node.
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $V$, time limit $T$.\
+**Output:** selected action $a$
 
-Given this, there are four functions used in the algorithm above:
+**while** $currentTime < T$\
+$\quad\quad$ $s \leftarrow s_0$\
+$\quad\quad$ **while** $s$ is not fully expanded\
+$\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using a multi-armed bandit algorithm\
+$\quad\quad\quad\quad$ Execute $a$ in $s$ and observe new state $s'$\
+$\quad\quad\quad\quad$ $s \leftarrow s'$\
+$\quad\quad$ Select an action $a$ from $s$ to apply, and expand one outcome $s'$ according to the distribution $P_a(s' \mid s)$\
+$\quad\quad$ $V(s') \leftarrow \textrm{simulate}(s')$ -- simulate from $s'$\
+$\quad\quad$ **do**\
+$\quad\quad\quad\quad$ $V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s') + \gamma V(s')]$\
+$\quad\quad\quad\quad$ $s \leftarrow $ parent of $s$\
+$\quad\quad$ **while** $s \neq s_0$\
+**return** $\textrm{argmax}_{a} Q(s_0, a)$ using policy extraction and $V(t)$ for each child $t$ of $s$
+:::
 
-**Select($node$)**
+Given this, there are four main parts to the algorithm above:
 
-- Recursively select the next node using some probabilistic policy (i.e. a multi-armed bandit) until we reach a state node that is not fully expanded
+1. **Selection**: The first loop progressively selects a branch in the tree using a multi-armed bandit algorithm, calculating $Q(s,a)$ at each node using [policy extraction](sec:mdps:policy-extraction), getting the values of $V(t)$ for each child $t$ from the child node.
 
-- At each choice point, if a node is fully expanded, select one of the edges in the tree using a multi-armed bandit using the Q values for the actions.
+2. **Expansion**: Select an action $a$ to apply in  state$s$, either randomly or using an heuristic. Get an outcome state $s'$ from applying action $a$ in state $s$ according to the probability distribution $P(s' \mid s)$ defined in the MDP. Expand a new environment node and a new state node for that outcome.
 
-- Then, using $P_a(s' \mid s)$, select an outcome for that action. Thus, our simulation follows the probability transitions of the underlying model.
+3. **Simulation**: Perform a randomised simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action. Heuristics can be used to improve the random simulation by guiding it towards more promising states. $G$ is the cumulative discounted reward received from the simulation starting at $s'$ until the simulation terminates. 
 
+   To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
 
-**Expand($expand\_node$)**
-
-- One we reach a node that is not fully expanded (the selected node), from that node, randomly select an action that can be applied in that state and has not been selected previously in that state.
-
-- Expand all possible outcomes nodes for that action. Alternatively, one could simply expand just one outcome using $P_a(s' \mid s)$, but in practice, these are the same thing: after expansion, only one is visited each time. However, because $P_a(s' \mid s)$ is stochastic,  several visits (in theory an infinite number) may be necessary to generate all successors.
-
-**Simulate($child$)**
-
-- Perform a random simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action.
-
-- We can use non-random simulation as well by following some heuristic, but we will not look at this in these notes.
-
-- $reward$ is the reward obtained over the entire simulation.
-
-- To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
-
-**Backpropagate($child$, $reward$)**
-
-- The reward from the simulation is backpropagated from the expanded node to its ancestors recursively. We must not forget the *discount factor*!
-
-- For each state, get the expected value of all actions from that node:
+4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the *discount factor*! For each state $s$, get the expected value of all actions from that node:
 
 $$
-V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s′) + \gamma V(s')]
+V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s') + \gamma V(s')]
 $$
 
-Does this look familiar?! It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
+Does this look familiar? It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
 
 However, in most MCTS frameworks,  we do not use the Bellman equation at all. Instead, we calculate the value of a node as: 
 
 $$
-V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G_{t+1} - V(s)) / N(s)
+V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G - V(s)) / N(s)
 $$
 
-where $G_{t+1}$ is the discounted future reward passed up from the child node during simulation and $N(s)$ is the number of times the state $s$ has been visited. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because the Select function selects using $P_a(s' \mid s)$, on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$, so the moving average will correspond to the Bellman equation given an infinite number of executions. 
+where $G$ is the discounted future reward passed up from the child node during simulation and $N(s)$ is the number of times the state $s$ has been visited. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because we select actions using $P_a(s' \mid s)$, meaning that on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$. The moving average will correspond to the Bellman equation given an infinite number of executions. 
 
 :::{admonition} Example: Backpropagation
 
@@ -280,7 +274,7 @@ If $Q(s,a) \in [0,1]$ and $C_p=\frac{1}{\sqrt{2}}$ then in two-player zero-sum, 
 
 ## Simulation-based MCTS
 
-**What if we do not know $P_a(s' \mid s)$?**
+**What if we do not know $P_a(s' \mid s)$ or r(s, a, s')?**
 
 We can use MCTS if we do not know our transition probabilities or our reward function, provided that we can *simulate* them; e.g. using a code-based simulator. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
 
@@ -288,7 +282,7 @@ The new approach is a straightforward modification:
 
 1.  *Selection* is as before.
 
-2.  In the *expansion* step, instead of expanding all child nodes of an action, we run the simulation forward one step, which will choose an outcome according to $P(s' \mid s)$ (provided the simulator is accurate), even though we cannot "see"  $P(s' \mid s)$.
+2.  In the *expansion* step, instead of expanding all child nodes of an action, we run the simulation forward one step, which will choose one outcome according to $P(s' \mid s)$ (provided the simulator is accurate), even though we cannot "see"  $P(s' \mid s)$.
 
 3.  We then simulate as before, and we learn the rewards when we receive them from the simulator.
 
@@ -464,9 +458,9 @@ class MCTS():
         currentTime = int(time.time() * 1000)
         while currentTime < startTime + timeout * 1000:
             # find a state node to expand
-            selectedNode = rootNode.select()
-            if not self.mdp.isTerminal(selectedNode):
-                child = selectedNode.expand()
+            selected\_node = rootNode.select()
+            if not self.mdp.isTerminal(selected\_node):
+                child = selected\_node.expand()
                 reward = self.simulate(child)
                 child.backPropagate(reward)
                 
@@ -546,7 +540,7 @@ class GraphVisualisation():
             
         for child in environmentNode.children:
             self.stateNodeToGraph(g, child, level + 1)
-```  
+```
 
 ```{code-cell} ipython3
 from gridworld import *
