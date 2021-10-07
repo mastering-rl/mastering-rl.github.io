@@ -852,8 +852,9 @@ class GridWorld(MDP):
                             horizontalalignment="center",
                             verticalalignment="center",
                         )
-        plt.imshow(img, origin="lower")
+        ax.imshow(img, origin="lower")
         plt.title(title)
+        plt.show()
         return fig
 
 
