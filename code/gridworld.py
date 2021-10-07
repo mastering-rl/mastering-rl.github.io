@@ -831,9 +831,7 @@ class GridWorld(MDP):
                         horizontalalignment="center",
                         verticalalignment="center",
                     )
-                elif (x, y) in self.blocked_states:
-                    pass
-                else:
+                elif (x, y) not in self.blocked_states:
                     if two_dimensional:
                         plt.text(
                             x,
