@@ -55,9 +55,9 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
             states = []
             rewards = []
 
-            state = self.mdp.getInitialState()
+            state = self.mdp.get_initial_state()
             episode_reward = 0
-            while not self.mdp.isTerminal(state):
+            while not self.mdp.is_terminal(state):
                 action = self.act(state)
                 next_state, reward = self.mdp.execute(state, action)
 

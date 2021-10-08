@@ -253,6 +253,14 @@ class GridWorld(MDP):
         else:
             print(self.policy_to_string(policy, title=title))
 
+    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5, two_dimensional=False):
+        if self.matplotlib_installed():
+            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size,
+                                                      two_dimensional=two_dimensional)
+        else:
+            # TODO make a stochastic policy to string
+            pass
+
     """ Visualise a grid world problem as a formatted string """
     def to_string(self, title=""):
         left_arrow = "\u25C4"
@@ -512,6 +520,7 @@ class GridWorld(MDP):
                         verticalalignment="center",
                     )
         plt.imshow(img, origin="lower")
+
         plt.title(title)
         return fig
 
@@ -801,44 +810,50 @@ class GridWorld(MDP):
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy(
-        self, agent, tile_size=32, two_dimensional=False, title="Action Probabilities"
-    ):
-        width_px = self.width * tile_size
-        height_px = self.height * tile_size
-        img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
+    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5, two_dimensional=False):
+        fig, ax, img = self.initialise_grid(grid_size=grid_size)
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
                 if two_dimensional:
-                    prob_left, prob_right, prob_up, prob_down = agent.get_probabilities(
+                    prob_left, prob_right, prob_up, prob_down = policy.get_probabilities(
                         (x, y)
                     )
                 else:
-                    prob_left, prob_right = agent.get_probabilities((x, y))
+                    prob_left, prob_right = policy.get_probabilities((x, y))
                 if (x, y) in self.goal_states:
-                    self.render_tile(x, y, tile_size, img, "goal")
-                else:
-                    self.render_tile(x, y, tile_size, img, "empty")
+                    plt.text(
+                        x,
+                        y,
+                        f"{self.get_goal_states()[(x, y)]:+0.2f}",
+                        fontsize="x-large",
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    )
+                elif (x, y) not in self.blocked_states:
                     if two_dimensional:
-                        render_action_probability(
-                            tile_size, x, y, self.UP, prob_up, v_text_offset=8
+                        plt.text(
+                            x,
+                            y,
+                            f"{prob_up:0.2f}\n{self.UP}\n{prob_left:0.2f}{self.LEFT} {self.RIGHT}{prob_right:0.2f}\n{self.DOWN}\n{prob_down:0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="center",
+                            verticalalignment="center",
                         )
-                        render_action_probability(
-                            tile_size, x, y, self.DOWN, prob_down, v_text_offset=-8
+                    else:
+                        plt.text(
+                            x,
+                            y,
+                            f"{prob_left:0.2f}{self.LEFT} {self.RIGHT}{prob_right:0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="center",
+                            verticalalignment="center",
                         )
-                    render_action_probability(
-                        tile_size, x, y, self.LEFT, prob_left, h_text_offset=-8
-                    )
-                    render_action_probability(
-                        tile_size, x, y, self.RIGHT, prob_right, h_text_offset=8
-                    )
-
-        plt.imshow(img, origin="lower", interpolation="bilinear")
-        plt.axis("off")
+        ax.imshow(img, origin="lower")
         plt.title(title)
         plt.show()
+        return fig
 
 
 class CliffWorld(GridWorld):
