@@ -129,17 +129,34 @@ class DeepPolicyGradientBase(PolicyGradientBase):
 
 if __name__ == '__main__':
     from gridworld import GridWorld
+    from gif_player import GifPlayer
 
     print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
     two_dimensional_gridworld = GridWorld()
-    two_dimensional_gridworld.visualise_as_image()
+
+    gif_player = GifPlayer("Deep Policy Gradient: 2D Gridworld")
+
+    # two_dimensional_gridworld.visualise_as_image()
+
     deep_pg_agent = DeepPolicyGradientBase(two_dimensional_gridworld,
                                          state_space=len(two_dimensional_gridworld.get_initial_state()), action_space=4)
+    _, _, img = two_dimensional_gridworld.visualise_stochastic_policy_as_image(deep_pg_agent, two_dimensional=True)
+    gif_player.add_image(img)
+
     deep_pg_agent.execute(episodes=10)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
+    _, _, img = two_dimensional_gridworld.visualise_stochastic_policy_as_image(deep_pg_agent, two_dimensional=True)
+    gif_player.add_image(img)
+
     deep_pg_agent.execute(episodes=100)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
-    deep_pg_agent.execute(episodes=1000)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
-    deep_pg_agent.execute(episodes=10000)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
+    _, _, img = two_dimensional_gridworld.visualise_stochastic_policy_as_image(deep_pg_agent, two_dimensional=True)
+    gif_player.add_image(img)
+
+    # deep_pg_agent.execute(episodes=1000)
+    # _, _, img = two_dimensional_gridworld.visualise_stochastic_policy_as_image(deep_pg_agent, two_dimensional=True)
+    # gif_player.add_image(img)
+    #
+    # deep_pg_agent.execute(episodes=10000)
+    # _, _, img = two_dimensional_gridworld.visualise_stochastic_policy_as_image(deep_pg_agent, two_dimensional=True)
+    # gif_player.add_image(img)
+
+    gif_player.show(block=True)

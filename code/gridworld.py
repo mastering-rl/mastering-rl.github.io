@@ -522,7 +522,7 @@ class GridWorld(MDP):
         plt.imshow(img, origin="lower")
 
         plt.title(title)
-        return fig
+        return img
 
     """Render each tile individually depending on the current state of the cell"""
 
@@ -850,10 +850,10 @@ class GridWorld(MDP):
                             horizontalalignment="center",
                             verticalalignment="center",
                         )
-        ax.imshow(img, origin="lower")
+        img = ax.imshow(img, origin="lower", animated=True)
         plt.title(title)
-        plt.show()
-        return fig
+        # plt.show()
+        return fig, ax, img
 
 
 class CliffWorld(GridWorld):
