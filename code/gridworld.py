@@ -253,10 +253,9 @@ class GridWorld(MDP):
         else:
             print(self.policy_to_string(policy, title=title))
 
-    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5, two_dimensional=False):
+    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5):
         if self.matplotlib_installed():
-            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size,
-                                                      two_dimensional=two_dimensional)
+            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size)
         else:
             # TODO make a stochastic policy to string
             pass
@@ -810,7 +809,7 @@ class GridWorld(MDP):
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5, two_dimensional=False):
+    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
 
         # Render the grid
@@ -818,10 +817,10 @@ class GridWorld(MDP):
             for x in range(0, self.width):
                 prob_left = policy.get_probability((x, y), self.LEFT)
                 prob_right = policy.get_probability((x, y), self.RIGHT)
-                if two_dimensional:
+                if self.height > 1:
                     prob_up = policy.get_probability((x, y), self.UP)
                     prob_down = policy.get_probability((x, y), self.DOWN)
-                    
+
                 if (x, y) in self.goal_states:
                     plt.text(
                         x,
@@ -832,7 +831,7 @@ class GridWorld(MDP):
                         verticalalignment="center",
                     )
                 elif (x, y) not in self.blocked_states:
-                    if two_dimensional:
+                    if self.height > 1:
                         plt.text(
                             x,
                             y,
