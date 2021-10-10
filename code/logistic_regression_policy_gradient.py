@@ -1,7 +1,7 @@
-from abstract_policy_gradient import PolicyGradientBase
 import math
 import random
-from mdp import *
+
+from abstract_policy_gradient import PolicyGradientBase
 
 
 class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
@@ -13,8 +13,8 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
     can update the policy using the policy gradient mechanism!
     """
 
-    def __init__(self, mdp, num_params=2, alpha=0.1, gamma=0.95) -> None:
-        super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
+    def __init__(self, mdp, policy, num_params=2, alpha=0.1) -> None:
+        super().__init__(mdp=mdp, policy=policy, alpha=alpha)
         self.theta = [random.random() for _ in range(num_params)]  # a vector of policy parameters
 
     def update(self, states, actions, rewards):
@@ -24,15 +24,11 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
         G is the total future discounted reward received in the episode:
             G <- gamma^0 * r_{t+1} + ... +  gamma^(T - t) * r_{T+1}
         """
-        discounted_future_rewards = self.discounted_rewards(rewards)
         for t in range(len(states)):
-            state = states[t]
-            action = actions[t]
-            discounted_future_reward = discounted_future_rewards[t]
-            gradient_log_pi = self.gradient_log_pi(state, action)
+            gradient_log_pi = self.gradient_log_pi(states[t], actions[t])
             # update each parameter
             for i in range(len(self.theta)):
-                self.theta[i] += self.alpha * (self.gamma ** t) * discounted_future_reward * gradient_log_pi[i]
+                self.theta[i] += self.alpha * (self.gamma ** t) * rewards[t] * gradient_log_pi[i]
 
     def act(self, state):
         """
@@ -46,30 +42,6 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
             return self.mdp.LEFT
         else:
             return self.mdp.RIGHT
-
-    def execute(self, episodes=100):
-        for i in range(episodes):
-            # Use these to store the states, actions and rewards for the episode. These form the trajectory which is
-            # used to update the agent at the end of the episode.
-            actions = []
-            states = []
-            rewards = []
-
-            state = self.mdp.get_initial_state()
-            episode_reward = 0
-            while not self.mdp.is_terminal(state):
-                action = self.act(state)
-                next_state, reward = self.mdp.execute(state, action)
-
-                # store the information from that step of the trajectory
-                states.append(state)
-                actions.append(action)
-                rewards.append(reward)
-
-                state = next_state
-                episode_reward += reward
-
-            self.update(states=states, actions=actions, rewards=rewards)
 
     def get_probabilities(self, state):
         """
@@ -100,39 +72,31 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
         else:
             return [- s_i * self.logistic_function(y) for s_i in state]
 
+    """ Standard logistic function """
     @staticmethod
     def logistic_function(y):
-        """
-        Standard logistic function which we will use to transform our policy values into probabilties.
-        """
         return 1 / (1 + math.exp(-y))
 
+    """ Compute the dot product between two vectors """
     @staticmethod
     def dot_product(vec1, vec2):
-        """
-        Function to compute the dot product between two vectors:
-            = v1[0] * v2[0] + v1[1] * v2[1] + ... + v1[n-1] * v2[n-1]
-        """
         return sum([v1 * v2 for v1, v2 in zip(vec1, vec2)])
 
 
 if __name__ == '__main__':
+    from gridworld import GridWorld
     from gridworld import OneDimensionalGridWorld
+    from logistic_regression_policy import LogisticRegressionPolicy
 
     print("==========\nLogistic Regression Policy Gradient: 1D Gridworld\n==========")
     # make a GridWorld that only has two dimensions
     one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
-    one_dimensional_gridworld.visualise_as_image()
+    #one_dimensional_gridworld.visualise_as_image()
+    policy = LogisticRegressionPolicy(actions = [GridWorld.LEFT, GridWorld.RIGHT], num_params=2, theta=None, alpha=0.1, gamma=one_dimensional_gridworld.get_discount_factor())
     pg_agent = LogisticRegressionPolicyGradientBase(one_dimensional_gridworld,
-                                                   num_params=len(one_dimensional_gridworld.get_initial_state()),  # need a weight for each part of the state-space
-                                                   alpha=0.1,
-                                                   gamma=0.95)
-    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
-    pg_agent.execute(episodes=10)
-    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
-    pg_agent.execute(episodes=100)
-    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+                                                    policy,
+                                                    num_params=len(one_dimensional_gridworld.get_initial_state()),  # need a weight for each part of the state-space
+                                                    alpha=0.1,
+                                                    gamma=one_dimensional_gridworld.get_discount_factor())
     pg_agent.execute(episodes=1000)
-    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
-    pg_agent.execute(episodes=10000)
-    one_dimensional_gridworld.visualise_stochastic_policy(pg_agent)
+    one_dimensional_gridworld.visualise_stochastic_policy(policy)

@@ -6,12 +6,12 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
-    TERMINATE = "terminate"
-    TERMINAL = ("terminal", "terminal")
-    LEFT = "\u25C4"
-    UP = "\u25B2"
-    RIGHT = "\u25BA"
-    DOWN = "\u25BC"
+    TERMINATE = 'terminate'
+    TERMINAL = ('terminal', 'terminal')
+    LEFT = '\u25C4'
+    UP = '\u25B2'
+    RIGHT = '\u25BA'
+    DOWN = '\u25BC'
 
     def __init__(
         self,
@@ -816,12 +816,12 @@ class GridWorld(MDP):
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
+                prob_left = policy.get_probability((x, y), self.LEFT)
+                prob_right = policy.get_probability((x, y), self.RIGHT)
                 if two_dimensional:
-                    prob_left, prob_right, prob_up, prob_down = policy.get_probabilities(
-                        (x, y)
-                    )
-                else:
-                    prob_left, prob_right = policy.get_probabilities((x, y))
+                    prob_up = policy.get_probability((x, y), self.UP)
+                    prob_down = policy.get_probability((x, y), self.DOWN)
+                    
                 if (x, y) in self.goal_states:
                     plt.text(
                         x,

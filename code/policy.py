@@ -1,18 +1,16 @@
 class Policy:
-    pass
-
-
-class DeterministicPolicy(Policy):
     def select_action(self, state):
         abstract
 
+
+class DeterministicPolicy(Policy):
     def update(self, state, action):
         abstract
 
 
 class StochasticPolicy(Policy):
-    def select_action(self, state, action):
+    def update(self, states, actions, rewards):
         abstract
 
-    def update(self, state, action, value):
+    def get_probability(self, state, action):
         abstract

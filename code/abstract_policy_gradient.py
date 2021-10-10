@@ -1,46 +1,44 @@
-from abc import ABC, abstractmethod
+import math
 
 
-class PolicyGradientBase(ABC):
-    def __init__(self, mdp, gamma, alpha) -> None:
+class PolicyGradientBase():
+    def __init__(self, mdp, policy, alpha) -> None:
         super().__init__()
         self.alpha = alpha  # learning rate (gradient update step-size)
-        self.gamma = gamma  # discount rate
         self.mdp = mdp
+        self.policy = policy
 
-    @abstractmethod
-    def update(self, states, actions, rewards):
-        """
-        Update the policy
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def act(self, state):
-        """
-        Select and action based on the policy of the agent
-        """
-        raise NotImplementedError
-
-    @abstractmethod
+    """ Generate and store an entire episode trajectory to use to update the policy """
     def execute(self, episodes=100):
-        """
-        Generate and store an entire episode trajectory to use to update the agent
-        """
-        raise NotImplementedError
+        for _ in range(episodes):
+            actions = []
+            states = []
+            rewards = []
+
+            state = self.mdp.get_initial_state()
+            episode_reward = 0
+            while not self.mdp.is_terminal(state):
+                action = self.policy.select_action(state)
+                next_state, reward = self.mdp.execute(state, action)
+
+                # Store the information from this step of the trajectory
+                states.append(state)
+                actions.append(action)
+                rewards.append(reward)
+
+                state = next_state
+
+            # Calculate future discount rewards G once instead of in each loop
+            discounted_rewards = self.discounted_rewards(rewards)
+            for t in range(len(states)):
+                delta = self.alpha * pow(self.mdp.get_discount_factor(), t) * discounted_rewards[t]
+                self.policy.update(state=states[t], action=actions[t], delta=delta)
+            
 
     def discounted_rewards(self, rewards):
-        """
-        Generate a list of the discounted future rewards at that step.
-            discounted_rewards[0] =  gamma^0 * r_{1} + ... +  gamma^T * r_{T+1}
-            discounted_rewards[1] =  gamma^0 * r_{2} + ... +  gamma^(T-1) * r_{T+1}
-            ...
-            discounted_rewards[t] =  gamma^0 * r_{t+1} + ... +  gamma^(T-t) * r_{T+1}
-            ...
-            discounted_rewards[T-2] =  gamma^0 * r_{T-1} + ... +  gamma^2 * r_{T+1}
-            discounted_rewards[T-1] =  gamma^0 * r_{T} + ... +  gamma^1 * r_{T+1}
-
-        Notice that discounted_reward[T-2] = rewards[T-1] + discounted_reward[T-1] * gamma.
+        """ 
+        Generate a list of the discounted future rewards at each step of an episode
+        Note that discounted_reward[T-2] = rewards[T-1] + discounted_reward[T-1] * gamma.
         We can use that pattern to populate the discounted_rewards array.
         """
         T = len(rewards)
@@ -48,5 +46,5 @@ class PolicyGradientBase(ABC):
         # the final discounted reward is just the reward you get at that step
         discounted_future_rewards[T - 1] = rewards[T - 1]
         for t in reversed(range(0, T - 1)):
-            discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t + 1] * self.gamma
+            discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t + 1] * self.mdp.get_discount_factor()
         return discounted_future_rewards

@@ -16,8 +16,8 @@ class DeepPolicyGradientBase(PolicyGradientBase):
     This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
     """
 
-    def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001, gamma=0.95) -> None:
-        super().__init__(mdp=mdp, gamma=gamma, alpha=alpha)
+    def __init__(self, mdp, policy, state_space, action_space, hidden_dim=64, alpha=0.001, gamma=0.95) -> None:
+        super().__init__(mdp=mdp, policy=policy, alpha=alpha)
         self.mdp = mdp
         self.state_space = state_space
         self.action_space = action_space
@@ -39,19 +39,28 @@ class DeepPolicyGradientBase(PolicyGradientBase):
         # the update stage.
         self.optimiser = Adam(self.policy_network.parameters(), lr=self.alpha)
 
+        # a two-way mapping from actions to integer IDs for ordinal encoding
+        actions = self.mdp.get_actions()
+        self.action_to_id = {actions[i]: i for i in range(len(actions))}
+        self.id_to_action = {action_id: action for action, action_id in self.action_to_id.items()}
+
     def act(self, state):
         """
         This function allows us to do a forward pass through the network in order to get our action logits which we will
         turn into a categorical distribution. We can then use this distribution to draw an action from the action-space
         """
-        action_logits = self.policy_network(state)
+        # turn the state into a tensor such that it can be passed into the network, which requires a tensor of
+        # floats
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
+
+        action_logits = self.policy_network(state_tensor)
         action_distribution = Categorical(logits=action_logits)
         action = action_distribution.sample()
-        log_prob = action_distribution.log_prob(
-            action)  # we also want to get the log prob of the action for the policy gradient update step
-        return action, log_prob
+        log_prob = action_distribution.log_prob(action)  # get the log prob of the action for the policy gradient update
+        return self.id_to_action[action.item()], log_prob
+        #return action, log_prob
 
-    def get_probabilities(self, state):
+    def get_probability(self, state, action):
         """
         Return the probabilities of each action given the state of the environment. This is used for the stochastic
         policy visualisation tool.
@@ -62,7 +71,9 @@ class DeepPolicyGradientBase(PolicyGradientBase):
         # a softmax layer turns action logits into probabilities
         probabilities = F.softmax(input=action_logits, dim=-1).tolist()
         # probabilities are in the order: prob_left, prob_right, prob_up, prob_down
-        return probabilities
+        return probabilities[self.action_to_id[action]]
+        #print(probabilities)
+        #return probabilities
 
     def evaluate_actions(self, states, actions):
         action_logits = self.policy_network(states)
@@ -75,37 +86,30 @@ class DeepPolicyGradientBase(PolicyGradientBase):
             actions = []
             states = []
             rewards = []
-            action_log_probs = []
 
             state = self.mdp.get_initial_state()
-            episode_reward = 0
             while not self.mdp.is_terminal(state):
-                # turn the state into a tensor such that it can be passed into the network, which requires a tensor of
-                # floats
-                state_tensor = torch.as_tensor(state, dtype=torch.float32)
-
-                action, action_log_prob = self.act(state_tensor)
+                
+                action, action_log_prob = self.act(state)
                 # take the action (which is a tensor) and convert it into an action for the mdp
-                next_state, reward = self.mdp.execute(state, self.convert_from_tensor_to_action(action))
+                next_state, reward = self.mdp.execute(state, action)
+                #next_state, reward = self.mdp.execute(state, self.convert_from_tensor_to_action(action))
 
                 # store the information from that step of the trajectory
                 states.append(state)
                 actions.append(action)
                 rewards.append(reward)
-                action_log_probs.append(action_log_prob)
 
                 state = next_state
-                episode_reward += reward
 
-            # print(f"episode reward = {episode_reward}")
             self.update(states=states, actions=actions, rewards=rewards)
 
     def update(self, states, actions, rewards):
         # convert to tensors such that we can use torch mechanisms to compute the gradient and update the node weights
-        # in the network.
+        # in the network
         returns = torch.as_tensor(self.discounted_rewards(rewards), dtype=torch.float32)
         states = torch.as_tensor(states, dtype=torch.float32)
-        actions = torch.as_tensor(actions)
+        actions = torch.as_tensor([self.action_to_id[action] for action in actions])
 
         action_log_probs = self.evaluate_actions(states, actions)
 
@@ -115,6 +119,7 @@ class DeepPolicyGradientBase(PolicyGradientBase):
         self.optimiser.step()  # make a gradient descent step
 
     def convert_from_tensor_to_action(self, action):
+        
         if action == 0:
             return self.mdp.LEFT
         if action == 1:
@@ -126,20 +131,13 @@ class DeepPolicyGradientBase(PolicyGradientBase):
         if action == 4:
             return self.mdp.TERMINATE
 
-
 if __name__ == '__main__':
     from gridworld import GridWorld
 
     print("==========\nDeep Policy Gradient: 2D Gridworld\n==========")
     two_dimensional_gridworld = GridWorld()
     two_dimensional_gridworld.visualise_as_image()
-    deep_pg_agent = DeepPolicyGradientBase(two_dimensional_gridworld,
+    deep_pg_agent = DeepPolicyGradientBase(two_dimensional_gridworld, policy=None,
                                          state_space=len(two_dimensional_gridworld.get_initial_state()), action_space=4)
-    deep_pg_agent.execute(episodes=10)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
-    deep_pg_agent.execute(episodes=100)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
     deep_pg_agent.execute(episodes=1000)
-    two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
-    deep_pg_agent.execute(episodes=10000)
     two_dimensional_gridworld.visualise_stochastic_policy(deep_pg_agent, two_dimensional=True)
