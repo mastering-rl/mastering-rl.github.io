@@ -19,7 +19,6 @@ class ModelFreeReinforcementLearner:
                 q_value = self.qfunction.get_q_value(state, action)
                 delta = self.get_delta(reward, q_value, state, next_state, next_action)
                 self.qfunction.update(state, action, delta)
-                self.qfunction.update(state, action, self.alpha * delta)
                 state = next_state
                 action = next_action
 
