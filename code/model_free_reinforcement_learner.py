@@ -18,12 +18,9 @@ class ModelFreeReinforcementLearner:
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
                 q_value = self.qfunction.get_q_value(state, action)
                 delta = self.get_delta(reward, q_value, state, next_state, next_action)
-                self.qfunction.update(state, action, delta)
+                self.qfunction.update(state, action, self.alpha * delta)
                 state = next_state
                 action = next_action
-
-            if n % 10 == 0:
-                print(self.mdp.q_function_to_string(self.qfunction))
 
     """ Calculate the delta for the update """
 

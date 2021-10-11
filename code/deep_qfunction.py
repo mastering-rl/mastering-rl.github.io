@@ -66,7 +66,7 @@ class DeepQFunction(QFunction):
         arg_max_q = None
         max_q = float("-inf")
         for action in actions:
-            value = q_values[self.action_to_id[action]]
+            value = q_values[self.action_to_id[action]].item()
             if max_q < value:
                 arg_max_q = action
                 max_q = value

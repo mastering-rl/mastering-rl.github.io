@@ -3,7 +3,11 @@ from qlearning import QLearning
 from deep_qfunction import DeepQFunction
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-mdp = GridWorld()
+mdp = GridWorld(width=4,
+                height=3,
+                goals=dict(
+                    [((3, 2), 100), ((3, 1), -1)]
+                ))
 qfunction = DeepQFunction(mdp=mdp, state_space=len(mdp.get_initial_state()), action_space=5, hiddem_dim=16)
 QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=1000)
 policy = qfunction.extract_policy(mdp)
