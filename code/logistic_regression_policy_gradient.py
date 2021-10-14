@@ -15,7 +15,9 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
 
     def __init__(self, mdp, policy, num_params=2, alpha=0.1) -> None:
         super().__init__(mdp=mdp, policy=policy, alpha=alpha)
-        self.theta = [random.random() for _ in range(num_params)]  # a vector of policy parameters
+        self.theta = [
+            random.random() for _ in range(num_params)
+        ]  # a vector of policy parameters
 
     def update(self, states, actions, rewards):
         """
@@ -28,7 +30,9 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
             gradient_log_pi = self.gradient_log_pi(states[t], actions[t])
             # update each parameter
             for i in range(len(self.theta)):
-                self.theta[i] += self.alpha * (self.gamma ** t) * rewards[t] * gradient_log_pi[i]
+                self.theta[i] += (
+                    self.alpha * (self.gamma ** t) * rewards[t] * gradient_log_pi[i]
+                )
 
     def act(self, state):
         """
@@ -70,33 +74,47 @@ class LogisticRegressionPolicyGradientBase(PolicyGradientBase):
         if action == self.mdp.LEFT:
             return [s_i - s_i * self.logistic_function(y) for s_i in state]
         else:
-            return [- s_i * self.logistic_function(y) for s_i in state]
+            return [-s_i * self.logistic_function(y) for s_i in state]
 
     """ Standard logistic function """
+
     @staticmethod
     def logistic_function(y):
         return 1 / (1 + math.exp(-y))
 
     """ Compute the dot product between two vectors """
+
     @staticmethod
     def dot_product(vec1, vec2):
         return sum([v1 * v2 for v1, v2 in zip(vec1, vec2)])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from gridworld import GridWorld
     from gridworld import OneDimensionalGridWorld
     from logistic_regression_policy import LogisticRegressionPolicy
 
     print("==========\nLogistic Regression Policy Gradient: 1D Gridworld\n==========")
     # make a GridWorld that only has two dimensions
-    one_dimensional_gridworld = OneDimensionalGridWorld(width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)])
-    #one_dimensional_gridworld.visualise_as_image()
-    policy = LogisticRegressionPolicy(actions = [GridWorld.LEFT, GridWorld.RIGHT], num_params=2, theta=None, alpha=0.1, gamma=one_dimensional_gridworld.get_discount_factor())
-    pg_agent = LogisticRegressionPolicyGradientBase(one_dimensional_gridworld,
-                                                    policy,
-                                                    num_params=len(one_dimensional_gridworld.get_initial_state()),  # need a weight for each part of the state-space
-                                                    alpha=0.1,
-                                                    gamma=one_dimensional_gridworld.get_discount_factor())
+    one_dimensional_gridworld = OneDimensionalGridWorld(
+        width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)]
+    )
+    # one_dimensional_gridworld.visualise_as_image()
+    policy = LogisticRegressionPolicy(
+        actions=[GridWorld.LEFT, GridWorld.RIGHT],
+        num_params=2,
+        theta=None,
+        alpha=0.1,
+        gamma=one_dimensional_gridworld.get_discount_factor(),
+    )
+    pg_agent = LogisticRegressionPolicyGradientBase(
+        one_dimensional_gridworld,
+        policy,
+        num_params=len(
+            one_dimensional_gridworld.get_initial_state()
+        ),  # need a weight for each part of the state-space
+        alpha=0.1,
+        gamma=one_dimensional_gridworld.get_discount_factor(),
+    )
     pg_agent.execute(episodes=1000)
     one_dimensional_gridworld.visualise_stochastic_policy(policy)

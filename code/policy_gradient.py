@@ -1,5 +1,4 @@
-
-class PolicyGradient():
+class PolicyGradient:
     def __init__(self, mdp, policy, alpha) -> None:
         super().__init__()
         self.alpha = alpha  # learning rate (gradient update step-size)
@@ -7,6 +6,7 @@ class PolicyGradient():
         self.policy = policy
 
     """ Generate and store an entire episode trajectory to use to update the policy """
+
     def execute(self, episodes=100):
         for _ in range(episodes):
             actions = []
@@ -28,10 +28,9 @@ class PolicyGradient():
 
             deltas = self.calculate_deltas(rewards)
             self.policy.update(states=states, actions=actions, deltas=deltas)
-            
 
     def calculate_deltas(self, rewards):
-        """ 
+        """
         Generate a list of the discounted future rewards at each step of an episode
         Note that discounted_reward[T-2] = rewards[T-1] + discounted_reward[T-1] * gamma.
         We can use that pattern to populate the discounted_rewards array.
@@ -41,8 +40,15 @@ class PolicyGradient():
         # the final discounted reward is just the reward you get at that step
         discounted_future_rewards[T - 1] = rewards[T - 1]
         for t in reversed(range(0, T - 1)):
-            discounted_future_rewards[t] = rewards[t] + discounted_future_rewards[t + 1] * self.mdp.get_discount_factor()
+            discounted_future_rewards[t] = (
+                rewards[t]
+                + discounted_future_rewards[t + 1] * self.mdp.get_discount_factor()
+            )
         deltas = []
         for t in range(len(discounted_future_rewards)):
-            deltas += [self.alpha * (self.mdp.get_discount_factor() ** t) * discounted_future_rewards[t]]
+            deltas += [
+                self.alpha
+                * (self.mdp.get_discount_factor() ** t)
+                * discounted_future_rewards[t]
+            ]
         return deltas

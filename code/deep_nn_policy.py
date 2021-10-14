@@ -32,18 +32,21 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
             nn.ReLU(),  # have a non-linear activation function between layers
             nn.Linear(in_features=hidden_dim, out_features=hidden_dim),
             nn.ReLU(),
-            nn.Linear(in_features=hidden_dim, out_features=self.action_space)
+            nn.Linear(in_features=hidden_dim, out_features=self.action_space),
         )
-        
+
         # The optimiser for the policy network, used to update policy weights
         self.optimiser = Adam(self.policy_network.parameters(), lr=self.alpha)
 
         # A two-way mapping from actions to integer IDs for ordinal encoding
         actions = self.mdp.get_actions()
         self.action_to_id = {actions[i]: i for i in range(len(actions))}
-        self.id_to_action = {action_id: action for action, action_id in self.action_to_id.items()}
+        self.id_to_action = {
+            action_id: action for action, action_id in self.action_to_id.items()
+        }
 
     """ Select an action using a forward pass through the network """
+
     def select_action(self, state):
         # Convert the state into a tensor so it can be passed into the network
         state = torch.as_tensor(state, dtype=torch.float32)
@@ -53,6 +56,7 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         return self.id_to_action[action.item()]
 
     """ Get the probability of an action being selected in a state """
+
     def get_probability(self, state, action):
         state = torch.as_tensor(state, dtype=torch.float32)
         with torch.no_grad():
