@@ -74,7 +74,7 @@ It is clear to see that the value iteration can be easily parallelised by updati
 (sec:value-iteration:implementation)=
 ## Implementation
 
-Below is a Python implementation for value iteration. In this implementation, the parameters `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
+Below is a Python implementation for value iteration. In this implementation, the parameter `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
 :load: "../code/value_iteration.py"

@@ -1,4 +1,3 @@
-import random
 from tabular_policy import TabularPolicy
 
 
@@ -26,9 +25,6 @@ class QFunction:
             if max_q < value:
                 arg_max_q = action
                 max_q = value
-            # If these actions have the same Q-value, randomly choose one
-            elif max_q == value:
-                arg_max_q = random.choice([arg_max_q, action])
         return (arg_max_q, max_q)
 
     """ Extract a policy for this Q-function  """

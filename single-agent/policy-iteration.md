@@ -76,7 +76,7 @@ Set $\pi$ to arbitrary policy; e.g. $\pi(s) = a$ for all $s$, where $a \in A$ is
 
 $\text{Repeat}$\
 $\quad\quad$ Compute $V(s)$ for all $s$ using policy evaluation\
-$\quad\quad \text{For each}~ s \in S$\
+$\quad\quad$ $\text{For each}~ s \in S$\
 $\quad\quad\quad\quad$ $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)}Q(s,a)$\
 $\text{Until}~ \pi$ does not change
 :::
@@ -87,135 +87,40 @@ However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence suggest
 
 ## Implementation
 
-First, let's look at the implementation of policy evaluation. First, we set up a basic tabular policy class representing the (deterministic) policy:
+Below is a Python implementation for policy iteration. In this implementation, the parameter `max_iterations` is the maximum number of iterations of the policy iteration, and the parameter `theta` the largest amount the value function corresponding to the current policy can change before the policy evaluation look terminates.
 
 ```{code-cell} ipython3
-class Policy(): pass
-
-class DeterministicPolicy(Policy):
-    def selectAction(state): abstract
-    def update(state, action, something): abstract
-
-import random
-from collections import defaultdict
-
-class TabularPolicy(DeterministicPolicy):
-    def __init__(self, mdp, initialPolicy = None):
-        self.mdp = mdp
-        if initialPolicy is not None: 
-            self.policyTable = initialPolicy
-        else:
-            self.policyTable = self.initialise()
-
-    def initialise(self):
-        action = random.choice(self.mdp.getActions())
-        return defaultdict(lambda: action)
-
-    def selectAction(self, state):
-        return self.policyTable[state]
-
-    def update(self, state, action):
-        self.policyTable[state] = action
+:load: "../code/policy_iteration.py"
 ```
 
-Given this, we can implement policy evaluation.:
+From this, we can see that policy evaluation  looks very similar to value iteration. The main differences is in the inner loop: instead of finding the action with the maximum Q-value, we simply find the value of the action that is given the policy: ``policy.select_action(state)``.
 
-```{code-cell} ipython3
-class PolicyIteration():
-
-    def __init__(self, mdp):
-        self.mdp = mdp
-
-    ''' Calculate Q(s,a) of an action '''
-    def qValue(self, state, action, values):
-        newValue = 0.0
-        for (newState, probability) in mdp.getTransitions(state, action):
-            reward = mdp.getReward(state, action, newState)
-            newValue += probability * (reward + (mdp.getDiscountFactor() * values[newState]))
-        return newValue
-
-    ''' Implmentation of policy iteration iteration '''
-    def policyEvaluation(self, policy, values, theta = 0.001):
-
-        while True:
-            delta = 0.0
-            newValues = dict()
-            for state in mdp.getStates():
-                # Calculate the value of V(s)
-                oldValue = values[state]
-                values[state] = self.qValue(state, policy.selectAction(state), values)
-                delta = max(delta, abs(oldValue - values[state]))
-            
-            # terminate if the value function has converged
-            if delta < theta:
-                break
-
-        return values
-```
-
-We can see that this looks very similar to value iteration. The main differences is in the inner loop: instead of finding the action with the maximum Q-value, we simply find the value of the action that is given the policy: ``policy.selectAction(state), values)``.
-
-From here, we can then implement policy iteration:
-
-```{code-cell} ipython3
-class PolicyIteration(PolicyIteration):
-
-    ''' Implmentation of policy iteration iteration '''
-    def policyIteration(self, iterations = 100, theta = 0.001):
-
-        # Initialise the value function V and policy function pi
-        values = self.initialiseValueFunction()
-        policy = TabularPolicy(self.mdp)
-        
-        for i in range(1, iterations):
-            policyChanged = False
-            values = self.policyEvaluation(policy, values, theta)
-            for state in mdp.getStates():
-                oldAction = policy.selectAction(state)
-                
-                qValues = dict()
-                for action in mdp.getActions(state):
-                    # Calculate the value of Q(s,a)
-                    newValue = self.qValue(state, action, values)
-                    qValues.update({action: newValue})
-
-                # V(s) = argmax_a Q(s,a)
-                newAction = max(qValues, key = lambda i: qValues[i])
-                policy.update(state, newAction)
-
-                policyChanged = True if newAction is not oldAction else policyChanged
-
-            if not policyChanged:
-                print("Converged in %d iterations" % i)
-                break
-                
-        return policy
-
-    def initialiseValueFunction(self):
-        return defaultdict(lambda: 0.0)
-```
-
-To assess, let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action and using that for every state:
+Let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action and using that for every state:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
-mdp = GridWorld()
-policyIteration = PolicyIteration(mdp)
+from policy_iteration import PolicyIteration
+from tabular_policy import TabularPolicy
 
-for iterations in [0, 1, 2, 3, 4, 5, 10]:
-    print("After iteration " + str(iterations))
-    print(mdp.policyToString(policyIteration.policyIteration(iterations = iterations).policyTable) + "\n")
+
+for iterations in [0, 1, 2, 3, 4, 5]:
+    mdp = GridWorld()
+    policy = TabularPolicy(default_action=mdp.get_actions()[0])
+    PolicyIteration(mdp, policy).policy_iteration(max_iterations=iterations)
+    mdp.visualise_policy(policy)
 ```
 
-We can see that this converges in just four  iterations. Let's try on a larger state space of a 20 x 15 grid::
+We can see that this converges in just four iterations. Let's try on a larger state space of a 20 x 19 grid:
 
 ```{code-cell} ipython3
-mdp = GridWorld(width = 20, height = 15)
-policyIteration = PolicyIteration(mdp)
-print(mdp.policyToString(policyIteration.policyIteration(iterations = 100).policyTable) + "\n")
+mdp = GridWorld(width=20, height=15)
+policy = TabularPolicy(default_action=mdp.get_actions()[0])
+iterations = PolicyIteration(mdp, policy).policy_iteration(max_iterations=100)
+print("Number of iterations until convergence: %d" % (iterations))
+mdp.visualise_policy(policy)
 ```
 
-This terminates in 19 iterations. We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward.
+This terminates in 19 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.
 
 ## Summary
 

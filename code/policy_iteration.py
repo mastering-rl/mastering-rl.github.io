@@ -27,12 +27,12 @@ class PolicyIteration:
 
     """ Implmentation of policy iteration iteration. Returns the number of iterations exected """
 
-    def policy_iteration(self, iterations=100, theta=0.001):
+    def policy_iteration(self, max_iterations=100, theta=0.001):
 
         # create a value function to hold details
         values = TabularValueFunction()
 
-        for i in range(iterations):
+        for i in range(1, max_iterations + 1):
             policy_changed = False
             values = self.policy_evaluation(self.policy, values, theta)
             for state in self.mdp.get_states():
@@ -55,4 +55,4 @@ class PolicyIteration:
             if not policy_changed:
                 return i
 
-        return iterations
+        return max_iterations
