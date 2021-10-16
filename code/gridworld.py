@@ -6,12 +6,12 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
-    TERMINATE = "terminate"
-    TERMINAL = ("terminal", "terminal")
-    LEFT = "\u25C4"
-    UP = "\u25B2"
-    RIGHT = "\u25BA"
-    DOWN = "\u25BC"
+    TERMINATE = 'terminate'
+    TERMINAL = ('terminal', 'terminal')
+    LEFT = '\u25C4'
+    UP = '\u25B2'
+    RIGHT = '\u25BA'
+    DOWN = '\u25BC'
 
     def __init__(
         self,
@@ -253,10 +253,9 @@ class GridWorld(MDP):
         else:
             print(self.policy_to_string(policy, title=title))
 
-    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5, two_dimensional=False):
+    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5):
         if self.matplotlib_installed():
-            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size,
-                                                      two_dimensional=two_dimensional)
+            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size)
         else:
             # TODO make a stochastic policy to string
             pass
@@ -522,7 +521,7 @@ class GridWorld(MDP):
         plt.imshow(img, origin="lower")
 
         plt.title(title)
-        return img
+        return fig
 
     """Render each tile individually depending on the current state of the cell"""
 
@@ -810,18 +809,18 @@ class GridWorld(MDP):
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5, two_dimensional=False):
+    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
-                if two_dimensional:
-                    prob_left, prob_right, prob_up, prob_down = policy.get_probabilities(
-                        (x, y)
-                    )
-                else:
-                    prob_left, prob_right = policy.get_probabilities((x, y))
+                prob_left = policy.get_probability((x, y), self.LEFT)
+                prob_right = policy.get_probability((x, y), self.RIGHT)
+                if self.height > 1:
+                    prob_up = policy.get_probability((x, y), self.UP)
+                    prob_down = policy.get_probability((x, y), self.DOWN)
+
                 if (x, y) in self.goal_states:
                     plt.text(
                         x,
@@ -832,7 +831,7 @@ class GridWorld(MDP):
                         verticalalignment="center",
                     )
                 elif (x, y) not in self.blocked_states:
-                    if two_dimensional:
+                    if self.height > 1:
                         plt.text(
                             x,
                             y,
@@ -850,7 +849,7 @@ class GridWorld(MDP):
                             horizontalalignment="center",
                             verticalalignment="center",
                         )
-        img = ax.imshow(img, origin="lower", animated=True)
+        ax.imshow(img, origin="lower")
         plt.title(title)
         # plt.show()
         return fig, ax, img
