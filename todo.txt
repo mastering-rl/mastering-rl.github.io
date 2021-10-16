@@ -3,10 +3,8 @@
 - Fix reward shaping graph
 - Consistent learning outcomes
 - Reward shaping example
-- Remove hard import code from early chapters (before the pythonpath was working)
-- Add the idea of a base policy to MCTS
 - Add google analytics: https://jupyterbook.org/advanced/html.html
-- Consider networkx
+- Add policy gradients code.
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
 
 - Read code cells from path:
