@@ -140,21 +140,56 @@ Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means i
 
 Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every $Q(s,a)$. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).
 
-Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros:
+Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros, taking the GridWorld example:
 
 ```{code-cell} ipython3
 ---
 tags: [remove-input]
 ---
-from tabulate import tabulate
+import matplotlib.pyplot as plt
+
+def plot_qtable(headers, data):
+
+    fig, ax = plt.subplots()
+
+    # Format cell data as text for consistent decimal place formatting
+    formatted_data = []
+    for row in data:
+        formatted_row = []
+        formatted_row.append(row[0])
+        for cell in row[1:len(row)]:
+            formatted_row.append("%.2f" % cell)
+        formatted_data.append(formatted_row)
+    table = ax.table(cellText=formatted_data, colLabels=headers, loc='center', cellLoc='right', edges='open')
+
+    cells = table.get_celld()
+    for i in range(0, len(headers)):
+        cells[(0, i)].set_text_props(horizontalalignment='right', weight='bold', color='black')
+        cells[(0, i)].visible_edges = 'BT'
+        cells[(0, i)].visible_edges = 'BT'
+        cells[(len(data), i)].visible_edges = 'B'
+
+    table.set_fontsize(14)
+    table.scale(0.9, 1.7)
+    ax.axis('off')
+
+    plt.show()
+
 
 headers=["State", "Up", "Down", "Right", "Left"]
-data = [[(0,0), 0, 0, 0, 0],
-        [(0,1), 0, 0, 0, 0],
-        ["..."],
-        [(2,2), 0, 0, 0, 0],
-        [(2,3), 0, 0, 0, 0]] 
-print (tabulate(data, headers))
+data = [[(0,0), 0.00, 0.00, 0.00, 0.00],
+        [(0,1), 0.00, 0.00, 0.00, 0.00],
+        [(0,2), 0.00, 0.00, 0.00, 0.00],
+        [(1,0), 0.00, 0.00, 0.00, 0.00],
+        [(1,1), 0.00, 0.00, 0.00, 0.00],
+        [(1,2), 0.00, 0.00, 0.00, 0.00],
+        [(2,0), 0.00, 0.00, 0.00, 0.00],
+        [(2,1), 0.00, 0.00, 0.00, 0.00],
+        [(2,2), 0.00, 0.00, 0.00, 0.00],
+        [(3,0), 0.00, 0.00, 0.00, 0.00],
+        [(3,1), 0.00, 0.00, 0.00, 0.00],
+        [(3,2), 0.00, 0.00, 0.00, 0.00]] 
+plot_qtable(headers, data)
 ```
 
 After some training, we may end up with a Q-function that looks something like this:
@@ -163,12 +198,19 @@ After some training, we may end up with a Q-function that looks something like t
 ---
 tags: [remove-input]
 ---
-data = [[(0,0), 0.53, 0.36, 0.36, 0.21],
-        [(0,1), 0.61, 0.27, 0.23, 0.23],
-        ["..."],
-        [(2,2), 0.79, 0.72, 0.90, 0.72],
-        [(2,3), 0.90, 0.78, 0.99, 0.81]] 
-print (tabulate(data, headers))
+data = [[(0, 0), 0.50, 0.42, 0.39, 0.42],
+        [(0, 1), 0.56, 0.44, 0.51, 0.51],
+        [(0, 2), 0.58, 0.51, 0.63, 0.57],
+        [(1, 0), 0.09, 0.18, 0.06, 0.43],
+        [(1, 1), 0.00, 0.00, 0.00, 0.00],
+        [(1, 2), 0.64, 0.65, 0.74, 0.59],
+        [(2, 0), 0.41, 0.00, 0.00, 0.00],
+        [(2, 1), 0.69, 0.09, -0.24, 0.24],
+        [(2, 2), 0.73, 0.61, 0.85, 0.65],
+        [(3, 0), -0.02, 0.00, 0.00, 0.00],
+        [(3, 1), 0.00, 0.00, 0.00, 0.00],
+        [(3, 2), 0.00, 0.00, 0.00, 0.00]]
+plot_qtable(headers, data)
 ```
 
 The following is an implementation of a Q-table using a Python dictionary:
@@ -177,13 +219,13 @@ The following is an implementation of a Q-table using a Python dictionary:
 :load: "../code/qtable.py"
 ```
 
-:::{note} Example -- Q-learning update
+:::{admonition} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
 
 $$
 \begin{array}{lll}
 Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
-           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),Right) - Q((2,2),N)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2), Right) - Q((2,2),N)]\\
            & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]\\
            & \leftarrow & 0.792\\
 \end{array}
@@ -218,7 +260,7 @@ We inherit from this class to implement the Q-learning algorithm:
 :load: "../code/qlearning.py"
 ```
 
-We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$,, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
+We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
 
 Using this implementation, we execute 1000 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
 
@@ -267,11 +309,11 @@ Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
 Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as epsilon-greedy\
+$\quad\quad$ Select action $a$ to apply in $s$ using $Q$ and a multi-armed bandit algorithm such as epsilon-greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
 $\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)$\
 $\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
 $\quad\quad\quad\quad s \leftarrow s'$\
@@ -350,7 +392,7 @@ Consider the example below called "Cliff World". The bottom-left cell is the sta
 from gridworld import CliffWorld
 
 mdp = CliffWorld()
-mdp.visualise_image()
+mdp.visualise()
 ```
 
 Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:

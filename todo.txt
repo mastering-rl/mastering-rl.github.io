@@ -1,3 +1,4 @@
+- add n-step learning implementation
 - MDP: terminating state is one with no outgoing states.
 - add prioritised sweeping for value iteration (or approximate value iteration)
 - Fix reward shaping graph

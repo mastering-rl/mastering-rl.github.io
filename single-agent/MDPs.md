@@ -97,7 +97,7 @@ from myst_nb import glue
 from gridworld import GridWorld
 
 mdp = GridWorld()
-gridworld_image = mdp.visualise_image()
+gridworld_image = mdp.visualise()
 glue("gridworld_image", gridworld_image, display=False)
 ```
 
@@ -303,7 +303,7 @@ from tabular_value_function import TabularValueFunction
 
 mdp = GridWorld()
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(iterations=100)
+ValueIteration(mdp, values).value_iteration(max_iterations=100)
 policy = values.extract_policy(mdp)
 mdp.visualise_policy(policy, "")
 ```

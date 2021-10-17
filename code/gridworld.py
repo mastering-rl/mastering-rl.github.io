@@ -230,20 +230,20 @@ class GridWorld(MDP):
 
     def visualise(self, agent_position=None, title="", grid_size=1.5):
         if self.matplotlib_installed():
-            self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size)
+            return self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size)
         else:
             print(self.to_string(title=title))
 
     """ Visualise a Grid World value function """
     def visualise_value_function(self, value_function, title="", grid_size=1.5):
         if self.matplotlib_installed():
-            self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size)
+            return self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size)
         else:
             print(self.value_function_to_string(value_function, title=title))
 
     def visualise_q_function(self, qfunction, title="", grid_size=2.0):
         if self.matplotlib_installed():
-            self.visualise_q_function_as_image(qfunction, title=title, grid_size=grid_size)
+            return self.visualise_q_function_as_image(qfunction, title=title, grid_size=grid_size)
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
@@ -255,7 +255,7 @@ class GridWorld(MDP):
 
     def visualise_stochastic_policy(self, policy, title="", grid_size=1.5):
         if self.matplotlib_installed():
-            self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size)
+            return self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size)
         else:
             # TODO make a stochastic policy to string
             pass
@@ -504,6 +504,7 @@ class GridWorld(MDP):
         current_position = (
             self.get_initial_state() if agent_position is None else agent_position
         )
+
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):

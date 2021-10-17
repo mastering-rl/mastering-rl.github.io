@@ -8,9 +8,9 @@ class ValueIteration:
         self.mdp = mdp
         self.values = values
 
-    def value_iteration(self, iterations=100, theta=0.001):
+    def value_iteration(self, max_iterations=100, theta=0.001):
 
-        for i in range(iterations):
+        for i in range(max_iterations):
             delta = 0.0
             new_values = TabularValueFunction()
             for state in self.mdp.get_states():
@@ -41,4 +41,4 @@ class ValueIteration:
 
             # Terminate if the value function has converged
             if delta < theta:
-                break
+                return i

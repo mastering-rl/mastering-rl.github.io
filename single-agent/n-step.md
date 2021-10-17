@@ -150,6 +150,7 @@ In the update rule above, we are using a SARSA update, but a Q-learning update i
 
 While conceptually this is not so difficult, an algorithm for doing n-step learning needs to store the rewards and observed states for $n$ steps, as well as keep track of which step to update. An algorithm for n-step SARSA is shown below.
 
+<!--
 :::{admonition} Algorithm -- n-step SARSA
 
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\, number of steps $n$\
@@ -178,13 +179,7 @@ $\quad\quad\quad\quad\quad\quad$ $Q(s_{\tau}, a_{\tau}) \leftarrow  Q(s_{\tau}, 
 $\quad\quad\quad\quad$ $t \leftarrow t + 1$\
 $\quad\quad$ Until $\tau = T - 1$
 :::
-
-For the first $n-1$ steps of the any episode, we do not update $Q$ at all; that is, if $\tau < 0$.
-
-Also, we have to continue updating $n-1$ steps after the end of the episode, but not selecting actions; that is, if $t \geq T$.
-
-Computationally, this is not much worse than 1-step learning. We need to store the last $n$ states, but the per-step computation is small and uniform for n-step, just as for 1-step.
-
+-->
 
 :::{admonition} Algorithm -- n-step SARSA
 
@@ -198,7 +193,7 @@ $\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi
 $\quad\quad$ $ss = \langle s\rangle$\
 $\quad\quad$ $as = \langle a\rangle$\
 $\quad\quad$ $rs = \langle \rangle$\
-$\quad\quad$ Repeat (for each step in episode $e$)\
+$\quad\quad$ While $ss$ is not empty\
 $\quad\quad\quad\quad$ If $s$ is not a terminal state then:\
 $\quad\quad\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
@@ -208,7 +203,7 @@ $\quad\quad\quad\quad\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ u
 $\quad\quad\quad\quad\quad\quad\quad\quad$ $ss \leftarrow ss + \langle s' \rangle$\
 $\quad\quad\quad\quad\quad\quad\quad\quad$ $as \leftarrow ss + \langle a' \rangle$\
 $\quad\quad\quad\quad$ If $|rs| = n$ or $s$ is a terminal state then:\
-$\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}r_i$\
+$\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}rs_i$\
 $\quad\quad\quad\quad\quad\quad$ If $s$ is not a terminal state then: $G \leftarrow G + \gamma^n Q(s', a')$\
 $\quad\quad\quad\quad\quad\quad$ $Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]$\
 $\quad\quad\quad\quad\quad\quad$ $rs \leftarrow rs_{[1 : n + 1]}$\
@@ -218,6 +213,18 @@ $\quad\quad\quad\quad$ $s \leftarrow s'$\
 $\quad\quad\quad\quad$ $a \leftarrow a'$
 :::
 
+This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $ss$, $as$, and $rs$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $ss_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $ss_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
+
+As with SARSA and Q-learning, we iterate over each step in the episode. The first branch simply executes the selected action, selects a new action to apply, and stores the state, action, and reward.
+
+It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $rs$, but remembering that they must be discounted based on their position in $rs$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $ss_0$. The $n-step$ reward in $G$ somes first. Then we do the actualy update, which updates the state-action pair $(ss_0, as_0)$ that is $n$-steps back.
+
+The final part of this branch removes the first element from the list of states, actions, and rewards, and moves on to the next state.
+
+What is the effect of all of the computation? This algorithm differs from standard SARSA as follows: it only updates a state-action pair after it has seen the next $n$ rewards that are returned, rather than just the single next reward. This means that there are no updates until the $n^{th}$ steps of  the episode; and no TD-estimate of the future reward in the last $n$ steps of the episode.
+
+Computationally, this is not much worse than 1-step learning. We need to store the last $n$ states, but the per-step computation is small and uniform for n-step, just as for 1-step.
+
 
 ### Example -- $n$-step SARSA update
 
@@ -225,108 +232,67 @@ Consider our simple 2D navigation task, in which we do not know the probability 
 
 Imagine the first episode consisting of the following (very lucky!) trace:
 
-```
-  --------------- --------------- --------------- --------------- 
- |               |               |               |               |
- |               2               3               6               |
- |           --------►      --------►        --------► +1.00     |
- |       ▲       |               |   |      ▲    |               |
- |       |       |               | 4 |      |    |               |
-  -------|------- --------------- ---|------|---- --------------- 
- |       | 1     | ############# |   |      | 5  |               |
- |       |       | ############# |   ▼      |    |               |
- |               | ############# |               |     -1.00     |
- |       ▲       | ############# |               |               |
- |       |       | ############# |               |               |
-  -------|------- --------------- --------------- --------------- 
- |       | 0     |               |               |               |
- |       |       |               |               |               |
- |               |               |               |               |
- |               |               |               |               |
- |               |               |               |               |
-  --------------- --------------- --------------- --------------- 
+```{code-cell} ipython3
+---
+tags: [remove-input]
+---
+from gridworld import GridWorld
+from print_gridworld_sequence import draw_action_sequence
+
+
+draw_action_sequence((0,0), [GridWorld.UP, GridWorld.UP, GridWorld.RIGHT, GridWorld.RIGHT, GridWorld.DOWN, GridWorld.UP, GridWorld.RIGHT])
 ```
 
 Assuming $Q(s,a)=0$ for all $s$ and $a$, if we traverse the episode the labelled episode, what will our Q-function look like for a 5-step update with $\alpha=0.5$ and $\gamma=0.9$?
 
-For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing. Let's look at those first $n-1 = 4$ steps if we apply n-step SARSA to them:
+For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing.
 
-$$
+On step 5, we reach the end of our n-step window, and we start to update values becasue $|rs|=n$. We calculate $G$ from $rs$ and update $Q(ss_0, as_0)$, and then similarly for the 6$^{th}$ step:
+
+
+$
 \begin{array}{llll}
-\text{For } n = 5\\[2mm]
- t = 0 & s_0 = (0,0),\ a_0 = Up & r_1 = 0 & s_1 = (0,1)\\
-       & T = \infty\\
-       & \tau = t - n + 1 = -4\\[1mm]
- t = 1 & s_1 = (0,1),\ a_1 = Up & r_2 = 0 & s_2 = (0,2)\\
-       & T = \infty\\
-       & \tau = t - n + 1 = -3\\[1mm]
- t = 2 & s_2 = (0,2),\ a_2 = Right & r_3 = 0 & s_3 = (1,2)\\
-       & T = \infty\\
-       & \tau = t - n + 1 = -2\\[1mm]
- t = 3 & s_3 = (1,2),\ a_3 = Right & r_4 = 0 & s_4 = (2,2)\\
-       & T = \infty\\
-       & \tau = t - n + 1 = -1
+& \text{Step 5} & rs = \langle 0, 0, 0, 0, 0\rangle\\
+&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,1), Up) = 0\\
+&       & Q((0,0), Up) = 0\\[1mm]
+& \text{Step 6} & rs = \langle 0, 0, 0, 0, 0\rangle\\
+&           & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,2), Right) = 0\\
+&           & Q((0,1), Up) = 0 + 0.5[0 - 0] = 0
 \end{array}
-$$
+$
 
-On the next step $t=4$, we reach the end of our n-step window, and we start to update values. At $t=4$, we see that $\tau \geq 0$ becomes true, so we calculate $G$ for $a_0$ and update $Q(s_0, a_0)$, and then similarly for $t=5$:
+We can see that there are no rewards in the first five steps, so the Q-values first two state-action pairs in the sequence $Q((0,0), Up)$ and $Q((0,1), Up)$ both remain 0, their original values.
 
-$$
+When we reach step 7, however,  we receive a reward. We can then update the Q-value $Q((0,2), Right)$ of the state-action pair at step 3:
+
+$
 \begin{array}{llll}
- t = 4 & s_4 = (2,2),\ a_4 = Down & r_5 = 0 & s_5 = (2,1)\\
-\phantom{\text{For }$n = 5$} %for consistent spacy
-       & T = \infty\\
-       & \tau = t - n + 1 = 0\\
-       & G = \gamma^0 r_1 + \ldots + \gamma^4 r_5 + \gamma^5 Q(s_5, a_5) = 0\\
-       & Q(s_0, a_0) = 0\\[1mm]
- t = 5 & s_5 = (2,1),\ a_5 = Up & r_6 = 0 & s_6 = (2,2)\\
-       & T = \infty\\
-       & \tau = t - n + 1 = 1\\
-       & G = \gamma^0 r_2 + \ldots + \gamma^4 r_6 + \gamma^5 Q(s_6, a_6) = 0\\
-       & Q(s_1, a_1) = 0\\[1mm]
+& \text{Step 7} & rs = \langle 0, 0, 0, 0, 1\rangle\\
+&      & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((3,2), Terminate) = 0.9^4 \cdot 1 = 0.6561\\
+&      & Q((0,2), Right) = 0 + 0.5[0.6561 - 0] = 0.32805
 \end{array}
-$$
+$
 
-We can see that there are no rewards in the first five steps, so $Q(s_0, a_0)$ and $Q(s_1, a_1)$ both remain 0, their original values.
+From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(ss_5, as_5)$ because there is no future discount reward beyond the end of the episode:
 
-When we reach $t=6$, however, we reach both a terminal state and we receive a reward. We can then update $Q(s_2, a_2)$:
-
-$$
+$
 \begin{array}{llll}
- t = 6 & s_6 = (2,2),\ a_6 = Right \quad\quad r_7 = 1 \quad s_7 = (3,2)\\
- \phantom{\text{For }$n = 5$}
-       & T = t + 1 = 7\\
-       & \tau = t - n - 1 = 2\\
-       & G = \gamma^0 r_3 + \ldots + \gamma^4 r_7 = 0.9^4 \cdot 1 = 0.6561\\
-       & Q(s_2, a_2) = 0 + 0.5[0.9^4 \cdot 1 - 0] = 0.32805
-       \end{array}
-$$
-
-From this point, $t \geq T$, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode:
-
-$$
-\begin{array}{llll}
- t = 7 & T = 7\\
-\phantom{\text{For }$n = 5$}
-       & \tau = t - n - 1 = 3\\
-       & G = \gamma^0 r_4 + \ldots + \gamma^3 r_7 = 0.9^3 \cdot 1 = 0.729\\
-       & Q(s_3, a_3) = 0 + 0.5[0.9^3 \cdot 1 - 0] = 0.3645\\[1mm]
- t = 8 & T = 7\\
-       & \tau = t - n - 1 = 4\\
-       & G = \gamma^0 r_5 + \ldots + \gamma^2 r_7 = 0.9^2 \cdot 1 = 0.81\\
-       & Q(s_4, a_4) = 0 + 0.5[0.9^2 \cdot 1 - 0] = 0.405\\[1mm]
- t = 9 & T = 7\\
-       & \tau = t - n - 1 = 5\\
-       & G = \gamma^0 r_6 + \gamma^1 r_7 = 0.9^1 \cdot 1 = 0.9\\
-       & Q(s_5, a_5) = 0 + 0.5[0.9^1  \cdot 1 - 0] = 0.45\\[1mm]
- t = 10 & T = 7\\
-       & \tau = t - n - 1 = 6\\
-       & G = \gamma^0 r_7 = 0.9^0 \cdot 1 = 1\\
-       & Q(s_6, a_6) = 0 + 0.5[1  \cdot 1 - 0] = 0.5\\[1mm]
+& \text{Step 8} & rs = \langle 0, 0, 0, 1\rangle\\
+&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_3 = 0.9^3 \cdot 1 = 0.729\\
+&       & Q((1,2), Right) = 0 + 0.5[0.729 - 0] = 0.3645\\[1mm]
+& \text{Step 9} & rs = \langle 0, 0, 1\rangle\\
+&       & G = \gamma^0 rs_0 + \ldots + \gamma^3 rs_2 = 0.9^2 \cdot 1 = 0.81\\
+&       & Q((2,2), Down) = 0 + 0.5[0.81 - 0] = 0.405\\[1mm]
+& \text{Step 10} & rs = \langle 0, 1\rangle\\
+&       & G = \gamma^0 rs_0 + \ldots + \gamma^2 rs_1 = 0.9^1 \cdot 1 = 0.9 = 0.9\\
+&       & Q((2,1), Up) = 0 + 0.5[0.9 - 0] = 0.45\\[1mm]
+& \text{Step 11} & rs = \langle 1\rangle\\
+&      & G = \gamma^0 rs_0 = 0.9^0 \cdot 1 = 1\\
+&      & Q((2,2, Right) = 0 + 0.5[1  \cdot 1 - 0] = 0.5
 \end{array}
-$$
+$
 
-At this point, $\tau = 6$ and $T=7$, so the inner loop terminates, and we start a new episode.
+At this point, there are no further states left to update, so the inner loop terminates, and we start a new episode.
 
 The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-step SARSA, reaching the reward only informs the state from which it is reached. Whereas for 5-step, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a non-zero state, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table faster.
 
@@ -335,37 +301,39 @@ The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-ste
 ---
 tags: [remove-input]
 ---
-from tabulate import tabulate
-import math
+from gridworld import GridWorld
+from qtable import QTable
 
 alpha = 0.5
 gamma = 0.9
-headers=["State", "Up", "Down", "Right", "Left"]
-data = [[(0,0), 0, 0, 0, 0],
-        [(0,1), 0, 0, 0, 0],
-        [(0,2), 0, 0, 0, 0],
-        ["..."],
-        [(1,2), 0, 0, 0, 0],
-        [(2,1), 0, 0, 0, 0],
-        [(2,2), 0, 0, alpha * math.pow(gamma, 0), 0]]
-print ("For n = 1")
-print (tabulate(data, headers))
+qtable = QTable()
+qtable.update((0,2), GridWorld.RIGHT, 0)
+qtable.update((1,2), GridWorld.RIGHT, 0)
+qtable.update((2,2), GridWorld.DOWN, 0)
+qtable.update((2,1), GridWorld.UP, 0)
+qtable.update((2,2), GridWorld.RIGHT, alpha * (gamma ** 0))
+
+mdp = GridWorld()
+title = "Q-Function after 1 episode for 1-step SARSA"
+mdp.visualise_q_function(qtable, title=title)
 ```
 
 ```{code-cell} ipython3
 ---
 tags: [remove-input]
 ---
-data = [[(0,0), 0, 0, 0, 0],
-        [(0,1), 0, 0, 0, 0],
-        [(0,2), 0, 0, alpha * math.pow(gamma, 4), 0],
-        ["..."],
-        [(1,2), 0, 0, alpha * math.pow(gamma, 3), 0],
-        [(2,1), 0, alpha * math.pow(gamma, 1), 0, 0],
-        [(2,2), 0, alpha * math.pow(gamma, 2), alpha * math.pow(gamma, 0), 0]]
-print ("For n = 5")
-print (tabulate(data, headers))
+qtable = QTable()
+qtable.update((0,2), GridWorld.RIGHT, alpha * (gamma ** 4))
+qtable.update((1,2), GridWorld.RIGHT, alpha * (gamma ** 3))
+qtable.update((2,2), GridWorld.DOWN, alpha * (gamma ** 2))
+qtable.update((2,1), GridWorld.UP, alpha * (gamma ** 1))
+qtable.update((2,2), GridWorld.RIGHT, alpha * (gamma ** 0))
+
+title = "Q-Function after 1 episode for 5-step SARSA"
+mdp.visualise_q_function(qtable, title=title)
 ```
+
+On the 2nd episode, if any of the questions reach one of the states with an update, it will be able to use the TD-estimate from that state to propagate back to the previous five states.
 
 ## Further Reading
 
