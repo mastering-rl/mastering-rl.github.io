@@ -7,7 +7,7 @@ class ModelFreeReinforcementLearner:
 
     def execute(self, episodes=100):
 
-        for n in range(episodes):
+        for _ in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction)

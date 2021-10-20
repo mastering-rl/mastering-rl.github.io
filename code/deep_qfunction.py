@@ -1,10 +1,9 @@
-from qfunction import QFunction
+import random
+
 import torch
 import torch.nn as nn
-import random
-from torch.distributions.categorical import Categorical
+from qfunction import QFunction
 from torch.optim import Adam
-import torch.nn.functional as F
 
 
 class DeepQFunction(QFunction):
@@ -13,7 +12,7 @@ class DeepQFunction(QFunction):
         This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
         """
 
-    def __init__(self, mdp, state_space, action_space, hiddem_dim=64, alpha=0.01) -> None:
+    def __init__(self, mdp, state_space, action_space, hiddem_dim=64, alpha=0.001) -> None:
         self.mdp = mdp
         self.state_space = state_space
         self.action_space = action_space
@@ -24,8 +23,8 @@ class DeepQFunction(QFunction):
         #   2) We need to add hidden layers as passed in the __init__ function. The hidden layers allows for non-linear
         #      representations.
         #   3) We need non-linear activation function between layers.
-        #   4) We need to output a categorical distribution which has the same size as the action-space to generate a
-        #       q-value for each action.
+        #   4) We use a multi-headed q-function that has the same number of outputs as the action-space to generate a
+        #       q-value for each action. This avoids having to do a pass through the network for each action.
         self.q_network = nn.Sequential(
             nn.Linear(in_features=self.state_space, out_features=hiddem_dim),
             nn.ReLU(),
@@ -42,19 +41,17 @@ class DeepQFunction(QFunction):
 
     def update(self, state, action, delta):
         # train the network based on the squared error. This ensures that the loss is positive.
-        self.optimiser.zero_grad()
-        (delta**2).backward()
-        self.optimiser.step()
+        self.optimiser.zero_grad()  # reset gradients to zero
+        (delta ** 2).backward()  # back-propagate the loss through the network
+        self.optimiser.step()  # do a gradient descent step with the optimiser
 
     def get_q_value(self, state, action):
         # convert the state into a tensor
         state = self.encode_state(state)
         q_values = self.q_network(state)
 
-        # index q-values by action
-        q_value = q_values[self.action_to_id[action]]
+        q_value = q_values[self.action_to_id[action]]  # index q-values by action
 
-        # ensure that we return a float value not a tensor
         return q_value
 
     def get_max_q(self, state, actions):
@@ -75,8 +72,12 @@ class DeepQFunction(QFunction):
                 arg_max_q = random.choice([arg_max_q, action])
         return (arg_max_q, max_q)
 
+    """
+    use this to turn the state into a tensor. It also handles the terminal states, which we need to turn into a number
+    representation to pass through the q-network.
+    """
     @staticmethod
     def encode_state(state):
         if state == ('terminal', 'terminal'):
-            state = (-1,-1)
+            state = (-1, -1)
         return torch.as_tensor(state, dtype=torch.float32)
