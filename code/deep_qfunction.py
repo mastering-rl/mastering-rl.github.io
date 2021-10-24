@@ -45,7 +45,7 @@ class DeepQFunction(QFunction):
         (delta ** 2).backward()  # back-propagate the loss through the network
         self.optimiser.step()  # do a gradient descent step with the optimiser
 
-    def get_q_value(self, state, action):
+    def get_q_value(self, state, action, for_max=False):
         # convert the state into a tensor
         state = self.encode_state(state)
         q_values = self.q_network(state)
@@ -59,7 +59,9 @@ class DeepQFunction(QFunction):
         state = torch.as_tensor(self.encode_state(state), dtype=torch.float32)
 
         # since we have a multi-headed q-function, we only need to pass through the network once
-        q_values = self.q_network(state)
+        # call torch.no_grad() to avoid tracking the gradients for this network forward pass
+        with torch.no_grad():
+            q_values = self.q_network(state)
         arg_max_q = None
         max_q = float("-inf")
         for action in actions:
