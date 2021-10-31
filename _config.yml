@@ -35,5 +35,12 @@ parse:
     - colon_fence
     - dollar_math
     - amsmath
+  myst_enable_extensions:
+    - html_image
 
-
+# Specify certain folders to be included in the build
+# This ensures that the custom raw html sections can find folders which aren't linked by default during the build
+# see https://jupyterbook.org/advanced/html.html#raw-html-in-markdown
+sphinx:
+  config:
+    html_extra_path: ['assets']  # This is required to embed the gifs in the html
