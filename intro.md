@@ -34,7 +34,6 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 
 <div id="container" markdown="1" style="text-align: center;">
     <img id="gridworld_value_function" src=./gifs/example.gif width=360 height=303>
-
-[comment]: <> (    <gif-player id="gridworld_value_function"></gif-player>)
+    <gif-player id="gridworld_value_function"></gif-player>
 </div>
 
