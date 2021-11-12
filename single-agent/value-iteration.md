@@ -91,6 +91,11 @@ for iterations in [0, 1, 2, 3, 4, 5, 10, 1000]:
     mdp.visualise_value_function(values, "After %d iterations" % (iterations))
 ```
 
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303>
+    <gif-player id="gridworld_value_function"></gif-player>
+</div>
+
 From the policy, we extract a policy:
 
 ```{code-cell} ipython3

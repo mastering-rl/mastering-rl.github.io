@@ -228,16 +228,16 @@ class GridWorld(MDP):
 
     """ Visualise a Grid World problem """
 
-    def visualise(self, agent_position=None, title="", grid_size=1.5):
+    def visualise(self, agent_position=None, title="", grid_size=1.5, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size)
+            return self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size, gif=gif)
         else:
             print(self.to_string(title=title))
 
     """ Visualise a Grid World value function """
-    def visualise_value_function(self, value_function, title="", grid_size=1.5):
+    def visualise_value_function(self, value_function, title="", grid_size=1.5, gif=False, grid=None, ax=None, fig=None):
         if self.matplotlib_installed():
-            return self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size)
+            return self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size, gif=gif, grid=grid, ax=ax, fig=fig)
         else:
             print(self.value_function_to_string(value_function, title=title))
 
@@ -499,7 +499,7 @@ class GridWorld(MDP):
 
     """ visualise the gridworld problem as a matplotlib image """
 
-    def visualise_as_image(self, agent_position=None, title="", grid_size=1.5):
+    def visualise_as_image(self, agent_position=None, title="", grid_size=1.5, gif=False):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
         current_position = (
             self.get_initial_state() if agent_position is None else agent_position
@@ -511,7 +511,7 @@ class GridWorld(MDP):
                 if (x, y) == current_position:
                     ax.scatter(x, y, s=2000, marker='o', edgecolors='none')
                 elif (x, y) in self.goal_states:
-                    plt.text(
+                    text = plt.text(
                         x,
                         y,
                         f"{self.get_goal_states()[(x, y)]:+0.2f}",
@@ -519,10 +519,12 @@ class GridWorld(MDP):
                         horizontalalignment="center",
                         verticalalignment="center",
                     )
-        plt.imshow(img, origin="lower")
-
-        plt.title(title)
-        return fig
+        if gif:
+            im = plt.imshow(img, origin="lower")
+            return fig, ax, im
+        else:
+            plt.title(title)
+            return fig
 
     """Render each tile individually depending on the current state of the cell"""
 
@@ -564,14 +566,17 @@ class GridWorld(MDP):
 
     """ Visualise the value function """
 
-    def visualise_value_function_as_image(self, value_function, title="", grid_size=1.5):
-        fig, ax, img = self.initialise_grid(grid_size=grid_size)
-
+    def visualise_value_function_as_image(self, value_function, title="", grid_size=1.5, gif=False, grid=None, ax=None, fig=None):
+        if gif:
+            fig, ax, img = self.initialise_grid(grid_size=grid_size)
+        else:
+            fig, ax, img = fig, ax, grid
+        texts = []
         for y in range(self.height):
             for x in range(self.width):
                 value = value_function.get_value((x, y))
                 if (x, y) not in self.blocked_states:
-                    plt.text(
+                    text = ax.text(
                         x,
                         y,
                         f"{value:+0.2f}",
@@ -580,9 +585,13 @@ class GridWorld(MDP):
                         verticalalignment="center",
                         color='lightgrey' if value == 0.0 else 'black',
                     )
-        ax.imshow(img, origin="lower")
-        plt.title(title)
-        plt.show()
+                    texts.append(text)
+        if gif:
+            return texts
+        else:
+            ax.imshow(img, origin="lower")
+            plt.title(title)
+            plt.show()
 
     """ Visualise the value function using a heat-map where green is high value and
     red is low value
