@@ -852,8 +852,8 @@ class GridWorld(MDP):
                         )
         ax.imshow(img, origin="lower")
         plt.title(title)
-        plt.show()
-        return fig
+        # plt.show()
+        return fig, ax, img
 
 
 class CliffWorld(GridWorld):
