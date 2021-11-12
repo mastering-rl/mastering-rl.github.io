@@ -33,7 +33,7 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 3. The [Graphviz Python library](https://graphviz.readthedocs.io/en/stable/) for drawing trees. You can download from the website or use ``pip install graphviz``. To render the generated graphs, you will also need to install [Graphviz the tool](https://www.graphviz.org/download/), which is called by the Python package.
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=./gifs/example.gif width=360 height=303>
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/example.gif width=360 height=303>
     <gif-player id="gridworld_value_function"></gif-player>
 </div>
 
