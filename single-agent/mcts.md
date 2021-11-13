@@ -161,7 +161,7 @@ $\quad\quad \textrm{Backpropagate}(selected\_node, child, reward)$\
 
 **while** $currentTime < T$\
 $\quad\quad$ $s \leftarrow s_0$\
-$\quad\quad$ **while** $s$ is not fully expanded\
+$\quad\quad$ **while** $s$ is fully expanded\
 $\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using a multi-armed bandit algorithm\
 $\quad\quad\quad\quad$ Execute $a$ in $s$ and observe new state $s'$\
 $\quad\quad\quad\quad$ $s \leftarrow s'$\

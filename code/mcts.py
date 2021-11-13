@@ -118,5 +118,3 @@ class MCTS:
             state = next_state
 
         return cumulative_reward
-
-

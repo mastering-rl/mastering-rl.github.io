@@ -7,6 +7,7 @@
 - Add google analytics: https://jupyterbook.org/advanced/html.html
 - Add policy gradients code.
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
+- To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.
 
 - Read code cells from path:
 ```{code-cell} ipython3

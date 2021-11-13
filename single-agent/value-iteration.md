@@ -87,7 +87,7 @@ mdp = GridWorld()
 
 for iterations in [0, 1, 2, 3, 4, 5, 10, 1000]:
     values = TabularValueFunction()
-    ValueIteration(mdp, values).value_iteration(iterations=iterations)
+    ValueIteration(mdp, values).value_iteration(max_iterations=iterations)
     mdp.visualise_value_function(values, "After %d iterations" % (iterations))
 ```
 
@@ -95,7 +95,7 @@ From the policy, we extract a policy:
 
 ```{code-cell} ipython3
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(iterations=100)
+ValueIteration(mdp, values).value_iteration(max_iterations=100)
 policy = values.extract_policy(mdp)
 mdp.visualise_policy(policy, "Policy after 100 iterations")
 ```
