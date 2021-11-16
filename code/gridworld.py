@@ -522,7 +522,7 @@ class GridWorld(MDP):
         im = plt.imshow(img, origin="lower")
         plt.title(title)
         if gif:
-            return fig, im
+            return fig, ax, im
         else:
             return fig
 

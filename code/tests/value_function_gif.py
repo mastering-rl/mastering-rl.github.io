@@ -8,8 +8,9 @@ gif_maker = GifMaker(mdp=gridworld) #, title="Value Iteration Gif")
 for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
     values = TabularValueFunction()
     ValueIteration(gridworld, values).value_iteration(max_iterations=iterations)
-    image_texts = gridworld.visualise_value_function(values, "After %d iterations" % (iterations), gif=True)
-    gif_maker.add_frame(image_texts)
+    title = "After %d iterations" % (iterations)
+    image_texts = gridworld.visualise_value_function(values, title=title, gif=True)
+    gif_maker.add_frame(image_texts, title=title)
 
 # Add policy
 values = TabularValueFunction()
