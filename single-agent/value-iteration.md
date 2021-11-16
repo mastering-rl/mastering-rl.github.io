@@ -85,7 +85,7 @@ Given this, we can create a GridWorld MDP, and solve using value iteration. The 
 ```{code-cell} ipython3
 mdp = GridWorld()
 
-for iterations in [0, 1, 2, 3, 4, 5, 10, 1000]:
+for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
     values = TabularValueFunction()
     ValueIteration(mdp, values).value_iteration(max_iterations=iterations)
     mdp.visualise_value_function(values, "After %d iterations" % (iterations))
