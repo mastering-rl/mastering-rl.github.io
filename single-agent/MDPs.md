@@ -79,10 +79,12 @@ For example, would you prefer \$100 today or \$100 in a year's time? We (humans)
 Assume our agent receives rewards $r_1, r_2, r_3, r_4, \ldots$ in that order. If $\gamma$ is the discount factor, then the discounted reward is:
 
 $$
+
  \begin{array}{lll}
   V & = & r_1 + \gamma r_2 + \gamma^2 r_3 + \gamma^3 r_4 + \ldots\\
     & = & r_1 + \gamma(r_2 + \gamma(r_3 + \gamma(r_4 + \ldots)))
  \end{array}
+
 $$
 
 If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1}$. So, the further away a reward is from the start state $s_0$, the less actual reward we will receive from it.
