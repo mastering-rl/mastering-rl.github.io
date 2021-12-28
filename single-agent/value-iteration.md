@@ -80,29 +80,40 @@ Below is a Python implementation for value iteration. In this implementation, th
 :load: "../python_code/value_iteration.py"
 ```
 
-Given this, we can create a GridWorld MDP, and solve using value iteration. The code below prints the value function for value iteration after 1, 2, 3, 4, 5, 10, and 100 iterations:
+Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
 
 ```{code-cell} ipython3
-mdp = GridWorld()
+:tags: [remove-output]
+from gridworld import GridWorld
+from gif_maker import GifMaker
+from value_iteration import ValueIteration
+from tabular_value_function import TabularValueFunction
 
-for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
-    values = TabularValueFunction()
-    ValueIteration(mdp, values).value_iteration(max_iterations=iterations)
-    mdp.visualise_value_function(values, "After %d iterations" % (iterations))
+gridworld = GridWorld()
+gif_maker = GifMaker(mdp=gridworld)
+values = TabularValueFunction()
+for iterations in range(0, 10):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
+    title = "After %d iterations" % (iterations)
+    image_texts = gridworld.visualise_value_function(values, title=title, gif=True)
+    gif_maker.add_frame(image_texts, title=title)
+```
+
+```{code-cell} python3
+:tags: [remove-cell]
+gif_maker.save("../assets/gifs/value_iteration.gif")
 ```
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303>
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=460 height=403 rel:auto_play="0">
     <gif-player id="gridworld_value_function"></gif-player>
 </div>
 
 From the policy, we extract a policy:
 
 ```{code-cell} ipython3
-values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=100)
-policy = values.extract_policy(mdp)
-mdp.visualise_policy(policy, "Policy after 100 iterations")
+policy = values.extract_policy(gridworld)
+gridworld.visualise_policy(policy, "Policy after 100 iterations")
 ```
 
 

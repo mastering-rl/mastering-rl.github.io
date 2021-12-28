@@ -4,19 +4,12 @@ from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
-gif_maker = GifMaker(mdp=gridworld) #, title="Value Iteration Gif")
-for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
-    values = TabularValueFunction()
-    ValueIteration(gridworld, values).value_iteration(max_iterations=iterations)
+gif_maker = GifMaker(mdp=gridworld)
+values = TabularValueFunction()
+for iterations in range(0, 100):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
     title = "After %d iterations" % (iterations)
     image_texts = gridworld.visualise_value_function(values, title=title, gif=True)
     gif_maker.add_frame(image_texts, title=title)
-
-# Add policy
-values = TabularValueFunction()
-ValueIteration(gridworld, values).value_iteration(max_iterations=100)
-policy = values.extract_policy(gridworld)
-image_texts = gridworld.visualise_policy(policy, gif=True)
-gif_maker.add_frame(image_texts)
 
 gif_maker.save("../../assets/gifs/value_iteration.gif")
