@@ -90,7 +90,7 @@ However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence suggest
 Below is a Python implementation for policy iteration. In this implementation, the parameter `max_iterations` is the maximum number of iterations of the policy iteration, and the parameter `theta` the largest amount the value function corresponding to the current policy can change before the policy evaluation look terminates.
 
 ```{code-cell} ipython3
-:load: "../code/policy_iteration.py"
+:load: "../python_code/policy_iteration.py"
 ```
 
 From this, we can see that policy evaluation  looks very similar to value iteration. The main differences is in the inner loop: instead of finding the action with the maximum Q-value, we simply find the value of the action that is given the policy: ``policy.select_action(state)``.

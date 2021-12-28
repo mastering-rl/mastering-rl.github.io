@@ -3,7 +3,6 @@
 - add multi-objective RL to Chapter 1. Don't spend much time on solutions, but an example may be good.
 - MDP: terminating state is one with no outgoing states.
 - add prioritised sweeping for value iteration (or approximate value iteration)
-- Fix reward shaping graph
 - Consistent learning outcomes
 - Reward shaping example
 - Add google analytics: https://jupyterbook.org/advanced/html.html

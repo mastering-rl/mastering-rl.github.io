@@ -298,32 +298,7 @@ Below is an implementation of MCTS in Python. This is a simulation-based impleme
 First, we create a class `Node`, which forms the basis for the tree:
 
 ```{code-cell} ipython3 
-import math
-import random
-import time
-from multi_armed_bandits import *
-
-class Node():    
-
-    # record a unique node id to distinguish duplicated states for visualisation
-    nextNodeID = 0
-    
-    def __init__(self, mdp, parent, state):
-        self.mdp = mdp  
-        self.parent = parent
-        self.state = state
-        self.id = Node.nextNodeID
-        Node.nextNodeID += 1
-
-        # the value and the total visits to this node
-        self.visits = 0
-        self.value = 0.0
-
-    '''
-    Return the value of this node
-    '''
-    def getValue(self):
-        return self.value
+:load: "../python_code/mcts.py"
 ```
 
 In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points' for the environment (that is, the filled nodes that correspond to an action outcome). 
@@ -333,223 +308,39 @@ Our implementation mirrors this, with two different classes for nodes: `StateNod
 For simplicity, we implement the select, expand, and backpropagate methods in these two node classes:
 
 ```{code-cell} ipython3
-class StateNode(Node):
-    
-    def __init__(self, mdp, parent, state, reward = 0, probability = 1.0, bandit = UpperConfidenceBounds()):
-        super().__init__(mdp, parent, state)
-        
-        # a dictionary from actions to an environment node
-        self.children = {}
-
-        # the reward received for this state
-        self.reward = reward
-        
-        # the probability of this node being chosen from its parent
-        self.probability = probability
-
-        # a multi-armed bandit for this node
-        self.bandit = bandit
-
-    '''
-    Return true if and only if all child actions have been expanded
-    '''
-    def isFullyExpanded(self):
-        validActions = self.mdp.getActions(self.state)
-        if len(validActions) == len(self.children):
-            return True
-        else:
-            return False
-
-    def select(self):
-        if not self.isFullyExpanded():
-            return self
-        else:
-            actions = list(self.children.keys())    
-            qValues = dict()
-            for action in actions:
-                #get the Q values from all outcome nodes
-                qValues[action] = self.children[action].getValue()
-            bestAction = self.bandit.select(actions, qValues)
-            return self.children[bestAction].select()
-
-    def expand(self):
-        #randomly select an unexpanded action to expand
-        actions = self.mdp.getActions(self.state) - self.children.keys()
-        action = random.choice(list(actions))
-
-        #choose an outcome
-        newChild = EnvironmentNode(self.mdp, self, self.state, action)
-        newStateNode = newChild.expand()
-        self.children[action] = newChild
-        return newStateNode
-
-    def backPropagate(self, reward):
-        self.visits += 1
-        self.value = self.value + ((self.reward + reward - self.value) / self.visits) 
-        
-        if self.parent != None:
-            self.parent.backPropagate(reward)
-
-    def getQFunction(self):
-        qValues = {}
-        for action in self.children.keys():
-            qValues[(self.state, action)] = round(self.children[action].getValue(), 3)
-        return qValues
-
-class EnvironmentNode(Node):
-    
-    def __init__(self, mdp, parent, state, action):
-        super().__init__(mdp, parent, state)
-        self.outcmes = {}
-        self.action = action
-        
-        # a set of outcomes
-        self.children = []
-
-    def select(self):
-        # choose one outcome based on transition probabilities
-        (newState, reward) = self.mdp.execute(self.state, self.action)
-
-        #find the corresponding state
-        for child in self.children:
-            if newState == child.state:
-                return child.select()
-
-    def addChild(self, action, newState, reward, probability):
-        child = StateNode(self.mdp, self, newState, reward, probability)
-        self.children += [child]
-        return child
-
-    def expand(self):
-        # choose one outcome based on transition probabilities
-        (newState, reward) = self.mdp.execute(self.state, self.action)
-
-        # expand all outcomes
-        selected = None
-        transitions = self.mdp.getTransitions(self.state, self.action)
-        for (outcome, probability) in transitions:
-            newChild = self.addChild(self.action, outcome, reward, probability)
-            # find the child node correponding to the new state
-            if outcome == newState:
-                selected = newChild
-        return selected
-
-    def backPropagate(self, reward):
-        self.visits += 1
-        self.value = self.value + ((reward - self.value) / self.visits)
-        self.parent.backPropagate(reward * self.mdp.getDiscountFactor())
+:load: "../python_code/single_agent_mcts.py"
 ```
 
 Once these are implemented, the MCTS class is quite straightforward. It simply implements the algorithm from above, and implements the simulation method:
 
-```{code-cell} ipython3
-class MCTS():
 
-    def __init__(self, mdp):
-        self.mdp = mdp
-
-    '''
-    Execute the MCTS algorithm from the initial state given, with timeout in seconds
-    '''
-    def mcts(self, timeout = 1):
-        rootNode = StateNode(self.mdp, None, self.mdp.getInitialState())
-        
-        startTime = int(time.time() * 1000)
-        currentTime = int(time.time() * 1000)
-        while currentTime < startTime + timeout * 1000:
-            # find a state node to expand
-            selected\_node = rootNode.select()
-            if not self.mdp.isTerminal(selected\_node):
-                child = selected\_node.expand()
-                reward = self.simulate(child)
-                child.backPropagate(reward)
-                
-            currentTime = int(time.time() * 1000)
-
-        return rootNode
-
-    '''
-        Choose a random action. Heustics can be used here to improve simulations.
-    '''
-    def choose(self, state):
-        return random.choice(self.mdp.getActions(state))
-
-    '''
-        Simulate until a terminal state
-    '''
-    def simulate(self, node):
-        state = node.state
-        cumulativeReward = 0.0
-        depth = 0
-        while not self.mdp.isTerminal(state):
-            #choose an action to execute
-            action = self.choose(state)
-            
-            # execute the action
-            (newState, reward) = self.mdp.execute(state, action)
-
-            # discount the reward 
-            cumulativeReward += pow(self.mdp.getDiscountFactor(), depth) * reward
-            depth += 1
-
-            state = newState
-            
-        return cumulativeReward
-```
-
-We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.01 seconds (to avoid a tree that is too large to visualise), we show the tree (open in a new tab to see a larger version):
+We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.01 seconds (to avoid a tree that is too large to visualise), we show the tree:
 
 ```{code-cell} ipython3
----
-tags: [hide-cell]
----
-from mcts import *
+from gridworld import GridWorld
+from graph_visualisation import GraphVisualisation
+from qtable import QTable
+from single_agent_mcts import SingleAgentMCTS
+from multi_armed_bandit.ucb import UpperConfidenceBounds
 
-from graphviz import Digraph
-
-class GraphVisualisation():
-
-    def __init__(self, maxLevel = 3):
-        self.maxLevel = maxLevel
-
-    def singleAgentMCTSToGraph(self, stateNode, filename='mcts'):
-        g = Digraph('G', filename=filename, format='png')
-        self.stateNodeToGraph(g, stateNode, level = 0)
-        return g
-
-    def stateNodeID(self, stateNode):
-        return "V(" + str(stateNode.state) + "." + str(stateNode.id) + ") = " + str(round(stateNode.getValue(), 3)) +\
-               "\\nN = " + str(stateNode.visits)
-
-    def environmentNodeID(self, environmentNode):
-        return "V(" + str(environmentNode.id) + ") = " + str(round(environmentNode.getValue(), 3)) +\
-               "\\nN = " + str(environmentNode.visits)
-    
-    def stateNodeToGraph(self, g, stateNode, level):
-        for action in stateNode.children.keys():
-            g.edge(self.stateNodeID(stateNode), self.environmentNodeID(stateNode.children[action]), action)
-
-        if level <= self.maxLevel:
-            for action in stateNode.children.keys():
-                self.environmentNodeToGraph(g, stateNode.children[action], level)
-
-    def environmentNodeToGraph(self, g, environmentNode, level):
-        for child in environmentNode.children:
-            g.node(self.environmentNodeID(environmentNode), self.environmentNodeID(environmentNode), style='filled', shape='point', width='0.25')
-            g.edge(self.environmentNodeID(environmentNode), self.stateNodeID(child), str(child.probability))
-            
-        for child in environmentNode.children:
-            self.stateNodeToGraph(g, child, level + 1)
-```
-
-```{code-cell} ipython3
-from gridworld import *
 mdp = GridWorld()
-rootNode = MCTS(mdp).mcts(timeout=0.01)
-gv = GraphVisualisation(maxLevel = 2)
-g = gv.singleAgentMCTSToGraph(rootNode, filename = 'mcts')
-g
+qfunction = QTable()
+root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=0.1)
+gv = GraphVisualisation(max_level=6)
+graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
+graph
 ```
+
+```{code-cell} ipython3
+mdp.visualise_q_function(qfunction)
+```
+
+```{code-cell} ipython3
+policy = qfunction.extract_policy(mdp)
+mdp.visualise_policy(policy)
+```
+
+
 
 In this tree, the expression $(x, y).z$ represents the $(x,y)$ state with the unique identify $z$ for the node. 
 
@@ -559,10 +350,21 @@ Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and p
 
 ```{code-cell} ipython3
 mdp = GridWorld()
-rootNode = MCTS(mdp).mcts()
-print(rootNode.getQFunction())
+qfunction = QTable()
+root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=1.0)
+mdp.visualise_q_function(qfunction)
 ```
+
 What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations end up long and get a very small discounted reward. Finally, there is actually very little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
+
+If we simulate for 5 seconds,, then we can see that the rewards start to resemble something more sensible:
+
+```{code-cell} ipython3
+mdp = GridWorld()
+qfunction = QTable()
+root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=5.0)
+mdp.visualise_q_function(qfunction)
+```
 
 (sec:monte-carlo-tree-search:demo)=
 ## Why does it work so well (sometimes)?

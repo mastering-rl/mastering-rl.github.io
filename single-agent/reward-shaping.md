@@ -55,35 +55,21 @@ learn how to get the kangaroo across the freeway?
 ![image](./figs/freeway_screenshot.png)
 :::
 
-:::{admonition} Exercise: GridWorld What would be a good heuristic for the GridWorld
-example?
+```{code-cell} ipython3
+---
+tags: [remove-cell]
+---
+from myst_nb import glue
+from gridworld import GridWorld
 
+mdp = GridWorld()
+gridworld_image = mdp.visualise()
+glue("gridworld_image", gridworld_image, display=False)
 ```
-  --------------- --------------- --------------- --------------- 
- |       ▲       |       ▲       |       ▲       |               |
- |               |               |               |               |
- |               |               |               |               |
- | ◄           ► | ◄           ► | ◄           ► |     +1.00     |
- |               |               |               |               |
- |               |               |               |               |
- |       ▼       |       ▼       |       ▼       |               |
-  --------------- --------------- --------------- --------------- 
- |       ▲       | ############# |       ▲       |               |
- |               | ############# |               |               |
- |               | ############# |               |               |
- | ◄           ► | ############# | ◄           ► |     -1.00     |
- |               | ############# |               |               |
- |               | ############# |               |               |
- |       ▼       | ############# |       ▼       |               |
-  --------------- --------------- --------------- --------------- 
- |       ▲       |       ▲       |       ▲       |       ▲       |
- |     _____     |               |               |               |
- |    ||o  o|    |               |               |               |
- | ◄  ||  * |  ► | ◄           ► | ◄           ► | ◄           ► |
- |    ||====|    |               |               |               |
- |     -----     |               |               |               |
- |       ▼       |       ▼       |       ▼       |       ▼       |
-  --------------- --------------- --------------- --------------- 
+
+:::{admonition} Exercise: GridWorld What would be a good heuristic for GridWorld?
+
+```{glue:} gridworld_image
 ```
 
 :::
@@ -180,77 +166,56 @@ In practice, it is non-trivial to derive a perfect reward function -- it is the 
 To implement potential-based reward shaping, we need to first implement a potential function. We implement potential functions as subclasses of ``PotentialFunction``. For the GridWorld example, the potential function is 1 minus the normalised distance from the goal:
 
 ```{code-cell} ipython3
-class PotentialFunction():
-    def getPotential(self, state): abstract
-
-class GridWorldPotentialFunction(PotentialFunction):
-
-    from gridworld import GridWorld
-
-    def __init__(self, mdp):
-        self.mdp = mdp
-        
-    def getPotential(self, state):
-        if state != GridWorld.TERMINAL:
-            goal = (self.mdp.width, self.mdp.height)
-            x = 0
-            y = 1
-            return 1 - ((goal[x] - state[x] + goal[y] - state[y]) / (goal[x] + goal[y]))
-        else:
-            return 0.0
+:load: "../python_code/gridworld_potential_function.py"
 ```
 
 Reward shaping for Q-learning is then a simple extension of the ``QLearning`` class, overriding the ``update`` method:
 
 ```{code-cell} ipython3
-from qlearning import *
-
-class RewardShapedQLearning(QLearning):
-    def __init__(self, mdp, bandit, potential, alpha = 0.1, convergenceEpsilon = float('-inf')):
-        super().__init__(mdp, bandit, alpha = alpha, convergenceEpsilon = convergenceEpsilon)
-        self.potential = potential
-        
-    def update(self, qValues, state, action, nextState, reward): 
-        (_, maxQValue) = self.getMaxQ(qValues, nextState)
-        qValue = qValues[(state, action)]
-        statePotential = self.potential.getPotential(state)
-        nextStatePotential = self.potential.getPotential(nextState)
-        potential = reward + self.mdp.discountFactor *  nextStatePotential - statePotential
-        return qValue + self.alpha * (reward + potential + self.mdp.discountFactor * maxQValue - qValue)
+:load: "../python_code/reward_shaped_qlearning.py"
 ```
 
-The small GridWorld example is not sufficient to demonstrate reward shaping, so we instead extend it to a version with that is 15 x 12. The Q-function and policy are as follows:
+We can run this on the simple GridWorld example:
 
 ```{code-cell} ipython3
-from gridworld import *
-```
+from qtable import QTable
+from qlearning import QLearning
+from reward_shaped_qlearning import RewardShapedQLearning
+from gridworld_potential_function import GridWorldPotentialFunction
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-```{code-cell} ipython3
+
 mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
-```
-
-```{code-cell} ipython3
+qfunction = QTable()
 potential = GridWorldPotentialFunction(mdp)
-qFunction = RewardShapedQLearning(mdp, EpsilonGreedy(), potential).execute(episodes = 100)
-policy = mdp.extractPolicyFromQFunction(qFunction)
-rewardShapedRewards = mdp.getRewards()
-print(mdp.qFunctionToString(qFunction))
-print(mdp.policyToString(policy))
+RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute()
+policy = qfunction.extract_policy(mdp)
+mdp.visualise_q_function(qfunction)
+mdp.visualise_policy(policy)
+reward_shaped_rewards = mdp.get_rewards()
 ```
 
 Now, we compare this with Q-learning without reward shaping:
 
 ```{code-cell} ipython3
 mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
-qFunction = QLearning(mdp, EpsilonGreedy()).execute(episodes = 100)
-qLearningRewards = mdp.getRewards()
+qfunction = QTable()
+QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+policy = qfunction.extract_policy(mdp)
+mdp.visualise_q_function(qfunction)
+mdp.visualise_policy(policy)
+q_learning_rewards = mdp.get_rewards()
 ```
 
 If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal::
 
 ```{code-cell} ipython3
 from plot import Plot
-Plot.plotEpisodeLength(["Q-learning", "Reward shaping"], [qLearningRewards, rewardShapedRewards])
+
+Plot.plot_episode_length(
+    ["Tabular Q-learning", "Reward shaping"],
+    [q_learning_rewards, reward_shaped_rewards],
+)
 ```
 
 ## Q-function initialisation 

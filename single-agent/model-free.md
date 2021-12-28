@@ -216,7 +216,7 @@ plot_qtable(headers, data)
 The following is an implementation of a Q-table using a Python dictionary:
 
 ```{code-cell} ipython3
-:load: "../code/qtable.py"
+:load: "../python_code/qtable.py"
 ```
 
 :::{admonition} Example -- Q-learning update
@@ -251,13 +251,13 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains most of the code we need:
 
 ```{code-cell} ipython3
-:load: "../code/model_free_reinforcement_learner.py"
+:load: "../python_code/model_free_reinforcement_learner.py"
 ```
 
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
-:load: "../code/qlearning.py"
+:load: "../python_code/qlearning.py"
 ```
 
 We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
@@ -355,7 +355,7 @@ $$
 As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
-:load: '../code/sarsa.py'
+:load: '../python_code/sarsa.py'
 ```
 
 So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a \in A} Q(s,a)$.
@@ -438,7 +438,7 @@ However, *during* learning, the agent will still fall off the cliff sometimes wh
 Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode::
 
 ```{code-cell} ipython3
-:load: '../code/tests/qlearning_sarsa_cliffworld.py'
+:load: '../python_code/tests/qlearning_sarsa_cliffworld.py'
 ```
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,

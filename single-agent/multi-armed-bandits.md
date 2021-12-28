@@ -80,7 +80,7 @@ A *zero-regret* strategy is a strategy whose average regret each round approache
 The implementation for each strategy we discuss inherits from the class `MultiArmedBandit`:
 
 ```{code-cell} ipython3
-:load: "../code/multi_armed_bandit/multi_armed_bandit.py"
+:load: "../python_code/multi_armed_bandit/multi_armed_bandit.py"
 ```
 
 Each strategy must implement the  `select` method, which takes the list of available actions and their Q-values. The `reset`  method resets to the bandit to its initial configuration, and is used for demonstration purposes later.
@@ -93,7 +93,7 @@ To demonstrate the effect of different multi-armed bandit strategies and their p
 The simulation returns a list of lists, representing the reward received at each step of each episode. The aim for the bandit is to maximise the expected rewards over each episode.
 
 ```{code-cell} ipython3
-:load: "../code/tests/multi_armed_bandit_tests/run_bandit.py"
+:load: "../python_code/tests/multi_armed_bandit_tests/run_bandit.py"
 ```
 
 ## Solutions for minimising regret
@@ -116,13 +116,13 @@ The best value for $\epsilon$ depends on the particular problem, but typically, 
 The implementation for epsilon greedy uses `random()` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If r is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
 
 ```{code-cell} ipython3
-:load: "../code/multi_armed_bandit/epsilon_greedy.py"
+:load: "../python_code/multi_armed_bandit/epsilon_greedy.py"
 ```
 
 The following plot shows the reward for each step, averaged over 2000 episodes, over the simulation described in the [](sec:multi-agent-bandit:simulation) section. Each episode is 1000 steps long. We evaluate different values of epsilon:
 
 ```{code-cell} ipython3
-:load: "../code/tests/multi_armed_bandit_tests/plot_epsilon_greedy.py"
+:load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_greedy.py"
 ```
 
 As we can see, higher  values of epsilon tend to have a lower reward over time, except that we need some non-zero value of epsilon. Higher values mean more exploration, so the bandit spends more time exploring less valuable actions, even after it has a good estimate of the value of actions. The actual choice of the epsilon parameter is entirely dependent on the particular application: there is no magic number. However, as in this particular case, an epsilon between 0.05-0.1 is usually a reasonable choice.
@@ -142,13 +142,13 @@ The selection mechanism is the same as epsilon greedy, but then after each selec
 The following implementation for the epsilon-decreasing strategy uses the epsilon-greedy strategy, just decreasing the epsilon value each step:
 
 ```{code-cell} ipython3
-:load: "../code/multi_armed_bandit/epsilon_decreasing.py"
+:load: "../python_code/multi_armed_bandit/epsilon_decreasing.py"
 ```
 
 The following plot shows the average reward over our simulation, varying the value of $\alpha$:
 
 ```{code-cell} ipython3
-:load: "../code/tests/multi_armed_bandit_tests/plot_epsilon_decreasing.py"
+:load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_decreasing.py"
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
@@ -168,13 +168,13 @@ As with the epsilon-decreasing strategy, we can add a decay parameter $\alpha$ t
 The following implementation of the softmax strategy uses ```random()``` to generate a random number between 0 and 1, and divides this space 0-1 among the set of actions based on the value of $e^{Q(a)/\tau}$:
 
 ```{code-cell} ipython3
-:load: "../code/multi_armed_bandit/softmax.py"
+:load: "../python_code/multi_armed_bandit/softmax.py"
 ```
 
 As before, we plot the average reward at each step of our simulation, this time varying values of tau:
 
 ```{code-cell} ipython3
-:load: "../code/tests/multi_armed_bandit_tests/plot_softmax.py"
+:load: "../python_code/tests/multi_armed_bandit_tests/plot_softmax.py"
 ```
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
@@ -217,7 +217,7 @@ If by chance the above expression does NOT hold for the optimal action $a$, then
 #### Implementation
 
 ```{code-cell} ipython3 
-:load: "../code/multi_armed_bandit/ucb.py"
+:load: "../python_code/multi_armed_bandit/ucb.py"
 ```
 
 Because UCB does not have parameters, there is no exploration to be done, however, in the next section we compare UCB with the other three strategies.
@@ -225,7 +225,7 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 ### Comparison
 
 ```{code-cell} ipython3
-:load: "../code/tests/multi_armed_bandit_tests/plot_comparison.py"
+:load: "../python_code/tests/multi_armed_bandit_tests/plot_comparison.py"
 ```
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.

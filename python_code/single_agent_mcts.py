@@ -95,4 +95,3 @@ class SingleAgentMCTS(MCTS):
         return SingleAgentNode(
             self.mdp, None, self.mdp.get_initial_state(), self.qfunction, self.bandit
         )
-

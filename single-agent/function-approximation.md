@@ -213,7 +213,7 @@ From this, we now can get an estimate of $Q(s,Up)$ from any state because we hav
 To implement linear function approximation, we implement a new class that inherits from `QFunction` called `LinearQFunction`:
 
 ```{code-cell} ipython3
-:load: '../code/linear_qfunction.py'
+:load: '../python_code/linear_qfunction.py'
 ```
 
 A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
@@ -237,11 +237,11 @@ Then, to extract state-action features, we need to define these as $f(s,a)$ is d
 We can implement these in a feature extractor class:
 
 ```{code-cell} ipython3
-:load: '../code/feature_extractor.py'
+:load: '../python_code/feature_extractor.py'
 ```
 
 ```{code-cell} ipython3
-:load: '../code/gridworld_feature_extractor.py'
+:load: '../python_code/gridworld_feature_extractor.py'
 ```
 
 Now, we just simply pass this as a feature extractor to our implementation of `LinearQFunction`, and use this as the Q-function instead of a Q-table:
@@ -258,8 +258,8 @@ features = GridWorldFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 policy = qfunction.extract_policy(mdp)
-print(mdp.q_function_to_string(qfunction))
-print(mdp.policy_to_string(policy))
+mdp.visualise_q_function(qfunction)
+mdp.visualise_policy(policy)
 ```
 
 We can see that this gives ok Q-values and an ok policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
@@ -271,7 +271,7 @@ The choice of features is key to solving the problem. We have defined features t
 We can solve this by improving our feature engineering. One way is to encode specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. A slightly better solution (because it is more general) is to add two new features that true 1 if and only if we are in the same column (or row respectively) as the goal:
 
 ```{code-cell} ipython3
-:load: '../code/gridworld_better_feature_extractor.py'
+:load: '../python_code/gridworld_better_feature_extractor.py'
 ```
 
 If we now run this on the GridWorld, we get better results:
@@ -284,8 +284,8 @@ features = GridWorldBetterFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 policy = qfunction.extract_policy(mdp)
-print(mdp.q_function_to_string(qfunction))
-print(mdp.policy_to_string(policy))
+mdp.visualise_q_function(qfunction)
+mdp.visualise_policy(policy)
 ```
 
 However, this is still not perfect. As we see, the policy recommends going up in state (1,0), which runs straight into the blocked cell. This is the downside of using linear function approximation. While it comes with convergence guarantees, it will not produce optimal policies if the underlying problem is non-linear.

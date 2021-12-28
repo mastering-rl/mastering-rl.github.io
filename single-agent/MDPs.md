@@ -325,13 +325,13 @@ We will focus mostly on  deterministic policies, but stochastic policies have th
 Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
 
 ```{code-cell} ipython3
-:load: "../code/policy.py"
+:load: "../python_code/policy.py"
 ```
 
 The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
-:load: "../code/tabular_policy.py"
+:load: "../python_code/tabular_policy.py"
 ```
 
 As we see later in the section on [policy gradients](sec:policy-based:policy-gradients), policies can be represented using other means, such as machine learning models, which do not require us to keep an explicit answer for every state.
@@ -426,7 +426,7 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
 
 ```{code-cell} ipython3
-:load: "../code/value_function.py"
+:load: "../python_code/value_function.py"
 ```
 
 For each state, we find the best action in the state (the action that maximises the Q-value from that state); and for that state, we set that max action as the action to select in that state.
