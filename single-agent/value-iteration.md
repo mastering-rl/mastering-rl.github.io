@@ -83,38 +83,29 @@ Below is a Python implementation for value iteration. In this implementation, th
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
 
 ```{code-cell} ipython3
-:tags: [remove-output]
 from gridworld import GridWorld
-from gif_maker import GifMaker
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
-gif_maker = GifMaker(mdp=gridworld)
 values = TabularValueFunction()
-for iterations in range(0, 10):
-    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    title = "After %d iterations" % (iterations)
-    image_texts = gridworld.visualise_value_function(values, title=title, gif=True)
-    gif_maker.add_frame(image_texts, title=title)
+ValueIteration(gridworld, values).value_iteration(max_iterations=100)
+gridworld.visualise_value_function(values, "Value function after 100 iterations")
 ```
 
-```{code-cell} python3
-:tags: [remove-cell]
-gif_maker.save("../assets/gifs/value_iteration.gif")
-```
-
-<div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=460 height=403 rel:auto_play="0">
-    <gif-player id="gridworld_value_function"></gif-player>
-</div>
-
-From the policy, we extract a policy:
+From the value function, we extract a policy:
 
 ```{code-cell} ipython3
 policy = values.extract_policy(gridworld)
 gridworld.visualise_policy(policy, "Policy after 100 iterations")
 ```
+
+Using the visualisation belong, stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="gridworld_value_function"></gif-player>
+</div>
 
 
 ## Summary
