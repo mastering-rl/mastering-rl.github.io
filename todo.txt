@@ -1,3 +1,4 @@
+- add a slider to the gif viewer
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
 - add n-step learning implementation
 - add multi-objective RL to Chapter 1. Don't spend much time on solutions, but an example may be good.

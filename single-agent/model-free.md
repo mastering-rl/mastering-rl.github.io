@@ -273,7 +273,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=1000)
 mdp.visualise_q_function(qfunction, "Q-Function")
 ```
 
@@ -285,6 +285,11 @@ Despite this, if we extract a policy from this, we still see that the policy cor
 policy = qfunction.extract_policy(mdp)
 mdp.visualise_policy(policy)
 ```
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/gridworld_qfunction.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="gridworld_qfunction"></gif-player>
+</div>
 
 (sec:model-free:sarsa)=
 # SARSA: On-policy reinforcement learning

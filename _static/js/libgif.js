@@ -1032,7 +1032,7 @@ class GifPlayer extends HTMLElement {
             "               <i class=\"fa fa-play\"></i></button>\n" +
             "           <button title=\"Next frame\" aria-label=\"Next frame\" onclick=\"sup1.move_relative(1); return false;\">\n" +
             "               <i class=\"fa fa-step-forward\"></i></button>\n" +
-            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"sup1.move_to(sup1.get_length()); return false;\">\n" +
+            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"sup1.move_to(sup1.get_length() - 1); return false;\">\n" +
             "               <i class=\"fa fa-fast-forward\"></i></button>\n" +
             "        </div>"
     }
