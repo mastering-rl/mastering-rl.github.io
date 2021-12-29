@@ -262,7 +262,7 @@ We inherit from this class to implement the Q-learning algorithm:
 
 We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
 
-Using this implementation, we execute 1000 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
+Using this implementation, we execute 100 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -273,7 +273,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=1000)
+QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=100)
 mdp.visualise_q_function(qfunction, "Q-Function")
 ```
 
@@ -286,10 +286,13 @@ policy = qfunction.extract_policy(mdp)
 mdp.visualise_policy(policy)
 ```
 
+Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become mroe and more accurate:
+
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_qfunction" src=https://gibberblot.github.io/rl-notes/gifs/gridworld_qfunction.gif width=360 height=303 rel:auto_play="0">
-    <gif-player id="gridworld_qfunction"></gif-player>
+    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="qlearning"></gif-player>
 </div>
+<p>
 
 (sec:model-free:sarsa)=
 # SARSA: On-policy reinforcement learning
@@ -365,7 +368,7 @@ As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner
 
 So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a \in A} Q(s,a)$.
 
-As before, we can execute SARSA for 1000 episodes:
+As with Q-learning, we execute SARSA for 100 episodes:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -376,7 +379,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 qfunction = QTable()
-SARSA(mdp, EpsilonGreedy(), qfunction).execute()
+SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes=100)
 mdp.visualise_q_function(qfunction)
 ```
 
@@ -476,19 +479,7 @@ The standard versions that we see in this section have two major limitations:
 
 1. Because we need to select the best action $a$ in Q-learning, we iterate over all actions. This limits Q-learning to discrete action spaces.
 
-2. If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory.
-
-
-## Q-learning Examples in Action
-
-Solving the cliff example using Q-learning with epsilon-greedy:
-
-<p align="center">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ppALjH0kYPE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</p>
-
-The source code for this is available from here: <https://github.com/alecKarfonta/Gridworld>
-
+2. If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory or at least so large that it will take many episodes to sample all state-action pairs.
 
 ### Applications of Reinforcement Learning
 

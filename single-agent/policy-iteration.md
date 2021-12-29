@@ -95,7 +95,7 @@ Below is a Python implementation for policy iteration. In this implementation, t
 
 From this, we can see that policy evaluation  looks very similar to value iteration. The main differences is in the inner loop: instead of finding the action with the maximum Q-value, we simply find the value of the action that is given the policy: ``policy.select_action(state)``.
 
-Let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action and using that for every state:
+We can execute this to get the policy:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -103,21 +103,29 @@ from policy_iteration import PolicyIteration
 from tabular_policy import TabularPolicy
 
 
-for iterations in [0, 1, 2, 3, 4, 5]:
-    mdp = GridWorld()
-    policy = TabularPolicy(default_action=mdp.get_actions()[0])
-    PolicyIteration(mdp, policy).policy_iteration(max_iterations=iterations)
-    mdp.visualise_policy(policy)
+gridworld = GridWorld()
+policy = TabularPolicy(default_action=gridworld.LEFT)
+PolicyIteration(gridworld, policy).policy_iteration(max_iterations=100)
+gridworld.visualise_policy(policy)
 ```
+
+We can see that this matches the optimal policy according to [value iteration](sec:value_iteration).
+
+Let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action (left) and using that for every state:
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="policy_iteration" src=https://gibberblot.github.io/rl-notes/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="policy_iteration"></gif-player>
+</div>
 
 We can see that this converges in just four iterations. Let's try on a larger state space of a 20 x 19 grid:
 
 ```{code-cell} ipython3
-mdp = GridWorld(width=20, height=15)
-policy = TabularPolicy(default_action=mdp.get_actions()[0])
-iterations = PolicyIteration(mdp, policy).policy_iteration(max_iterations=100)
+gridworld = GridWorld(width=20, height=15)
+policy = TabularPolicy(default_action=gridworld.LEFT)
+iterations = PolicyIteration(gridworld, policy).policy_iteration(max_iterations=100)
 print("Number of iterations until convergence: %d" % (iterations))
-mdp.visualise_policy(policy)
+gridworld.visualise_policy(policy)
 ```
 
 This terminates in 19 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.
