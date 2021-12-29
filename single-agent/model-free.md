@@ -287,7 +287,7 @@ mdp.visualise_policy(policy)
 ```
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/gridworld_qfunction.gif width=360 height=303 rel:auto_play="0">
+    <img id="gridworld_qfunction" src=https://gibberblot.github.io/rl-notes/gifs/gridworld_qfunction.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="gridworld_qfunction"></gif-player>
 </div>
 

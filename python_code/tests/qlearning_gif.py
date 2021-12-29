@@ -4,7 +4,8 @@ from qtable import QTable
 from qlearning import QLearning
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-saves=[1,2,3,4,5,10,50,100,200,300,400,500,600,700,800,900,1000]
+#saves=[1,2,3,4,5,10,50,100,200,300,400,500,600,700,800,900,1000]
+saves=range(1,1001)
 
 gridworld = GridWorld()
 gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
