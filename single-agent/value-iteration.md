@@ -106,6 +106,7 @@ Using the visualisation belong, stepping through the 100 iterations, we can see 
     <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="gridworld_value_function"></gif-player>
 </div>
+<p>
 
 
 ## Summary

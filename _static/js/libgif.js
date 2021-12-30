@@ -1021,8 +1021,11 @@ class GifPlayer extends HTMLElement {
         self.sup1 = new SuperGif({gif:  document.getElementById(this.id), max_width: this.getAttribute('width')});
         self.sup1.load();
         this.innerHTML =
+            "        <div class=\"gif_controls\">\n" +
+            "        <div class=\"slider\">\n" +
+            "           <input id=\"gif_slider\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"sup1.move_to(((sup1.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
             "        <div class=\"buttons\">\n" +
-            "           <button title=\"First frame\" aria-label=\"asdasd frame\" onclick=\"sup1.move_to(0); return false;\">\n" +
+            "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"sup1.move_to(0); return false;\">\n" +
             "             <i class=\"fa fa-fast-backward\"></i></button>\n" +
             "           <button title=\"Previous frame\" aria-label=\"Previous frame\" onclick=\"sup1.move_relative(-1); return false;\">\n" +
             "               <i class=\"fa fa-step-backward\"></i></button>\n" +
@@ -1034,6 +1037,8 @@ class GifPlayer extends HTMLElement {
             "               <i class=\"fa fa-step-forward\"></i></button>\n" +
             "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"sup1.move_to(sup1.get_length() - 1); return false;\">\n" +
             "               <i class=\"fa fa-fast-forward\"></i></button>\n" +
+            "        </div>\n" +
+            "        </div>\n" +
             "        </div>"
     }
 
