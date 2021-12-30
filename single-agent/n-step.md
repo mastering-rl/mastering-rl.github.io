@@ -294,7 +294,15 @@ $
 
 At this point, there are no further states left to update, so the inner loop terminates, and we start a new episode.
 
-The tables below compares 1-step vs. 5-step SARSA for the trace above. In 1-step SARSA, reaching the reward only informs the state from which it is reached. Whereas for 5-step, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a non-zero state, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table faster.
+### Example
+
+Using the simulation below, we compare 1-step vs. 5-step Q-learning. Using 1-step Q-learning, reaching the reward only informs the state from which it is reached in the first episode; whereas for 5-step Q-learning, it informs the previous five steps. Then, in the next episode, there is more chance of encountering a state with some reward, so which will again inform the five steps instead of just one. The rewards 'spread' throughout the Q-table more quickly.
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="1_step_vs_5_step_qlearning" src=https://gibberblot.github.io/rl-notes/gifs/1_step_vs_5_step_qlearning.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="1_step_vs_5_step_qlearning"></gif-player>
+</div>
+<p>
 
 
 ```{code-cell} ipython3

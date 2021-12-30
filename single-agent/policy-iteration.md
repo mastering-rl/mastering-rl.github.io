@@ -117,6 +117,7 @@ Let's look at the policies that are generated after each iteration, noting that 
     <img id="policy_iteration" src=https://gibberblot.github.io/rl-notes/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="policy_iteration"></gif-player>
 </div>
+<p>
 
 We can see that this converges in just four iterations. Let's try on a larger state space of a 20 x 19 grid:
 

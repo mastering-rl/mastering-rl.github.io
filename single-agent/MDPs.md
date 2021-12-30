@@ -98,8 +98,8 @@ tags: [remove-cell]
 from myst_nb import glue
 from gridworld import GridWorld
 
-mdp = GridWorld()
-gridworld_image = mdp.visualise()
+gridworld = GridWorld()
+gridworld_image = gridworld.visualise()
 glue("gridworld_image", gridworld_image, display=False)
 ```
 
@@ -303,11 +303,11 @@ from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
 
-mdp = GridWorld()
+gridworld = GridWorld()
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=100)
-policy = values.extract_policy(mdp)
-mdp.visualise_policy(policy, "")
+ValueIteration(gridworld, values).value_iteration(max_iterations=100)
+policy = values.extract_policy(gridworld)
+gridworld.visualise_policy(policy, "")
 ```
 
 So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidently slips right, it should go left again to return to the initial state.

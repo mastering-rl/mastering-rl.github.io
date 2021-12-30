@@ -271,10 +271,10 @@ from qlearning import QLearning
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
-mdp = GridWorld()
+gridworld = GridWorld()
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=100)
-mdp.visualise_q_function(qfunction, "Q-Function")
+QLearning(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
+gridworld.visualise_q_function(qfunction, "Q-Function")
 ```
 
 If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
@@ -282,8 +282,8 @@ If we compare this to the value function for the [value iteration implementation
 Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_policy(policy)
+policy = qfunction.extract_policy(gridworld)
+gridworld.visualise_policy(policy)
 ```
 
 Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become mroe and more accurate:
@@ -377,17 +377,17 @@ from sarsa import SARSA
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
-mdp = GridWorld()
+gridworld = GridWorld()
 qfunction = QTable()
-SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes=100)
-mdp.visualise_q_function(qfunction)
+SARSA(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
+gridworld.visualise_q_function(qfunction)
 ```
 
 Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_policy(policy)
+policy = qfunction.extract_policy(gridworld)
+gridworld.visualise_policy(policy)
 ```
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
@@ -399,23 +399,22 @@ Consider the example below called "Cliff World". The bottom-left cell is the sta
 ```{code-cell} ipython3
 from gridworld import CliffWorld
 
-mdp = CliffWorld()
-mdp.visualise()
+cliffworld = CliffWorld()
+cliffworld_image = cliffworld.visualise()
 ```
 
 Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
 
 ```{code-cell} ipython3
-mdp = CliffWorld()
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+QLearning(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 From this, we extract the following policy:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_policy(policy)
+policy = qfunction.extract_policy(cliffworld)
+cliffworld.visualise_policy(policy)
 ```
 
 We can see that the policy will take from initially up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
@@ -423,16 +422,16 @@ We can see that the policy will take from initially up, and then along the cliff
 Now, let's try training the same problem with SARSA:
 
 ```{code-cell} ipython3
-mdp = CliffWorld()
+cliffworld = CliffWorld()
 qfunction = QTable()
-SARSA(mdp, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+SARSA(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 Extracting the policy, we get:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_policy(policy)
+policy = qfunction.extract_policy(cliffworld)
+cliffworld.visualise_policy(policy)
 ```
 
 We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*
@@ -443,7 +442,7 @@ Consider each agent moving from state $(1,1)$ to state $(2,1)$. The Q-learning a
 
 However, *during* learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off *less* than the Q-learning agent because it takes actions on the safe path more often during learning?
 
-Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode::
+Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode:
 
 ```{code-cell} ipython3
 :load: '../python_code/tests/qlearning_sarsa_cliffworld.py'
