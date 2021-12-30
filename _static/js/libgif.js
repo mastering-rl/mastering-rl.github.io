@@ -1018,7 +1018,7 @@ class GifPlayer extends HTMLElement {
         this
             .shadowRoot
             .querySelector("logo-element");
-        self.sup1 = new SuperGif({gif: document.getElementById(this.id)});
+        self.sup1 = new SuperGif({gif:  document.getElementById(this.id), max_width: this.getAttribute('width')});
         self.sup1.load();
         this.innerHTML =
             "        <div class=\"buttons\">\n" +
@@ -1040,5 +1040,3 @@ class GifPlayer extends HTMLElement {
 }
 
 customElements.define("gif-player", GifPlayer);
-
-
