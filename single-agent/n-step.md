@@ -303,6 +303,8 @@ Using the simulation below, we compare 1-step vs. 5-step Q-learning over the fir
     <gif-player id="1_step_vs_5_step_qlearning" width="900"></gif-player>
 </div>
 <p>
+
+
 **Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Unfortunately, doing this, which is called *Monte-Carlo simulation*, does not work so well in practice. In effect, we would no longer have an TD estimates in the update rule, which leads to more variance in the learning. 
 
 **What is the best value for $n$ then?** Unfortunately, there is no theoretically best value for $n$. It depends on the particular application and reward function that is being trained. In practice, it seems that values of $n$ around 4-8 give good updates because we can easily assign credit to each of the 4-8 actions; that is, we can tell whether the 4-8 actions in the lookahead contributed to the score, because we use the TD estimates. 
