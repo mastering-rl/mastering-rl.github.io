@@ -292,6 +292,13 @@ However, this is still not perfect. As we see, the policy recommends going up in
 
 We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
 
+### Example -- Linear function approximation vs Q-tables
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="linear_function_vs_qtable" src="https://gibberblot.github.io/rl-notes/gifs/linear_function_vs_qtable.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="linear_function_vs_qtable" width="900"></gif-player>
+</div>
+<p>
 
 ### Challenges and tips
 

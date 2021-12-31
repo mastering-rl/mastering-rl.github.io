@@ -10,12 +10,13 @@ class GraphVisualisation():
         self.single_agent_node_to_graph(g, node, level = 0)
         return g
 
-    def node_id(self, node):
-        return "V(%s.%d) = %0.3f\\nN = %d" % (node.state, node.id, node.get_value(), node.get_visits())
+    def node_label(self, node):
+        return "V%s =\n%0.2f\\nN = %d" % (node.state, node.get_value(), node.get_visits())
 
     def single_agent_node_to_graph(self, g, node, level):
+        g.node(str(node.id), label=self.node_label(node), **{'width':str(1), 'height':str(1), 'fixedsize':str(True)})
         for action in node.children.keys():
-            g.edge(self.node_id(node), str(action) + str(node.id), action)
+            g.edge(str(node.id), str(action) + str(node.id), action)
 
         if level <= self.max_level:
             for action in node.children.keys():
@@ -25,7 +26,7 @@ class GraphVisualisation():
         node_id = str(action) + str(node.id)
         for (child, probability) in node.children[action]:
             g.node(node_id, node_id, style='filled', shape='point', width='0.25')
-            g.edge(node_id, self.node_id(child), str(probability))
+            g.edge(node_id, str(child.id), str(probability))
 
         for (child, _) in node.children[action]:
             self.single_agent_node_to_graph(g, child, level + 1)

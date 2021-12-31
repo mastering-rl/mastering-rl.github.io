@@ -323,24 +323,26 @@ from qtable import QTable
 from single_agent_mcts import SingleAgentMCTS
 from multi_armed_bandit.ucb import UpperConfidenceBounds
 
-mdp = GridWorld()
+gridworld = GridWorld()
 qfunction = QTable()
-root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=0.1)
+root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(timeout=0.03)
 gv = GraphVisualisation(max_level=6)
 graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
 graph
 ```
 
-```{code-cell} ipython3
-mdp.visualise_q_function(qfunction)
-```
+If we visualise the Q-function, we can see that only the actions that occur early in traces have any informed Q-values:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_policy(policy)
+gridworld.visualise_q_function(qfunction)
 ```
 
+Therefore, the extracted policy is not yet very good:
 
+```{code-cell} ipython3
+policy = qfunction.extract_policy(gridworld)
+gridworld.visualise_policy(policy)
+```
 
 In this tree, the expression $(x, y).z$ represents the $(x,y)$ state with the unique identify $z$ for the node. 
 
@@ -357,7 +359,7 @@ mdp.visualise_q_function(qfunction)
 
 What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations end up long and get a very small discounted reward. Finally, there is actually very little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
-If we simulate for 5 seconds,, then we can see that the rewards start to resemble something more sensible:
+If we simulate for 5 seconds, then we can see that the rewards start to resemble something more sensible:
 
 ```{code-cell} ipython3
 mdp = GridWorld()
@@ -365,6 +367,8 @@ qfunction = QTable()
 root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=5.0)
 mdp.visualise_q_function(qfunction)
 ```
+
+Note that the state-action pairs around the -1 reward are not well explored, because the UCB multi-armed bandit that selects the actions does not explore actions with low values often. 
 
 (sec:monte-carlo-tree-search:demo)=
 ## Why does it work so well (sometimes)?
