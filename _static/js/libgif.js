@@ -705,7 +705,7 @@
 
             var stepFrame = function (amount) { // XXX: Name is confusing.
                 i = i + amount;
-
+                document.getElementById("gif_slider").value=parseInt((100 / (frames.length - 1)) * i);
                 putFrame();
             };
 
@@ -804,6 +804,7 @@
                 },
                 move_to: function (frame_idx) {
                     i = frame_idx;
+                    document.getElementById("gif_slider").value=parseInt((100 / (this.get_length() - 1)) * i);
                     putFrame();
                 }
             }
