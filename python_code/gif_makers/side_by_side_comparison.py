@@ -1,3 +1,4 @@
+import os
 import imageio
 import numpy as np
 from gridworld import GridWorld
@@ -8,9 +9,9 @@ def run_learner(mdp, learner, qfunction, learner_name, out_filename, episodes=20
     gridworld = GridWorld()
     gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
 
-    for iteration in range(1, episodes + 1):
+    for episode in range(1, episodes + 1):
         learner.execute(episodes=1)
-        title = "%s after %d iterations" % (learner_name, iteration)
+        title = "%s after %d episodes" % (learner_name, episode)
         image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)
         gif_maker.add_frame(image_texts, title=title)
 
@@ -38,3 +39,5 @@ def join_gif(filename1, filename2, out_filename):
     gif1.close()
     gif2.close()
     new_gif.close()
+
+    os.system("bash compress.bash %s" % (out_filename))

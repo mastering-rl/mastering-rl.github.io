@@ -294,9 +294,11 @@ We could work around the above problem by adding two more features to avoid the 
 
 ### Example -- Linear function approximation vs Q-tables
 
+The following interactive visualisation gives an episode-by-episode comparison of linear Q-function approximation vs Q tables for 20 episodes. As we can see, after one episode,
+
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="linear_function_vs_qtable" src="https://gibberblot.github.io/rl-notes/gifs/linear_function_vs_qtable.gif" width="900" height="400" rel:auto_play="0">
-    <gif-player id="linear_function_vs_qtable" width="900"></gif-player>
+    <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
 </div>
 <p>
 
@@ -304,7 +306,7 @@ We could work around the above problem by adding two more features to avoid the 
 
 The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.
 
-**Tip:** Note that to make analysis and debugging easier,, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
+**Tip:** Note that to make analysis and debugging easier, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
 
 ## Deep Q-learning
 
@@ -328,6 +330,35 @@ $$\theta \leftarrow \theta + \alpha \cdot \delta \cdot \nabla_{\theta} Q(s,a; \t
 
 where $\nabla_{\theta} Q(s,a; \theta)$ is the *gradient* of the Q-function. In these notes, we will not cover how to calculate the gradient of the Q-function: there are many excellent text books that cover gradients.
 
+### Implementation
+
+Deep Q-learning is identical to tabular or linear Q-learning, except that we use a deep neural network to represent the Q-function instead of a Q-table or a linear equation.
+
+In this implementation, we use  the PyTorch deep learning framework  (https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code.
+
+Using PyTorch, we create a sequence neural network with the following:
+1. The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.
+2. We have a hidden layer, with a default number of 64 hidden dimensions, but this is parameterised by the variable `hidden_dim` in the `__init__` constructor.
+3. The third and final layer is the output layer, whose dimensionality is the same as the action space, so that each action has a Q-value associated with it.
+3. We use a non-linear ReLU (rectified linear unit) between layers.
+
+From this, we implement the `update` method, which uses the PyTorch implementation to update the network parameters $\theta$, rather than calculating the gradient itself. We could also get the gradient and update $\theta$, but using an off-the-shelf implementation allows us to take advantage of optimisations.
+
+We also need to implement the `get_q_value` method to pass through the network to get our Q-values.
+
+```{code-cell} ipython3
+:load: "../python_code/deep_qfunction.py"
+```
+
+Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as integers.
+
+We can now use this implementation by creating a standard Q-learning agent with a deep Q network as the Q function:
+
+```{code-cell} ipython3
+:load: "../python_code/tests/deep_qlearning_run.py"
+```
+
+Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation, so we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
 
 ### Advantages and disadvantages

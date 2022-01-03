@@ -17,6 +17,6 @@ gridworld = GridWorld()
 features = GridWorldBetterFeatureExtractor(gridworld)
 qfunction = LinearQFunction(features)
 learner = QLearning(gridworld, EpsilonGreedy(), qfunction)
-run_learner(mdp=gridworld, learner=learner, qfunction=qfunction, learner_name="Q-learning with linear function approximation", out_filename="../../assets/gifs/qlearning_with_linear_function_approximation.gif", episodes=episodes)
+run_learner(mdp=gridworld, learner=learner, qfunction=qfunction, learner_name="Linear Q-learning", out_filename="../../assets/gifs/linear_qlearning.gif", episodes=episodes)
 
-join_gif(filename1="../../assets/gifs/qlearning_with_qtable.gif", filename2="../../assets/gifs/qlearning_with_linear_function_approximation.gif", out_filename="../../assets/gifs/linear_function_vs_qtable.gif")
+join_gif(filename1="../../assets/gifs/qlearning_with_qtable.gif", filename2="../../assets/gifs/linear_qlearning.gif", out_filename="../../assets/gifs/qtable_vs_linear_qlearning.gif")
