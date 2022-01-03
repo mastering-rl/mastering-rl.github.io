@@ -1,5 +1,3 @@
-import random
-
 import torch
 import torch.nn as nn
 from qfunction import QFunction
@@ -69,9 +67,6 @@ class DeepQFunction(QFunction):
             if max_q < value:
                 arg_max_q = action
                 max_q = value
-            # If these actions have the same Q-value, randomly choose one
-            elif max_q == value:
-                arg_max_q = random.choice([arg_max_q, action])
         return (arg_max_q, max_q)
 
     """

@@ -1,4 +1,5 @@
 jupyter-book
 matplotlib
 numpy
-imageio
+imageio 
+pytorch (https://pytorch.org/)
