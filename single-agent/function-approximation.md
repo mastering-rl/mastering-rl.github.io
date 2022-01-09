@@ -367,6 +367,9 @@ Note the value of the learning rate $\alpha=1.0$. This is because the optimiser 
                 var linear_qlearning_vs_deep_qlearning_gif = new SuperGif({ gif: document.getElementById('linear_qlearning_vs_deep_qlearning'), max_width: "900"});
                 linear_qlearning_vs_deep_qlearning_gif.load();
         </script>
+        <div class="gif_controls">
+            <div class="slider">
+            <input id="gif_slider" type="range" style="width: 400px" class="anim_slider" name="slider" min="0" max="100" step="1" >
 		<div class="buttons">
            <button title="First frame" aria-label="First frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(0); return false;">
              <i class="fa fa-fast-backward"></i></button>
@@ -380,6 +383,7 @@ Note the value of the learning rate $\alpha=1.0$. This is because the optimiser 
                <i class="fa fa-step-forward"></i></button>
            <button title="Last frame" aria-label="Last frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(linear_qlearning_vs_deep_qlearning_gif.get_length() - 1); return false;">
                <i class="fa fa-fast-forward"></i></button>
+        </div>
         </div>
         </center>
 </div>

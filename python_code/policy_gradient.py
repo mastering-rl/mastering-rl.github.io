@@ -1,7 +1,7 @@
 class PolicyGradient:
     def __init__(self, mdp, policy, alpha) -> None:
         super().__init__()
-        self.alpha = alpha  # learning rate (gradient update step-size)
+        self.alpha = alpha  # Learning rate (gradient update step-size)
         self.mdp = mdp
         self.policy = policy
 
@@ -37,7 +37,7 @@ class PolicyGradient:
         """
         T = len(rewards)
         discounted_future_rewards = [0 for _ in range(T)]
-        # the final discounted reward is just the reward you get at that step
+        # The final discounted reward is the reward you get at that step
         discounted_future_rewards[T - 1] = rewards[T - 1]
         for t in reversed(range(0, T - 1)):
             discounted_future_rewards[t] = (

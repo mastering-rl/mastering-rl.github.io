@@ -292,6 +292,8 @@ The planning problem for discounted-reward MDPs is different to that of classica
 A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
 :::
 
+
+(sec:mdp:deterministic-vs-stochastic-policies)=
 ### Deterministic vs. stochastic policies
 
 A *deterministic policy* $\pi : S \rightarrow A$ is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.

@@ -1,7 +1,16 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (sec:policy-based:policy-gradients)=
 # Policy gradient methods
-
-**Non-examinable topic -- but very interesting!**
 
 As noted earlier, policy-based methods search for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
 
@@ -12,7 +21,7 @@ In policy gradient methods, we approximate the policy from the rewards and actio
 1. The policy is represented using some function that is *differentiable* with respect to its parameters. For a non-differentiable policy, we cannot calculate the gradient.
 2. Typically, we want the policy to be *stochastic*. Recall from the section on [policies](sec:mdps:policies) that a stochastic policy specifies a *probability distribution* over actions, defining the probability with which each action should be chosen.
 
-The goal of a policy gradient is to approximate the optimal policy $\pi(s, a; \theta)$ via gradient ascent on the expected return. Gradient ascent will find the best parameters $\theta$ for the particular MDP.
+The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}(s, a)$ via gradient ascent on the expected return. Gradient ascent will find the best parameters $\theta$ for the particular MDP.
 
 ## Policy improvement
 
@@ -38,12 +47,12 @@ $$\theta \leftarrow \theta + \alpha \nabla\ J(\theta)$$
 
 where $\alpha$ is a learning rate parameter that dictates how big the step in the direction of the gradient should be.
 
-The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi(s,a; \theta)$ that $\nabla J(\theta)$ is:
+The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi_{\theta}(s,a)$ that $\nabla J(\theta)$ is:
 
-$$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi(s, a; \theta) Q(s,a)]$$
+$$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi_{\theta}(s, a) Q(s,a)]$$
 
-The expression $\textrm{ln} \pi(s, a; \theta)$ tells us how to change the weights $\theta$ is we want to increase the log probability of selecting action $a$ in state $s$. If the quality of selecting action $a$ in $s$ is positive, we would increase that probability; otherwise it will descrease
-Thus, this is the expected return of of taking action $\pi(s,a; \theta)$ multiplied by the gradient.
+The expression $\textrm{ln} \pi_{\theta}(s, a)$ tells us how to change the weights $\theta$ is we want to increase the log probability of selecting action $a$ in state $s$. If the quality of selecting action $a$ in $s$ is positive, we would increase that probability; otherwise it will descrease
+Thus, this is the expected return of of taking action $\pi_{\theta}(s,a)$ multiplied by the gradient.
 
 In these notes, we will not go into details about gradients or algorithms for solving them -- this is itself a large topic that is relevant outside of reinforcement learning. Instead, we will just give the intuition.
 
@@ -52,13 +61,11 @@ In these notes, we will not go into details about gradients or algorithms for so
 The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the way done in TD learning.
 
 :::{admonition} Algorithm -- REINFORCE
-**Input:** A differentiable policy $\pi(s,a; \theta)$, an MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Policy $\pi(s;a; \theta)$          
-
-Initialise policy parameters $\theta$ arbitrarily; e.g., to 0 for elements in $\theta$
+**Input:** A differentiable policy $\pi_{\theta}(s,a)$, an MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Output:** Policy $\pi_{\theta}(s,a)$          
 
 Repeat\
-$\quad\quad$ Generate episode $(s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})$ by following $\pi( ,; \theta)$\
+$\quad\quad$ Generate episode $(s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})$ by following $\pi_{\theta}$\
 $\quad\quad$ For each $(s_t, a_t)$ in the episode\
 $\quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\
 $\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi(s,a;\theta)$\
@@ -67,11 +74,33 @@ Until some time limit or until $\pi$ converges
 
 REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
 
-### Comparison to value-based 
+Comparing to value-based techniques, we can see that REINFORCE (and other policy-based approaches)  do not evaluate each action in the policy improvement process. In policy improvement, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q(s,a)$. Instead, actions are selected from the policy directly. 
 
-Overall, the policy-based approach is typically more efficient for problems with a high number of actions and will therefore converge to a solution more quickly than value-based methods. This is because it does not have to evaluate all actions every time it selects an action -- it simply follows the policy.
+This has the advantage that policy-based approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-based approaches are often more efficient than value-based approaches when there are a large number of actions.
 
-Other techniques exist that can improve on REINFORCE. In particular, one such technique is the *actor-critic* method. In the update where we use $G$ as the update, this generates an unbiased sample, however, the variance is high because we take the reward over a single trace. Instead, we can estimate $V(s)$ for the state, at update relative to $G-V(s)$ to reduce the variance. 
+### Implementation
+
+The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
+
+```{code-cell} ipython3
+:load: "../python_code/policy_gradient.py"
+```
+
+We need a differentiable policy so that we can calculate the gradient and update. To illustrate this from first principles, let's look at an implementation of a policy that uses logistic regression. This basic implementation supports environments with only two actions, but it is sufficient to illustrate the basics of policy gradient methods from first principles.
+
+The policy inherits from [`StochasticPolicy`](sec:mdp:deterministic-vs-stochastic-policies), which means that the policy $\pi_{\theta}(s,a)$ returns the probability of action $a$ being executed in state $s$. 
+
+```{code-cell} ipython3
+:load: "../python_code/logistic_regression_policy.py"
+```
+
+```{code-cell} ipython3
+:load: "../python_code/tests/logistic_regression_policy_gradient.py"
+```
+
+## Deep policy gradients
+
+
 
 ## Applications of policy gradient ascent
 
