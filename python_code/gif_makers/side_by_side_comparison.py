@@ -9,7 +9,7 @@ def run_learner(mdp, learner, qfunction, learner_name, out_filename, episodes=20
     gridworld = GridWorld()
     gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
 
-    for episode in range(1, episodes + 1):
+    for episode in range(0, episodes + 1):
         learner.execute(episodes=1)
         title = "%s after %d episodes" % (learner_name, episode)
         image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)

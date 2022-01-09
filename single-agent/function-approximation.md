@@ -360,6 +360,30 @@ We can now use this implementation by creating a standard Q-learning agent with 
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation, so we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
+<div id="container2" markdown="1" style="text-align: center;">
+        <center>
+        <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400"  rel:auto_play="0">
+        <script type="text/javascript">
+                var linear_qlearning_vs_deep_qlearning_gif = new SuperGif({ gif: document.getElementById('linear_qlearning_vs_deep_qlearning'), max_width: "900"});
+                linear_qlearning_vs_deep_qlearning_gif.load();
+        </script>
+		<div class="buttons">
+           <button title="First frame" aria-label="First frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(0); return false;">
+             <i class="fa fa-fast-backward"></i></button>
+           <button title="Previous frame" aria-label="Previous frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_relative(-1); return false;">
+               <i class="fa fa-step-backward"></i></button>
+           <button title="Pause" aria-label="Pause" onclick="linear_qlearning_vs_deep_qlearning_gif.pause(); return false;">
+               <i class="fa fa-pause"></i></button>
+           <button title="Play" aria-label="Play" onclick="linear_qlearning_vs_deep_qlearning_gif.play(); return false;">
+               <i class="fa fa-play"></i></button>
+           <button title="Next frame" aria-label="Next frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_relative(1); return false;">
+               <i class="fa fa-step-forward"></i></button>
+           <button title="Last frame" aria-label="Last frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(linear_qlearning_vs_deep_qlearning_gif.get_length() - 1); return false;">
+               <i class="fa fa-fast-forward"></i></button>
+        </div>
+        </center>
+</div>
+<p>
 
 ### Advantages and disadvantages
 

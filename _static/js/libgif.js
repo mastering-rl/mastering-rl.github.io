@@ -705,7 +705,7 @@
 
             var stepFrame = function (amount) { // XXX: Name is confusing.
                 i = i + amount;
-                document.getElementById("gif_slider").value=parseInt((100 / (frames.length - 1)) * i);
+//***                document.getElementById("gif_slider").value=parseInt((100 / (frames.length - 1)) * i);
                 putFrame();
             };
 
@@ -804,7 +804,7 @@
                 },
                 move_to: function (frame_idx) {
                     i = frame_idx;
-                    document.getElementById("gif_slider").value=parseInt((100 / (this.get_length() - 1)) * i);
+//***                    document.getElementById("gif_slider").value=parseInt((100 / (this.get_length() - 1)) * i);
                     putFrame();
                 }
             }
@@ -1023,8 +1023,8 @@ class GifPlayer extends HTMLElement {
         self.sup1.load();
         this.innerHTML =
             "        <div class=\"gif_controls\">\n" +
-            "        <div class=\"slider\">\n" +
-            "           <input id=\"gif_slider_\"" +  document.getElementById(this.id) + " type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"sup1.move_to(((sup1.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
+//***            "        <div class=\"slider\">\n" +
+//***           "           <input id=\"gif_slider\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"sup1.move_to(((sup1.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
             "        <div class=\"buttons\">\n" +
             "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"sup1.move_to(0); return false;\">\n" +
             "             <i class=\"fa fa-fast-backward\"></i></button>\n" +
@@ -1039,7 +1039,7 @@ class GifPlayer extends HTMLElement {
             "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"sup1.move_to(sup1.get_length() - 1); return false;\">\n" +
             "               <i class=\"fa fa-fast-forward\"></i></button>\n" +
             "        </div>\n" +
-            "        </div>\n" +
+//***            "        </div>\n" +
             "        </div>"
     }
 
