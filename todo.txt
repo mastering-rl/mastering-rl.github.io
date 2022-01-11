@@ -1,3 +1,4 @@
+- align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
 - add a slider to the gif viewer
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
 - add n-step learning implementation
@@ -10,6 +11,8 @@
 - Add policy gradients code.
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
 - To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.
+- Add more complex MDP stuff; e.g. what if there is some alternate reward 'along the way'
+- Definitly try to implement a frogger implementation; or perhaps something that does not use the gridworld?
 
 - Read code cells from path:
 ```{code-cell} ipython3

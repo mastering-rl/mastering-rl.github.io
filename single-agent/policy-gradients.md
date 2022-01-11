@@ -27,11 +27,11 @@ The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}
 
 The goal of gradient ascent is to find weights of a policy function that maximises the expected return. This is done in an iterative by calculating the gradient from some data and updating the weights of the policy
 
-The expected value of a policy $\pi_{\theta}$ with parameters $\theta$ is defined as:
+The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$ with parameters $\theta$ is defined as:
 
-$$J(\theta) = V_{\pi_{\theta}}(s_0)$$
+$$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V(\pi_{\theta})$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, so we use policy gradient algorithms to approximate it. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V_{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, so we use policy gradient algorithms to approximate it. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -39,11 +39,13 @@ Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect 
 $$
 \nabla_{\theta}J(\theta) = \begin{pmatrix} \frac{\partial J(\theta)}{\partial \theta_1} \\ \vdots \\ \frac{\partial J(\theta)}{\partial \theta_n} \end{pmatrix}
 $$
+
+where $\frac{\partial J(\theta)}{\partial \theta_i}$ is the partial derivative of $J$ with respective to $\theta_i$.
 :::
 
-If we want to follow the gradient towards the optimal $J(\theta)$ for our problem, we need to calculate the gradient and update the weights:
+If we want to follow the gradient towards the optimal $J(\theta)$ for our problem, we  use the gradient and update the weights:
 
-$$\theta \leftarrow \theta + \alpha \nabla\ J(\theta)$$
+$$\theta \leftarrow \theta + \alpha \nabla J(\theta)$$
 
 where $\alpha$ is a learning rate parameter that dictates how big the step in the direction of the gradient should be.
 
@@ -51,10 +53,10 @@ The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see 
 
 $$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi_{\theta}(s, a) Q(s,a)]$$
 
-The expression $\textrm{ln} \pi_{\theta}(s, a)$ tells us how to change the weights $\theta$ is we want to increase the log probability of selecting action $a$ in state $s$. If the quality of selecting action $a$ in $s$ is positive, we would increase that probability; otherwise it will descrease
-Thus, this is the expected return of of taking action $\pi_{\theta}(s,a)$ multiplied by the gradient.
+The expression $\textrm{ln} \pi_{\theta}(s, a)$ tells us how to change the weights $\theta$: increase the log probability of selecting action $a$ in state $s$. If the quality of selecting action $a$ in $s$ is positive, we would increase that probability; otherwise we decrease the probability.
+So, this is the expected return of taking action $\pi_{\theta}(s,a)$ multiplied by the gradient.
 
-In these notes, we will not go into details about gradients or algorithms for solving them -- this is itself a large topic that is relevant outside of reinforcement learning. Instead, we will just give the intuition.
+In these notes, we will not go into details about gradients or algorithms for solving them -- this is itself a large topic that is relevant outside of reinforcement learning. Instead, we will just give the intuition and how to use this for model-free reinforcement learning.
 
 ## REINFORCE
 
@@ -88,15 +90,63 @@ The implementation of REINFORCE takes a policy, but this policy must be differen
 
 We need a differentiable policy so that we can calculate the gradient and update. To illustrate this from first principles, let's look at an implementation of a policy that uses logistic regression. This basic implementation supports environments with only two actions, but it is sufficient to illustrate the basics of policy gradient methods from first principles.
 
-The policy inherits from [`StochasticPolicy`](sec:mdp:deterministic-vs-stochastic-policies), which means that the policy $\pi_{\theta}(s,a)$ returns the probability of action $a$ being executed in state $s$. 
+The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
 
 ```{code-cell} ipython3
 :load: "../python_code/logistic_regression_policy.py"
 ```
 
+The `update` method, as well as the `gradient_log_pi` method that it calls, are where the policy gradient theorem is applied. In `update`, for every state-action transition in the trajectory, we calculate the gradient and then update the parameters $\theta$ using the corresponding partial derivative.
+
+Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, we know the following:
+
+$$
+\begin{align}
+        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{(-\theta \cdot s)}}\\
+        \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{(\theta \cdot s)}}
+\end{align}
+$$
+
+This gives us the probibility of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
+
+We can then find $\nabla \textrm{ln} \pi(a, s)$:
+
+$$
+\begin{align}
+  \nabla \textrm{ln} \pi_{\theta}(a_0, s) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
+  \nabla \textrm{ln} \pi_{\theta}(a_1, s) &= -s \cdot \pi_{\theta}(s, a_1)
+\end{align}
+$$
+
+This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
+
+Let's try this on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridworth that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
+
 ```{code-cell} ipython3
-:load: "../python_code/tests/logistic_regression_policy_gradient.py"
+from gridworld import GridWorld
+from gridworld import OneDimensionalGridWorld
+from policy_gradient import PolicyGradient
+from logistic_regression_policy import LogisticRegressionPolicy
+
+gridworld = GridWorld(
+    height=1, width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)]
+)
+gridworld_image = gridworld.visualise()
 ```
+
+Next,  we create a `LogisticRegressionPolicy` with just two actions LEFT and RIGHT, and with two parameters corresponding to the x and y coordinates. This is used in a `PolicyGradient` instance:
+
+```{code-cell} ipython3
+policy = LogisticRegressionPolicy(
+    actions=[GridWorld.LEFT, GridWorld.RIGHT],
+    num_params=len(gridworld.get_initial_state()),
+)
+policy_gradient = PolicyGradient(gridworld, policy, alpha=0.1)
+policy_gradient.execute(episodes=1000)
+policy_image = gridworld.visualise_stochastic_policy(policy)
+```
+
+We can see here that this is a stochastic policy --- instead of giving us an action (left or right) in each cell, we get the probability that the policy will select each of these actions. The policy learns to select right with a  much higher probability because this is where the reward is.
 
 ## Deep policy gradients
 

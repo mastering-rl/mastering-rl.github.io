@@ -79,12 +79,10 @@ For example, would you prefer \$100 today or \$100 in a year's time? We (humans)
 Assume our agent receives rewards $r_1, r_2, r_3, r_4, \ldots$ in that order. If $\gamma$ is the discount factor, then the discounted reward is:
 
 $$
-
  \begin{array}{lll}
   V & = & r_1 + \gamma r_2 + \gamma^2 r_3 + \gamma^3 r_4 + \ldots\\
     & = & r_1 + \gamma(r_2 + \gamma(r_3 + \gamma(r_4 + \ldots)))
  \end{array}
-
 $$
 
 If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1}$. So, the further away a reward is from the start state $s_0$, the less actual reward we will receive from it.
@@ -108,6 +106,7 @@ glue("gridworld_image", gridworld_image, display=False)
 An agent is in the bottom left cell of a grid. The cell containing '#'s  is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately below.
 
 ```{glue:} gridworld_image
+
 ```
 
 But! Things can go wrong --- sometimes the effects of the actions are not what we want:
@@ -343,6 +342,7 @@ As we see later in the section on [policy gradients](sec:policy-based:policy-gra
 
 For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
+(defn:expected-discounted-reward)=
 :::{admonition} Definition -- Expected discounted reward
 The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
@@ -350,7 +350,7 @@ $$
 V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(s_i, a_i, s_{i+1}) \ | \ s_0 = s, a_i = \pi(s_i)]\,
 $$
 
-Sp, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
+So, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
 :::
 
 For our Grid World example, assuming only the -1 and +1 states have rewards, the expected value is:
