@@ -308,6 +308,8 @@ The key challenge in linear function approximation for Q-learning is the feature
 
 **Tip:** Note that to make analysis and debugging easier, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
 
+
+(sec:function-approximation:deep-Q-learning)=
 ## Deep Q-learning
 
 The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions. 

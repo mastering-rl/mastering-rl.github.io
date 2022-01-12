@@ -23,7 +23,7 @@ In policy gradient methods, we approximate the policy from the rewards and actio
 
 The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}(s, a)$ via gradient ascent on the expected return. Gradient ascent will find the best parameters $\theta$ for the particular MDP.
 
-## Policy improvement
+## Policy improvement using gradient ascent
 
 The goal of gradient ascent is to find weights of a policy function that maximises the expected return. This is done in an iterative by calculating the gradient from some data and updating the weights of the policy
 
@@ -80,6 +80,7 @@ Comparing to value-based techniques, we can see that REINFORCE (and other policy
 
 This has the advantage that policy-based approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-based approaches are often more efficient than value-based approaches when there are a large number of actions.
 
+(sec:policy-gradients:logistic-regression)=
 ### Implementation
 
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
@@ -98,18 +99,27 @@ The policy inherits from `StochasticPolicy`, which means that the policy is a [s
 
 The `update` method, as well as the `gradient_log_pi` method that it calls, are where the policy gradient theorem is applied. In `update`, for every state-action transition in the trajectory, we calculate the gradient and then update the parameters $\theta$ using the corresponding partial derivative.
 
-Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, we know the following:
+Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
 
 $$
 \begin{align}
-        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{(-\theta \cdot s)}}\\
-        \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{(\theta \cdot s)}}
+        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\
+        \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{\theta \cdot s}}
 \end{align}
 $$
 
-This gives us the probibility of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
+This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
 
-We can then find $\nabla \textrm{ln} \pi(a, s)$:
+Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
+
+$$
+\begin{align}
+\sigma(x) &= \frac{1}{1 + e^{\theta \cdot x}}\\[1mm]
+\frac{\partial \sigma(x)}{\partial x} &= \sigma(x)(1 - \sigma(x))
+\end{align}
+$$
+
+Using this result, we can then find $\nabla \textrm{ln} \pi(a, s)$:
 
 $$
 \begin{align}
@@ -120,7 +130,7 @@ $$
 
 This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
 
-Let's try this on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridworth that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
+Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridworth that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -134,7 +144,7 @@ gridworld = GridWorld(
 gridworld_image = gridworld.visualise()
 ```
 
-Next,  we create a `LogisticRegressionPolicy` with just two actions LEFT and RIGHT, and with two parameters corresponding to the x and y coordinates. This is used in a `PolicyGradient` instance:
+Next,  we create a `LogisticRegressionPolicy` with just two actions, `left` and `right`, and with two parameters corresponding to the $x$ and $y$ coordinates. This is used in a `PolicyGradient` instance to produce the following policy:
 
 ```{code-cell} ipython3
 policy = LogisticRegressionPolicy(
@@ -146,18 +156,51 @@ policy_gradient.execute(episodes=1000)
 policy_image = gridworld.visualise_stochastic_policy(policy)
 ```
 
-We can see here that this is a stochastic policy --- instead of giving us an action (left or right) in each cell, we get the probability that the policy will select each of these actions. The policy learns to select right with a  much higher probability because this is where the reward is.
+We can see here that this is a stochastic policy --- instead of giving us an action (left or right) in each cell, we get the probability that the policy will select each of these actions. The policy learns to select right with a  much higher probability because the positive reward is to the right.
 
+To follow the policy, we can use this deterministically by simply selecting the action with the highest probability, but in some applications, the optimal behaviour is to select an action by sampling from the probability distribution.
+
+The difference between value-based methods such as Q-learning and SARSA is demonstrated by the output: there is just a policy and no value function or Q-function because the policy is learnt directly.
+
+This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
+
+( sec:policy-gradient:deep-policy-gradients)=
 ## Deep policy gradients
 
+Just like we can use deep neural networks to approximate Q-functions in [deep Q learning](sec:function-approximation:deep-Q-learning), we can use deep neural networks to approximate policies. Neural networks are differentiable, so these can be used in policy gradient algorithms such as REINFORCE --- the policy parameters $\theta$ are the parameters to the neural network.
 
+As with deep Q learning, this has the advantage that features of the problem are learnt, features do not have to be independent, therefore supporting a larger set ofproblems compared to a logistic regression approach,, and we can use unstructured data as input, such as images and videos.
 
-## Applications of policy gradient ascent
+### Implementation
 
-A great application of using policy gradient descent is learning how to control robotic arms to grasp unknown objects -- that is, objects that have not been seen before. The only input for the problem is the camera data:
+To implement a deep policy gradient approach in REINFORCE, we just have to implement a new policy that uses a deep neural network. 
 
-<p align="center">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/cXaic_k80uM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</p>
+In our  implementation, we again  use  the PyTorch deep learning framework  (https://pytorch.org/). 
 
-What is interesting is how the policy is used to adjust the position and the gripper continuously as it tries to grasp objects in the testing phase.
+The policy uses a three layer network with the following:
+1. The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.
+2. We have a hidden layer, with a default number of 64 hidden dimensions, but this is parameterised by the variable `hidden_dim` in the `__init__` constructor.
+3. The third and final layer is the output layer, which returns a categorical distribution with a dimensionality the same size as the action space, so that each action is associated with a probability of being selected.
+4. We use a non-linear ReLU (rectified linear unit) between layers.
+
+It inherits from the `StochasticPolicy` and then implement the `update`, `select_action`, and `get_probability` methods. These take advantage of optimisations with the PyTorch framework, so the calculation of the gradient is 'hidden' by the PyTorch library:
+
+```{code-cell} ipython3
+:load: "../python_code/deep_nn_policy.py"
+```
+
+As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implementation, PyTorch does not support strings as values, so we need to encode action names and states as integers.
+
+We can now use this implementation by creating a REINFORCE agent with a `DeepNeuralNetworkPolicy` instance as the policy, and use it to learn a policy for the GridWorld example:
+
+```{code-cell} ipython3
+:load: "../python_code/tests/deep_nn_policy_gradient.py"
+```
+
+Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
+    <gif-player id="deep_policy_gradient"></gif-player>
+</div>
+<p>

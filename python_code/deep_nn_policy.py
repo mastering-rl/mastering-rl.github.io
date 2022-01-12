@@ -9,11 +9,8 @@ from policy import StochasticPolicy
 
 class DeepNeuralNetworkPolicy(StochasticPolicy):
     """
-    A policy gradient agent using a neural network to represent the agent's policy. One of the restrictions of the
-    logistic regression agent is that it can only make decisions when the size of the action space is two. Neural
-    networks allow us to handle higher dimensional action-spaces. Additionally it allows us to represent non-linear
-    policies.
-    This class uses PyTorch for the neural network framework. See PyTorch documentation: https://pytorch.org/
+    An implementation of a policy that uses a PyTorch (https://pytorch.org/) deep neural network
+    to represent the underlying policy.
     """
 
     def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001):
@@ -22,14 +19,10 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         self.action_space = action_space
         self.alpha = alpha
 
-        # Define the policy structure as a sequential neural network as follows:
-        #   1) First layer takes in the state vector so is the size of the number of state features
-        #   2) The second layer is a hidden layers of specified dimensions to allow for non-linearity
-        #   3) Non-linear activation function between layers.
-        #   4) The final layer outputs a categorical distribution that is the same size as the action space.
+        # Define the policy structure as a sequential neural network.
         self.policy_network = nn.Sequential(
             nn.Linear(in_features=self.state_space, out_features=hidden_dim),
-            nn.ReLU(),  # have a non-linear activation function between layers
+            nn.ReLU(),
             nn.Linear(in_features=hidden_dim, out_features=hidden_dim),
             nn.ReLU(),
             nn.Linear(in_features=hidden_dim, out_features=self.action_space),
