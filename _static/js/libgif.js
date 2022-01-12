@@ -29,6 +29,7 @@
 		max_width			Optional. Scale gifs over max_width down to max_width. Helpful with mobile.
  		on_end				Optional. Add a callback for when the gif reaches the end of a single loop (one iteration). The first argument passed will be the gif HTMLElement.
 		loop_delay			Optional. The amount of time to pause (in ms) after each single loop (iteration).
+		step_delay			Optional. The amount of time to pause (in ms) between each frame of a gif.
 		draw_while_loading	Optional. Determines whether the gif will be drawn to the canvas whilst it is loaded.
 		show_progress_bar	Optional. Only applies when draw_while_loading is set to true.
 
@@ -441,7 +442,6 @@
         var loading = false;
 
         var transparency = null;
-        var delay = null;
         var disposalMethod = null;
         var disposalRestoreFromIdx = null;
         var lastDisposalMethod = null;
@@ -457,11 +457,14 @@
         var frameOffsets = []; // elements have .x and .y properties
 
         var gif = options.gif;
+        var gif_slider = options.gif_slider;
+
         if (typeof options.auto_play == 'undefined')
             options.auto_play = (!gif.getAttribute('rel:auto_play') || gif.getAttribute('rel:auto_play') == '1');
 
         var onEndListener = (options.hasOwnProperty('on_end') ? options.on_end : null);
         var loopDelay = (options.hasOwnProperty('loop_delay') ? options.loop_delay : 0);
+        var stepDelay = (options.hasOwnProperty('step_delay') ? options.step_delay : 300);
         var overrideLoopMode = (options.hasOwnProperty('loop_mode') ? options.loop_mode : 'auto');
         var drawWhileLoading = (options.hasOwnProperty('draw_while_loading') ? options.draw_while_loading : true);
         var showProgressBar = drawWhileLoading ? (options.hasOwnProperty('show_progress_bar') ? options.show_progress_bar : true) : false;
@@ -593,7 +596,7 @@
             pushFrame();
             clear();
             transparency = gce.transparencyGiven ? gce.transparencyIndex : null;
-            delay = gce.delayTime;
+            // ***delay = gce.delayTime;
             disposalMethod = gce.disposalMethod;
             // We don't have much to do with the rest of GCE.
         };
@@ -705,7 +708,7 @@
 
             var stepFrame = function (amount) { // XXX: Name is confusing.
                 i = i + amount;
-                document.getElementById("gif_slider").value=parseInt((100 / (frames.length - 1)) * i);
+                document.getElementById(gif_slider).value=parseInt((100 / (frames.length - 1)) * i);
                 putFrame();
             };
 
@@ -730,15 +733,15 @@
                     if (!stepping) return;
 
                     stepFrame(1);
-                    var delay = frames[i].delay * 10;
-                    if (!delay) delay = 100; // FIXME: Should this even default at all? What should it be?
+                    //var delay = frames[i].delay * 10;
+                    //if (!delay) delay = 100; // FIXME: Should this even default at all? What should it be?
 
                     var nextFrameNo = getNextFrameNo();
                     if (nextFrameNo === 0) {
-                        delay += loopDelay;
-                        setTimeout(completeLoop, delay);
+                        stepDelay += loopDelay;
+                        setTimeout(completeLoop, stepDelay);
                     } else {
-                        setTimeout(doStep, delay);
+                        setTimeout(doStep, stepDelay);
                     }
                 };
 
@@ -775,6 +778,14 @@
                 playing = false;
             };
 
+            var decrease_speed = function () {
+                stepDelay /= 0.7;
+            };
+
+            var increase_speed = function () {
+                stepDelay *= 0.7;
+            };
+
 
             return {
                 init: function () {
@@ -796,6 +807,8 @@
                 pause: pause,
                 playing: playing,
                 move_relative: stepFrame,
+                decrease_speed: decrease_speed,
+                increase_speed: increase_speed,
                 current_frame: function () {
                     return i;
                 },
@@ -804,7 +817,7 @@
                 },
                 move_to: function (frame_idx) {
                     i = frame_idx;
-                    document.getElementById("gif_slider").value=parseInt((100 / (this.get_length() - 1)) * i);
+                    document.getElementById(gif_slider).value=parseInt((100 / (this.get_length() - 1)) * i);
                     putFrame();
                 }
             }
@@ -918,6 +931,8 @@
             pause: player.pause,
             move_relative: player.move_relative,
             move_to: player.move_to,
+            decrease_speed: player.decrease_speed,
+            increase_speed: player.increase_speed,
 
             // getters for instance vars
             get_playing: function () {
@@ -1019,28 +1034,33 @@ class GifPlayer extends HTMLElement {
         this
             .shadowRoot
             .querySelector("logo-element");
-        self.sup1 = new SuperGif({gif:  document.getElementById(this.id), max_width: this.getAttribute('width')});
-        self.sup1.load();
+
+        self.super_gif = new SuperGif({gif: document.getElementById(this.id), max_width: this.getAttribute('width'), loop_mode: false, gif_slider: this.getAttribute('slider')});
+        self.super_gif.load();
         this.innerHTML =
             "        <div class=\"gif_controls\">\n" +
             "        <div class=\"slider\">\n" +
-           "           <input id=\"gif_slider\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"sup1.move_to(((sup1.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
+            "        <input id=\"" + this.getAttribute('slider') + "\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"super_gif.move_to(((super_gif.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
             "        <div class=\"buttons\">\n" +
-            "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"sup1.move_to(0); return false;\">\n" +
+            "           <button title=\"Decrease speed\" aria-label=\"Decrease speed\" onclick=\"super_gif.decrease_speed(); return false;\">\n" + 
+            "             <i class=\"fa fa-minus\"></i></button>\n" +
+            "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"super_gif.move_to(0); return false;\">\n" +
             "             <i class=\"fa fa-fast-backward\"></i></button>\n" +
-            "           <button title=\"Previous frame\" aria-label=\"Previous frame\" onclick=\"sup1.move_relative(-1); return false;\">\n" +
+            "           <button title=\"Previous frame\" aria-label=\"Previous frame\" onclick=\"super_gif.move_relative(-1); return false;\">\n" +
             "               <i class=\"fa fa-step-backward\"></i></button>\n" +
-            "           <button title=\"Pause\" aria-label=\"Pause\" onclick=\"sup1.pause(); return false;\">\n" +
+            "           <button title=\"Pause\" aria-label=\"Pause\" onclick=\"super_gif.pause(); return false;\">\n" +
             "               <i class=\"fa fa-pause\"></i></button>\n" +
-            "           <button title=\"Play\" aria-label=\"Play\" onclick=\"sup1.play(); return false;\">\n" +
+            "           <button title=\"Play\" aria-label=\"Play\" onclick=\"super_gif.play(); return false;\">\n" +
             "               <i class=\"fa fa-play\"></i></button>\n" +
-            "           <button title=\"Next frame\" aria-label=\"Next frame\" onclick=\"sup1.move_relative(1); return false;\">\n" +
+            "           <button title=\"Next frame\" aria-label=\"Next frame\" onclick=\"super_gif.move_relative(1); return false;\">\n" +
             "               <i class=\"fa fa-step-forward\"></i></button>\n" +
-            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"sup1.move_to(sup1.get_length() - 1); return false;\">\n" +
+            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"super_gif.move_to(super_gif.get_length() - 1); return false;\">\n" +
             "               <i class=\"fa fa-fast-forward\"></i></button>\n" +
+            "           <button title=\"Increase speed\" aria-label=\"Increase speed\" onclick=\"super_gif.increase_speed(); return false;\">\n" + 
+            "             <i class=\"fa fa-plus\"></i></button>\n" +
             "        </div>\n" +
             "        </div>\n" +
-            "        </div>"
+            "        </div>";
     }
 
 }

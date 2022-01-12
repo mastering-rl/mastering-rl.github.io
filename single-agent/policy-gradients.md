@@ -201,6 +201,12 @@ Again, we can see that this policy is stochastic: each action has a probability 
 
 <div id="container" markdown="1" style="text-align: center;">
     <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
-    <gif-player id="deep_policy_gradient"></gif-player>
+    <gif-player id="deep_policy_gradient" slider="deep_policy_gradient_slider"></gif-player>
+</div>
+<p>
+
+<div id="container-log" markdown="1" style="text-align: center;">
+    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif width=360 rel:auto_play="0">
+    <gif-player id="logistic_regression_policy_gradient" slider="logistic_regression_policy_gradient_slider"></gif-player>
 </div>
 <p>
