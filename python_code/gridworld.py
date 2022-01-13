@@ -476,6 +476,7 @@ class GridWorld(MDP):
     """ Initialise a gridworld grid """
     def initialise_grid(self, grid_size=1.5):
         fig = plt.figure(figsize=(self.width * grid_size, self.height * grid_size))
+        plt.subplots_adjust(top=0.92, bottom=0.01, right=1, left=0, hspace=0, wspace=0)
         ax = fig.add_subplot(1, 1, 1)
 
         # Initialise the map to all white

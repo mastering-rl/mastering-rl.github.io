@@ -11,7 +11,7 @@ def run_learner(mdp, learner, qfunction, learner_name, out_filename, episodes=20
 
     for episode in range(0, episodes + 1):
         learner.execute(episodes=1)
-        title = "%s after %d episodes" % (learner_name, episode)
+        title = "%s after episode %d" % (learner_name, episode)
         image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)
         gif_maker.add_frame(image_texts, title=title)
 

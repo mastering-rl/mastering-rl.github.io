@@ -191,7 +191,7 @@ The policy uses a three layer network with the following:
 3. The third and final layer is the output layer, which returns a categorical distribution with a dimensionality the same size as the action space, so that each action is associated with a probability of being selected.
 4. We use a non-linear ReLU (rectified linear unit) between layers.
 
-It inherits from the `StochasticPolicy` and then implement the `update`, `select_action`, and `get_probability` methods. These take advantage of optimisations with the PyTorch framework, so the calculation of the gradient is 'hidden' by the PyTorch library:
+It inherits from the `StochasticPolicy` and then implement the `update`, `select_action`, and `get_probability` methods. These take advantage of optimisations with the PyTorch framework, so the calculation of the gradient is 'hidden' by the PyTorch library. The line `self.optimiser.zero_grad()` then 'zeros' out the existing gradient so that the new gradient can be calculated. The gradient is calculated using `loss.backwards()`. Then `self.optimiser.step()` adjusts the parameters $\theta$ in the direction of the gradient:
 
 ```{code-cell} ipython3
 :load: "../python_code/deep_nn_policy.py"
@@ -207,8 +207,11 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
 
+Simulating the process of training the policy, we can see that initially, all four actions have (approximately) the same probability of being executed.
+
 <div id="container-deep-nn" markdown="1" style="text-align: center;">
     <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
     <gif-player id="deep_policy_gradient"></gif-player>
 </div>
 <p>
+
