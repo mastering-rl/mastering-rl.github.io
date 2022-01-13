@@ -298,13 +298,7 @@ The following interactive visualisation gives an episode-by-episode comparison o
 
 <div id="container" markdown="1" style="text-align: center;">
     <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
-    <gif-player id="qtable_vs_linear_qlearning" width="900" slider="qtable_vs_linear_qlearning_slider"></gif-player>
-</div>
-<p>
-
-<div id="container" markdown="1" style="text-align: center;">
-    <img id="qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qlearning.gif" width="250" height="200" rel:auto_play="0">
-    <gif-player id="qlearning" width="400" slider="qlearning_slider"></gif-player>
+    <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
 </div>
 <p>
 
@@ -312,7 +306,7 @@ The following interactive visualisation gives an episode-by-episode comparison o
 
 The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.
 
-**Tip:** Note that to make analysis and debugging easier, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. 
+**Tip:** Note that to make analysis and debugging easier, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.
 
 
 (sec:function-approximation:deep-Q-learning)=
@@ -369,43 +363,8 @@ We can now use this implementation by creating a standard Q-learning agent with 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation, so we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
 <div id="container2" markdown="1" style="text-align: center;">
-        <center>
-        <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400"  rel:auto_play="0">
-        <script type="text/javascript">
-                var linear_qlearning_vs_deep_qlearning_gif = new SuperGif({ gif: document.getElementById('linear_qlearning_vs_deep_qlearning'), max_width: "900", gif_slider: "linear_qlearning_vs_deep_qlearning_slider", loop_mode: false, step_delay: 300});
-                linear_qlearning_vs_deep_qlearning_gif.load();
-        </script>
-        <div class="gif_controls">
-            <div class="slider">
-            <input id="linear_qlearning_vs_deep_qlearning_slider" type="range" style="width: 400px" class="anim_slider" name="slider" min="0" max="100" step="1"  value="0" oninput="linear_qlearning_vs_deep_qlearning_gif.move_to(((linear_qlearning_vs_deep_qlearning_gif.get_length() - 1)/ 100) * parseInt(this.value)); return false;">
-		<div class="buttons">
-		   <button title="Decrease speed" aria-label="Decrease speed" onclick="linear_qlearning_vs_deep_qlearning_gif.decrease_speed(); return false;">
-		     <i class="fa fa-minus"></i>
-		   </button>
-           <button title="First frame" aria-label="First frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(0); return false;">
-             <i class="fa fa-fast-backward"></i>
-           </button>
-           <button title="Previous frame" aria-label="Previous frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_relative(-1); return false;">
-               <i class="fa fa-step-backward"></i>
-           </button>
-           <button title="Pause" aria-label="Pause" onclick="linear_qlearning_vs_deep_qlearning_gif.pause(); return false;">
-               <i class="fa fa-pause"></i>
-           </button>
-           <button title="Play" aria-label="Play" onclick="linear_qlearning_vs_deep_qlearning_gif.play(); return false;">
-               <i class="fa fa-play"></i>
-           </button>
-           <button title="Next frame" aria-label="Next frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_relative(1); return false;">
-               <i class="fa fa-step-forward"></i>
-           </button>
-           <button title="Last frame" aria-label="Last frame" onclick="linear_qlearning_vs_deep_qlearning_gif.move_to(linear_qlearning_vs_deep_qlearning_gif.get_length() - 1); return false;">
-               <i class="fa fa-fast-forward"></i>
-           </button>
-           <button title="Increase speed" aria-label="Increase speed" onclick="linear_qlearning_vs_deep_qlearning_gif.increase_speed(); return false;">
-		     <i class="fa fa-plus"></i>
-		   </button>
-        </div>
-        </div>
-        </center>
+    <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="linear_qlearning_vs_deep_qlearning" width="900"></gif-player>
 </div>
 <p>
 

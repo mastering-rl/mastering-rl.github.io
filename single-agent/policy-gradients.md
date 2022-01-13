@@ -160,7 +160,15 @@ We can see here that this is a stochastic policy --- instead of giving us an act
 
 To follow the policy, we can use this deterministically by simply selecting the action with the highest probability, but in some applications, the optimal behaviour is to select an action by sampling from the probability distribution.
 
-The difference between value-based methods such as Q-learning and SARSA is demonstrated by the output: there is just a policy and no value function or Q-function because the policy is learnt directly.
+The difference between value-based methods such as Q-learning and SARSA is demonstrated by the output: there is just a policy and no value function or Q-function because the policy is learnt directly. 
+
+If we step through the policy during training, we can see the gradient updates performing their role in policy improvement:
+
+<div id="container-logistic-regression-policy-gradient" markdown="1" style="text-align: center;">
+    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
+    <gif-player id="logistic_regression_policy_gradient" width="900"></gif-player>
+</div>
+<p>
 
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
@@ -199,14 +207,8 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
 
-<div id="container" markdown="1" style="text-align: center;">
+<div id="container-deep-nn" markdown="1" style="text-align: center;">
     <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
-    <gif-player id="deep_policy_gradient" slider="deep_policy_gradient_slider"></gif-player>
-</div>
-<p>
-
-<div id="container-log" markdown="1" style="text-align: center;">
-    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif width=360 rel:auto_play="0">
-    <gif-player id="logistic_regression_policy_gradient" slider="logistic_regression_policy_gradient_slider"></gif-player>
+    <gif-player id="deep_policy_gradient"></gif-player>
 </div>
 <p>

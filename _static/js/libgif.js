@@ -457,7 +457,7 @@
         var frameOffsets = []; // elements have .x and .y properties
 
         var gif = options.gif;
-        var gif_slider = options.gif_slider;
+        var gif_slider = "gif_slider_" +  options.gif.id;
 
         if (typeof options.auto_play == 'undefined')
             options.auto_play = (!gif.getAttribute('rel:auto_play') || gif.getAttribute('rel:auto_play') == '1');
@@ -1035,33 +1035,45 @@ class GifPlayer extends HTMLElement {
             .shadowRoot
             .querySelector("logo-element");
 
-        self.super_gif = new SuperGif({gif: document.getElementById(this.id), max_width: this.getAttribute('width'), loop_mode: false, gif_slider: this.getAttribute('slider')});
-        self.super_gif.load();
+        var index = 0; //(this.getAttribute('index') == null ? 0 : parseInt(this.getAttribute('index')));
+        if (self.super_gif == null) {
+            self.super_gif = {}
+            self.last_index = 0;
+        }
+        else {
+            self.last_index += 1;
+            index = self.last_index;
+        }
+        console.log("next index = " + index);
+        self.super_gif[index] = new SuperGif({gif: document.getElementById(this.id), max_width: this.getAttribute('width'), loop_mode: false, index: index});
+        self.super_gif[index].load();
         this.innerHTML =
             "        <div class=\"gif_controls\">\n" +
             "        <div class=\"slider\">\n" +
-            "        <input id=\"" + this.getAttribute('slider') + "\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"super_gif.move_to(((super_gif.get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
+            "        <input id=\"gif_slider_" + this.id + "\" type=\"range\" style=\"width: 400px;\" class=\"anim_slider\" name=\"slider\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" oninput=\"super_gif[" + index + "].move_to(((super_gif[" + index + "].get_length() - 1)/ 100) * parseInt(this.value)); return false;\"></input>\n" +
             "        <div class=\"buttons\">\n" +
-            "           <button title=\"Decrease speed\" aria-label=\"Decrease speed\" onclick=\"super_gif.decrease_speed(); return false;\">\n" + 
+            "           <button title=\"Decrease speed\" aria-label=\"Decrease speed\" onclick=\"super_gif[" + index + "].decrease_speed(); return false;\">\n" +
             "             <i class=\"fa fa-minus\"></i></button>\n" +
-            "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"super_gif.move_to(0); return false;\">\n" +
+            "           <button title=\"First frame\" aria-label=\"First frame\" onclick=\"super_gif[" + index + "].move_to(0); return false;\">\n" +
             "             <i class=\"fa fa-fast-backward\"></i></button>\n" +
-            "           <button title=\"Previous frame\" aria-label=\"Previous frame\" onclick=\"super_gif.move_relative(-1); return false;\">\n" +
+            "           <button title=\"Previous frame\" aria-label=\"Previous frame\" onclick=\"super_gif[" + index + "].move_relative(-1); return false;\">\n" +
             "               <i class=\"fa fa-step-backward\"></i></button>\n" +
-            "           <button title=\"Pause\" aria-label=\"Pause\" onclick=\"super_gif.pause(); return false;\">\n" +
+            "           <button title=\"Pause\" aria-label=\"Pause\" onclick=\"super_gif[" + index + "].pause(); return false;\">\n" +
             "               <i class=\"fa fa-pause\"></i></button>\n" +
-            "           <button title=\"Play\" aria-label=\"Play\" onclick=\"super_gif.play(); return false;\">\n" +
+            "           <button title=\"Play\" aria-label=\"Play\" onclick=\"super_gif[" + index + "].play(); return false;\">\n" +
             "               <i class=\"fa fa-play\"></i></button>\n" +
-            "           <button title=\"Next frame\" aria-label=\"Next frame\" onclick=\"super_gif.move_relative(1); return false;\">\n" +
+            "           <button title=\"Next frame\" aria-label=\"Next frame\" onclick=\"super_gif[" + index + "].move_relative(1); return false;\">\n" +
             "               <i class=\"fa fa-step-forward\"></i></button>\n" +
-            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"super_gif.move_to(super_gif.get_length() - 1); return false;\">\n" +
+            "           <button title=\"Last frame\" aria-label=\"Last frame\" onclick=\"super_gif[" + index + "].move_to(super_gif[" + index + "].get_length() - 1); return false;\">\n" +
             "               <i class=\"fa fa-fast-forward\"></i></button>\n" +
-            "           <button title=\"Increase speed\" aria-label=\"Increase speed\" onclick=\"super_gif.increase_speed(); return false;\">\n" + 
+            "           <button title=\"Increase speed\" aria-label=\"Increase speed\" onclick=\"super_gif[" + index + "].increase_speed(); return false;\">\n" +
             "             <i class=\"fa fa-plus\"></i></button>\n" +
             "        </div>\n" +
             "        </div>\n" +
             "        </div>";
+        console.log(this.innerHTML);
     }
+
 
 }
 
