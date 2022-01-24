@@ -1,3 +1,4 @@
+- consider adding Peg Solitaire for the single-agent notes.
 - align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
 - add a slider to the gif viewer
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/

@@ -70,8 +70,8 @@ Repeat\
 $\quad\quad$ Generate episode $(s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})$ by following $\pi_{\theta}$\
 $\quad\quad$ For each $(s_t, a_t)$ in the episode\
 $\quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\
-$\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi(s,a;\theta)$\
-Until some time limit or until $\pi$ converges
+$\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)$\
+Until some time limit or until $\pi_{\theta}$ converges
 :::
 
 REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
@@ -79,6 +79,10 @@ REINFORCE  generates an entire episode using Monte-Carlo simulation by following
 Comparing to value-based techniques, we can see that REINFORCE (and other policy-based approaches)  do not evaluate each action in the policy improvement process. In policy improvement, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q(s,a)$. Instead, actions are selected from the policy directly. 
 
 This has the advantage that policy-based approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-based approaches are often more efficient than value-based approaches when there are a large number of actions.
+
+:::{note}
+From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-free:on-policy-vs-off-policy) approach. The sample trajectories from directly from $\pi_{\theta}$ and the update happens
+:::
 
 (sec:policy-gradients:logistic-regression)=
 ### Implementation
@@ -207,7 +211,7 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
 
-Simulating the process of training the policy, we can see that initially, all four actions have (approximately) the same probability of being executed.
+Simulating the process of training the policy, we can see that initially, all four actions have (approximately) the same probability of being executed, but deep REINFORCE learns a good Q-function and therefore policy:
 
 <div id="container-deep-nn" markdown="1" style="text-align: center;">
     <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
@@ -215,3 +219,14 @@ Simulating the process of training the policy, we can see that initially, all fo
 </div>
 <p>
 
+
+## Advantages and disadvantages of policy gradients (compared to value-based techniques)
+
+### Advantages
+
+-  **High-dimensional problems**: The major advantage of policy-based approaches compared to value-based techniques like Q-learning and SARSA is that they can handle high-dimensional action and state spaces, including actions and states that are continuous. This is because we do not have to iterate over all actions using $\textrm{argmax}_{a \in A(s)}$ as we do in value-based approaches. For continuous problems, $\textrm{argmax}_{a \in A(s)}$ is not possible to calculate, while for a high number of actions, the computational complexity is dependent on the number of actions.
+
+### Disadvantages
+
+- **Sample inefficiency**:  A disadvantage of policy gradients is known as *sample inefficiency*. Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward).
+- **Loss of explainability**: Model-free reinforcement learning is a particularly challenging case to understand and explain why a policy is making a decision. This is largely due to the model-free property: there are no action definitions that can used as these are unknown. However, policy gradients are particularly difficult because the values of states are unknown: we just have a resulting policy. With value-based approaches, knowing $V$ or $Q$ provides some insight into why actions are chosen by a policy; although explainability problems still remain.

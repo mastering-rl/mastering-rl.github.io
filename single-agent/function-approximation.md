@@ -372,13 +372,13 @@ Note the value of the learning rate $\alpha=1.0$. This is because the optimiser 
 
 **Advantages** of deep Q-function approximation  (compared to linear Q-function approximation):
 
-- We do not need to select features -- the 'features' will be learnt as part of the hidden layers of the neural network. 
-- The state $s$ can be less structured, such as images or sequences of images (video).
+- **Feature selection**: We do not need to select features -- the 'features' will be learnt as part of the hidden layers of the neural network. 
+- **Unstructured data**: The state $s$ can be less structured, such as images or sequences of images (video).
 
-Disadvantages:
+**Disadvantages**:
 
-- There are no convergence guarantees.
-- Deep neural networks are data hungry because they need to learn features as well as "the Q-function", so compared to a linear approximation with good features, learning good Q-functions can be  difficult. Large amounts of computation are often required.
+- **Convergence**: There are no convergence guarantees.
+- **Data hungry**: Deep neural networks are more data hungry because they need to learn features as well as "the Q-function", so compared to a linear approximation with good features, learning good Q-functions can be  difficult. Large amounts of computation are often required.
 
 Despite this, deep Q-learning  works remarkably well in some areas, especially for tasks that require vision (see the robotic arm grasping unknown objects).
 

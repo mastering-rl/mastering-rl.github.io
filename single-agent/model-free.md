@@ -286,7 +286,7 @@ policy = qfunction.extract_policy(gridworld)
 gridworld.visualise_policy(policy)
 ```
 
-Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become mroe and more accurate:
+Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:
 
 <div id="container" markdown="1" style="text-align: center;">
     <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
@@ -460,17 +460,36 @@ However, once training is complete, we extract a policy. Because the actions are
 The end result for the SARSA (on policy) method is a sub-optimal policy, but one that achieves stronger rewards during training.
 
 
-### On-policy vs. off policy: Why do we have both?
+(sec:model-free:on-policy-vs-off-policy)=
+### On-policy vs. off-policy: Why do we have both?
 
-Imagine a reinforcement learning agent that manages resources for a cloud-based platform and we have no prior data to inform a policy.
+There are a few reasons why we have both on-policy and off-policy learning.
+#### Learning from prior experience
 
--   On-policy learning is more appropriate when we want to optimise the behaviour of an agent who learns *while operating in its environment*.
-    
-    We would need to operate our cloud platform to get data. As such, if the average reward *per episode* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the episodes are not practice -- they actually influence real rewards,  such as profit.
+The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by *demonstration*. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
 
-- Off-policy learning is more appropriate when we have the luxury of training our agent offline before it is put into operation.
+#### Learning on the job
+
+The main advantage of on-policy approaches is that they are useful for 'learning on the job', meaning that it is better for cases in which we want an agent to learn optimal behaviour while operating in its environment. 
+
+For example, imagine a reinforcement learning agent that manages resources for a cloud-based platform and we have no prior data to inform a policy. We could program a simulator for this environment, but it is highly unlikely that the simulator would be an accurate reflection of the real world, as estimating the number of jobs, their lengths, their timing, etc., would be difficult without prior data. So, the only way to learn a policy is to get data from our cloud platform while it operates. 
+
+As such, if the average reward *per episode* is better using on-policy, this would give us better overall outcomes than off-policy learning, because the episodes are not practice -- they actually influence real rewards,  such as throughput, downtime, etc., and ultimately profit.
 
 If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
+
+#### Combining off-policy and on-policy learning
+
+We can combine the two approaches for particular applications. For example, if we use take our cloud platform from above, it would be silly to start with a random policy. We would quickly lose customers as the scheduling etc., would be terrible. 
+
+A better approach would be to hand-craft an algorithm that gave good results initially, and use this with an off-policy approach to train a good initial policy. 
+
+However, this new policy will merely mimic the hand-crafted algorithm. Presumably we are using reinforcement learning because the problem is so complex that a hand-crafted approach is not ver efficient. 
+
+So, we can then take the policy trained using off-policy and optimise it further using on-policy learning.
+
+Another common place for combining off-policy and on-policy learning is when we have an existing approach and we can use data from this with an off-policy approach to come up with an initial policy, which can be refined using on-policy.
+
 
 ## Limitations of Q-learning and SARSA
 
