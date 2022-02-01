@@ -26,3 +26,7 @@ parts:
     - file: multi-agent/backward-induction
     - file: multi-agent/multi-agent-rl
   - file: multi-agent/modelling-and-abstraction
+
+- caption: Appendix
+  chapters:
+  - file: appendix/intro-to-probability-theory

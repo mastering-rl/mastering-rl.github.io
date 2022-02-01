@@ -1,5 +1,6 @@
 jupyter-book
 matplotlib
+matplotlib_venn
 numpy
 imageio 
 pytorch (https://pytorch.org/)

@@ -28,7 +28,7 @@ class NStepReinforcementLearner:
                         )
                         states += [next_state]
                         actions += [next_action]
-                        
+
                 if len(rewards) == self.n or self.mdp.is_terminal(state):
                     n_step_rewards = sum(
                         [
