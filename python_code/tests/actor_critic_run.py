@@ -27,7 +27,15 @@ policy = qfunction.extract_policy(gridworld)
 gridworld.visualise_policy_as_image(policy)
 
 # execute 100 episodes
-q_actor_critic.execute()
+q_actor_critic.execute(100)
+
+# Visualise current policy and q-function
+gridworld.visualise_q_function_as_image(qfunction)
+policy = qfunction.extract_policy(gridworld)
+gridworld.visualise_policy_as_image(policy)
+
+# execute 100 episodes
+q_actor_critic.execute(1000)
 
 # Visualise current policy and q-function
 gridworld.visualise_q_function_as_image(qfunction)

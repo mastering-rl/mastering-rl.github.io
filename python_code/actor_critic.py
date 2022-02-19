@@ -13,10 +13,9 @@ class ActorCritic:
 
             state = self.mdp.get_initial_state()
             while not self.mdp.is_terminal(state):
-                action = self.actor.select_action(state)
+                action = self.actor.policy.select_action(state)
                 next_state, reward = self.mdp.execute(state, action)
-                critic_deltas = self.calculate_critic_delta(reward, state, action, next_state)
-                self.critic.update(states=states, actions=actions, deltas=critic_deltas)
+                self.update_critic(reward, state, action, next_state)
 
                 # Store the information from this step of the trajectory
                 states.append(state)
@@ -25,13 +24,12 @@ class ActorCritic:
 
                 state = next_state
 
-            actor_baselines = self.calculate_actor_baseline(states, actions)
-            self.actor.update(states=states, actions=actions, deltas=actor_baselines)
+            self.update_actor(states=states, actions=actions)
 
-    def calculate_actor_baseline(self, states, actions):
+    def update_actor(self, states, actions):
         abstract
 
-    def calculate_critic_delta(self, reward, state, action, next_state):
+    def update_critic(self, reward, state, action, next_state):
         abstract
 
 
