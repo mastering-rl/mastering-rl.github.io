@@ -11,6 +11,7 @@ gridworld = GridWorld()
 # Instantiate the critic
 qfunction = DeepQFunction(gridworld, state_space=len(gridworld.get_initial_state()), action_space=5, hiddem_dim=16)
 critic = QLearning(gridworld, EpsilonGreedy(), qfunction, alpha=1.0)
+critic.execute(1000)
 
 # Instantiate the actor
 policy = DeepNeuralNetworkPolicy(
@@ -23,21 +24,13 @@ q_actor_critic = QActorCritic(mdp=gridworld, actor=actor, critic=critic)
 
 # Visualise current policy and q-function
 gridworld.visualise_q_function_as_image(qfunction)
-policy = qfunction.extract_policy(gridworld)
-gridworld.visualise_policy_as_image(policy)
+gridworld.visualise_stochastic_policy(policy)
 
-# execute 100 episodes
-q_actor_critic.execute(100)
+for i in range(10):
+    # execute 100 episodes
+    q_actor_critic.execute(100)
 
-# Visualise current policy and q-function
-gridworld.visualise_q_function_as_image(qfunction)
-policy = qfunction.extract_policy(gridworld)
-gridworld.visualise_policy_as_image(policy)
-
-# execute 100 episodes
-q_actor_critic.execute(1000)
-
-# Visualise current policy and q-function
-gridworld.visualise_q_function_as_image(qfunction)
-policy = qfunction.extract_policy(gridworld)
-gridworld.visualise_policy_as_image(policy)
+    # Visualise current policy and q-function
+    gridworld.visualise_q_function_as_image(qfunction)
+    gridworld.visualise_stochastic_policy(policy)
+    gridworld.visualise_policy_as_image(policy)

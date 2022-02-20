@@ -10,6 +10,7 @@ class ActorCritic:
             actions = []
             states = []
             rewards = []
+            next_states = []
 
             state = self.mdp.get_initial_state()
             while not self.mdp.is_terminal(state):
@@ -21,12 +22,13 @@ class ActorCritic:
                 states.append(state)
                 actions.append(action)
                 rewards.append(reward)
+                next_states.append(next_state)
 
                 state = next_state
 
-            self.update_actor(states=states, actions=actions)
+            self.update_actor(rewards=rewards, states=states, actions=actions, next_states=next_states)
 
-    def update_actor(self, states, actions):
+    def update_actor(self, rewards, states, actions, next_states):
         abstract
 
     def update_critic(self, reward, state, action, next_state):
