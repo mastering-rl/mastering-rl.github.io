@@ -27,7 +27,11 @@ class AdvantageActorCritic(ActorCritic):
             advantage = reward + self.mdp.get_discount_factor() * next_value - value
             advantages.append(advantage)
 
-        self.actor.policy.update(states, actions, advantages)
+        self.actor.update(states, actions, advantages)
 
     def update_critic(self, reward, state, action, next_state):
-        pass
+        # We want to take the MSE between the state_value and r + gamma * next_state_value
+        state_value = self.critic.get_value(state=state)
+        next_state_value = self.critic.get_value(state=next_state)
+        delta = reward + self.mdp.get_discount_factor() * next_state_value - state_value
+        self.critic.update(state=state, delta=delta)

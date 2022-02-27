@@ -578,7 +578,7 @@ class GridWorld(MDP):
                     text = plt.text(
                         x,
                         y,
-                        f"{value:+0.2f}",
+                        f"{float(value):+0.2f}",
                         fontsize="x-large",
                         horizontalalignment="center",
                         verticalalignment="center",
