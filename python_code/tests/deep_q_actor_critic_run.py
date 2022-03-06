@@ -1,10 +1,9 @@
-from python_code.qlearning import QLearning
-from python_code.deep_qfunction import DeepQFunction
-from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from python_code.gridworld import GridWorld
 from python_code.deep_nn_policy import DeepNeuralNetworkPolicy
-from python_code.policy_gradient import PolicyGradient
 from python_code.deep_q_actor_critic import DeepQActorCritic
+from python_code.deep_qfunction import DeepQFunction
+from python_code.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.qlearning import QLearning
 
 gridworld = GridWorld()
 
