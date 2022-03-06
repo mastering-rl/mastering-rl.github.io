@@ -1,10 +1,10 @@
-import torch
 import torch.nn as nn
 from value_function import ValueFunction
 from torch.optim import Adam
+from deep_agent import DeepAgent
 
 
-class DeepValueFunction(ValueFunction):
+class DeepValueFunction(ValueFunction, DeepAgent):
     """
     A neural network to represent the Value-function.
     This class uses PyTorch for the neural network framework (https://pytorch.org/).
@@ -37,9 +37,3 @@ class DeepValueFunction(ValueFunction):
         state = self.encode_state(state)
         value = self.value_network(state)
         return value
-
-    @staticmethod
-    def encode_state(state):
-        if state == ("terminal", "terminal"):
-            state = (-1, -1)
-        return torch.as_tensor(state, dtype=torch.float32)

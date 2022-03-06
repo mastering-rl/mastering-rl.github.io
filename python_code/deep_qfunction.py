@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 from qfunction import QFunction
 from torch.optim import Adam
+from deep_agent import DeepAgent
 
 
-class DeepQFunction(QFunction):
+class DeepQFunction(QFunction, DeepAgent):
     """ A neural network to represent the Q-function.
         This class uses PyTorch for the neural network framework (https://pytorch.org/).
     """
@@ -65,13 +66,3 @@ class DeepQFunction(QFunction):
                 arg_max_q = action
                 max_q = value
         return (arg_max_q, max_q)
-
-    """
-    Turn the state into a tensor.
-    """
-
-    @staticmethod
-    def encode_state(state):
-        if state == ("terminal", "terminal"):
-            state = (-1, -1)
-        return torch.as_tensor(state, dtype=torch.float32)
