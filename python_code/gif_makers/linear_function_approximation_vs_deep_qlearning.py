@@ -7,7 +7,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from side_by_side_comparison import run_learner
 from side_by_side_comparison import join_gif
 
-episodes=20
+episodes=50
 gridworld = GridWorld()
 features = GridWorldBetterFeatureExtractor(gridworld)
 qfunction = LinearQFunction(features)

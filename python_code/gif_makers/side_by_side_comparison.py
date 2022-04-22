@@ -15,7 +15,7 @@ def run_learner(mdp, learner, qfunction, learner_name, out_filename, episodes=20
         image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)
         gif_maker.add_frame(image_texts, title=title)
 
-        gif_maker.save(out_filename)
+    gif_maker.save(out_filename)
 
 def join_gif(filename1, filename2, out_filename):
 
