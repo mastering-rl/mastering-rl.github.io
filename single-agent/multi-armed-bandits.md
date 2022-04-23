@@ -43,15 +43,17 @@ Successive plays $X_{i,1}, X_{j,2}, X_{k,3}\ldots$ are assumed to be independent
 
 The idea is that a gambler iteratively plays rounds, observing the reward from the arm after each round, and can adjust their strategy each time. The aim is to maximise the sum of the rewards collected over all  rounds.
 
+Multi-arm bandit strategies aim to learn a *policy* $\pi(k)$, where $k$ is the play. 
+
 :::
 
 Given that we do not know the probability distributions, a simple strategy is simply to select the arm given a uniform distribution; that is, select each arm with the same probability. This is just uniform sampling.
 
 Then, the Q-value for an action $a$ can be estimated using the following formula:
 
-$$Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t} {\mathbb I}_{i}(a) r_i$$
+$$Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t}  X_{a,i}$$
 
-where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, $r_i$ is the *reward* obtained in the $i$-th round, and  $\mathbb{I}_{i}(a)$ is $1$ if $a$ was selected on the $i$-th round, and is $0$ otherwise.
+where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, and $X_{a,i}$ is the *reward* obtained in the $i$-th round for playing arm $a$..
 
 The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of $Q(a)$ start to stabilise), we start selecting $\max_a Q(a)$. This is known as the *$\epsilon$-first* strategy, where the parameter $\epsilon$ (epsilon), determines how many rounds to select random actions before moving to the greedy action.
 
@@ -63,15 +65,18 @@ What we want is to play only the good actions; so just keep playing the actions 
 
 But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO). FOMO drives us to search for strategies that *minimise regret*.
 
-:::{admonition} Definition --- (Pseudo)--Regret 
-Pseudo-regret is defined formally as:
+:::{admonition} Definition --- Regret
 
- $$\mathcal {R_{N,b} }  =  \max_a Q(a) N(a) - \mathbb{E} [ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b) ]$$
+Given a policy $\pi$ and $t$ number of arm pulls, regret is defined formally as:
 
-where $t$ is the number of rounds, $\mathbb{I}_{i}(a)$ is $1$ if $a$ was selected on the $i$-th round and $0$ otherwise, and ${\mathbb E}[ \sum_{i}^{t} Q(b) \mathbb{I}_{i}(b)] > 0$ for every $b$.
+ $$\mathcal {R(\pi, t) }  =  t \cdot \max_a Q^*(a) - \mathbb{E} [ \sum_{k=1}^{t} X_{\pi(k), k} ]$$
+
+where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $ \max_a Q^*(a)$ each round.
 :::
 
-Informally: If I take action $b$, my regret is the *best possible expected reward* minus the *expected reward of playing $b$*. If I take action $a$ (the best action), my regret is 0. So, regret is the *expected loss* from not taking the best action.
+Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the *expected loss* from not taking the best action. If I take always action $\max_a Q^*(a)$ (the best action), my regret is 0. 
+
+The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.
 
 A *zero-regret* strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.
 
@@ -186,6 +191,7 @@ So, what happens if we change the value of our underlying probabilities? In the 
 If we plot the performance of the softmax algorithm with this, the results are as follows:
 
 ```{code-cell} ipython3
+
 plot_softmax(drift=True)
 ```
 As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
@@ -208,7 +214,7 @@ Interesting, the UCB formula is not a weighted formula -- that is, there is no p
 
 We want to learn the Q-function, which gives us the average return on each action $a$, such that it approximates the real (unknown) Q-function, which we will call $Q^*$. At each round, we select the action $a$ that maximises the expression inside the brackets. If arm $a$ is optimal, then we want the following to hold for all actions $b \neq a$:
 
-$$Q(b) + sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)$$
+$$Q(b) + \sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)$$
 
 If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low for some actions, we do not have this confidence. 
 
