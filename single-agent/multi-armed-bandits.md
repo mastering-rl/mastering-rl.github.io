@@ -105,6 +105,30 @@ The simulation returns a list of lists, representing the reward received at each
 
 There are several basic strategies for minimising regret. In each of these techniques, we record the average return of each arm over time. For consistency with the rest of these notes, we will call these Q-values, and will use $Q(a)$ to represent the Q value of arm $a$.
 
+The multi-armed bandit solutions we will look at in these notes all follow the same basic format below, where $T$ is the number of rounds or pulls that we will play, which may be infinite, and $A$ is the set of arms available.
+
+:::{admonition} Algorithm -- Abstract multi-armed bandit
+
+**Input:** Multi-armed bandit problem $M = \langle \{X_{i,k}\}, A, T\rangle$\
+**Output:** Q-function $Q$
+
+$Q(a) \leftarrow 0$ for all arms $a \in A$\
+$N(a) \leftarrow 0$ for all arms $a \in A$
+
+$k \leftarrow 1$\
+while $k \leq T$\
+$\quad\quad$ $a \leftarrow \textrm{select(k)$\
+$\quad\quad$ Execute arm $a$ for round $k$ and observe reward $X_{a,k}$\
+$\quad\quad$ $N(a) \leftarrow N(a) + 1$\
+$\quad\quad$ $Q(a) \leftarrow \frac{1}{N(a)}[X_{a,k} - Q(a)]$\
+$\quad\quad$ $k \leftarrow k + 1$
+
+:::
+
+So, these algorithms choose an arm, and then add the reward from that to a cumulative average of playing that arm so far. 
+
+The key difference between the solutions we will look at is how the $\textrm{select}$ function is implemented. This is what determines the policy $\pi(k)$ for the multi-armed bandit problem.
+
 ### Epsilon-greedy strategy
 
 The $\epsilon$-greedy strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in [0,1]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
@@ -128,6 +152,7 @@ The following plot shows the reward for each step, averaged over 2000 episodes, 
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_greedy.py"
+
 ```
 
 As we can see, higher  values of epsilon tend to have a lower reward over time, except that we need some non-zero value of epsilon. Higher values mean more exploration, so the bandit spends more time exploring less valuable actions, even after it has a good estimate of the value of actions. The actual choice of the epsilon parameter is entirely dependent on the particular application: there is no magic number. However, as in this particular case, an epsilon between 0.05-0.1 is usually a reasonable choice.
@@ -154,6 +179,7 @@ The following plot shows the average reward over our simulation, varying the val
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_decreasing.py"
+
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
@@ -180,6 +206,7 @@ As before, we plot the average reward at each step of our simulation, this time 
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_softmax.py"
+
 ```
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
@@ -191,7 +218,6 @@ So, what happens if we change the value of our underlying probabilities? In the 
 If we plot the performance of the softmax algorithm with this, the results are as follows:
 
 ```{code-cell} ipython3
-
 plot_softmax(drift=True)
 ```
 As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
@@ -232,6 +258,7 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_comparison.py"
+
 ```
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.
@@ -240,6 +267,7 @@ From this, we may answer the question why softmax is considered a good strategy 
 
 ```{code-cell} ipython3
 plot_comparison(drift=True)
+
 ```
 
 From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previous good are no longer good, thus encouraging exploration to other actions, but also, those that had poor Q-values but are now good actions would not have been visited as much previously, which also encourages exploration. Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.

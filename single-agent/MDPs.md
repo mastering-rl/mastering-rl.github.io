@@ -395,7 +395,10 @@ The **Q-value** for action $a$ in state $s$ is defined as:
 $$
 Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
 $$
+
+This represents the value of choosing action $a$ in state $s$ and then following this same policy until termination.
 :::
+
 This is just the expression inside the $\max$ expression in the Bellman equation. Using this, we can then Bellman equation then defined as: 
 
 $$

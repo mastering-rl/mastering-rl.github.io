@@ -7,7 +7,7 @@ from qtable import QTable
 being a set length.
 """
 
-def run_bandit(bandit, episodes=200, episode_length=1000, drift=True):
+def run_bandit(bandit, episodes=2000, episode_length=1000, drift=True):
 
     # The actions available
     actions = [0, 1, 2, 3, 4]

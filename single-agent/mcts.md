@@ -50,8 +50,6 @@ The question is: how to we do the repeated simuations? *Monte Carlo* methods are
 
 Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based around the same idea. Here, we will focus on using an algorithm for solving single-agent MDPs in a model-based manner. Later, we look at solving single-agent MDPs in a model-free manner and  multi-agent MDPs using MCTS.
 
-*Monte Carlo* is an area within Monaco (small principality on the French riviera), which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, methods for solving MDPs online are often called *Monte Carlo* methods, because they use *randomness* to search the action space.
-
 
 ### Foundation: MDPs as ExpectiMax Trees
 

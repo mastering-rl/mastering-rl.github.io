@@ -17,7 +17,7 @@ kernelspec:
     
 2.  Explain how model-free planning differs from model-based planning
 
-3.  Apply Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically
+3.  Apply temporal difference methods Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically
     
 4.  Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning
 
@@ -63,9 +63,6 @@ The aim of the game is to win the game. You have six actions available, which ca
 
 
 
-
-
-
 Once you have played this, ask yourself the following questions:
 
 -   What was the process you took?
@@ -96,45 +93,34 @@ There are many different techniques for model-free reinforcement learning, all w
     
 -   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
+(sec:model-free:monte-carlo-learning)=
+# Monte-Carlo reinforcement learning
 
-(sec:model-free:q-learning)=
-# Q-Learning: Off-policy reinforcement learning
+Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a [Q-function](sec:mdps:bellman-equation) that records the value $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
-Q-Learning is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a Q-function that records $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
+It is called *Monte-Carlo* reinforcement learning after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
 
-:::{admonition} Algorithm -- Q-learning
+:::{admonition} Algorithm -- Monte-Carlo reinforcement learning
 
 **Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Q-function $Q$
 
-Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
+Initialise $Q$ arbitrarily; e.g., $Q(s,a) \leftarrow 0$ for all $s$ and $a$\
+$N(s, a) \leftarrow 0$ for all $s$ and $a$
 
 Repeat (for each episode)\
-$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Repeat (for each step in episode $e$)\
-$\quad\quad\quad\quad$Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad\quad\quad$Execute action $a$ in state $s$\
-$\quad\quad\quad\quad$Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)$\
-$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
-$\quad\quad\quad\quad s \leftarrow s'$\
-$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
+$\quad\quad$ Generate an episode $(s_0, a_0, r_1, \ldots, s_{T-1}, a_{T-1}, r_T)$; e.g. using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad$ $G \leftarrow 0$\
+$\quad\quad$ $t \leftarrow T-1$\
+$\quad\quad$ While $t \geq 0$\
+$\quad\quad\quad\quad$ $G \leftarrow r_{t+1} + \gamma \cdot G$\
+$\quad\quad\quad\quad$ If $s_t, a_t$ does not appear in $s_0, a_0,\ldots, s_{t-1}, a_{t-1}$ then\
+$\quad\quad\quad\quad\quad\quad$ $Q(s_t, a_t) \leftarrow \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]$\
+$\quad\quad\quad\quad\quad\quad$ $N(s_t, a_t) \leftarrow N(s_t, a_t) + 1$\
+$\quad\quad\quad\quad$ $t \leftarrow t-1$
 :::
 
-## Updating the Q-function
-
-Updating the Q-function is where the learning happens:
-
-$$\delta \leftarrow [\underbrace{r}_{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \underbrace{\max_{a'} Q(s',a')}_{\text{TD target}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
-
-$$Q(s,a) \leftarrow 
-\underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot \underbrace{\delta}_{\text{delta value}}$$
-
-We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information.  The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
-
-The estimate from the new observations is given by $\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')$, where $\delta$ (pronounced "delta") is the difference between the previous estimate and the most recent observation, $r$ is the reward that was received by executing action $a$ in state $s$, and $\gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* target. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The definition of $\delta$ is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference target. The last part where we subtract the old value of $Q(s,a)$ ensures that the old value is weighted $1 - \alpha$.
-
-Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
+This algorithm generates an entire episode following some policy, such $\epsilon$-greedy, observing the reward $r_{t+1}$ at each step $t$. It then calculates the discounted future reward $G$ at each step. If $s_t, a_t$ occurs earlier in the episode, then we do not update $Q(s_t, a_t)$ as we will update it later in the loop. If it does not occur, we update $Q(s_t, a_t)$ as the cumulative average over all executions of $s_t, a_t$ over all episodes. In this algorithm $N(s_t,a_t)$ represents the number of times that $s_t, a_t$ have been evaluated over all episodes.
 
 ## Q-Tables
 
@@ -206,7 +192,7 @@ data = [[(0, 0), 0.50, 0.42, 0.39, 0.42],
         [(1, 2), 0.64, 0.65, 0.74, 0.59],
         [(2, 0), 0.41, 0.00, 0.00, 0.00],
         [(2, 1), 0.69, 0.09, -0.24, 0.24],
-        [(2, 2), 0.73, 0.61, 0.85, 0.65],
+        [(2, 2), 0.79, 0.61, 0.90, 0.65],
         [(3, 0), -0.02, 0.00, 0.00, 0.00],
         [(3, 1), 0.00, 0.00, 0.00, 0.00],
         [(3, 2), 0.00, 0.00, 0.00, 0.00]]
@@ -219,13 +205,83 @@ The following is an implementation of a Q-table using a Python dictionary:
 :load: "../python_code/qtable.py"
 ```
 
+(sec:model-free:td-learning)=
+## Temporal difference (TD) reinforcement learning
+Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high *variance*. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
+
+*Temporal difference* (TD) methods alleviate this problem using *bootstrapping*. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
+
+In TD methods, our update rules always follow a pattern:
+
+$$
+Q(s,a) \leftarrow \underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot [\underbrace{\overbrace{r}^{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot V(s')}_{\text{TD target}} - \overbrace{Q(s,a)}^{\text{do not count extra } Q(s,a)}]
+$$
+
+
+$V(s')$ is our TD estimate of the average future reward, and is  the bootstrapped value of our future discounted reward. 
+The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
+
+The idea  is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
+
+Why is there the expression $-Q(s,a)$ inside the square brackets? This is because the old value is weighted $(1 - \alpha) \cdot Q(s,a)$. We can expand this to $Q(s,a) - \alpha \cdot Q(s,a)$, and can then move the latter $-Q(s,a)$ inside the square brackets where the learning rate $\alpha$ is applied.
+
+
+In this chapter, we will look at two TD methods that differ in the way that they estimate the future reward $V(s')$:
+1. **Q-learning**, which is what we call an **off-policy** approach; and
+2. **SARSA**, which is what we call an **on-policy** approach.
+
+
+(sec:model-free:q-learning)=
+# Q-Learning: Off-policy temporal-difference learning
+
+Q-learning is a foundational method for reinforcement learning. It is TD method that estimates the future reward $V(s')$ using the Q-function itself, assuming that from state $s'$, the best action (according to $Q$) will be executed at each state.
+
+Below is the Q_learning algorithm. It uses $\max_{a'} Q(s',a')$ as the estimate of $V(s')$; that is, it estimates this by using $Q$ to estimate the value of the best action from $s'$. This helps to stabilise the learning.
+
+Note that, unlike Monte Carlo reinforcement learning, because Q-learning uses the bootstrapped value, it can interleave execution and update, meaning that $Q$ is improved at each step of an episode, rather than having to wait until the end of the episode to calculate $G$. This has benefit early episodes benefit from learning more than in Monte Carlo reinforcement learning.
+
+:::{admonition} Algorithm -- Q-learning
+
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Output:** Q-function $Q$
+
+Initialise $Q$ arbitrarily; e.g., $Q(s,a) \leftarrow 0$ for all $s$ and $a$
+
+Repeat (for each episode)\
+$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
+$\quad\quad$ Repeat (for each step in episode $e$)\
+$\quad\quad\quad\quad$Select action $a$ to apply in $s$; e.g. $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad\quad\quad$Execute action $a$ in state $s$\
+$\quad\quad\quad\quad$Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)$\
+$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
+$\quad\quad\quad\quad s \leftarrow s'$\
+$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
+:::
+
+## Updating the Q-function
+
+Updating the Q-function is where the learning happens:
+
+$$\delta \leftarrow [\underbrace{\overbrace{r}^{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \overbrace{\max_{a'} Q(s',a')}^{V(s') \text{ estimate}}}_{\text{TD target}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]$$
+
+$$Q(s,a) \leftarrow 
+\underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot \underbrace{\delta}_{\text{delta value}}$$
+
+We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information.  
+
+The estimate from the new observations is given by $\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')$, where $\delta$ (pronounced "delta") is the difference between the previous estimate and the most recent observation, $r$ is the reward that was received by executing action $a$ in state $s$, and $r + \gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* target. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The definition of $\delta$ is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference target. 
+
+Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
+
+
 :::{admonition} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
 
 $$
 \begin{array}{lll}
-Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),N)]\\
-           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2), Right) - Q((2,2),N)]\\
+Q((2,2),Up) & \leftarrow & Q((2,2),Up) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),Up)]\\
+           & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2), Right) - Q((2,2),Up)]\\
            & \leftarrow & 0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]\\
            & \leftarrow & 0.792\\
 \end{array}
@@ -482,11 +538,9 @@ If we could run our reinforcement learning algorithm in a simulated environment 
 
 We can combine the two approaches for particular applications. For example, if we use take our cloud platform from above, it would be silly to start with a random policy. We would quickly lose customers as the scheduling etc., would be terrible. 
 
-A better approach would be to hand-craft an algorithm that gave good results initially, and use this with an off-policy approach to train a good initial policy. 
+A better approach would be to hand-craft an algorithm that gave good results initially, and use this with an off-policy approach to train a good initial policy. We could use the hand-crafted algorithm to select actions for training initially to gain an initial policy.
 
-However, this new policy will merely mimic the hand-crafted algorithm. Presumably we are using reinforcement learning because the problem is so complex that a hand-crafted approach is not ver efficient. 
-
-So, we can then take the policy trained using off-policy and optimise it further using on-policy learning.
+However, this new policy will merely mimic the hand-crafted algorithm. Presumably we are using reinforcement learning because the problem is so complex that a hand-crafted approach is not good enough. So, we can then take the policy trained using off-policy and optimise it further using on-policy learning.
 
 Another common place for combining off-policy and on-policy learning is when we have an existing approach and we can use data from this with an off-policy approach to come up with an initial policy, which can be refined using on-policy.
 
