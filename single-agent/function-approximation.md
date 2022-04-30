@@ -8,6 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
+(sec:qfunction-approximation)=
 # Q-function approximation
 
 ## Learning Outcomes

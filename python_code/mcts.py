@@ -70,8 +70,9 @@ class MCTS:
     Execute the MCTS algorithm from the initial state given, with timeout in seconds
     """
 
-    def mcts(self, timeout=1):
-        root_node = self.create_root_node()
+    def mcts(self, timeout=1, root_node=None):
+        if root_node is None:
+            root_node = self.create_root_node()
 
         start_time = time.time()
         current_time = time.time()

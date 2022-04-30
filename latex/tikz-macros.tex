@@ -4,6 +4,10 @@
 \usetikzlibrary{arrows}
 \usetikzlibrary{automata}
 
+\definecolor{nicered}{rgb}{0.7,0.15,0.15}
+\definecolor{nicegreen}{rgb}{0.2,0.60,0.2}
+\definecolor{niceblue}{rgb}{0.15,0.25,0.6}
+
 \usetikzlibrary{snakes}
 \tikzset{
   treenode/.style = {align=center, inner sep=0pt, text centered,
@@ -16,19 +20,19 @@
      text width=1em, very thick},% arbre rouge noir, nil
   prob_n/.style = {treenode, circle, fill=black,
      text width=1em, very thick},% arbre rouge noir, nil
-   prob_reg_n/.style = {treenode, circle, red, draw=red, fill=black,
+   prob_reg_n/.style = {treenode, circle, nicered, draw=nicered, fill=black,
  	text width=1em, very thick},% arbre rouge noir, nil
-    prob_gen_n/.style = {treenode, circle, blue, draw=blue, fill=blue,
+    prob_gen_n/.style = {treenode, circle, niceblue, draw=niceblue, fill=niceblue,
  	text width=1em, very thick},% arbre rouge noir, nil
-  reg_n/.style = {treenode, circle, red, draw=red, 
+  reg_n/.style = {treenode, circle, nicered, draw=nicered, 
     text width=1.5em, very thick},% arbre rouge noir, noeud rouge
-  gen_n/.style = {treenode, circle, draw=blue,
+  gen_n/.style = {treenode, circle, draw=niceblue,
     text width=1.5em, very thick},% arbre rouge noir, nil
   sim_n/.style = {treenode, circle, draw=pink,
 	text width=1.5em, very thick},% arbre rouge noir, nil
-  updated_n/.style = {treenode, circle, draw=green,
+  updated_n/.style = {treenode, circle, draw=nicegreen,
   	text width=1.5em, very thick},% arbre rouge noir, nil
-  example_n/.style = {treenode, circle, draw=green,
+  example_n/.style = {treenode, circle, draw=nicegreen,
   	text width=2.5em, font=\small, very thick},% arbre rouge noir, nil
 }
 

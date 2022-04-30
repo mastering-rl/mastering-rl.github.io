@@ -27,18 +27,12 @@ child{ node [prob_reg_n] {}
 		child{ node [prob_gen_n] {}	
 			child{ node [gen_n] {$y$} 
 				edge from parent node[sloped, anchor=south] {\prob{c}{y}{t'}}
-			} 
-			child{ node [gen_n] {$y'$}         
-				edge from parent node[sloped, anchor=south] {\prob{c}{y'}{t'}}    
 			}
-			child{ node [gen_n] {$y''$}         
-			     edge from parent node[sloped, anchor=south] {\prob{c}{y''}{t'}}    
-			}
-			edge from parent  [draw,thick,blue] node[left] {f}
+			edge from parent  [draw,thick,niceblue] node[left] {f}
 		}
 		edge from parent node[sloped, anchor=south] {\prob{a}{t'}{s_0}}
 	}                            
-	edge from parent [draw,red,thick] node[above left] {a} 
+	edge from parent [draw,nicered,thick] node[above left] {a} 
 }   
 child{ node [prob_n] {}
 	child{ node [idle] {$u$} 

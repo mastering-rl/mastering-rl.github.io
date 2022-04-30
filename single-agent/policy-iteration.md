@@ -8,7 +8,17 @@ kernelspec:
   language: python
   name: python3
 ---
+(sec:policy-iteration)=
 # Policy iteration
+## Learning outcomes
+
+The learning outcomes of this chapter are:
+
+1. Apply policy iteration to solve small-scale MDP problems manually and program policy iteration algorithms to solve medium-scale MDP problems automatically
+2. Discuss the strengths and weaknesses of policy iteration
+3. Compare and contrast policy iteration to value iteration
+
+## Overview
 
 The other common way that MDPs are solved is using *policy iteration* -- an approach that is similar to value iteration. While value iteration iterates over value functions, policy iteration iterates over policies themselves, creating a strictly improved policy in each iteration (except if the iterated policy is already optimal).
 

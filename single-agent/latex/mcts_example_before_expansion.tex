@@ -12,9 +12,9 @@
 \tikzstyle{level 3}=[sibling distance=3cm]
 \tikzstyle{level 4}=[sibling distance=2cm]
 \tikzstyle{level 5}=[sibling distance=1.5cm]
-\node [reg_n, text width=3.2em] {\scriptsize{V(s) = 27\\[-1mm]N=95}}
+\node [reg_n, text width=2em] {\scriptsize{s\\[-1mm]N=9}}
 child{ node [prob_n] {} 
-	child{ node [idle, text width=3em] {\scriptsize{V(t)=12\\[-1mm]N=14}} 
+	child{ node [idle, text width=2em] {\scriptsize{t$'$\\[-1mm]N=14}} 
 		child{ node [prob_n] {}	
 			child{ node [idle] {...} 
 				edge from parent node[sloped, anchor=south] {0.99}
@@ -26,28 +26,13 @@ child{ node [prob_n] {}
 		}
 		edge from parent [draw,black,thin]   node[sloped, anchor=south] {0.8}
 	}
-	child{ node [reg_n, text width=3em] {\scriptsize{V(t')=18\\[1mm]N=1\\[-1mm]r=7}}
-		child{ node [prob_gen_n] {}	
-			child{ node [gen_n, text width=3em] {\scriptsize{V(y)=0\\[-1mm]N=0}} 
-				edge from parent node[sloped, anchor=south] {0.1}
-			} 
-			child{ node [gen_n, text width=3em] {\scriptsize{V(y$'$)=0\\[-1mm]N=0}} 
-				edge from parent node[sloped, anchor=south] {0.1}    
-			}
-			child{ node [sim_n, text width=3em] {\scriptsize{V(y$''$)=25\\[-1mm]N=1}}
-				child{ node [sim_n,text width=1.7em] {\scriptsize{r=100}}
-					edge from parent [draw,thick,pink,decorate] node {}
-				}     
-				edge from parent node[sloped, anchor=south] {0.8}    
-			}
-			edge from parent [draw,thick,niceblue] node[left] {f}
-		}
+	child{ node [reg_n, text width=2em] {\scriptsize{t\\[1mm]N=1\\[-1mm]r=6}}
 		edge from parent node[sloped, anchor=south] {0.2}
 	}                            
 	edge from parent [draw,red,thick] node[above left] {a} 
 }   
 child{ node [prob_n] {}
-	child{ node [idle, text width=3em] {\scriptsize{V(u)=40\\N=38}} 
+	child{ node [idle, text width=2em] {\scriptsize{u\\N=18}} 
 %		child{ node [prob_n,xshift=30.0] {}
 %			child{ node [idle] {$w$}
 %				edge from parent node[sloped, anchor=south] {0.5}
@@ -67,7 +52,7 @@ child{ node [prob_n] {}
 %		}
 		edge from parent node[sloped, anchor=south] {0.5}
 	} 
-	child{ node [idle, text width=3em] {\scriptsize{V(u')=20\\N=42}}         
+	child{ node [idle, text width=2em] {\scriptsize{u$'$\\N=12}}         
 		edge from parent node[sloped, anchor=south] {0.5}    
 	}
 	edge from parent node[above right] {b}

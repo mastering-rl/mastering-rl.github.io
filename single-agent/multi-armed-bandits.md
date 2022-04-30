@@ -117,10 +117,10 @@ $N(a) \leftarrow 0$ for all arms $a \in A$
 
 $k \leftarrow 1$\
 while $k \leq T$\
-$\quad\quad$ $a \leftarrow \textrm{select(k)$\
+$\quad\quad$ $a \leftarrow \textrm{select}(k)$\
 $\quad\quad$ Execute arm $a$ for round $k$ and observe reward $X_{a,k}$\
 $\quad\quad$ $N(a) \leftarrow N(a) + 1$\
-$\quad\quad$ $Q(a) \leftarrow \frac{1}{N(a)}[X_{a,k} - Q(a)]$\
+$\quad\quad$ $Q(a) \leftarrow Q(a) + \frac{1}{N(a)}[X_{a,k} - Q(a)]$\
 $\quad\quad$ $k \leftarrow k + 1$
 
 :::

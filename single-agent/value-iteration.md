@@ -18,7 +18,7 @@ The learning outcomes of this chapter are:
     
 2.  Construct a policy from a value function
 
-4.  Discuss the strengths and weaknesses of value iteration
+3.  Discuss the strengths and weaknesses of value iteration
 
 ## Overview
 

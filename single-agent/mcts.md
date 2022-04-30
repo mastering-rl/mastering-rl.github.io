@@ -28,21 +28,23 @@ kernelspec:
 
 ## Offline Planning & Online Planning for MDPs
 
-We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. These offline planning methods derive a policy $\pi$ such that:
+We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. 
 
--   We can define policies that work from any state in a convenient manner.
+Yet the state space $S$ is usually *far* too big to determine $V(s)$ or $\pi$ exactly. Even games like Go, which are famously difficult for reinforcement learning, requiring computational power available to only a handful of organisations, are small compared to many real-world problems.
     
--   Yet the state space $S$ is usually *far* too big to determine $V(s)$ or $\pi$ exactly.
-    
--   There are methods to approximate the MDP by reducing the dimensionality of $S$, but we will not discuss these until later.
+There are methods to approximate the MDP by reducing the dimensionality of $S$, but we will not discuss these until later.
 
 In *online* planning, planning is undertaken immediately before executing an action. Once an action (or perhaps a sequence of actions) is executed, we start planning again from the new state. As such, planning and execution are interleaved such that:
 
--   For each state $s$ visited, many policies $\pi$ are partially evaluated
+-   For each state $s$ visited, the set of all available actions $A(s)$ partially evaluated
 
--   The quality of each $\pi$ is approximated by averaging the expected reward of trajectories over $S$ obtained by repeated simulations of $r(s,a,s')$.
+-   The quality of each action $a$ is approximated by averaging the expected reward of trajectories over $S$ obtained by repeated simulations, giving as an approximation for $Q(s,a)$.
     
--   The chosen policy $\hat{\pi}$ is selected and the action $\hat{\pi}(s)$ executed.
+-   The chosen action is $\argmax_{a'} Q(s,a)$
+
+In online planning, we need access to a *simulator* that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
+
+The simulator allows us to run repeated simulations of possible futures to gain an idea of what moves are likely to be good moves compared to others.
 
 The question is: how to we do the repeated simuations? *Monte Carlo* methods are by far the most widely-used approach.
 
@@ -56,8 +58,9 @@ Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based aro
 To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called *ExpectiMax* trees:
 
 ```{figure} ./latex/mcts_expectimax.png
-:name: expectimax
-
+---
+name: expectimax
+---
 Abstract example of an ExpectiMax Tree
 ```
 
@@ -69,7 +72,7 @@ The algorithm is online, which means the action selection is interleaved with ac
 
 Fundamental features:
 
-1.  The value $V(s)$ for each is approximated using *random simulation*.
+1.  The Q-value $Q(s,a)$ for each is approximated using *random simulation*.
 
 2.  For a single-agent problem, an ExpectiMax *search tree* is built incrementally
 
@@ -96,19 +99,21 @@ The basic framework is to build up a tree using simulation. The states that have
 Start at the root node, and successively select a child until we reach a node that is not fully expanded.
 
 ```{figure} ./latex/mcts_selection.png 
-:name: mcts_selection
-
-caption
+---
+name: mcts_selection
+---
+MCTS Selection step. The red arcs and nodes are those that have been selected
 ```
 
 ### Expansion
 
 Unless the node we end up at is a terminating state, expand the children of the selected node by choosing an action and creating new nodes using the action outcomes.
 
-```{figure} ./latex/mcts_expansion.png 
-:name: mcts_expansion
-
-caption
+```{figure} ./latex/mcts_expansion.png
+---
+name: mcts_expansion
+---
+MCTS Expansion step. The blue arcs and nodes are those that have been selected. 
 ```
 
 ### Simulation
@@ -116,9 +121,10 @@ caption
 Choose one of the new nodes and perform a random simulation of the MDP to the terminating state:
 
 ```{figure} ./latex/mcts_simulation.png 
-:name: mcts_simulation
-
-caption
+---
+name: mcts_simulation
+---
+MCTS Simulation step. The pink nodes and arcs represent the simulation.
 ```
 
 ### Backpropagation
@@ -126,121 +132,130 @@ caption
 Given the reward $r$ at the terminating state, *backpropagate* the reward to calculate the value $V(s)$ at each state along the path.
 
 ```{figure} ./latex/mcts_backpropagation.png 
-:name: mcts_backpropagation
-
-caption
+---
+name: mcts_backpropagation
+---
+MCTS Backpropagation step. The green arcs and nodes represent the states and actions whose Q-values will be updated.
 ```
 
 ## Algorithm
 
 In a basic MCTS algorithm we incrementally build of the search tree. Each node in the tree stores:
 
-1.  $V(s)$ (an estimate of the value of the state) for its state;
-2.  a set of children nodes; and
-3.  a pointer to their parent node.
+1.  a set of children nodes; 
+2.  pointers to its parent node and parent action; and
+3.  the number of times it has been visited.
+
+We use this tree to explore different Monte-Carlo simulations to learn a Q-function $Q$.
 
 :::{admonition} Algorithm -- Monte-Carlo Tree Search
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $V$, time limit $T$.\
-**Output:** selected action $a$
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $Q$, time limit $T$.\
+**Output:** updated Q-function $Q$
 
 **while** $currentTime < T$\
 $\quad\quad selected\_node \leftarrow \textrm{Select}(s_0)$\
 $\quad\quad child \leftarrow \textrm{Expand}(selected\_node)$ -- expand and choose a child to simulate\
-$\quad\quad reward \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
-$\quad\quad \textrm{Backpropagate}(selected\_node, child, reward)$\
-**return** $\textrm{argmax}_{a} Q(s_0, a)$
-:::
-
-:::{admonition} Algorithm -- Monte-Carlo Tree Search
-
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $V$, time limit $T$.\
-**Output:** selected action $a$
-
-**while** $currentTime < T$\
-$\quad\quad$ $s \leftarrow s_0$\
-$\quad\quad$ **while** $s$ is fully expanded\
-$\quad\quad\quad\quad$ Select action $a$ to apply in $s$ using a multi-armed bandit algorithm\
-$\quad\quad\quad\quad$ Execute $a$ in $s$ and observe new state $s'$\
-$\quad\quad\quad\quad$ $s \leftarrow s'$\
-$\quad\quad$ Select an action $a$ from $s$ to apply, and expand one outcome $s'$ according to the distribution $P_a(s' \mid s)$\
-$\quad\quad$ $V(s') \leftarrow \textrm{simulate}(s')$ -- simulate from $s'$\
-$\quad\quad$ **do**\
-$\quad\quad\quad\quad$ $V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s') + \gamma V(s')]$\
-$\quad\quad\quad\quad$ $s \leftarrow $ parent of $s$\
-$\quad\quad$ **while** $s \neq s_0$\
-**return** $\textrm{argmax}_{a} Q(s_0, a)$ using policy extraction and $V(t)$ for each child $t$ of $s$
+$\quad\quad G \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
+$\quad\quad \textrm{Backpropagate}(selected\_node, child, G)$\
+**return** $Q$
 :::
 
 Given this, there are four main parts to the algorithm above:
 
-1. **Selection**: The first loop progressively selects a branch in the tree using a multi-armed bandit algorithm, calculating $Q(s,a)$ at each node using [policy extraction](sec:mdps:policy-extraction), getting the values of $V(t)$ for each child $t$ from the child node.
+1. **Selection**: The first loop progressively selects a branch in the tree using a multi-armed bandit algorithm using $Q(s,a)$. The outcome that occurs from an action is chosen according to $P(s' \mid s)$ defined in the MDP.
 
-2. **Expansion**: Select an action $a$ to apply in  state$s$, either randomly or using an heuristic. Get an outcome state $s'$ from applying action $a$ in state $s$ according to the probability distribution $P(s' \mid s)$ defined in the MDP. Expand a new environment node and a new state node for that outcome.
+    :::{admonition} Function -- $\textrm{Select}(s : S)$ 
+    
+    **Input:** state $s$\
+    **Output:** unexpanded state
+    
+    **while** $s$ is fully expanded\
+    $\quad\quad$ Select action $a$ to apply in $s$ using a multi-armed bandit algorithm\
+    $\quad\quad$ Choose one outcome $s'$ according to $P_a(s' \mid s)$\
+    $\quad\quad$ $s \leftarrow s'$\
+    **return** s
+    :::
+
+2. **Expansion**: Select an action $a$ to apply in  state $s$, either randomly or using an heuristic. Get an outcome state $s'$ from applying action $a$ in state $s$ according to the probability distribution $P(s' \mid s)$. Expand a new environment node and a new state node for that outcome.
+
+    :::{admonition} Function -- $\textrm{Expand}(s : S)$
+
+    **Input:** state $s$\
+    **Output:** expanded state $s'$
+
+    Select an action $a$ from $s$ to apply\
+    Expand one outcome $s'$ according to the distribution $P_a(s' \mid s)$ and observe reward $r$\
+    **return** s'
+    :::
 
 3. **Simulation**: Perform a randomised simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action. Heuristics can be used to improve the random simulation by guiding it towards more promising states. $G$ is the cumulative discounted reward received from the simulation starting at $s'$ until the simulation terminates. 
 
    To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
 
-4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the *discount factor*! For each state $s$, get the expected value of all actions from that node:
+4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the *discount factor*! For each state $s$ and action $a$ selected in the Select step, update the cumulative reward of that state.
 
-$$
-V(s) \leftarrow \max_{a\in A(s)} \Sigma_{s' \in children} P_a(s' \mid s) [r(s,a,s') + \gamma V(s')]
-$$
+    :::{admonition} Procedure -- $\textrm{Backpropagation}(s : S; a : A)$
 
-Does this look familiar? It is just the Bellman equation. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return, and this calculation is done over two layers.  The summation ($\Sigma_{s'\in S}$ ...) calculates the value of the small black nodes in the tree, while the maximisation ($\max_{a \in A(s)}$ ...) calculates the value of the large white nodes (the state nodes).
+    **Input:** state-action pair $(s, a)$\
+    **Output:** none
+    
+    **do**\
+    $\quad\quad$ $N(s,a) \leftarrow N(s,a) + 1$\
+    $\quad\quad$ $Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]$\
+    $\quad\quad$ $G \leftarrow r + G$\
+    $\quad\quad$ $s \leftarrow $ parent of $s$\
+    $\quad\quad$ $a \leftarrow $ parent action of $s$\
+    **while** $s \neq s_0$
+    :::
 
-However, in most MCTS frameworks,  we do not use the Bellman equation at all. Instead, we calculate the value of a node as: 
 
-$$
-V(s) \leftarrow V(s) + (r(s,a,s') + \gamma G - V(s)) / N(s)
-$$
+Because action outcomes are selected according to $P_a(s' \mid s)$, this will converge to the average expected reward. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return.
 
-where $G$ is the discounted future reward passed up from the child node during simulation and $N(s)$ is the number of times the state $s$ has been visited. This expression calculates $V(s)$ as a moving average. It does not use $P_a(s' \mid s)$, however, because we select actions using $P_a(s' \mid s)$, meaning that on average, state $s'$ will be selected from $s$ with probability $P_a(s' \mid s)$. The moving average will correspond to the Bellman equation given an infinite number of executions. 
+**But:** what if we do not know $P_a(s' \mid s)$?
+
+Provided that we can *simulate* the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
 
 :::{admonition} Example: Backpropagation
 
-Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.9$, $r=X$ represents reward $X$ received at a state, N is the number of times the
-state has been visited, and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
+Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.0$, $r=X$ represents reward $X$ received at a state, $V$ represents the value of the state (the value $\max_{a'\in children} Q(s,a')$) and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example
 ```
 
-In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from $y''$, which terminates after 14 steps. A reward of 100 is received in the terminal state. This would mean that the discounted reward returned at node $y''$ would be $\gamma^{13} \times 100$.
+In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from $y$, which terminates after 3 steps. A reward of 31.25 is received in the terminal state. This would mean that the discounted reward returned at node $y$ would be $\gamma^{} \times 31.25$, which is 20.
 
-The backpropagation step is then calculated for the nodes $y''$, $t'$, and $s$ as follows:
+Before backpropagation, we  have the following:
 
 $$
-\begin{array}{lll}
-  V(y'')  & = & \max_{a\in A(y'')} \sum_{s' \in children(y'')} P_a(s'|y'')\ [r(y'',a,s') + \gamma\  V(s') ]\\
-          & = & \gamma^{13} \times 100~~\textrm{(simulation is 14 steps long and receives reward of 100)}\\
-          & \approx &   25\\
-  ~~\\
-  V(t')   & = &  max_{a\in A(t')} \sum_{s' \in children(t')} P_a(s'|t')\ [r(t',a,s') + \gamma\  V(s') ]\\
-          & = &  0.1(0+0) ~+~ 0.1(0+0) ~+~ 0.8(0 + 0.9 \times 25)\\
-          & = &  18\\
- ~~\\
-  V(s)    & = & \max_{a\in A(s)} \sum_{s' \in children(s)} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s') ]\\
-          & = & \max(0.8(0 + 0.9 \times 12) + 0.2(7 + 0.9 \times 18),~~ \textrm{(action a)}\\
-          &   & \quad\quad 0.5(0 + 0.9 \times 40) + 0.5(0 + 0.9 \times 20))~~ \textrm{(action b)}\\
-          & = & \max(8.64 + 4.62,~ 18 + 9)\\
-          & = & 27\\
+\begin{array}{llr}
+ Q(s,a) & = & 18\\
+ Q(t,f) & = & 0
 \end{array}
 $$
 
+We leave out the remainder of the Q-function as it is not relevant to the example.
 
-The new tree would look like this:
+The backpropagation step is then calculated for the nodes $y$, $t$, and $s$ as follows:
 
-```{figure} ./latex/mcts_example_after_backprop.png
-:name: mcts_example_after_backprop
-```
-
-The value of $V(s)$ does not change because action $b$ still returns the maximum discounted future reward.
-
+$$
+\begin{array}{lll}
+   Q(y, g) & = & \gamma^{2} \times 31.25~~\textrm{(simulation is 3 steps long and receives reward of 31.25)}\\
+          & \approx &   20\\
+  ~~\\
+  Q(t,f)   & = &  Q(t,f) + \frac{1}{N(t, f)}[r + \gamma G - Q(t,f)]\\
+          & = &  0   + \frac{1}{2}[6 + 0.8 \cdot 20 - 0]\\
+          & = &  11\\
+~~\\
+  Q(s,a)    & = & Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]\\
+            & = & 18   + \frac{1}{10}[0 + 0.8 \cdot 11 - 18]\\
+            & = & 17.08
+\end{array}
+$$
 :::
 
-## Execution
+## Action selection
 
 Once we have run out of computational time, we select the action that maximises are expected return, which is simply the one with the highest Q-value from our simulations: 
 
@@ -256,9 +271,7 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorith, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
 
-**Intuition**: actions $a$ applicable on $s$ are the "arms of the bandit", and $Q(s,a)$ corresponds to the random variables $X_{i,n}$. So, at each state, simply run a multi-armed bandit at that state.
-
-The Upper Confidence Trees (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
+The *Upper Confidence Trees* (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
 
 $$UCT = MCTS + UCB1$$
 
@@ -268,25 +281,10 @@ $$\text{argmax}_{a \in A(s)} Q(s,a) + 2 C_p \sqrt{\frac{2 \ln N(s)}{N(s,a)}}$$
 
 $N(s)$ is the number of times a state node has been visited, and $N(s,a)$ is the number of times $a$ has been selected from this node. $C_p >0$ is the exploration constant, which determines can be increased to encourage more exploration, and decreased to encourage less exploration. Ties are broken randomly.
 
+:::{note}
 If $Q(s,a) \in [0,1]$ and $C_p=\frac{1}{\sqrt{2}}$ then in two-player zero-sum, UCT converges to the well-known Minimax algorithm.
+:::
 
-## Simulation-based MCTS
-
-**What if we do not know $P_a(s' \mid s)$ or r(s, a, s')?**
-
-We can use MCTS if we do not know our transition probabilities or our reward function, provided that we can *simulate* them; e.g. using a code-based simulator. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
-
-The new approach is a straightforward modification:
-
-1.  *Selection* is as before.
-
-2.  In the *expansion* step, instead of expanding all child nodes of an action, we run the simulation forward one step, which will choose one outcome according to $P(s' \mid s)$ (provided the simulator is accurate), even though we cannot "see"  $P(s' \mid s)$.
-
-3.  We then simulate as before, and we learn the rewards when we receive them from the simulator.
-
-4.  In the *backpropagation* step, instead of using the Bellman equation to calculate the expected return, we simply use the *average* return. If we simulate each step enough times, the average will converge to the expected return.
-
-The advantage of this is that it is more general: as long as we have a simulator for our problem, we can apply it -- we do not need an explicit model of the problem. For many problem, simulators are easier to produce than problems.
 
 (sec:mcts:implementation)=
 ## Implementation
@@ -312,7 +310,7 @@ For simplicity, we implement the select, expand, and backpropagate methods in th
 Once these are implemented, the MCTS class is quite straightforward. It simply implements the algorithm from above, and implements the simulation method:
 
 
-We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.01 seconds (to avoid a tree that is too large to visualise), we show the tree:
+We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.03 seconds (to avoid a tree that is too large to visualise), we show the tree, and we only visualise up to the 6th level (including both state and environment nodes). At each node, $V(s)$ is the value of that node (the child with the highest Q-value). Right-click and open the image in a new tab to see a larger version:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -329,6 +327,8 @@ graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
 graph
 ```
 
+The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.
+
 If we visualise the Q-function, we can see that only the actions that occur early in traces have any informed Q-values:
 
 ```{code-cell} ipython3
@@ -342,11 +342,22 @@ policy = qfunction.extract_policy(gridworld)
 gridworld.visualise_policy(policy)
 ```
 
-In this tree, the expression $(x, y).z$ represents the $(x,y)$ state with the unique identify $z$ for the node. 
+After 0.03 seconds, the rewards are improving but are still quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations are often long sequences of actions and so they received a small discounted reward. Finally, there is actually  little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
-The MCTS tree example shows weakness: the same state expanded multiple times, and will continue to be expanded. We can work around this by not expanding states that have already been visited. We can work around this by simply returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.
+```{code-cell} ipython3
+mdp = GridWorld()
+qfunction = QTable()
+root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=0.1)
+mdp.visualise_q_function(qfunction)
+```
 
-Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and print the corresponding Q-function for the initial state:
+Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
+
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="mcts"></gif-player>
+</div>
+<p>
 
 ```{code-cell} ipython3
 mdp = GridWorld()
@@ -355,18 +366,20 @@ root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeou
 mdp.visualise_q_function(qfunction)
 ```
 
-What we notice is that after 1 second, the rewards are quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations end up long and get a very small discounted reward. Finally, there is actually very little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
+The final values after 1 second are much closer to what we expect; and in fact, even after about 0.2 seconds we have enough information to extract an optimal action.
 
-If we simulate for 5 seconds, then we can see that the rewards start to resemble something more sensible:
+### Function approximation
 
-```{code-cell} ipython3
-mdp = GridWorld()
-qfunction = QTable()
-root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=5.0)
-mdp.visualise_q_function(qfunction)
-```
+As with standard Q-learning, we can use [Q-function approximation](sec:qfunction-approximation) to help generalise learning in MCTS. 
 
-Note that the state-action pairs around the -1 reward are not well explored, because the UCB multi-armed bandit that selects the actions does not explore actions with low values often. 
+In particular, we can use an off-line method such as Q-learning or SARSA with Q-function approximation to learn a general Q-function. Often this will work quite well, however, the issue with Q-function approximation is sometimes the approximation does not work well for certain states during execution. 
+
+To mitigate this, we can then use MCTS (online planning) to search from the actual state, but starting with the pre-trained Q-function. This has two benefits:
+
+1. The MCTS supplements the pre-trained Q-function by running simulations from the actual initial state $s_0$, which may  reflect the real rewards more accurately than the pre-trained Q-function given that it is an approximation.
+2. The pre-trained Q-function improves the MCTS search by guiding the *selection* step. In effect, the early simulations are not as random because there is some signal to use. This helps to mitigate the 'cold start' problem.
+
+Later in this chapter, we see an example of this with [AlphaZero](sec:mcts:alpha-zero).
 
 (sec:monte-carlo-tree-search:demo)=
 ## Why does it work so well (sometimes)?
@@ -385,7 +398,7 @@ Watch it playing Mario brothers. The lines in front of Mario illustrate the expl
 <iframe width="560" height="315" src="https://www.youtube.com/embed/HRiEUUC9TUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </p>
 
-Here is UCT doing very poorly playing a game of Freeway:
+Here is UCT doing  poorly playing a game of Freeway:
 
 <p align="center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/YVbTbMO4rtM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -410,6 +423,7 @@ This is important: value iteration is then more expensive for many problems, how
 
 For MCTS, we need to solve *online* each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heurist for rollouts), this can be improved.
 
+(sec:mcts:alpha-zero)=
 ## Combining MCTS and TD learning: Alpha Zero
 
 Alpha Zero (or more accurately its predecessor AlphaGo) made headlines when it beat Go world champion Lee Sodol in 2016. It uses a combination of MCTS and (deep) reinforcement learning to learn a policy. 
@@ -441,8 +455,12 @@ A simple overview:
 
 AlphaZero is best summarised using the following figure from the Alpha Zero Nature paper (2017):
 
-![image](./figs/AlphaGoZero-Architecture.png)
-
+```{figure} ./figs/AlphaGoZero-Architecture.png
+---
+name: AlphaZero
+---
+The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
+```
 
 ## Summary
 
