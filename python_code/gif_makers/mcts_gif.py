@@ -8,10 +8,10 @@ gridworld = GridWorld()
 gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
 qfunction = QTable()
 root_node = None
-for time in range(1, 101):
-    root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(timeout=0.01, root_node=root_node)
+for time in range(0, 101):
     title = "Time = {:.2f}s".format(time/100)
     image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)
     gif_maker.add_frame(image_texts, title=title)
+    root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(timeout=0.01, root_node=root_node)
 
 gif_maker.save("../../assets/gifs/mcts.gif")

@@ -354,7 +354,7 @@ mdp.visualise_q_function(qfunction)
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <img id="mcts" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="mcts"></gif-player>
 </div>
 <p>
@@ -366,7 +366,7 @@ root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeou
 mdp.visualise_q_function(qfunction)
 ```
 
-The final values after 1 second are much closer to what we expect; and in fact, even after about 0.2 seconds we have enough information to extract an optimal action.
+The final values after 1 second are much closer to what we expect.
 
 ### Function approximation
 
