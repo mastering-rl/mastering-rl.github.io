@@ -344,12 +344,6 @@ gridworld.visualise_policy(policy)
 
 After 0.03 seconds, the rewards are improving but are still quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations are often long sequences of actions and so they received a small discounted reward. Finally, there is actually  little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
-```{code-cell} ipython3
-mdp = GridWorld()
-qfunction = QTable()
-root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=0.1)
-mdp.visualise_q_function(qfunction)
-```
 
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
@@ -358,13 +352,6 @@ Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and v
     <gif-player id="mcts"></gif-player>
 </div>
 <p>
-
-```{code-cell} ipython3
-mdp = GridWorld()
-qfunction = QTable()
-root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=1.0)
-mdp.visualise_q_function(qfunction)
-```
 
 The final values after 1 second are much closer to what we expect.
 
