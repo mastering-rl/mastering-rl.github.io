@@ -185,7 +185,7 @@ For update, we now need to update the weights instead of the Q-table values. The
 $\quad\quad$ For each state-action feature $i$\
 $\quad\quad\quad\quad w^a_i \leftarrow w^a_i + \alpha \cdot \delta \cdot \ f_i(s,a)$
 
-where $\delta$ depends on which algorithm we are using; e.g. Q-learning, SARSA; and $n$ is the number of state-action features.
+where $\delta$ depends on which algorithm we are using; e.g. Q-learning, SARSA.
 
 As this is linear, it is therefore convex, so the weights will converge.
 
@@ -196,7 +196,7 @@ In Freeway, for example, if we receive our first reward by crossing the road (go
 ```
 
 ```{admonition} Example --- Q-value update for Freeway
-Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 6 is has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
+Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 6 has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
 we have:
 
 $$

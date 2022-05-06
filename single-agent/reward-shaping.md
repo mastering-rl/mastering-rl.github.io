@@ -70,6 +70,7 @@ glue("gridworld_image", gridworld_image, display=False)
 :::{admonition} Exercise: GridWorld What would be a good heuristic for GridWorld?
 
 ```{glue:} gridworld_image
+
 ```
 
 :::
@@ -141,17 +142,17 @@ $$
 \end{array}
 $$
 
-We can compare the Q-values for these states for the four different possible moves that could have been taken from (1,2), using and $\alpha=0.5$ and $\gamma=0.9$:
+We can compare the Q-values for these states for the four different possible moves that could have been taken from (1,2), using and $\alpha=0.1$ and $\gamma=0.9$:
 
 $$
 \begin{array}{lllcc}
 \hline
  \textbf{Action}  & r & F(s,s') & \gamma \max_{a'}Q(s',a') & \textrm{New}~ Q(s,a)\\
  \hline
- Up    & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.06\\
- Down  & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.06\\
- Right & 0 & 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) = \phantom{-}0.12 & 0 & \phantom{-}0.12\\
- Left  & 0 & 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) = -0.24 & 0 & -0.24\\
+ Up    & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.006\\
+ Down  & 0 & 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 & 0 & -0.006\\
+ Right & 0 & 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) = \phantom{-}0.12 & 0 & \phantom{-}0.012\\
+ Left  & 0 & 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) = -0.24 & 0 & -0.024\\
  \hline
  \end{array}
 $$

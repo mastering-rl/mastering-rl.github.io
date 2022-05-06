@@ -103,7 +103,7 @@ glue("gridworld_image", gridworld_image, display=False)
 
 :::{admonition} Example MDP: Grid World
 
-An agent is in the bottom left cell of a grid. The cell containing '#'s  is a wall. The two labelled cells give a *reward*: 1 for reaching the top-right cell, but a negative reward of -1 for the cell immediately below.
+An agent is in the bottom left cell of a grid. The grey cell is a wall. The two coloured cells give a *reward*. There is a reward of 1 of being in the top-right (green) cell, but a negative value of -1 for the cell immediately below (red).
 
 ```{glue:} gridworld_image
 

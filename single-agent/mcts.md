@@ -9,7 +9,7 @@ kernelspec:
   name: python3
 ---
 
-(sec:monte-carlo-tree-search)=
+(sec:mcts)=
 # Monte-Carlo Tree Search
 
 ## Learning Outcomes
@@ -52,7 +52,7 @@ The question is: how to we do the repeated simuations? *Monte Carlo* methods are
 
 Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based around the same idea. Here, we will focus on using an algorithm for solving single-agent MDPs in a model-based manner. Later, we look at solving single-agent MDPs in a model-free manner and  multi-agent MDPs using MCTS.
 
-
+(sec:mcts:expectimax-trees)=
 ### Foundation: MDPs as ExpectiMax Trees
 
 To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called *ExpectiMax* trees:
@@ -242,15 +242,16 @@ The backpropagation step is then calculated for the nodes $y$, $t$, and $s$ as f
 $$
 \begin{array}{lll}
    Q(y, g) & = & \gamma^{2} \times 31.25~~\textrm{(simulation is 3 steps long and receives reward of 31.25)}\\
-          & \approx &   20\\
+          & = &   20\\
   ~~\\
   Q(t,f)   & = &  Q(t,f) + \frac{1}{N(t, f)}[r + \gamma G - Q(t,f)]\\
-          & = &  0   + \frac{1}{2}[6 + 0.8 \cdot 20 - 0]\\
-          & = &  11\\
+          & = &  0   + \frac{1}{2}[0 + 0.8 \cdot 20 - 0]\\
+          & = &  8\\
 ~~\\
   Q(s,a)    & = & Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]\\
-            & = & 18   + \frac{1}{10}[0 + 0.8 \cdot 11 - 18]\\
-            & = & 17.08
+            & = & 18   + \frac{1}{5}[6 + 0.8 \cdot (0.8 \cdot 20) - 18]\\            
+            & = & 18   + \frac{1}{5}[6 + 12.8 - 18]\\
+            & = & 18.16
 \end{array}
 $$
 :::
