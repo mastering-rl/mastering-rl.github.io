@@ -71,15 +71,3 @@ class AbstractExtensiveFormGame(ExtensiveFormGame):
 
     def to_string(self, state):
         return str(state)
-
-if __name__ == "__main__":
-    from backward_induction import BackwardInduction
-
-    game = AbstractExtensiveFormGame()
-    backward_induction = BackwardInduction(game)
-    solution = backward_induction.backward_induction(game.get_initial_state())
-    from graph_visualisation import GraphVisualisation
-    
-    gv = GraphVisualisation(max_level = 5)
-    graph = gv.node_to_graph(game, game.game_tree(), printValues = False)
-    graph.view()

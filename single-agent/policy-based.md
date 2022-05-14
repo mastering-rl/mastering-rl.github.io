@@ -6,5 +6,5 @@ As noted earlier, learning a policy directly has advantages, particularly for ap
 
 In this chapter, we will look introduce just two policy-based methods: 
 
-1. *Policy iteration*: Like value iteration, this is a dynamic programming-based method for model-based MDPs
-2. *Policy gradients*: This is a model-free technique that performs gradient ascent, which is the same as the well-known gradient descent technique, but which maximises rewards instead of minimising error.
+1. [*Policy iteration*](sec:policy-iteration): Like value iteration, this is a dynamic programming-based method for model-based MDPs
+2. [*Policy gradients*](sec:policy-based:policy-gradients): This is a model-free technique that performs gradient ascent, which is the same as the well-known gradient descent technique, but which maximises rewards instead of minimising error.

@@ -39,7 +39,7 @@ class GraphVisualisation():
     def node_to_string(self, game, node, print_state, print_value):
         result = ""
         if print_state:
-            result += game.toString(node.state) + "\\n"
+            result += game.to_string(node.state) + "\\n"
         if len(node.children) == 0 or print_value:
             result += "("
             result += ", ".join([str(node.value[player]) for player in node.value.keys()])
@@ -47,14 +47,13 @@ class GraphVisualisation():
         return result
 
     def game_node(self, graph, game, node, visited, level, print_state, print_value):
-        
         if node.id not in visited:
             graph.node(str(node.id), label=self.node_to_string(game, node, print_state, print_value), xlabel = str(node.player_turn) if node.player_turn is not None else "")
             if level <= self.max_level:
                 for key in node.children.keys():
                     child = node.children[key]
                     self.game_node(graph, game, child, visited, level + 1, print_state, print_value)
-                    penwidth = '3.0' if child.isBestAction else '1.0'
+                    penwidth = '3.0' if child.is_best_action else '1.0'
                     graph.edge(str(node.id), str(child.id), str(key), penwidth = penwidth)
             visited += [node.id]
             

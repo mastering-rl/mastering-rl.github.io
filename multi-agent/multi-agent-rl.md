@@ -63,7 +63,7 @@ $$
 V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 = s, a = \pi(s_i)]
 $$
 
-Note here that $a = \pi(s_i)$ is the joint action of all agents. So, each agent's objective is to maximise its own expected reward consider the possible actions of all other agents.
+Note that $a = \pi(s_i)$ is the joint action of all agents. So, each agent's objective is to maximise its own expected reward considering the possible actions of all other agents.
 
 ## Multi-agent Q-learning 
 
@@ -82,8 +82,8 @@ $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Select action $a^j$ to apply in $s$ using Q-values in $Q^j$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
 $\quad\quad\quad\quad$ Execute action $a^j$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r^j$ and new state $s'$\
-$\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha \cdot [r^j + \gamma \cdot \max_{a'} Q^j(s',a') - Q^j(s,a)]$\
-$\quad\quad\quad\quad s \leftarrow s'$\
+$\quad\quad\quad\quad$ $Q^j(s,a) \leftarrow Q^j(s,a) + \alpha \cdot [r^j + \gamma \cdot \max_{a'} Q^j(s',a') - Q^j(s,a)]$\
+$\quad\quad\quad\quad$ $s \leftarrow s'$\
 $\quad\quad$ Until the end of episode $e$ (a terminal state)
 :::
 
@@ -96,7 +96,7 @@ However, if we want to solve for just an extensive form game, where players take
 $\quad\quad$ Execute action $a^j$ in state $s$\
 $\quad\quad$ Wait for other agents' actions (via simulation or via play)\
 $\quad\quad$ Observe rewards $r_t^j, \ldots, r_{t+n}^j$ and new state $s_{t+n}$\
-$\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j +  \ldots + r_{t+n}^j + \gamma \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]$
+$\quad\quad$ $Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j +  \ldots + r_{t+n}^j + \gamma \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]$
 
 This algorithm differs from the first  in two main ways:
 1. After execution our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state $s_{t+n}$, where $n-1$ moves have been made by other agents. 
@@ -114,7 +114,7 @@ The main question we need to answer is: how can we "decide" our opponents moves 
 
 In a truly model-free problem, we cannot simulate our opponents, however, our opponent will be executing their own moves, so we don't need to. 
 
-However, if we are learning in a simulated environment without real opponents, we will need to simulate their moves ourselves, rather than just "waiting" their actions. How should we choose actions for opponents' moves? There are a few ways to do this:
+However, if we are learning in a simulated environment without real opponents, we will need to simulate their moves ourselves, rather than just "waiting" for their actions. How should we choose actions for opponents' moves? There are a few ways to do this:
 
 1. *Random selection*: Select a random action. This is easy, but it means that we may end up exploring a lot of actions that will never be taken by a good opponent and therefore we will learn poor Q-values for our actions.
 2. *Using a fixed policy*: We can use an existing *stochastic* policy that gives reasonable behaviour of the opponent. This could be hand-coded or learnt from a similar game.
@@ -127,9 +127,9 @@ Just as we extend Q-learning to a multi-agent case, we can extend [Monte-Carlo t
 Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic MCTS algorithm as follows:
 
 1. **Selection**: For ‘our’ moves, we run selection as before, however, we also need to select models for our opponents. In multi-agent MCTS, an easy way to do this is via self-play. Each node has a player whose turn it is, and we use a multi-armed bandit algorithm to choose an action for that player.
-2. **Expansion**: Instead of expanding all child nodes of an action, we expand just one child node, which leads to our opponents' node. In the next iteration, that node becomes a node of expansion. 
+2. **Expansion**: Instead of expanding a child node based on $P_a(s' \mid s)$, we expand one of our actions, which leads to our opponents' node. In the next iteration, that node becomes a node of expansion. 
 3. **Simulate**: We then simulate as before, and we learn the rewards when we receive them. Recall that the rewards are a vector of rewards: one for each player.
-4. **Backpropagate**: The backpropogation step is the same as before, except that we need to keep the value of the node for every player, not just ourselves. 
+4. **Backpropagate**: The backpropagation step is the same as before, except that we need to keep the value of the node for every player, not just ourselves. 
 
 ## Summary
 

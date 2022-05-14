@@ -56,35 +56,7 @@ The algorithm can be modified in a straightforward manner to return the paths an
 The implementation for this is straightforward from the algorithm above:
 
 ```{code-cell} ipython3
-from extensive_form_game import GameNode
-
-class BackwardInduction:
-    def __init__(self, game, doCache = False):
-        self.game = game
-        self.doCache = doCache
-        self.cache = dict()
-
-    def backwardInduction(self, state):
-
-        if self.game.isTerminal(state):
-            node = GameNode(state, None, self.game.getReward(state))
-            return node
-
-        bestChild = None
-        bestAction = None
-        player = self.game.getPlayerTurn(state)
-        children = dict()
-        for action in self.game.getActions(state):
-            nextState = self.game.getTransition(state, action)
-            child = self.backwardInduction(nextState)
-            if bestChild is None or child.value[player] > bestChild.value[player]:
-                if bestChild is not None:
-                    bestChild.isBestAction = False
-                child.isBestAction = True
-                bestChild = child
-            children[action] = child
-        node = GameNode(state, player, bestChild.value, children = children)
-        return node
+:load: "../python_code/backward_induction.py"
 ```
 
 Instead of simply returning the best value from the game, we construct an entire strategy profile for all players using the ``GameNode`` objects. The result is a game tree with nodes annotated by their value that is induced up the tree.
@@ -92,95 +64,16 @@ Instead of simply returning the best value from the game, we construct an entire
 Consider the following example, which is just an abstract game with two players:
 
 ```{code-cell} ipython3
----
-tags: [hide-input]
----
-
-from extensive_form_game import ExtensiveFormGame
-
-ONE = "1"
-TWO = "2"
-
-class AbstractExtensiveFormGame(ExtensiveFormGame):
-
-    ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self):
-        return [ONE, TWO]
-
-    ''' Get the valid actions at a state '''
-    def getActions(self, state):
-        actions = dict()
-        actions[1] = ["A", "B"]
-        actions[2] = ["C", "D"]
-        actions[3] = ["E", "F"]
-        actions[7] = ["G", "H"]
-
-        if state in actions.keys():
-            return actions[state]
-        else:
-            return []
-
-    ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action):
-        transitions = dict()
-        if state == 1:
-            transitions["A"] = 2
-            transitions["B"] = 3
-        elif state == 2:
-            transitions["C"] = 4
-            transitions["D"] = 5
-        elif state == 3:
-            transitions["E"] = 6
-            transitions["F"] = 7
-        elif state == 7:
-            transitions["G"] = 8
-            transitions["H"] = 9
-        else: 
-            transitions[action] = []
-        return transitions[action]
-
-    ''' Return the reward for a state, return as a dictionary mapping players to rewards '''
-    def getReward(self, state):
-        rewards = dict()
-        if state in [4,5,6,8,9]:
-            rewards[4] = {ONE:3, TWO: 8}
-            rewards[5] = {ONE:8, TWO: 3}
-            rewards[6] = {ONE:5, TWO: 5}
-            rewards[8] = {ONE:2, TWO: 10}
-            rewards[9] = {ONE:1, TWO: 0}
-            return rewards[state]
-        else:
-            return {ONE:0, TWO:0}
-
-    ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state):
-        return state in [4,5,6,8,9]
-
-    ''' Return the player who selects the action at this state (whose turn it is) '''
-    def getPlayerTurn(self, state):
-        if state in [1,7]:
-            return ONE
-        else:
-            return TWO
-    
-    ''' Return the initial state of this game '''
-    def getInitialState(self):
-        return 1
-
-    def toString(self, state):
-        return str(state)
-
-game = AbstractExtensiveFormGame()
-backwardInduction = BackwardInduction(game)
-solution = backwardInduction.backwardInduction(game.getInitialState())
-
-from graph_visualisation import GraphVisualisation
-gv = GraphVisualisation()
-graph = gv.nodeToGraph(game, solution, printValue = True)
-graph
+:load: "../python_code/abstract_extensive_form_game.py"
 ```
 
-Here, we can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.
+We can solve this with the following code:
+
+```{code-cell} ipython3
+:load: "../python_code/tests/abstract_extensive_form_game_run.py"
+```
+
+We can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.
 
 ## Tictactoe
 
@@ -191,12 +84,11 @@ For a slightly larger game (which is still small by standards of games), let's l
 from tictactoe import TicTacToe
 
 tictactoe = TicTacToe()
-backwardInduction = BackwardInduction(tictactoe)
-solution = backwardInduction.backwardInduction(tictactoe.getInitialState())
-
-gv = GraphVisualisation(maxLevel = 1)
-tictactoeGraph = gv.nodeToGraph(tictactoe, solution, printState = True, printValue = True)
-tictactoeGraph
+backward_induction = BackwardInduction(tictactoe)
+solution = backward_induction.backward_induction(tictactoe.get_initial_state())
+gv = GraphVisualisation(max_level = 1)
+tictactoe_subgraph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
+tictactoe_subgraph
 ```
 
 Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is 'empty'), and the third row is empty, playing in the middle cell will guarantee a winfor 'x' to win regardless what player 'o' does:
@@ -205,16 +97,17 @@ Next, we show that from the state where the top row of the game is x-o-o,  the s
 from tictactoe import TicTacToe
 
 tictactoe = TicTacToe()
-backwardInduction = BackwardInduction(tictactoe)
+backward_induction = BackwardInduction(tictactoe)
 state = [['x', 'o', 'o'],
          [' ', ' ', 'x'],
          [' ', ' ', ' ']]
 
-nextState = tictactoe.getTransition(state, (1, 1))
-solution = backwardInduction.backwardInduction(nextState)
-gv = GraphVisualisation(maxLevel = 100)
-tictactoeSubGraph = gv.nodeToGraph(tictactoe, solution, printState = True, printValue = True)
-tictactoeSubGraph
+
+next_state = tictactoe.get_transition(state, (1, 1))
+solution = backward_induction.backward_induction(next_state)
+gv = GraphVisualisation(max_level = 100)
+tictactoe_subgraph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
+tictactoe_subgraph
 ```
 
 As a result, the equilibrium of this sub-game is (1, -1). No matter which move player 'o' takes, they cannot draw or win if player 'x' follows the strategy highlighted.

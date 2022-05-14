@@ -8,6 +8,7 @@ kernelspec:
   language: python
   name: python3
 ---
+
 # Extensive form games
 
 ## Learning outcomes
@@ -56,107 +57,21 @@ Consider the following simple game called the *Sharing Game*, from *Essentials i
 the following protocol for sharing two indivisible and identical presents from their parents. First the brother suggests a split, which can be one of three—he keeps both, she keeps both, or they each keep one. Then the sister chooses whether to accept or reject the split. If she accepts they each get their allocated present(s), and otherwise neither gets any gift.*"
 
 We assume that the brother and sister both value the presents equally, we can represent this as a tree, so the rewards vectors are (2,0), (1,1), and (0,2) where the first element is the brother's reward and the second element is the sisters reward.
+:::
 
 We can implement such a game in Python. First, we have an interface that defined what an extensive form game is:
 
-```
-class ExtensiveFormGame:
+```{code-cell} ipython3
+:load: "../python_code/extensive_form_game.py"
 
-    ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self): abstract
-
-    ''' Get the valid actions at a state '''
-    def getActions(self, state): abstract
-
-    ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action): abstract
-
-    ''' Return the reward for a state, return as a dictionary mapping players to rewards '''
-    def getReward(self, state, action, nextState): abstract
-
-    ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state): abstract
-
-    ''' Return the player who selects the action at this state (whose turn it is) '''
-    def getPlayerTurn(self, state): abstract
-    
-    ''' Return the initial state of this game '''
-    def getInitialState(self): abstract
 ```
 
 Then, we need to implement this interface to create an extensive form game:
 
+```{code-cell} ipython3
+:load: "../python_code/sharing_game.py"
 ```
-BROTHER = "B"
-SISTER = "S"
 
-from extensive_form_game import ExtensiveFormGame
-
-class SharingGame(ExtensiveFormGame):
-
-    ''' Get the list of players for this game as a list [1, ..., N] '''
-    def getPlayers(self):
-        return [BROTHER, SISTER]
-
-    ''' Get the valid actions at a state '''
-    def getActions(self, state):
-        actions = dict()
-        actions[1] = ["2-0", "1-1", "0-2"]
-        actions[2] = ["yes", "no"]
-        actions[3] = ["yes", "no"]
-        actions[4] = ["yes", "no"]
-
-        if state in actions.keys():
-            return actions[state]
-        else:
-            return []
-
-    ''' Return the state resulting from playing an action in a state '''
-    def getTransition(self, state, action):
-        transitions = dict()
-        if state == 1:
-            transitions["2-0"] = 2
-            transitions["1-1"] = 3
-            transitions["0-2"] = 4
-            return transitions[action]
-        elif state > 1 and state <= 4:
-            transitions["no"] = state + 3
-            transitions["yes"] = state + 4
-            return transitions[action]
-        else:
-            transitions[action] = []
-        return transitions[action]
-
-    ''' Return the reward for a state, return as a dictionary mapping players to rewards '''
-    def getReward(self, state):
-        rewards = dict()
-        if state > 4:
-            rewards[5] = {BROTHER:0, SISTER:0}
-            rewards[6] = {BROTHER:2, SISTER:0}
-            rewards[7] = {BROTHER:0, SISTER:0}
-            rewards[8] = {BROTHER:1, SISTER:1}
-            rewards[9] = {BROTHER:0, SISTER:0}
-            rewards[10] = {BROTHER:0, SISTER:2}
-            return rewards[state]
-        else:
-            return {BROTHER:0, SISTER:0}
-
-    ''' Return true if and only if state is a terminal state of this game '''
-    def isTerminal(self, state):
-        return state > 4
-
-    ''' Return the player who selects the action at this state (whose turn it is) '''
-    def getPlayerTurn(self, state):
-        if state == 1:
-            return BROTHER
-        else:
-            return SISTER
-    
-    ''' Return the initial state of this game '''
-    def getInitialState(self):
-        return 1
-```
-:::
 
 We can visualise extensive form games as *trees*, where the edges are actions, and the nodes are states.  The root node is the initial state. Consider the following extensive form game tree for the sharing game. The labels next to nodes indicate whose turn it is ("B" for brother and "S" for sister), and the tuples in nodes are the payoffs at that node (blank if there are no payoffs):
 
@@ -168,10 +83,11 @@ from sharing_game import SharingGame
 sharing = SharingGame()
 from graph_visualisation import GraphVisualisation
 
-gv = GraphVisualisation(maxLevel = 5)
-graph = gv.nodeToGraph(sharing, sharing.gameTree())
+gv = GraphVisualisation(max_level = 5)
+graph = gv.node_to_graph(sharing, sharing.game_tree())
 graph
 ```
+
 ## Solutions for extensive form games
 
 Like normal form games, extensive form games have strategies, however, the strategies must tell each agent what to do every time it is their turn to choose the action.
@@ -185,7 +101,7 @@ Therefore, a pure strategy for player $i$ tells them what move to take in each s
 An optimal solution for an extensive form game is called the *subgame-perfect equilbrium* for that game.  Before we define what subgame-perfect equilibria are, we first need to define what sub-games are..
 
 :::{admonition} Definition -- Sub-game
-Given an extensive form game $G$, the *sub-game* of $G$ rooted at the node $s_g \in S$ is the game $G_{s_g}=  (N, S, s_{g} A, T, r)$; that is, the part of the game tree in which $s_g$ is the root node and its descendents are the same as its descendants in $G$.
+Given an extensive form game $G$, the *sub-game* of $G$ rooted at the node $s_g \in S$ is the game $G_{s_g}=  (N, S, s_{g}, A, T, r)$; that is, the part of the game tree in which $s_g$ is the root node and its descendents are the same as its descendants in $G$.
 :::
 
 For any state $s_g \in S$ that occurs in the game tree, we can define a sub-game by taking the descendents of that tree. Therefore, we can define a game as simply the root node $s_0$, with the actions in $A(s_0)$ lead to nodes that are the root nodes of its sub-game.
@@ -205,12 +121,12 @@ tags: [remove-input]
 from sharing_game import SharingGame
 from backward_induction import BackwardInduction
 sharing = SharingGame()
-backwardInduction = BackwardInduction(sharing)
-solution = backwardInduction.backwardInduction(sharing.getInitialState())
+backward_induction = BackwardInduction(sharing)
+solution = backward_induction.backward_induction(sharing.get_initial_state())
     
 from graph_visualisation import GraphVisualisation
 gv = GraphVisualisation()
-graph = gv.nodeToGraph(sharing, solution)
+graph = gv.node_to_graph(sharing, solution)
 graph
 ```
 

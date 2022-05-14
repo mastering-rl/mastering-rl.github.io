@@ -17,7 +17,7 @@ class ExtensiveFormGame:
 
     ''' Return the player who selects the action at this state (whose turn it is) '''
     def get_player_turn(self, state): abstract
-    
+
     ''' Return the initial state of this game '''
     def get_initial_state(self): abstract
 
@@ -53,4 +53,3 @@ class GameNode:
 
         self.id = GameNode.next_node_id
         GameNode.next_node_id += 1
-        

@@ -38,7 +38,7 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V_{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, so we use policy gradient algorithms to approximate it. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, so we use policy gradient algorithms to approximate it. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -56,7 +56,7 @@ $$\theta \leftarrow \theta + \alpha \nabla J(\theta)$$
 
 where $\alpha$ is a learning rate parameter that dictates how big the step in the direction of the gradient should be.
 
-The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi_{\theta}(s,a)$ that $\nabla J(\theta)$ is:
+The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi_{\theta}$, state $s$, and action $a$, that $\nabla J(\theta)$ is:
 
 $$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi_{\theta}(s, a) Q(s,a)]$$
 
@@ -65,34 +65,36 @@ So, this is the expected return of taking action $\pi_{\theta}(s,a)$ multiplied 
 
 In these notes, we will not go into details about gradients or algorithms for solving them -- this is itself a large topic that is relevant outside of reinforcement learning. Instead, we will just give the intuition and how to use this for model-free reinforcement learning.
 
-## REINFORCE
+# REINFORCE
 
-The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the way done in TD learning.
+The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the sampling process in [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning).
 
 :::{admonition} Algorithm -- REINFORCE
 **Input:** A differentiable policy $\pi_{\theta}(s,a)$, an MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
 **Output:** Policy $\pi_{\theta}(s,a)$          
 
+Initialise parameters $\theta$ arbitrarily
+
 Repeat\
 $\quad\quad$ Generate episode $(s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})$ by following $\pi_{\theta}$\
 $\quad\quad$ For each $(s_t, a_t)$ in the episode\
-$\quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\
-$\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)$\
+$\quad\quad\quad\quad$ $G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\
+$\quad\quad\quad\quad$ $\theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)$\
 Until some time limit or until $\pi_{\theta}$ converges
 :::
 
 REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
 
-Comparing to value-based techniques, we can see that REINFORCE (and other policy-based approaches)  do not evaluate each action in the policy improvement process. In policy improvement, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q(s,a)$. Instead, actions are selected from the policy directly. 
+Comparing to value-based techniques, we can see that REINFORCE (and other policy-gradient approaches)  do not evaluate each action in the policy improvement process. In policy iteration, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q^\pi(s,a)$. In REINFORCE, the most recently sampled action and its reward are used to calculate the gradient and update.
 
-This has the advantage that policy-based approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-based approaches are often more efficient than value-based approaches when there are a large number of actions.
+This has the advantage that policy-gradient approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-gradient approaches are often more efficient than value-based approaches when there are a large number of actions.
 
 :::{note}
 From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-free:on-policy-vs-off-policy) approach. The sample trajectories from directly from $\pi_{\theta}$ and the update happens
 :::
 
 (sec:policy-gradients:logistic-regression)=
-### Implementation
+## Implementation
 
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
@@ -183,14 +185,12 @@ If we step through the policy during training, we can see the gradient updates p
 
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
-( sec:policy-gradient:deep-policy-gradients)=
-## Deep policy gradients
+(sec:policy-gradient:deep-policy-gradients)=
+## Deep REINFORCE
 
 Just like we can use deep neural networks to approximate Q-functions in [deep Q learning](sec:function-approximation:deep-Q-learning), we can use deep neural networks to approximate policies. Neural networks are differentiable, so these can be used in policy gradient algorithms such as REINFORCE --- the policy parameters $\theta$ are the parameters to the neural network.
 
-As with deep Q learning, this has the advantage that features of the problem are learnt, features do not have to be independent, therefore supporting a larger set ofproblems compared to a logistic regression approach,, and we can use unstructured data as input, such as images and videos.
-
-### Implementation
+As with deep Q learning, this has the advantage that features of the problem are learnt, features do not have to be independent, therefore supporting a larger set of problems compared to a logistic regression approach, and we can use unstructured data as input, such as images and videos.
 
 To implement a deep policy gradient approach in REINFORCE, we just have to implement a new policy that uses a deep neural network. 
 
@@ -227,13 +227,56 @@ Simulating the process of training the policy, we can see that initially, all fo
 <p>
 
 
-## Advantages and disadvantages of policy gradients (compared to value-based techniques)
+# Advantages and disadvantages of policy gradients (compared to value-based techniques)
 
-### Advantages
+## Advantages
 
--  **High-dimensional problems**: The major advantage of policy-based approaches compared to value-based techniques like Q-learning and SARSA is that they can handle high-dimensional action and state spaces, including actions and states that are continuous. This is because we do not have to iterate over all actions using $\textrm{argmax}_{a \in A(s)}$ as we do in value-based approaches. For continuous problems, $\textrm{argmax}_{a \in A(s)}$ is not possible to calculate, while for a high number of actions, the computational complexity is dependent on the number of actions.
+-  **High-dimensional problems**: The major advantage of policy-gradient approaches compared to value-based techniques like Q-learning and SARSA is that they can handle high-dimensional action and state spaces, including actions and states that are continuous. This is because we do not have to iterate over all actions using $\textrm{argmax}_{a \in A(s)}$ as we do in value-based approaches. For continuous problems, $\textrm{argmax}_{a \in A(s)}$ is not possible to calculate, while for a high number of actions, the computational complexity is dependent on the number of actions.
 
-### Disadvantages
+## Disadvantages
 
-- **Sample inefficiency**:  A disadvantage of policy gradients is known as *sample inefficiency*. Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward).
+- **Sample inefficiency**:  A disadvantage of REINFORCE is known as *sample inefficiency*. Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward).
 - **Loss of explainability**: Model-free reinforcement learning is a particularly challenging case to understand and explain why a policy is making a decision. This is largely due to the model-free property: there are no action definitions that can used as these are unknown. However, policy gradients are particularly difficult because the values of states are unknown: we just have a resulting policy. With value-based approaches, knowing $V$ or $Q$ provides some insight into why actions are chosen by a policy; although explainability problems still remain.
+
+# Actor critic methods
+
+The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards $G$ over episodes leads to instability.
+
+Actor critic methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the *actor* and the  value function is called the *critic*. The primary idea is that the actor produces actions, and as in [temporal difference learning](sec:model-free:td-learning), the  value function (the critic) provides feedback or "criticism" about these actions as a way of bootstrapping.
+
+The *Q Actor Critic* algorithm uses a Q-function as the critic.
+
+:::{admonition} Algorithm -- Q Actor Critic
+
+**Input:** An MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
+**Input:** A differentiable actor policy $\pi_{\theta}(s,a)$\
+**Input**: A differentiable critic Q-function $Q(s,a)$\
+**Output:** Policy $\pi_{\theta}(s,a)$   
+
+Initialise actor $\pi$ parameters $\theta$ and critic parameters $w$ arbitrarily
+
+Repeat (for each episode)\
+$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
+$\quad\quad$ Select action $a \sim \pi_\theta(s)$\
+$\quad\quad$ Repeat (for each step in episode $e)$\
+$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
+$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
+$\quad\quad\quad\quad$ Select action $a' \sim \pi_\theta(s')$\
+$\quad\quad\quad\quad$ $\delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s',a')$\
+$\quad\quad\quad\quad$ $w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)$\
+$\quad\quad\quad\quad$ $\theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)$\
+$\quad\quad\quad\quad$ $s \leftarrow s'$; $a \leftarrow a'$\
+$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
+:::
+
+Note that we have two different learning rates $\alpha_w$ and $\alpha_{\theta}$ for the Q-function and policy respectively.
+
+Let's analyse the key parts in more detail. The line that updates $\delta$ is the same as the $\delta$ calculation in SARSA:  it is temporal difference value for executing action $a$ in state $s$, with the estimate of the future discount reward being $Q_w(s',a')$.
+
+Once the $\delta$ value is calculated, we update both the actor and the critic.  The weights of the critic $Q_w$ are updated by following the gradient $\nabla Q_w(s,a)$ of the critic Q-function at $s,a$, and then the parameters of the actor $\theta$ are updated the same way as in REINFORCE, except that the value of $\delta$ uses the temporal difference estimate based on $Q_w(s,a)$ instead of using $G$.
+
+So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (Q-function) $Q_w$, but the critic is learnt only to provide the temporal difference update, not to extract the policy.
+
+**But wait!** Didn't we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven't we now gone backwards by including a Q-function? Why not just use the Q-function directly?
+
+The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.

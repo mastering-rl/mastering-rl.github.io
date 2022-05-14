@@ -327,7 +327,7 @@ A further advantage is that states can be non-structured (or less structured), r
 
 The update rule for deep Q-learning looks similar to that of updating a linear Q-function.
 
-The deep reinforcement learning, TD update is:
+The deep reinforcement learning TD update is:
 
 $$\theta \leftarrow \theta + \alpha \cdot \delta \cdot \nabla_{\theta} Q(s,a; \theta)$$
 

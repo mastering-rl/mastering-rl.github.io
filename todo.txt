@@ -12,6 +12,7 @@
 - To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.
 - Add more complex MDP example; e.g. what if there is some alternate reward 'along the way'
 - Definitly try to implement a frogger implementation; or perhaps something that does not use the gridworld? (see Peg Soliatire note above)
+- Add example from Revision lecture in OneNote: go around or go through the possibly-locked door.
 
 
 - Read code cells from path:

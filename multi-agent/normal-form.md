@@ -27,6 +27,8 @@ The learning outcomes of this chapter are:
 
 2. Manually calculate the best responses and Nash equilibria for two-player normal form games.
 
+3. Compare and contrast pure strategies and mixed strategies.
+
 
 ## Chapter overview
 
@@ -36,7 +38,7 @@ Normal form games capture many different applications in the field of multi-agen
 A normal  form game is a tuple $G = (N, A, u)$
 
 - $N$ is a set of $n$ number of players
-- $A = A_1 \times \ldots \times A_n$ is an *action profile*, where $A_i$ is the set of actios for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
+- $A = A_1 \times \ldots \times A_n$ is an *action profile*, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
 - $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the *utility* for an action.
 :::
 
@@ -104,7 +106,7 @@ Note that a pure strategy is a special case of a mixed strategy where one of the
 
 We call the set of strategies for an agent a *strategy profile*. The strategy profile for agent $i$ is denoted $S_i$. Note that $S_i \neq A_i$ because $S_i$ contains mixed strategies. The set of mixed-strategy profiles for all agents is simply $S = S_1 \times \ldots S_n$.
 
-We use the notation $S_{-i}$ to denote the set of mixed-strategy profiles for all agents except for agent $i$, and $S_{-i} \in S_{-i}$ to denote an element of this.
+We use the notation $S_{-i}$ to denote the set of mixed-strategy profiles for all agents except for agent $i$, and $s_{-i} \in S_{-i}$ to denote an element of this.
 
 It is not immediately obvious why an agent would want to use randomisation when select an action, but we will see examples where this is important.
 
@@ -210,7 +212,7 @@ We can verify this by looking at each cell and reasoning as follows:
                              |
 ```
 
-What are the Nash equilibria. There are in fact three Nash equilibria for this game, highlighted using the square brackets above.! Let's reason about them:
+What are the Nash equilibria. There are in fact three Nash equilibria for this game, highlighted using the square brackets above! Let's reason about them:
 - $(steal, steal)$ is a Nash equilbrium for both agents, because if either agent deviates by playing $split$, their utility remains at  0.
 - $(steal, split)$ and $(split, steal)$ are both equilibria because if either agent deviates from $steal$ their utilitiy decreases from 2 to 1, while if either deviates from $split$ their utility remains at 0
 - $(split,split)$ is not a Nash equilibrium because both agents have incentive to deviate to $steal$, which would increase their utility from 1 to 2.
@@ -244,10 +246,10 @@ To do this, we need to define the concepts of *expected utility* and *indifferen
 Expected utility is the weighted average  received by an playing a particular pure strategy. For an action $a_i \in A_i$, the expected utility  of that action is:
 
 $$
-U_i(a_i) = p_1 \times u_i(a_i,a^1_{-i}) + \ldots p_m \times u_i(a_i, a^m_{-i})
+U_i(a_i) = p_1 \times u_i(a_i,a^1_{-i}) + \ldots + p_m \times u_i(a_i, a^m_{-i})
 $$
 
-where $a^1_{-i}, \ldots, a^m_{-i}$ are the action profiles for all agents other than $i$, $p_1, \ldots, p_m$ and are the probabilities of our opponents playing those action profiles.
+where $a^1_{-i}, \ldots, a^m_{-i}$ are the action profiles for all agents other than $i$, and $p_1, \ldots, p_m$ are the probabilities of our opponents playing those action profiles.
 :::
 
 In theory, we can maximise our overall  utility by picking the pure strategy with the highest expected utility. However, in a game, we do not know the probabilities that our opponents will play those moves! This is where indifference comes in.
@@ -259,7 +261,7 @@ An agent $i$ is indifferent between a set of pure strategies $I \subseteq A_i$ i
 Informally, this states that an agent is indifferent between a set of pure strategies if the expected return of all strategies is the same. The agent is therefore indifferent between these pure strategies because it does not matter which action they choose.
 
 :::{admonition} Definition -- Mixed-strategy Nash equilibria
-A *mixed-strategy Nash equilibria* is a mixed-strategy profile $S$ such that the strategy for each agent $i \in N$ is a tuple of probabilities $P_i = (p_1, \ldots, p_m)$, one for each pure strategy, such that $p_1 + \ldots +, p_m = 1$ and that all opponents $j$ are indifferent to their pure strategies $A_j$..
+A *mixed-strategy Nash equilibria* is a mixed-strategy profile $S$ such that the strategy for each agent $i \in N$ is a tuple of probabilities $P_i = (p_1, \ldots, p_m)$, one for each pure strategy, such that $p_1 + \ldots + p_m = 1$ and that all opponents $j$ are indifferent to their pure strategies $A_j$..
 :::
 
 Informally, this states that each agent should choose a mixed strategy such that it makes their opponents indifferent to their own actions. Intuitively, this does not really make much sense: each agents' strategy is to make its opponents indifferent to their own strategy. However, if we analyse it from the perspective of the opponent, it becomes clear: if we select the probabilities for a mixed strategy such that our opponent is *not* indifferent, then this means there is at least one strategy that has a higher expected utility than all others. In that case, the opponent would play that strategy.
@@ -267,7 +269,7 @@ Informally, this states that each agent should choose a mixed strategy such that
 :::{admonition} Example -- Mixed strategies for matching pennies
 For the matching pennies game, as agent $Odd$, we want to set the probabilities of $heads$ and $tails$ such that $U_{Even}(heads) = U_{Even}(tails)$.
 
-Let $Y$ and $1-Y$ be the probabilities that agent $Odd$ plays $heads$ and $tails$ respectively.  $1 - Y$ be the probability that agent $Odd$ play. We need to solve to $Y$ to make $Even$ indifferent to playing $heads$ or $tails$:
+Let $Y$ and $1-Y$ be the probabilities that agent $Odd$ plays $heads$ and $tails$ respectively. We need to solve to $Y$ to make $Even$ indifferent to playing $heads$ or $tails$:
 
 $$
 \begin{array}{rcl}
