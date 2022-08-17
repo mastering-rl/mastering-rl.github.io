@@ -202,8 +202,8 @@ Given this, there are four main parts to the algorithm above:
     
     **do**\
     $\quad\quad$ $N(s,a) \leftarrow N(s,a) + 1$\
-    $\quad\quad$ $Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]$\
-    $\quad\quad$ $G \leftarrow r + G$\
+    $\quad\quad$ $G \leftarrow r + \gamma G$\
+    $\quad\quad$ $Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}[G - Q(s,a)]$\
     $\quad\quad$ $s \leftarrow $ parent of $s$\
     $\quad\quad$ $a \leftarrow $ parent action of $s$\
     **while** $s \neq s_0$
@@ -218,7 +218,7 @@ Provided that we can *simulate* the outcomes; e.g. using a code-based simulator,
 
 :::{admonition} Example: Backpropagation
 
-Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.0$, $r=X$ represents reward $X$ received at a state, $V$ represents the value of the state (the value $\max_{a'\in children} Q(s,a')$) and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
+Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.8$, $r=X$ represents reward $X$ received at a state, $V$ represents the value of the state (the value $\max_{a'\in children} Q(s,a')$) and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example

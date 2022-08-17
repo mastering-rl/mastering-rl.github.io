@@ -1,3 +1,4 @@
+- Move to OpenAI gym interface?
 - consider adding Peg Solitaire for the single-agent notes.
 - align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
@@ -11,9 +12,15 @@
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
 - To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.
 - Add more complex MDP example; e.g. what if there is some alternate reward 'along the way'
+- Example of multi-objective RL learning circuits: https://developer.nvidia.com/blog/designing-arithmetic-circuits-with-deep-reinforcement-learning/
 - Definitly try to implement a frogger implementation; or perhaps something that does not use the gridworld? (see Peg Soliatire note above)
 - Add example from Revision lecture in OneNote: go around or go through the possibly-locked door.
-
+- License: https://github.com/uds-se/fuzzingbook/blob/master/LICENSE.md
+- Policy gradient slide: https://twitter.com/hbouammar/status/1489215674014703618
+- Good policy gradient overview: https://core-robotics.gatech.edu/2020/12/16/bootcamp-summer-2020-week-4-policy-iteration-and-policy-gradient/
+- Nouse maze example: https://medium.com/machine-learning-for-humans/reinforcement-learning-6eacf258b265
+- Crop management support example: https://www.sciencedirect.com/science/article/pii/S0168169922004999
+- Multi-objective problems: https://github.com/LucasAlegre/mo-gym
 
 - Read code cells from path:
 ```{code-cell} ipython3

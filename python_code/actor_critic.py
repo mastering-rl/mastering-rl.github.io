@@ -33,6 +33,3 @@ class ActorCritic:
 
     def update_critic(self, reward, state, action, next_state):
         abstract
-
-
-

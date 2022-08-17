@@ -201,7 +201,7 @@ we have:
 
 $$
 \begin{array}{lll}
-  w^a_i & \leftarrow & w^a_i + \alpha[r + \gamma \max_a Q(s',a') - Q(s,a)] f_i(s,a)\\
+  w^a_i & \leftarrow & w^a_i + \alpha[r + \gamma \max_{a'} Q(s',a') - Q(s,a)] f_i(s,a)\\
   w^{Up}_{6} & \leftarrow & 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
               & = &5
 \end{array}

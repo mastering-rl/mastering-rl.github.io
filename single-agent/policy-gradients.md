@@ -262,7 +262,7 @@ $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
 $\quad\quad\quad\quad$ Select action $a' \sim \pi_\theta(s')$\
-$\quad\quad\quad\quad$ $\delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s',a')$\
+$\quad\quad\quad\quad$ $\delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)$\
 $\quad\quad\quad\quad$ $w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)$\
 $\quad\quad\quad\quad$ $\theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)$\
 $\quad\quad\quad\quad$ $s \leftarrow s'$; $a \leftarrow a'$\
