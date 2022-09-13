@@ -3,6 +3,7 @@ from collections import defaultdict
 from mdp import *
 from rendering_utils import *
 import numpy as np
+import warnings
 
 SUNK_REWARD = -10
 BERTH_REWARD = 10
@@ -42,6 +43,9 @@ DEFAULT_SHIP = (2,8)
 REGION_COLOURS = {SHORE1:'#876445',SHORE2:'#876445',LAND:'#EDDFB3',SEA:'#EFEFEF',HI_DGR:'#ff0000',LO_DGR:'#ff8800',NO_DGR:'#FFFFFF',-1:'#FFFFFF',}
 SHIP_COLOR = "#4466aa"
 BATTERY_COLOR = "#441111"
+SHIP_SYMBOL = "\u03e1" 
+BATTERY_SYMBOL = "\u273A"
+
 
 left_cell = lambda o: (o[0]-1,o[1])
 right_cell = lambda o: (o[0]+1,o[1])
@@ -50,6 +54,7 @@ down_right_cell = lambda o: (o[0]+(o[1]%2),o[1]+1)
 up_left_cell = lambda o: (o[0]+(o[1]%2)-1,o[1]-1)
 up_right_cell = lambda o: (o[0]+(o[1]%2),o[1]-1)        
 
+warnings.filterwarnings('error')
 
 class ContestedCrossing(MDP):
     #labels for actions and states
@@ -61,10 +66,10 @@ class ContestedCrossing(MDP):
     
     def __init__(
         self,
-        high_danger=0.9,
-        low_danger=0.3,
+        high_danger=0.99,
+        low_danger=0.1,
         battery_health = 2,
-        ship_health = 5,
+        ship_health = 3,
         discount_factor=0.9,
         action_cost=0.0
     ):
@@ -377,14 +382,14 @@ class ContestedCrossing(MDP):
 
     """ Visualise a Contested Crossing problem """
 
-    def visualise(self, agent_position=None, title="", cell_size=2, gif=False):
+    def visualise(self, agent_position=None, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
             return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif)
         else:
             print(self.to_string(title=title))
 
     """ Visualise a Contested Crossing value function """
-    def visualise_value_function(self, value_function, title="", cell_size=2, gif=False, mode=0):
+    def visualise_value_function(self, value_function, title="", cell_size=1, gif=False, mode=0):
         """
         Because the information is 5-dimensional, other metrics must be extracted in order to display it on a 2-D map
         """
@@ -397,8 +402,10 @@ class ContestedCrossing(MDP):
                 flat_values[(x,y)]['mean'] = 0.0 if xyvals==[] else np.mean(xyvals)
                 flat_values[(x,y)]['sd'] = 0.0 if xyvals==[] else np.std(xyvals)
                 flat_values[(x,y)]['sub_means'] = {}
-                flat_values[(x,y)]['sub_means']["\u224b"] = {d:np.mean([vals[v] for v in vals if v[2]==d]) for d in range(self.ship_full_health+1)}
-                flat_values[(x,y)]['sub_means']["*"] = {d:np.mean([vals[v] for v in vals if v[3]==d]) for d in range(self.battery_full_health+1)}
+                sms = {d:[vals[v] for v in vals if v[2]==d] for d in range(self.ship_full_health+1)}
+                smb = {d:[vals[v] for v in vals if v[3]==d] for d in range(self.battery_full_health+1)}
+                flat_values[(x,y)]['sub_means'][(SHIP_SYMBOL,240)] = {d:np.mean(sms[d]) for d in sms if len(sms[d])>0}
+                flat_values[(x,y)]['sub_means'][(BATTERY_SYMBOL,0)] = {d:np.mean(smb[d]) for d in smb if len(smb[d])>0}
                 flat_values[(x,y)]['key_vals']={k:[] for k in set(xyvals)}
                 for v in vals:
                     flat_values[(x,y)]['key_vals'][vals[v]].append(v[2:])
@@ -407,19 +414,19 @@ class ContestedCrossing(MDP):
         else:
             print(self.to_string(values=flat_values, title=title))
 
-    def visualise_q_function(self, qfunction, title="", cell_size=2, gif=False):
+    def visualise_q_function(self, qfunction, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
             return self.visualise_q_function_as_image(qfunction, title=title, cell_size=cell_size, gif=gif)
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
-    def visualise_policy(self, policy, title="", cell_size=2, gif=False):
+    def visualise_policy(self, policy, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
             return self.visualise_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif)
         else:
             print(self.policy_to_string(policy, title=title))
 
-    def visualise_stochastic_policy(self, policy, title="", cell_size=2, gif=False):
+    def visualise_stochastic_policy(self, policy, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
             return self.visualise_stochastic_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif)
         else:
@@ -522,7 +529,7 @@ class ContestedCrossing(MDP):
         #TODO
         return ""
 
-    def initialise_world(self, cell_size=2, values=None, policy=None, mode=0):
+    def initialise_world(self, cell_size=1, values=None, policy=None, mode=0):
         x_cell = cell_size
         y_cell = cell_size * (1/np.sqrt(2))
         pt_size = cell_size*100
@@ -577,14 +584,15 @@ class ContestedCrossing(MDP):
                     ax.scatter(thispoint[0],thispoint[1], s=pt_size, color=img_pt, marker="*")
         if policy is not None and mode==1:
             self._path_plot(ax, policy, cell_size)
+        return fig
 
     def _policy_plot(self,ax, point, gridorigin, cell_size, policy):
-        sizefactor=60
-        pointsize=sizefactor*6
+        sizefactor=40
+        pointsize=sizefactor*10
         text_args = dict(ha='center', va='center', fontsize=cell_size*sizefactor)
         arrow_color = "#00000008"
-        arrow = "$\u2007\u2007\u2007\u2192$" #a right arrow
-        explode = "$*$" 
+        arrow = "$\u2007\u2007\u2192$" #a right arrow
+        explode = "$\u0489$" # possibilities \u263c\u25cc\u0489\u0488
         rotations={E:0,NE:60,NW:120,W:180,SW:240,SE:300}
         x,y=point
         importance={a:0 for a in self.get_actions()}
@@ -599,22 +607,22 @@ class ContestedCrossing(MDP):
         if i_weight==0:
             return
         #show shooting action
-        if importance[SHOOT]*sizefactor/i_weight >= 1:
-            ax.scatter(gridorigin[0],gridorigin[1], s=cell_size*importance[SHOOT]*pointsize/i_weight, color="#ff1111", marker="*")
-            #all others
+        fade='{:02x}'.format(int(importance[SHOOT]*255/i_weight))
+        ax.scatter(gridorigin[0],gridorigin[1], s=cell_size*pointsize, color="#ff1111"+fade, marker=explode)
+        #all others
         for dir in [E,NE,NW,W,SW,SE]:
             if importance[dir]*sizefactor/i_weight >= 1:
+                fade='{:02x}'.format(int(importance[dir]*255/i_weight))
                 rot = rotations[dir]
-                text_args = dict(ha='center', va='center', fontsize=cell_size*importance[dir]*sizefactor/i_weight,
-                                 color="#000000", rotation=rot)
-                ax.text(gridorigin[0],gridorigin[1],arrow,**text_args)
+                text_args = dict(ha='center', va='center', fontsize=cell_size*sizefactor,
+                                 color="#000000"+fade, rotation=rot)
+                ax.text(gridorigin[0]+0.09,gridorigin[1],arrow,**text_args)
 
     def _path_plot(self, ax, policy, cell_size):
         x_cell = cell_size
         y_cell = cell_size * (1/np.sqrt(2))
         grid_pos = lambda o:((o[0]+(o[1]%2)/2)*x_cell,(self.height-o[1])*y_cell)
         pathcount=100
-        eps = cell_size/(pathcount*5)
         ship_health_cols = {(a,b):(1-(a/self.ship_full_health),0,1-(b/self.battery_full_health),0.5) for a in range (self.ship_full_health+1)
                             for b in range (self.battery_full_health+1)}
         for i in range(pathcount):
@@ -625,8 +633,11 @@ class ContestedCrossing(MDP):
                 thispoint=grid_pos(state[:2])
                 if not self.is_terminal(next_state):
                     endpoint=grid_pos(next_state[:2])
-                    offs = (pathcount/2-i)*eps
-                    ax.plot([thispoint[0]+offs,endpoint[0]+offs],[thispoint[1]+offs,endpoint[1]+offs],color=ship_health_cols[(state[2],state[3])])
+                    xoffs = (pathcount/2-i)*cell_size/500
+                    yoffs = (pathcount/2-i)*cell_size/5000
+                    #if action==SHOOT:
+                    #    ax.scatter(endpoint[0],endpoint[1], s=cell_size*250, color=ship_health_cols[(state[2],state[3])], marker="$\u0489$")
+                    ax.plot([thispoint[0]+xoffs,endpoint[0]+xoffs],[thispoint[1]+yoffs,endpoint[1]+yoffs],color=ship_health_cols[(state[2],state[3])])
                     if(next_state[2]==0):
                         ax.scatter(endpoint[0],endpoint[1], s=cell_size*250, color=(0,0,0,0.5), marker="*")
                 state = next_state
@@ -638,11 +649,10 @@ class ContestedCrossing(MDP):
         smalltext_body = dict(ha='left', va='top', fontsize=cell_size*4, color='#343434')
         subcell=cell_size/12
         bar_colors = {True:"#111111",False:"#ff1111"}
-
         #"values" is a point-indexed dict of dict with keys 'mean' and headings for other vars
         mytext='{0} ({1})'.format(round(pt_values['mean'],2),round(pt_values['sd'],2))
         ax.text(gridorigin[0],gridorigin[1],mytext,**text_args)
-        if pt_values['mean']==0.0:
+        if pt_values['mean']==0.0 or mode==3:
             return
         if mode==2:
             #mode == 2 - max/min/mode
@@ -650,11 +660,12 @@ class ContestedCrossing(MDP):
             ax.text(gridorigin[0],gridorigin[1]-4*subcell,"min:  {0}".format(round(min(pt_values['key_vals'].keys()),2)),**smalltext_body)
             ax.text(gridorigin[0],gridorigin[1]-5*subcell,"mode: {0}".format(round(sorted(pt_values['key_vals'].items(),
                                                                                 key = lambda v : len(v[1]),reverse=True)[0][0],2)),**smalltext_body)
-                
+            return
         hspace=1.0
         for k in pt_values['sub_means']:
             vspace=1.5
-            ax.text(gridorigin[0]+(hspace+0.5)*subcell,gridorigin[1]-vspace*subcell,k,**smalltext_head)
+            smalltext_head['rotation']=k[1]
+            ax.text(gridorigin[0]+(hspace+0.5)*subcell,gridorigin[1]-vspace*subcell,k[0],**smalltext_head)
             vspace+=0.5
             for d in pt_values['sub_means'][k]:
                 vspace+=1.0 if mode==0 else 0.5
@@ -667,13 +678,14 @@ class ContestedCrossing(MDP):
                     ax.plot([linestartx,linestartx+abs(subcell*pt_values['sub_means'][k][d]/BERTH_REWARD)],[liney,liney],
                                  color=bar_colors[pt_values['sub_means'][k][d]>0], linewidth=cell_size)
             hspace+=4.0
-    def visualise_as_image(self, agent_position=None, title="", cell_size=2, gif=False, values=None, policy=None, mode=0):
+        
+    def visualise_as_image(self, agent_position=None, title="", cell_size=1, gif=False, values=None, policy=None, mode=0):
         """
         visualise with optional overlay for values or policy.
         values modes:0 - numeric means, 1 - graphical means, 2 - key values
         """
-        ship = "$\u00ab\u2699\u00bb$" #"$\u224b$"
-        battery="$\u273A$"
+        ship_args = dict(ha='center', va='center', fontsize=cell_size*25, color=SHIP_COLOR, rotation=240)
+        bat_args = dict(ha='center', va='center', fontsize=cell_size*15, color=BATTERY_COLOR)
         x_cell = cell_size
         y_cell = cell_size * (1/np.sqrt(2))
         pt_size = cell_size*100
@@ -682,13 +694,14 @@ class ContestedCrossing(MDP):
         if current_position is None:
             x,y,_,_,_=self.get_initial_state()
             current_position = (x,y)
-        self.initialise_world(cell_size=cell_size,values=values,policy=policy, mode=mode)
+        fig = self.initialise_world(cell_size=cell_size,values=values,policy=policy, mode=mode)
         shipx,shipy = grid_pos(current_position)
-        plt.scatter(shipx, shipy, s=pt_size*8, marker=ship, color=SHIP_COLOR)
+        plt.text(shipx, shipy, SHIP_SYMBOL, **ship_args)
         batx,baty = grid_pos(self.battery)
-        plt.scatter(batx,baty, s=pt_size*5, marker=battery, color=BATTERY_COLOR)
+        plt.text(batx, baty, BATTERY_SYMBOL, **bat_args)
         plt.title(title)
-        plt.show()
+        #plt.show()
+        return fig
 
     def execute(self, state, action):
         if state in self.goal_states:

@@ -3,11 +3,14 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.11.5
 kernelspec:
   display_name: Python 3
   language: python
   name: python3
 ---
+
 (sec:value-iteration)=
 # Value Iteration
 ## Learning outcomes
@@ -77,7 +80,9 @@ It is clear to see that the value iteration can be easily parallelised by updati
 Below is a Python implementation for value iteration. In this implementation, the parameter `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
-:load: "../python_code/value_iteration.py"
+:load: ../python_code/value_iteration.py
+
+
 ```
 
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
@@ -100,7 +105,7 @@ policy = values.extract_policy(gridworld)
 gridworld.visualise_policy(policy, "Policy after 100 iterations")
 ```
 
-Using the visualisation belong, stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:
+Using the visualisation below, stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:
 
 <div id="container" markdown="1" style="text-align: center;">
     <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
@@ -108,6 +113,58 @@ Using the visualisation belong, stepping through the 100 iterations, we can see 
 </div>
 <p>
 
++++
+
+The process works in exactly the same way for the Contested Crossing problem. However, in this case, the state space is no longer represented only by the coordinates of the agent. We also have to take into account non-locational information - damage to the ship, damage to the enemy, and the previous direction of travel - since these features will also affect the likelihood of the ship reaching its goal.
+
+```{code-cell} ipython3
+from contested_crossing import ContestedCrossing
+from value_iteration import ValueIteration
+from tabular_value_function import TabularValueFunction
+
+ccross=ContestedCrossing()
+values = TabularValueFunction()
+ValueIteration(ccross, values).value_iteration(max_iterations=100)
+enemy_health = direction = 1
+for x in [1,2]:
+    for y in [1,2]:
+        for ship_health in [1,2]:
+            print("state: {0} - value: {1}".format((x,y,ship_health,enemy_health,direction),
+                                                   round(values.value_table[(x,y,ship_health,enemy_health,direction)],3)))
+```
+
+This can be difficult to visualise graphically. We can no longer simply assign one value to each physical location and so map the progress of the agent from each value to the largest adjacent one. We can, however, use other ways to get a general sense of how the state affects the behaviour of an agent at any one point. For instance, we can show the mean and standard deviation for all states at a particular location, or we can show tables of values at each location to express the differnece between different possible states located there.
+
+```{code-cell} ipython3
+ccross.visualise_value_function(values, "Value function after 100 iterations",mode=3,cell_size=1.6)
+ccross.visualise_value_function(values, "Value function after 100 iterations, with sub-tables",mode=0,cell_size=1.6)
+```
+
+
+```{glue:} ccross_mode3
+
+```
+
+```{glue:} ccross_mode1
+
+```
+
+An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. The visualisation which includes means for different values of ship health and enemy health (the two smaller columns) shows a more complicated picture. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.
+
+Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the 'shoot' action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities - it is simply a representation of the fact that multiple states exist at one location.
+
+The path plot gives a number of traces of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents which have been damaged tend to follow the safer path round the outside of the map while agents which have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
+
+```{code-cell} ipython3
+policy = values.extract_policy(ccross)
+ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0)
+ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1)
+```
+
+```{glue} ccross_mode3```
+```{glue} ccross_mode1```
+
++++
 
 ## Summary
 

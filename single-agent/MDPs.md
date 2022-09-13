@@ -3,11 +3,14 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.11.5
 kernelspec:
   display_name: Python 3
   language: python
   name: python3
 ---
+
 (sec:mdps)=
 # Markov Decision Processes
 
@@ -90,15 +93,19 @@ If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1
 In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
 ```{code-cell} ipython3
----
-tags: [remove-cell]
----
+:tags: [remove-cell]
+
 from myst_nb import glue
 from gridworld import GridWorld
+from contested_crossing import ContestedCrossing
 
 gridworld = GridWorld()
 gridworld_image = gridworld.visualise()
 glue("gridworld_image", gridworld_image, display=False)
+
+ccross = ContestedCrossing()
+ccross_image = ccross.visualise(title="Initial Positions")
+glue("ccross_image", ccross_image, display=False)
 ```
 
 :::{admonition} Example MDP: Grid World
@@ -120,6 +127,29 @@ But! Things can go wrong --- sometimes the effects of the actions are not what w
 -   If the wall is in the way of the cell that would have been taken, the agent stays in the current cell.
 
 The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?
+:::
+
+:::{admonition} Example MDP 2: Contested Crossing
+
+An agent (a ship) is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
+
+At the closest point of the north shore is an enemy. The enemy may shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. In those areas, the ship may also shoot at the enemy, but it cannot do so and turn at the same time - if it chooses to shoot, it will continue sailing in the same direction. 
+
+```{glue:} ccross_image
+
+```
+
+-   In areas of low danger, a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship)
+
+-   In areas of high danger, a shot will damage the target 99$\%$ of the time
+
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with one damage it moves successfully 67$\%$ and at two damage, 33$\%$. At three damage, it sinks.
+
+-   When the enemy is damaged once, there is no change in its behaviour. When it is damaged twice it is destroyed - at this point the ship is in no further danger
+
+In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
+
+
 :::
 
 :::{admonition} Example MDP model
@@ -300,6 +330,7 @@ A graphical representation of the policy for Grid World is:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
+
 from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
@@ -326,13 +357,17 @@ We will focus mostly on  deterministic policies, but stochastic policies have th
 Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
 
 ```{code-cell} ipython3
-:load: "../python_code/policy.py"
+:load: ../python_code/policy.py
+
+
 ```
 
 The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
-:load: "../python_code/tabular_policy.py"
+:load: ../python_code/tabular_policy.py
+
+
 ```
 
 As we see later in the section on [policy gradients](sec:policy-based:policy-gradients), policies can be represented using other means, such as machine learning models, which do not require us to keep an explicit answer for every state.
@@ -431,7 +466,9 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
 
 ```{code-cell} ipython3
-:load: "../python_code/value_function.py"
+:load: ../python_code/value_function.py
+
+
 ```
 
 For each state, we find the best action in the state (the action that maximises the Q-value from that state); and for that state, we set that max action as the action to select in that state.
