@@ -56,7 +56,7 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 -   actions $A(s) \subseteq A$ applicable in each state $s \in S$
 
--   **transition probabilities** $P_a(s'|s)$ for $s \in S$ and
+-   **transition probabilities** $P_a(s' \mid s)$ for $s \in S$ and
     $a \in A(s)$
 
 -   **rewards** $r(s,a,s')$ positive or negative of transitioning from
@@ -67,7 +67,7 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 What is different between an MDP and the models from classical planning? There are four main differences:
 
--   The transition function is not deterministic. Each action has a probability of $P_a(s'|s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
+-   The transition function is not deterministic. Each action has a probability of $P_a(s' \mid s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
 
 -   There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.
 
@@ -382,7 +382,7 @@ For discounted-reward MDPs, optimal solutions maximise the *expected discounted 
 The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
 $$
-V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(s_i, a_i, s_{i+1}) \ | \ s_0 = s, a_i = \pi(s_i)]\,
+V^{\pi}(s) = E_{\pi}[\sum_{i} \gamma^i r(s_i, a_i, s_{i+1}) \mid s_0 = s, a_i = \pi(s_i)]
 $$
 
 So, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
@@ -404,7 +404,7 @@ condition that must hold for a policy to be optimal. The Bellman equation is def
 as:
 
 $$
-V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]
+V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]
 $$
 :::
 
@@ -484,8 +484,6 @@ full-observability. A POMDP is defined as:
 
 -   states $s \in S$
 
--   set of goal states $G \subseteq S$
-
 -   actions $A(s) \subseteq A$
 
 -   transition probabilities $P_a(s' \mid s)$ for $s \in S$ and $a \in A(s)$
@@ -494,12 +492,14 @@ full-observability. A POMDP is defined as:
 
 -   reward function $r(s,a,s')$
 
+-   a set of possible observations $Obs$
+
 -   a **sensor model** given by probabilities $O_a(o \mid s)$, $o \in Obs$
 :::
 
 The sensor model allows the agent to observe the environment. If an agent executes an action $a$, it has probability $O_a(o \mid s')$ of observing state $s'$.
 
-Solving POMDPs is similar to solving MDPs. In fact, the same algorithms apply. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
+Solving POMDPs is similar to solving MDPs. In fact, the same algorithms can be applied. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
 POMDP is a **belief state**, which defined the probability of being in each state $S$. This leads to an exponentially-larger state space, so POMDPs are typically harder problems to solve.
 
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies maximise the expected reward.

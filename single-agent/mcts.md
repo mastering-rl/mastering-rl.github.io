@@ -40,7 +40,7 @@ In *online* planning, planning is undertaken immediately before executing an act
 
 -   The quality of each action $a$ is approximated by averaging the expected reward of trajectories over $S$ obtained by repeated simulations, giving as an approximation for $Q(s,a)$.
     
--   The chosen action is $\argmax_{a'} Q(s,a)$
+-   The chosen action is $\textrm{argmax}_{a'} Q(s,a)$
 
 In online planning, we need access to a *simulator* that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
 
