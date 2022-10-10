@@ -3,6 +3,8 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.11.5
 kernelspec:
   display_name: Python 3
   language: python
@@ -129,9 +131,8 @@ Q-tables are the simplest way to maintain a Q-function. They are a table with an
 Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros, taking the GridWorld example:
 
 ```{code-cell} ipython3
----
-tags: [remove-input]
----
+:tags: [remove-input]
+
 import matplotlib.pyplot as plt
 
 def plot_qtable(headers, data):
@@ -181,9 +182,8 @@ plot_qtable(headers, data)
 After some training, we may end up with a Q-function that looks something like this:
 
 ```{code-cell} ipython3
----
-tags: [remove-input]
----
+:tags: [remove-input]
+
 data = [[(0, 0), 0.50, 0.42, 0.39, 0.42],
         [(0, 1), 0.56, 0.44, 0.51, 0.51],
         [(0, 2), 0.58, 0.51, 0.63, 0.57],
@@ -202,7 +202,9 @@ plot_qtable(headers, data)
 The following is an implementation of a Q-table using a Python dictionary:
 
 ```{code-cell} ipython3
-:load: "../python_code/qtable.py"
+:load: ../python_code/qtable.py
+
+
 ```
 
 (sec:model-free:td-learning)=
@@ -307,13 +309,17 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains most of the code we need:
 
 ```{code-cell} ipython3
-:load: "../python_code/model_free_reinforcement_learner.py"
+:load: ../python_code/model_free_reinforcement_learner.py
+
+
 ```
 
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
-:load: "../python_code/qlearning.py"
+:load: ../python_code/qlearning.py
+
+
 ```
 
 We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
@@ -419,7 +425,9 @@ $$
 As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
-:load: '../python_code/sarsa.py'
+:load: ../python_code/sarsa.py
+
+
 ```
 
 So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a \in A} Q(s,a)$.
@@ -439,7 +447,7 @@ SARSA(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
 gridworld.visualise_q_function(qfunction)
 ```
 
-Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up. 
+Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up.
 
 ```{code-cell} ipython3
 policy = qfunction.extract_policy(gridworld)
@@ -501,7 +509,9 @@ However, *during* learning, the agent will still fall off the cliff sometimes wh
 Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode:
 
 ```{code-cell} ipython3
-:load: '../python_code/tests/qlearning_sarsa_cliffworld.py'
+:load: ../python_code/tests/qlearning_sarsa_cliffworld.py
+
+
 ```
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
@@ -515,6 +525,30 @@ However, once training is complete, we extract a policy. Because the actions are
 
 The end result for the SARSA (on policy) method is a sub-optimal policy, but one that achieves stronger rewards during training.
 
+## SARSA vs. Q-learning example: Contested crossing
+
+What happens when we train on a more complicated example?
+
+In a game such as the Contested Crossing example, the addition of even a small number of extra actions and outcomes has a significant effect on the ability of both Q-learning and SARSA to find a good policy.
+
+In the example of CliffWorld, multiple runs of the algorithm above (train for n episodes then test for n episodes) produce a stable optimal policy for when n is at least 500. If we go through the procedure of training and testing for both Q-learning and SARSA multiple times, the final policy gives close to the same output each time.
+
+
+```{code-cell} ipython3
+:load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
+
+```
+
+In the case of Contested Crossing, there are seven actions available (compared to four for CliffWorld), the number of steps taken in executing the policy is somewhere between 6 and around 20 depending on the amount of damage the ship takes (compared to 7 for CliffWorld using Q-learning and 9 using SARSA) and the amount of chance involved is significantly higher (because a ship can shoot or be shot at any time within the danger zones, with medium or high probability).
+
+The result of this is to considerably increase the amount of time taken to find a good policy, for either Q-learning or SARSA. For n=2,000, the policy found by Q-learning is usually - but not always - superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
+
+At n=20,000 the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at n=20,000 have still not converged and (as in the CliffWorld example) are less good than the Q-learning policies
+
+```{code-cell} ipython3
+:load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
+
+```
 
 (sec:model-free:on-policy-vs-off-policy)=
 ### On-policy vs. off-policy: Why do we have both?
@@ -600,4 +634,3 @@ If we do *not* know MDP, we need to use model-free techniques:
 -   **Offline**: Q-learning, SARSA, and friends.
 
 -   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
-

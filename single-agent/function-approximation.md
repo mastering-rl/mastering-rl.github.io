@@ -293,6 +293,25 @@ However, this is still not perfect. As we see, the policy recommends going up in
 
 We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
 
+In the Contested Crossing example, there is more continuous territory in which a similar policy makes sense, so the function approximation can learn quite a good policy fairly quickly. However it has some blind spots - particularly around avoiding the 'shoot' action in some regions where this would make sense.
+
+```{code-cell} ipython3
+from qlearning import QLearning
+from linear_qfunction import LinearQFunction
+from ccross_feature_extractor import CCrossFeatureExtractor
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+import contested_crossing
+
+
+mdp = contested_crossing.ContestedCrossing()
+features = CCrossFeatureExtractor(mdp)
+qfunction = LinearQFunction(features)
+QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+policy = qfunction.extract_policy(mdp)
+mdp.visualise_as_image(policy=policy,mode=0,title="Low danger: {0}, High danger: {1}".format(mdp.low_danger,mdp.high_danger),plot=True)
+
+```
+
 ### Example -- Linear function approximation vs Q-tables
 
 The following interactive visualisation gives an episode-by-episode comparison of linear Q-function approximation vs Q tables for 20 episodes. As we can see, after one episode,

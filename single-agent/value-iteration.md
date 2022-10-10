@@ -157,14 +157,9 @@ The path plot gives a number of traces of the actual movement of an agent follow
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
-ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0)
-ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1)
+ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0,plot=True)
+ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1,plot=True)
 ```
-
-```{glue} ccross_mode3```
-```{glue} ccross_mode1```
-
-+++
 
 ## Summary
 
