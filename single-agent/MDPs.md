@@ -16,6 +16,12 @@ kernelspec:
 
 ## Learning outcomes
 
+````{margin}
+```{admonition} Video byte: Introduction to MDPs
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The learning outcomes of this chapter are:
 
 1.  Define 'Markov Decision Process'.  
@@ -27,6 +33,12 @@ The learning outcomes of this chapter are:
 4.  Explain how Bellman equations are solutions to MDP problems
 
 ## Chapter Overview
+
+````{margin}
+```{admonition} Video byte: MDPs -- An intuition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=70s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Classical planning algorithms assume that action are deterministic. *Markov Decision Processes* (MDPs) remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability.
 
@@ -44,6 +56,12 @@ For example:
 MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
 
 ## Markov Decision Processes
+
+````{margin}
+```{admonition} Video byte: MDPs -- A definition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=229s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Definition -- Markov Decision Process
 
@@ -75,6 +93,12 @@ What is different between an MDP and the models from classical planning? There a
 
 -   We have a *discount factor*.
 
+````{margin}
+```{admonition} Video byte: Discounted rewards
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=430s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The **discount factor**  determines how much a future reward should be discounted compared to a current reward.
 
 For example, would you prefer \$100 today or \$100 in a year's time? We (humans) often *discount* the future and place a higher value on nearer-term rewards.
@@ -92,7 +116,7 @@ If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1
 
 In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
-```{code-cell} ipython3
+​```{code-cell} ipython3
 :tags: [remove-cell]
 
 from myst_nb import glue
@@ -107,6 +131,7 @@ ccross = ContestedCrossing()
 ccross_image = ccross.visualise(title="Initial Positions")
 glue("ccross_image", ccross_image, display=False)
 ```
+
 
 :::{admonition} Example MDP: Grid World
 
@@ -148,8 +173,6 @@ At the closest point of the north shore is an enemy. The enemy may shoot at the 
 -   When the enemy is damaged once, there is no change in its behaviour. When it is damaged twice it is destroyed - at this point the ship is in no further danger
 
 In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
-
-
 :::
 
 :::{admonition} Example MDP model
@@ -315,6 +338,12 @@ In later chapters, we will see how to use these code-based models in several way
 (sec:mdps:policies)=
 ## Policies
 
+````{margin}
+```{admonition} Video byte: Policies
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=610s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
 
 :::{admonition} Definition -- Policy
@@ -375,6 +404,12 @@ As we see later in the section on [policy gradients](sec:policy-based:policy-gra
 (sec:mdps:bellman-equation)=
 ## Optimal Solutions for MDPs
 
+````{margin}
+```{admonition} Video byte: Expected discounted reward
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1139s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
 (defn:expected-discounted-reward)=
@@ -397,6 +432,12 @@ $$
  + & \ldots                             \textrm{(etc.)}
 \end{array}
 $$
+
+````{margin}
+```{admonition} Video byte: Bellman equation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1512s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Definition -- Bellman equation
 The **Bellman equation**, identified by Richard Bellman, describes the
@@ -445,6 +486,12 @@ The two definitions are equivalent, and you may seem them defined in both ways. 
 
 (sec:mdps:policy-extraction)=
 ## Policy extraction
+
+````{margin}
+```{admonition} Video byte: Policy extraction
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3554s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Given a value function $V$, how should we then select the action to play in a given state? It is reasonably straightforward: select the action that maximises our expected utility!
 

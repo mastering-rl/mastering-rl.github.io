@@ -177,11 +177,13 @@ The difference between value-based methods such as Q-learning and SARSA is demon
 
 If we step through the policy during training, we can see the gradient updates performing their role in policy improvement:
 
+```{div} full-width
 <div id="container-logistic-regression-policy-gradient" markdown="1" style="text-align: center;">
     <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
     <gif-player id="logistic_regression_policy_gradient" width="900"></gif-player>
 </div>
 <p>
+```
 
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 

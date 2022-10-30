@@ -28,3 +28,10 @@
 ```{code-cell} ipython3
 :load: <path>
 ```
+
+- Embded youtube videos:
+
+```{margin} The value iteration algorithm
+<iframe width="230" height="163" src="https://www.youtube-nocookie.com/embed/9-aMEGNyuec" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
