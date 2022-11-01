@@ -17,9 +17,16 @@ The standard definition of an MDP is for a single agent, who controls all of the
 
 First, we look at *normal form* games, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or *payoff* that they receive is dependent on the moves of the other agents.
 
+
 Then, we look at *extensive form games*, which are sequential games, meaning that there are multiple actions played in sequence.
 
 ## Learning outcomes
+
+````{margin}
+```{admonition} Video byte: Introduction to normal form games
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The learning outcomes of this chapter are:
 
@@ -34,15 +41,12 @@ The learning outcomes of this chapter are:
 
 Normal form games capture many different applications in the field of multi-agent systems. We will just look at the foundation of these, focusing on both deterministic and stochastic strategies for playing the games. We will cover how to solve these analytically.
 
-:::{admonition} Definition -- Normal form game
-A normal  form game is a tuple $G = (N, A, u)$
 
-- $N$ is a set of $n$ number of players
-- $A = A_1 \times \ldots \times A_n$ is an *action profile*, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
-- $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the *utility* for an action.
-:::
-
-Normal game games can be visualised as matrices, which each agent representing one dimension of the matrix, each row represents an action for a player, and each cell represents the utility received when the players each take the action.
+````{margin}
+```{admonition} Video byte: Exercise --- Prisoner's dilemma
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Exercise -- Prisoner's dilemma
 The best known example of a normal form game is known as the *Prisoner's dilemma*, which is as follows.
@@ -90,6 +94,25 @@ If we reason this way, it is clear to see why both players admit. The game is sy
 
 So, whatever my opponent does, my best action is to admit. Similarly, my opponent can reason in the same way, and their best action is to admit as well. Because both of us reason like this an both of us are self interested, we both end up spending two years in prison instead of one.  Interestingly, we cannot use this to out-reason our opponent. If we "know" they will admit, switching to deny is not a good response: we will end up with four years in prison instead of two! This is why it is known as the Prisoner's *dilemma*: both prisoners know there is a better outcome for them both, but neither of them has an incentive to deny.
 
+Now that we have seen an example, let's look at a more formal definition of *normal form game*.
+
+````{margin}
+```{admonition} Video byte: Definition -- Normal form game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+:::{admonition} Definition -- Normal form game
+A normal  form game is a tuple $G = (N, A, u)$
+
+- $N$ is a set of $n$ number of players
+- $A = A_1 \times \ldots \times A_n$ is an *action profile*, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
+- $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the *utility* for an action.
+:::
+
+Normal game games can be visualised as matrices, as shown above for the prisoner's dilemma, with each agent representing one dimension of the matrix, each row represents an action for a player, and each cell represents the utility received when the players each take the action.
+
+
 ## Solutions for normal form games: strategies
 
 In normal form games, the solution for a player in the game is known as a *strategy*. There are several types of strategy.
@@ -133,6 +156,13 @@ In the Prisoner's dilemma game, the strategy to admit is strictly dominant: is t
 ## Best response and Nash equilibria
 
 First, we look at how to solve games from the perspective of one of the agents, known as the agent's *best response*. Then, we look at solutions at the concept of *equilibria*, which captures solutions to the entire game.
+
+````{margin}
+```{admonition} Video byte: Best response and Nash equilibria
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 
 Informally, the concept of a best response refers to the best strategy that an agent  could select *if* it know how all of the other agents in the game were going to play.
 
@@ -190,6 +220,12 @@ Informally, given a normal form game, we can look at each cell $(s_1, s_2)$ of t
 
 To search for pure strategy equilibria, we just set $S_i \leftarrow A_i$; that is, we search only over pure strategies.
 
+````{margin}
+```{admonition} Video byte: Exercise -- The advertising game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Example -- Nash equilibria for Prisoner's dilemma
 Prisoner's dilemma has a unique pure-strategy Nash equilibrium: $(admit, admit)$. In fact, for any game in which all agents have a dominant strategy, that will form a unique Nash equilibrium.
 
@@ -198,6 +234,12 @@ We can verify this by looking at each cell and reasoning as follows:
 - At $(deny, deny)$ the utility is $(-1, -1)$. If either agent switches to $admit$, their utility will increase to $0$, so they have an incentive to deviate. Therefore, this is NOT a Nash equilibrium.
 - For $(admin, deny)$ or $(deny,admit)$, the agent that denies has an incentive to admit to increase its utility from $-1$ to $0$, therefore, neither is a Nash equilibrium.
 :::
+
+````{margin}
+```{admonition} Video byte: Exercise -- Split or steal
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Example -- Nash equilibria for *Split or steal*
 *Split or steal* is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the stealer receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:
@@ -222,6 +264,12 @@ What are the Nash equilibria. There are in fact three Nash equilibria for this g
 
 Recall from earlier in this chapter where we defined *mixed strategies*, which are strategies that use randomisation. To illustrate why these are necessary, consider the following simple game.
 
+````{margin}
+```{admonition} Video byte: Example -- Matching pennies game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Example -- Matching pennies
 In *matching pennies*, two players each have a penny, and simultaneously they need to show either a $head$ or a $tail$ of their penny to their opponent. The $Odd$ player will win if there is just one head, and the $Even$ player will win if there are two heads. We can model this as follows:
 
@@ -240,6 +288,12 @@ It is clear that neither agent has a dominant strategy and there are no pure-str
 So, what strategy should we play? If we were to play this game a number of times, clearly picking either $heads$ or $tails$ every time would be a bad strategy: our opponent would learn this and would start picking their strategy to beat us. Instead, we need to *randomise* by choosing $heads$ sometimes and $tails$ sometimes. Intuitively, we would choose each with probability 0.5; but can we calculate this analytically?
 :::
 
+````{margin}
+```{admonition} Video byte: Expected utility
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 To do this, we need to define the concepts of *expected utility* and *indifference*. 
 
 :::{admonition} Definition -- Expected utility of a pure strategy
@@ -254,11 +308,23 @@ where $a^1_{-i}, \ldots, a^m_{-i}$ are the action profiles for all agents other 
 
 In theory, we can maximise our overall  utility by picking the pure strategy with the highest expected utility. However, in a game, we do not know the probabilities that our opponents will play those moves! This is where indifference comes in.
 
+````{margin}
+```{admonition} Video byte: Indifference
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Definition -- Indifference
 An agent $i$ is indifferent between a set of pure strategies $I \subseteq A_i$ if for all $a_i, a_j \in I$, we have that $U_i(a_i) = U_i(a_j)$. 
 :::
 
 Informally, this states that an agent is indifferent between a set of pure strategies if the expected return of all strategies is the same. The agent is therefore indifferent between these pure strategies because it does not matter which action they choose.
+
+````{margin}
+```{admonition} Video byte: Mixed strategies
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Definition -- Mixed-strategy Nash equilibria
 A *mixed-strategy Nash equilibria* is a mixed-strategy profile $S$ such that the strategy for each agent $i \in N$ is a tuple of probabilities $P_i = (p_1, \ldots, p_m)$, one for each pure strategy, such that $p_1 + \ldots + p_m = 1$ and that all opponents $j$ are indifferent to their pure strategies $A_j$..
@@ -266,6 +332,11 @@ A *mixed-strategy Nash equilibria* is a mixed-strategy profile $S$ such that the
 
 Informally, this states that each agent should choose a mixed strategy such that it makes their opponents indifferent to their own actions. Intuitively, this does not really make much sense: each agents' strategy is to make its opponents indifferent to their own strategy. However, if we analyse it from the perspective of the opponent, it becomes clear: if we select the probabilities for a mixed strategy such that our opponent is *not* indifferent, then this means there is at least one strategy that has a higher expected utility than all others. In that case, the opponent would play that strategy.
 
+````{margin}
+```{admonition} Video byte: Example -- Mixed strategies for matching pennies
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 :::{admonition} Example -- Mixed strategies for matching pennies
 For the matching pennies game, as agent $Odd$, we want to set the probabilities of $heads$ and $tails$ such that $U_{Even}(heads) = U_{Even}(tails)$.
 
@@ -285,6 +356,20 @@ Therefore, $Odd$ should play $heads$ and $tails$ with probability $\frac{1}{2}$ 
 :::
 
 In this example, the probabilities of the game are reasonably clear without having to solve. Now, let's look at a more complicated game, which is an example of a *security game*.
+
+````{margin}
+```{admonition} Video byte: Exercise -- Security game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+
+
+````{margin}
+```{admonition} Video byte: Application -- Security games
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Example -- Mixed strategies for the security game
 
@@ -321,6 +406,7 @@ $$
  \end{array}
 $$
 
+
 So, the adversary should target Terminal 1 with probability $\frac{3}{13}$ and Terminal 2 with probability $\frac{10}{13}$.
 
 If $X$ is the probability that the defender will defend Terminal 1, then the expected utility of the adversary's two pure strategies are:
@@ -343,7 +429,15 @@ $$
 So, the defender should choose to defend Terminal 1 with the probability $\frac{3}{5}$ and Terminal 2 with $\frac{2}{5}$.
 :::
 
+
+````{margin}
+```{admonition} Video byte: Summary of normal form games
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 ## Summary
+
 
 - Normal form games model non-sequential games where agents take actions simultaneously.
 

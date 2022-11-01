@@ -1,3 +1,4 @@
+- Add summary to policy gradients section.
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Move to OpenAI gym interface?
 - consider adding Peg Solitaire for the single-agent notes.

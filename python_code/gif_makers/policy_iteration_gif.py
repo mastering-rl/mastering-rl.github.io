@@ -4,7 +4,7 @@ from policy_iteration import PolicyIteration
 from tabular_policy import TabularPolicy
 
 
-gridworld = GridWorld(width=12, height=9)
+gridworld = GridWorld()
 gif_maker = GifMaker(mdp=gridworld)
 policy = TabularPolicy(default_action=gridworld.LEFT)
 for iterations in range(0, 10):

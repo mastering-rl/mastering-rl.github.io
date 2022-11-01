@@ -15,6 +15,7 @@ kernelspec:
 
 The learning outcomes of this chapter are:
 
+
 1. Define 'extensive form game'
 2. Identify situations in which extensive form games  are a suitable model of a problem.
 3. Define the types of strategy for an extensive form game
@@ -22,6 +23,12 @@ The learning outcomes of this chapter are:
 5. Design and implement backward induction to solve medium-scale extensive form games automatically.
 
 ## Overview
+
+````{margin}
+```{admonition} Video byte: Introduction to extensive form games
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 In this section, we look at *extensive form games*. An extensive form game is a sequential game, which includes a set of players, rules around which players can move when, and what they observe and the rewards they receive when they move. In an extensive form game, there are multiple players who can take moves in the game, but not simultaneously. At the end of the game, each player receives a reward, known as a *payoff*, which can be positive or negative.
 
@@ -33,6 +40,13 @@ We look at three main ways to solve extensive form games:
 In these notes, we will look only at *perfect information* extensive form games, which means that the game state is fully observable to all players.
 
 ## Perfect information extensive form games
+
+
+````{margin}
+```{admonition} Video byte: Definition -- Extensive form game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=69" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Definition -- Perfect information extensive form game
 A perfect information extensive form game is a tuple $G = (N, S, s_0, A, T, r)$

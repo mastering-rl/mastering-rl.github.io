@@ -116,7 +116,7 @@ If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1
 
 In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
-​```{code-cell} ipython3
+```{code-cell} ipython3
 :tags: [remove-cell]
 
 from myst_nb import glue
@@ -388,14 +388,12 @@ Policies can be represented in several ways, but all have the same basic interfa
 ```{code-cell} ipython3
 :load: ../python_code/policy.py
 
-
 ```
 
 The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
 :load: ../python_code/tabular_policy.py
-
 
 ```
 
@@ -514,7 +512,6 @@ Policy extraction takes a value function and extracts a tabular policy. In this 
 
 ```{code-cell} ipython3
 :load: ../python_code/value_function.py
-
 
 ```
 

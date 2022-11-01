@@ -14,6 +14,12 @@ kernelspec:
 
 ## Learning outcomes
 
+````{margin}
+```{admonition} Video byte: Introduction to policy gradient methods
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The learning outcomes of this chapter are:
 
 1. Apply policy gradients and actor critic methods to solve small-scale MDP problems manually and program policy gradients and actor critic algorithms to solve medium-scale MDP problems automatically
@@ -21,9 +27,21 @@ The learning outcomes of this chapter are:
 
 ## Overview
 
+````{margin}
+```{admonition} Video byte: Intuition of policy gradient methods
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=87" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 As noted earlier, policy-based methods search for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
 
 In policy gradient methods, we approximate the policy from the rewards and actions received in our episodes, similar to the way we do it with Q-learning. We can do this provided that the policy has two properties:
+
+````{margin}
+```{admonition} Video byte: Policy gradients 
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=213" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 1. The policy is represented using some function that is *differentiable* with respect to its parameters. For a non-differentiable policy, we cannot calculate the gradient.
 2. Typically, we want the policy to be *stochastic*. Recall from the section on [policies](sec:mdps:policies) that a stochastic policy specifies a *probability distribution* over actions, defining the probability with which each action should be chosen.
@@ -31,6 +49,12 @@ In policy gradient methods, we approximate the policy from the rewards and actio
 The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}(s, a)$ via gradient ascent on the expected return. Gradient ascent will find the best parameters $\theta$ for the particular MDP.
 
 ## Policy improvement using gradient ascent
+
+````{margin}
+```{admonition} Video byte: Intuition of policy gradients
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=363" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The goal of gradient ascent is to find weights of a policy function that maximises the expected return. This is done in an iterative by calculating the gradient from some data and updating the weights of the policy
 
@@ -67,6 +91,12 @@ In these notes, we will not go into details about gradients or algorithms for so
 
 # REINFORCE
 
+````{margin}
+```{admonition} Video byte: REINFORCE
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=551" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the sampling process in [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning).
 
 :::{admonition} Algorithm -- REINFORCE
@@ -84,6 +114,12 @@ Until some time limit or until $\pi_{\theta}$ converges
 :::
 
 REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
+
+````{margin}
+```{admonition} Video byte: Convergence
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=903" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Comparing to value-based techniques, we can see that REINFORCE (and other policy-gradient approaches)  do not evaluate each action in the policy improvement process. In policy iteration, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q^\pi(s,a)$. In REINFORCE, the most recently sampled action and its reward are used to calculate the gradient and update.
 
@@ -115,10 +151,10 @@ The `update` method, as well as the `gradient_log_pi` method that it calls, are 
 Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
 
 $$
-\begin{align}
+\begin{aligned}
         \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\
         \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{\theta \cdot s}}
-\end{align}
+\end{aligned}
 $$
 
 This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
@@ -126,19 +162,19 @@ This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, 
 Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
 
 $$
-\begin{align}
+\begin{aligned}
 \sigma(x) &= \frac{1}{1 + e^{\theta \cdot x}}\\[1mm]
 \frac{\partial \sigma(x)}{\partial x} &= \sigma(x)(1 - \sigma(x))
-\end{align}
+\end{aligned}
 $$
 
 Using this result, we can then find $\nabla \textrm{ln} \pi(a, s)$:
 
 $$
-\begin{align}
+\begin{aligned}
   \nabla \textrm{ln} \pi_{\theta}(a_0, s) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
   \nabla \textrm{ln} \pi_{\theta}(a_1, s) &= -s \cdot \pi_{\theta}(s, a_1)
-\end{align}
+\end{aligned}
 $$
 
 This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
@@ -242,11 +278,23 @@ Simulating the process of training the policy, we can see that initially, all fo
 
 # Actor critic methods
 
+````{margin}
+```{admonition} Video byte: Actor-critic methods
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1053" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards $G$ over episodes leads to instability.
 
 Actor critic methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the *actor* and the  value function is called the *critic*. The primary idea is that the actor produces actions, and as in [temporal difference learning](sec:model-free:td-learning), the  value function (the critic) provides feedback or "criticism" about these actions as a way of bootstrapping.
 
 The *Q Actor Critic* algorithm uses a Q-function as the critic.
+
+````{margin}
+```{admonition} Video byte: Q actor critic
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1313" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Algorithm -- Q Actor Critic
 
@@ -281,4 +329,11 @@ So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (
 
 **But wait!** Didn't we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven't we now gone backwards by including a Q-function? Why not just use the Q-function directly?
 
+````{margin}
+```{admonition} Video byte: Summary of policy gradients
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1610" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.
+
