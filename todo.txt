@@ -1,3 +1,5 @@
+- Add summary to policy gradients section.
+- Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Move to OpenAI gym interface?
 - consider adding Peg Solitaire for the single-agent notes.
 - align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
@@ -19,6 +21,7 @@
 - Policy gradient slide: https://twitter.com/hbouammar/status/1489215674014703618
 - Good policy gradient overview: https://core-robotics.gatech.edu/2020/12/16/bootcamp-summer-2020-week-4-policy-iteration-and-policy-gradient/
 - Nouse maze example: https://medium.com/machine-learning-for-humans/reinforcement-learning-6eacf258b265
+- Overcooked: useful as 1 and 2 player example: https://humancompatibleai.github.io/overcooked-demo/
 - Crop management support example: https://www.sciencedirect.com/science/article/pii/S0168169922004999
 - Multi-objective problems: https://github.com/LucasAlegre/mo-gym
 
@@ -26,3 +29,10 @@
 ```{code-cell} ipython3
 :load: <path>
 ```
+
+- Embded youtube videos:
+
+```{margin} The value iteration algorithm
+<iframe width="230" height="163" src="https://www.youtube-nocookie.com/embed/9-aMEGNyuec" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+

@@ -11,6 +11,12 @@ kernelspec:
 (sec:single-agent:reward-shaping)=
 # Reward shaping
 
+````{margin}
+```{admonition} Video byte: Introduction to reward shaping
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 ## Learning Outcomes
 
 1.  Explain how reward shaping can be used to help model-free
@@ -35,6 +41,12 @@ In this section, we look at two simple approaches that can improve temporal diff
 
 ## Reward shaping
 
+````{margin}
+```{admonition} Video byte: Rewarding shaping --- The problem
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 What is reward shaping? The basic idea is to give small intermediate rewards to the algorithm that help it converge more quickly.
 
 In many applications, you will have some idea of what a good solution should look like. For example, in our simple navigation task, it is clear that moving towards the reward of +1 and away from the reward of -1 are likely to be good solutions. 
@@ -48,6 +60,12 @@ slightly to give the algorithm some information to help, while also guaranteeing
 This information is known as *domain knowledge* --- that is, stuff about the domain
 that the human modeller knows about while constructing the model to be
 solved.
+
+````{margin}
+```{admonition} Video byte: Reward shaping intuition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=180" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to
 learn how to get the kangaroo across the freeway?
@@ -77,6 +95,12 @@ glue("gridworld_image", gridworld_image, display=False)
 
 ### Shaped Reward
 
+````{margin}
+```{admonition} Video byte: Shaped reward updates
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=253" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 In TD learning methods, we update a Q-function when a reward is received. E.g, for 1-step Q-learning:
 
 $$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]$$
@@ -95,6 +119,13 @@ shaped reward for the entire trace.
 If we define $F(s,s') > 0$ for states $s$ and $s'$, then this provides a small positive reward for transitioning from $s$ to $s'$, thus encouraging actions that transition from $s$ to $s'$ in future exploitation. If we define $F(s,s') < 0$ for states $s$ and $s'$, then this provides a small *negative* reward for transitioning from $s$ to $s'$, thus discouraging actions that transition like this in future exploitation.
 
 ### Potential-based Reward Shaping 
+
+
+````{margin}
+```{admonition} Video byte: Potential-based reward shaping
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=387" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 *Potential-based* reward shaping is a particular type of reward shaping with nice theoretical guarantees. In potential-based reward shaping, $F$ is of the form:
 
@@ -123,6 +154,12 @@ where $G$ refers to the shaped reward for the episode, and $s_0$ is the starting
 **However!** While it provides guarantees about the end result, potential-based reward shaping may either increase or decrease the time taken to learn. A well-designed potential function decrease the time to convergence.
 
 ###  Example -- Potential Reward Shaping for GridWorld 
+
+````{margin}
+```{admonition} Video byte: Example -- Reward shaping in Q-learning 
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=503" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 For Grid World, we use the Manhattan distance to define the potential function, normalised by the size of the grid:
 
@@ -176,7 +213,13 @@ Reward shaping for Q-learning is then a simple extension of the ``QLearning`` cl
 :load: "../python_code/reward_shaped_qlearning.py"
 ```
 
-We can run this on the simple GridWorld example:
+````{margin}
+```{admonition} Video byte: Reward shaping in Super Gridworld
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=838" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+We can run this on a GridWorld example with more states, to make the problem harder::
 
 ```{code-cell} ipython3
 from qtable import QTable
@@ -219,7 +262,13 @@ Plot.plot_episode_length(
 )
 ```
 
-## Q-function initialisation 
+## Q-function initialisation
+
+````{margin}
+```{admonition} Video byte: Q-function initialisation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=1014" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 An approach related to reward shaping is *Q-function initialisation*. Recall that TD learning methods can start
 at any arbitrary Q-function. The closer our Q-function is to the optimal Q-function, the quicker it will converge.
@@ -244,6 +293,12 @@ $$
 Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential funtion! A poor potential function will give an inaccurate initial Q-function, which may take longer to converge.
 
 ## Summary
+
+````{margin}
+```{admonition} Video byte: Summary
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=1142" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 - A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.
 - Reward shaping takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.

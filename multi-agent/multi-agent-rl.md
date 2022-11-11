@@ -28,6 +28,13 @@ An extensive form game tree can be thought of as a slight modification to an Exp
 Extensive form game tree as a reinforcement learning problem
 ```
 
+
+````{margin}
+```{admonition} Video byte: Multi-agent reinforcement learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1270" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 From this visualisation, we can see that an extensive form game can be solved with model-free reinforcement learning techniques and Monte-Carlo tree search techniques: we can just treat our opponent as the environment; albeit one that has a particular goal itself.
 
 In this section, we just give the intuition of how reinforcement learning techniques can be applied in multi-agent settings like this. Extensions that are specific to multi-agent techniques also exist.
@@ -66,6 +73,13 @@ $$
 Note that $a = \pi(s_i)$ is the joint action of all agents. So, each agent's objective is to maximise its own expected reward considering the possible actions of all other agents.
 
 ## Multi-agent Q-learning 
+
+
+````{margin}
+```{admonition} Video byte: Multi-agent Q-learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1470" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Given the similarities between MDPs and stochastic games, we can re-cast our standard Q-learning algorithm as a multi-agent version.
 
@@ -110,6 +124,13 @@ Of course, it is not just Q-learning that can be extended to the multi-agent cas
 
 ### Opponent moves
 
+
+````{margin}
+```{admonition} Video byte: Opponent moves
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1611" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The main question we need to answer is: how can we "decide" our opponents moves if we are learning offline?
 
 In a truly model-free problem, we cannot simulate our opponents, however, our opponent will be executing their own moves, so we don't need to. 
@@ -122,9 +143,23 @@ However, if we are learning in a simulated environment without real opponents, w
 
 ## Multi-agent Monte-Carlo tree search
 
+
+````{margin}
+```{admonition} Video byte: Multi-agent MCTS
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1820" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 Just as we extend Q-learning to a multi-agent case, we can extend [Monte-Carlo tree search](sec:mcts) to the multi-agent case with just a small change in our algorithms.
 
 Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic MCTS algorithm as follows:
+
+
+````{margin}
+```{admonition} Video byte: Application -- Poker
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=2037" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 1. **Selection**: For ‘our’ moves, we run selection as before, however, we also need to select models for our opponents. In multi-agent MCTS, an easy way to do this is via self-play. Each node has a player whose turn it is, and we use a multi-armed bandit algorithm to choose an action for that player.
 2. **Expansion**: Instead of expanding a child node based on $P_a(s' \mid s)$, we expand one of our actions, which leads to our opponents' node. In the next iteration, that node becomes a node of expansion. 
@@ -132,6 +167,13 @@ Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic M
 4. **Backpropagate**: The backpropagation step is the same as before, except that we need to keep the value of the node for every player, not just ourselves. 
 
 ## Summary
+
+
+````{margin}
+```{admonition} Video byte: Summary of extensive form games
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=2227" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 - For solving extensive form games in a model-free or simulated environment, we can extend techniques like Q-learning, SARSA, and MCTS from single-agent to multi-agent environments in a straightforward way.
 

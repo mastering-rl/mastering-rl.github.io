@@ -12,7 +12,16 @@ kernelspec:
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 
+
+
+
 ## Learning outcomes
+
+````{margin}
+```{admonition} Video byte: Introduction to multi-armed bandits
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The learning outcomes of this chapter are:
 
@@ -20,6 +29,12 @@ The learning outcomes of this chapter are:
 2. Compare and contrast  the strengths a weaknesses of different multi-armed bandit algorithms
 
 ## Overview
+
+````{margin}
+```{admonition} Video byte: Intuition of multi-armed bandits
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=43s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 *Multi-armed bandit* techniques are not techniques for solving MDPs, but they are used throughout a lot of reinforcement learning techniques that do solve MDPs.
 
@@ -30,6 +45,12 @@ The problem of multi-armed bandits can be illustrated as follows:
 The question is: over an infinite period of time, without knowing the probability distribution beforehand, how should we select the arms. Multi-armed bandit techniques aim to solve this problem. 
 
 ## The multi-armed bandit problem
+
+````{margin}
+```{admonition} Video byte: Multi-armed bandits -- Definition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=107s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Definition
 
@@ -60,6 +81,12 @@ The idea here is that for a multi-armed bandit problem, we explore the options u
 **But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Why not focus also on the *most promising actions* given the rewards we have received so far.
 
 ## Exploration vs. Exploitation
+
+````{margin}
+```{admonition} Video byte: Exploration vs. exploitation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=169s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, at first, we do not have information to tell us what the best actions are. Thus, we want strategies that *exploit* what we think are the best actions so far, but still *explore* other actions.
 
@@ -92,6 +119,12 @@ Each strategy must implement the  `select` method, which takes the list of avail
 
 (sec:multi-agent-bandit:simulation)=
 ### Simulation
+
+````{margin}
+```{admonition} Video byte: Simulation example
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=516s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 To demonstrate the effect of different multi-armed bandit strategies and their parameters, we use the following simple simulation. The simulation is an implementation of a simple multi-armed bandit problem with five actions, ```actions = [0, 1, 2, 3, 4]```.  Each action has a probability associated with it: ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]```. The simulation runs  2000 *episodes* of a bandit problem, with each episode being 1000 *steps* long. At each step, the agent must chose an action. For the action `a` it chooses,  it receives a reward of 5 with a probability `probability[a]`.  With a probability of ```1 - probability[a]``` it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.
 
@@ -131,6 +164,12 @@ The key difference between the solutions we will look at is how the $\textrm{sel
 
 ### Epsilon-greedy strategy
 
+````{margin}
+```{admonition} Video byte: Epsilon greedy
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=594s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The $\epsilon$-greedy strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in [0,1]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
 
 Each time we need to choose an action, we do the following:
@@ -161,6 +200,12 @@ But we can also see that while epsilon = 0.05 ends up with a higher return after
 
 ### Epsilon-decreasing strategy
 
+````{margin}
+```{admonition} Video byte: Epsilon decreasing
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=712s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 This follows a similar idea to epsilon greedy, however, it recognises that initially, we have very little feedback so exploiting is not a good strategy to being with: we need to explore first. Then, as we gather more data, we should exploit more.
 
 The epsilon-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is used to decrease $\epsilon$ over time. For this reason, $\alpha$ is called the *decay*.
@@ -185,6 +230,12 @@ The following plot shows the average reward over our simulation, varying the val
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
 
 ### Softmax strategy
+
+````{margin}
+```{admonition} Video byte: Softmax
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=820s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Softmax is *probability matching strategy*, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the *Boltzman* distribution for that action:
 
@@ -224,6 +275,12 @@ As one can see, the strategies that are less "commited" to their Q-values are le
 
 ### Upper Confidence Bounds (UCB1)
 
+````{margin}
+```{admonition} Video byte: Upper Confidence Bounds (UCB1)
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1105s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 A highly effective multi-armed bandit strategy is the *Upper Confidence Bounds* (UCB1) strategy.
 
 Using the UCB1 strategy, we select the next action  using the following:
@@ -256,6 +313,12 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 
 ### Comparison
 
+````{margin}
+```{admonition} Video byte: Comparison multi-armed bandit solutions
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1217s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_comparison.py"
 
@@ -273,6 +336,20 @@ plot_comparison(drift=True)
 From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previous good are no longer good, thus encouraging exploration to other actions, but also, those that had poor Q-values but are now good actions would not have been visited as much previously, which also encourages exploration. Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.
 
 While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case if the underlying probability distributions change or drift regularly. In those cases, softmax may be a better choice.
+
+## Summary
+
+````{margin}
+```{admonition} Video byte: Summary of multi-armed bandits
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1334s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+- Multi-armed bandits are problems in where we must make a selection from a set of options, but we do not know the probability of success (or the expected return) of each options
+
+- Several techniques can be used to solve these. This chapter looks at just a few: $\epsilon$-greedy, $\epsilon$-decreasing, softmax, and UCB1 strategy. 
+
+- In a simple experiment, we found that UCB1 was the fastest learner and recovered from shift quickly. However, this is just one experiment -- other domains will have different properties.
 
 ## Further reading
 

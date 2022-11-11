@@ -3,15 +3,24 @@ jupytext:
   text_representation:
     extension: .md
     format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.11.5
 kernelspec:
   display_name: Python 3
   language: python
   name: python3
 ---
+
 (sec:mdps)=
 # Markov Decision Processes
 
 ## Learning outcomes
+
+````{margin}
+```{admonition} Video byte: Introduction to MDPs
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The learning outcomes of this chapter are:
 
@@ -24,6 +33,12 @@ The learning outcomes of this chapter are:
 4.  Explain how Bellman equations are solutions to MDP problems
 
 ## Chapter Overview
+
+````{margin}
+```{admonition} Video byte: MDPs -- An intuition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=70s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Classical planning algorithms assume that action are deterministic. *Markov Decision Processes* (MDPs) remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability.
 
@@ -42,6 +57,12 @@ MDPs have been successfully applied to planning in many domains: robot navigatio
 
 ## Markov Decision Processes
 
+````{margin}
+```{admonition} Video byte: MDPs -- A definition
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=229s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Definition -- Markov Decision Process
 
 A **Markov Decision Processes** (MDP) is a  *fully observable, probabilistic* state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
@@ -53,7 +74,7 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 -   actions $A(s) \subseteq A$ applicable in each state $s \in S$
 
--   **transition probabilities** $P_a(s'|s)$ for $s \in S$ and
+-   **transition probabilities** $P_a(s' \mid s)$ for $s \in S$ and
     $a \in A(s)$
 
 -   **rewards** $r(s,a,s')$ positive or negative of transitioning from
@@ -64,13 +85,19 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 What is different between an MDP and the models from classical planning? There are four main differences:
 
--   The transition function is not deterministic. Each action has a probability of $P_a(s'|s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
+-   The transition function is not deterministic. Each action has a probability of $P_a(s' \mid s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
 
 -   There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.
 
 -   There are no action costs. Actions costs are modelled as negative rewards.
 
 -   We have a *discount factor*.
+
+````{margin}
+```{admonition} Video byte: Discounted rewards
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=430s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The **discount factor**  determines how much a future reward should be discounted compared to a current reward.
 
@@ -90,16 +117,21 @@ If $V_t$ is the value received at time-step $t$, then $V_t = r_t + \gamma V_{t+1
 In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.
 
 ```{code-cell} ipython3
----
-tags: [remove-cell]
----
+:tags: [remove-cell]
+
 from myst_nb import glue
 from gridworld import GridWorld
+from contested_crossing import ContestedCrossing
 
 gridworld = GridWorld()
 gridworld_image = gridworld.visualise()
 glue("gridworld_image", gridworld_image, display=False)
+
+ccross = ContestedCrossing()
+ccross_image = ccross.visualise(title="Initial Positions")
+glue("ccross_image", ccross_image, display=False)
 ```
+
 
 :::{admonition} Example MDP: Grid World
 
@@ -120,6 +152,27 @@ But! Things can go wrong --- sometimes the effects of the actions are not what w
 -   If the wall is in the way of the cell that would have been taken, the agent stays in the current cell.
 
 The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?
+:::
+
+:::{admonition} Example MDP 2: Contested Crossing
+
+An agent (a ship) is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
+
+At the closest point of the north shore is an enemy. The enemy may shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. In those areas, the ship may also shoot at the enemy, but it cannot do so and turn at the same time - if it chooses to shoot, it will continue sailing in the same direction. 
+
+```{glue:} ccross_image
+
+```
+
+-   In areas of low danger, a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship)
+
+-   In areas of high danger, a shot will damage the target 99$\%$ of the time
+
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with one damage it moves successfully 67$\%$ and at two damage, 33$\%$. At three damage, it sinks.
+
+-   When the enemy is damaged once, there is no change in its behaviour. When it is damaged twice it is destroyed - at this point the ship is in no further danger
+
+In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
 :::
 
 :::{admonition} Example MDP model
@@ -285,6 +338,12 @@ In later chapters, we will see how to use these code-based models in several way
 (sec:mdps:policies)=
 ## Policies
 
+````{margin}
+```{admonition} Video byte: Policies
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=610s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
 
 :::{admonition} Definition -- Policy
@@ -300,6 +359,7 @@ A graphical representation of the policy for Grid World is:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
+
 from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
@@ -326,19 +386,27 @@ We will focus mostly on  deterministic policies, but stochastic policies have th
 Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
 
 ```{code-cell} ipython3
-:load: "../python_code/policy.py"
+:load: ../python_code/policy.py
+
 ```
 
 The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
-:load: "../python_code/tabular_policy.py"
+:load: ../python_code/tabular_policy.py
+
 ```
 
 As we see later in the section on [policy gradients](sec:policy-based:policy-gradients), policies can be represented using other means, such as machine learning models, which do not require us to keep an explicit answer for every state.
 
 (sec:mdps:bellman-equation)=
 ## Optimal Solutions for MDPs
+
+````{margin}
+```{admonition} Video byte: Expected discounted reward
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1139s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
@@ -347,7 +415,7 @@ For discounted-reward MDPs, optimal solutions maximise the *expected discounted 
 The **expected discounted reward** from $s$ for a policy $\pi$ is:
 
 $$
-V^{\pi}(s) = E_{\pi}[\, \sum_{i} \gamma^i \, r(s_i, a_i, s_{i+1}) \ | \ s_0 = s, a_i = \pi(s_i)]\,
+V^{\pi}(s) = E_{\pi}[\sum_{i} \gamma^i r(s_i, a_i, s_{i+1}) \mid s_0 = s, a_i = \pi(s_i)]
 $$
 
 So, $V^{\pi}(s)$ defines the expected value of following the policy $\pi$ from state $s$.
@@ -363,13 +431,19 @@ $$
 \end{array}
 $$
 
+````{margin}
+```{admonition} Video byte: Bellman equation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1512s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Definition -- Bellman equation
 The **Bellman equation**, identified by Richard Bellman, describes the
 condition that must hold for a policy to be optimal. The Bellman equation is defined recursively
 as:
 
 $$
-V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s'|s)\ [r(s,a,s') + \gamma\  V(s')]
+V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]
 $$
 :::
 
@@ -411,6 +485,12 @@ The two definitions are equivalent, and you may seem them defined in both ways. 
 (sec:mdps:policy-extraction)=
 ## Policy extraction
 
+````{margin}
+```{admonition} Video byte: Policy extraction
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3554s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 Given a value function $V$, how should we then select the action to play in a given state? It is reasonably straightforward: select the action that maximises our expected utility!
 
 So, if the value function $V$ is optimal, we can select the action with the highest expected reward using:
@@ -431,7 +511,8 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
 
 ```{code-cell} ipython3
-:load: "../python_code/value_function.py"
+:load: ../python_code/value_function.py
+
 ```
 
 For each state, we find the best action in the state (the action that maximises the Q-value from that state); and for that state, we set that max action as the action to select in that state.
@@ -447,8 +528,6 @@ full-observability. A POMDP is defined as:
 
 -   states $s \in S$
 
--   set of goal states $G \subseteq S$
-
 -   actions $A(s) \subseteq A$
 
 -   transition probabilities $P_a(s' \mid s)$ for $s \in S$ and $a \in A(s)$
@@ -457,12 +536,14 @@ full-observability. A POMDP is defined as:
 
 -   reward function $r(s,a,s')$
 
+-   a set of possible observations $Obs$
+
 -   a **sensor model** given by probabilities $O_a(o \mid s)$, $o \in Obs$
 :::
 
 The sensor model allows the agent to observe the environment. If an agent executes an action $a$, it has probability $O_a(o \mid s')$ of observing state $s'$.
 
-Solving POMDPs is similar to solving MDPs. In fact, the same algorithms apply. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
+Solving POMDPs is similar to solving MDPs. In fact, the same algorithms can be applied. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a **probability distribution** over the set $S$. Thus, each state of the
 POMDP is a **belief state**, which defined the probability of being in each state $S$. This leads to an exponentially-larger state space, so POMDPs are typically harder problems to solve.
 
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies maximise the expected reward.

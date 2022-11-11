@@ -298,14 +298,16 @@ At this point, there are no further states left to update, so the inner loop ter
 
 Using the simulation below, we compare 1-step vs. 5-step Q-learning over the first 20 episodes of learning. Using 1-step Q-learning, reaching the reward only informs the state from which it is reached in the first episode; whereas for 5-step Q-learning, it informs the previous five steps. Then, in the 2nd episode, if any action reaches a state that has been visited, it can access the TD-estimate for that state. There are five such states in 5-step Q-learning; and just one in 1-step Q-learning. On all subsequent iterations, there is more chance of encountering a state with a TD estimate and those estimates are better informed. The end result is that the estimates 'spread' throughout the Q-table more quickly:
 
+```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
     <img id="1_step_vs_5_step_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/1_step_vs_5_step_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="1_step_vs_5_step_qlearning" width="900"></gif-player>
 </div>
 <p>
+```
 
 
-**Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Unfortunately, doing this, which is called *Monte-Carlo simulation*, does not work so well in practice. In effect, we would no longer have an TD estimates in the update rule, which leads to more variance in the learning. 
+**Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Doing this, which is called *Monte-Carlo simulation*, does not work so well in practice. In effect, we would no longer have an TD estimates in the update rule, which leads to more variance in the learning. 
 
 **What is the best value for $n$ then?** Unfortunately, there is no theoretically best value for $n$. It depends on the particular application and reward function that is being trained. In practice, it seems that values of $n$ around 4-8 give good updates because we can easily assign credit to each of the 4-8 actions; that is, we can tell whether the 4-8 actions in the lookahead contributed to the score, because we use the TD estimates. 
 

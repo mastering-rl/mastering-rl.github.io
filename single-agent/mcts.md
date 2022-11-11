@@ -10,9 +10,16 @@ kernelspec:
 ---
 
 (sec:mcts)=
-# Monte-Carlo Tree Search
+# Monte-Carlo Tree Search (MCTS)
 
 ## Learning Outcomes
+
+
+````{margin}
+```{admonition} Video byte: Introduction to MCTS
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 1.  Explain the difference between offline and online planning for MDPs.
     
@@ -28,11 +35,23 @@ kernelspec:
 
 ## Offline Planning & Online Planning for MDPs
 
+````{margin}
+```{admonition} Video byte: Online vs offline planning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. 
 
 Yet the state space $S$ is usually *far* too big to determine $V(s)$ or $\pi$ exactly. Even games like Go, which are famously difficult for reinforcement learning, requiring computational power available to only a handful of organisations, are small compared to many real-world problems.
     
 There are methods to approximate the MDP by reducing the dimensionality of $S$, but we will not discuss these until later.
+
+````{margin}
+```{admonition} Video byte: Monte-Carlo simulation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 In *online* planning, planning is undertaken immediately before executing an action. Once an action (or perhaps a sequence of actions) is executed, we start planning again from the new state. As such, planning and execution are interleaved such that:
 
@@ -40,7 +59,7 @@ In *online* planning, planning is undertaken immediately before executing an act
 
 -   The quality of each action $a$ is approximated by averaging the expected reward of trajectories over $S$ obtained by repeated simulations, giving as an approximation for $Q(s,a)$.
     
--   The chosen action is $\argmax_{a'} Q(s,a)$
+-   The chosen action is $\textrm{argmax}_{a'} Q(s,a)$
 
 In online planning, we need access to a *simulator* that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
 
@@ -54,6 +73,12 @@ Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based aro
 
 (sec:mcts:expectimax-trees)=
 ### Foundation: MDPs as ExpectiMax Trees
+
+````{margin}
+```{admonition} Video byte: Expecti-max trees
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called *ExpectiMax* trees:
 
@@ -83,6 +108,12 @@ Fundamental features:
 	-   This is optimal if an entire search can be performed (which is unusual -- if the problem is that small we should just use a dynamic programming technique such as  value iteration).
 
 ## The Framework: Monte Carlo Tree Search (MCTS)
+
+````{margin}
+```{admonition} Video byte: MCTS framework
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is *incrementally* built be iterating over the following four steps:
 
@@ -216,6 +247,12 @@ Because action outcomes are selected according to $P_a(s' \mid s)$, this will co
 
 Provided that we can *simulate* the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
 
+````{margin}
+```{admonition} Video byte: MCTS example
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 :::{admonition} Example: Backpropagation
 
 Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.8$, $r=X$ represents reward $X$ received at a state, $V$ represents the value of the state (the value $\max_{a'\in children} Q(s,a')$) and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
@@ -270,6 +307,12 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 ## Upper Confidence Trees (UCT)
 
+````{margin}
+```{admonition} Video byte: Upper Confidence Trees (UCT)
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorith, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
 
 The *Upper Confidence Trees* (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
@@ -308,8 +351,11 @@ For simplicity, we implement the select, expand, and backpropagate methods in th
 :load: "../python_code/single_agent_mcts.py"
 ```
 
-Once these are implemented, the MCTS class is quite straightforward. It simply implements the algorithm from above, and implements the simulation method:
-
+````{margin}
+```{admonition} Video byte: MCTS example on Gridworld
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.03 seconds (to avoid a tree that is too large to visualise), we show the tree, and we only visualise up to the 6th level (including both state and environment nodes). At each node, $V(s)$ is the value of that node (the child with the highest Q-value). Right-click and open the image in a new tab to see a larger version:
 
@@ -346,6 +392,12 @@ gridworld.visualise_policy(policy)
 After 0.03 seconds, the rewards are improving but are still quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations are often long sequences of actions and so they received a small discounted reward. Finally, there is actually  little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.
 
 
+````{margin}
+```{admonition} Video byte: Convergence
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
 <div id="container" markdown="1" style="text-align: center;">
@@ -380,13 +432,19 @@ It addresses exploitation vs. exploration comprehensively.
 
     -   Exploration aims at *minimising regret*.
 
-Watch it playing Mario brothers. The lines in front of Mario illustrate the exploration:
+````{margin}
+```{admonition} Video byte: MCTS demo
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+Below is a video of MCTS playing the game *Mario brothers*. The lines in front of Mario illustrate the exploration:
 
 <p align="center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/HRiEUUC9TUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </p>
 
-Here is UCT doing  poorly playing a game of Freeway:
+Here is UCT doing  poorly playing a game of *Freeway*:
 
 <p align="center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/YVbTbMO4rtM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -451,6 +509,12 @@ The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](http
 ```
 
 ## Summary
+
+````{margin}
+```{admonition} Video byte: Summary of MCTS
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 -   Monte Carlo Tree Search (MCTS) is an anytime search algorithm, especially good for stochastic domains, such as MDPs.
 

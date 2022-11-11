@@ -20,6 +20,12 @@ kernelspec:
 
 Backward induction is a model-based technique for solving extensive form games. It solves this by recursively calculating the sub-game equilibrium for each sub-game and then using this to solve the parent node of each subgame. Because it solves subgames first, it is effectively solving the game backwards.
 
+
+````{margin}
+```{admonition} Video byte: Backward induction
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=471" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 The intuition is as follows: starting at the terminal nodes of the tree (those were $A(s)$ is empty), for the parent, calculate the best move for the agent whose turn it is. This gives us the sub-game equilibrium for the smallest sub-games in the game. As the solutions are reward tuples themselves, we can solve the parent of the parents by using the parent solution as reward for the sub-game, which gives us the sub-game equilbirum for the game that starts at the parents of the parents of the terminal nodes. We progressively induct these values backward up the tree until we reach the start node.
 
 In the pure backward induction that we cover here, the assumption is that only terminal nodes have rewards. If we want to model any situations in which non-terminal nodes have rewards, we simply sum all rewards along the path to the terminal node. Therefore, this solution generalises to the definition of extensive form games in the previous section.
@@ -47,6 +53,12 @@ $\quad\quad\quad\quad\quad\quad best\_child \leftarrow child\_reward$\
 $\quad\quad \text{return}\ best\_child$
 :::
 
+
+````{margin}
+```{admonition} Video byte: Exercise -- The advertising game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=817" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 So, the solution above is a recursive algorithm that returns the reward tuple for a terminal node, and otherwise finds the best reward tuple for the children of the node. However, "best" is relative to the player whose turn it is. A rational player will choose the outcome that is best for them when it is their turn. The final output of the algorithm is the reward at the terminal state for whose turn it is, which is the sub-game perfect equilibrium for the entire game.
 
 The algorithm can be modified in a straightforward manner to return the paths and strategies for each player by collecting this information at each point.
@@ -76,6 +88,13 @@ We can solve this with the following code:
 We can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.
 
 ## Tictactoe
+
+
+````{margin}
+```{admonition} Video byte: Example -- Tic Tac Toe
+<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=959" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 For a slightly larger game (which is still small by standards of games), let's look at Tictactoe. The game itself is too large to display as a game tree, but let's just look at two parts. First, we show just the root node and its children.  The equilibria of the sub-games show that even going first, there is no way to ensure you win:
 
