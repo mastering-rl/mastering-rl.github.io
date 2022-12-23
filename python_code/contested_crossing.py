@@ -414,7 +414,7 @@ class ContestedCrossing(MDP):
         """
         flat_values = self._make_values_flat(value_function.value_table)
         if self.matplotlib_installed():
-            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, values=flat_values, mode=mode)
+            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, values=flat_values, mode=mode,plot=True)
         else:
             print(self.to_string(values=flat_values, title=title))
 
@@ -632,11 +632,14 @@ class ContestedCrossing(MDP):
         y_cell = cell_size * (1/np.sqrt(2))
         grid_pos = lambda o:((o[0]+(o[1]%2)/2)*x_cell,(self.height-o[1])*y_cell)
         pathcount=100
+        breaktime=200
         ship_health_cols = {(a,b):(1-(a/self.ship_full_health),0,1-(b/self.battery_full_health),0.5) for a in range (self.ship_full_health+1)
                             for b in range (self.battery_full_health+1)}
         for i in range(pathcount):
             state = self.get_initial_state()
-            while not self.is_terminal(state):
+            endcheck=0
+            while endcheck<breaktime and not self.is_terminal(state):
+                endcheck+=1
                 action = policy.select_action(state)
                 (next_state, reward) = self.execute(state, action)
                 thispoint=grid_pos(state[:2])
@@ -769,20 +772,35 @@ class ContestedCrossing(MDP):
 
 LONG_REGIONS = {(2,0):SHORE2,(3,0):LAND,(4,0):LAND,(5,0):LAND,(6,0):LAND,(7,0):LAND,(2,1):SHORE2,(3,1):LAND,
                 (4,1):LAND,(5,1):LAND,(6,1):LAND,(3,2):SHORE2,(4,2):LAND,(5,2):LAND,(6,2):LAND,(7,2):LAND,
-                (3,3):SHORE2,(4,3):SHORE2,(5,3):SHORE2,(6,3):SHORE2,(5,9):SHORE1,(6,9):SHORE1,(5,10):SHORE1,
-                (6,10):LAND,(7,10):LAND,(4,11):SHORE1,(5,11):LAND,(6,11):LAND,(4,12):SHORE1,(5,12):LAND,
-                (6,12):LAND,(7,12):LAND,(3,13):SHORE1,(4,13):LAND,(5,13):LAND,(6,13):LAND,(7,13):LAND}
+                (3,3):SHORE2,(4,3):SHORE2,(5,3):SHORE2,(6,3):SHORE2,(5,27):SHORE1,(6,27):SHORE1,(5,28):SHORE1,
+                (6,28):LAND,(7,28):LAND,(4,29):SHORE1,(5,29):LAND,(6,29):LAND,(4,30):SHORE1,(5,30):LAND,
+                (6,30):LAND,(7,30):LAND,(3,31):SHORE1,(4,31):LAND,(5,31):LAND,(6,31):LAND,(7,31):LAND}
 
 LONG_DANGER =  {(1,1):LO_DGR,(2,1):LO_DGR,(1,2):LO_DGR,(2,2):LO_DGR,(3,2):HI_DGR,(1,3):LO_DGR,(2,3):HI_DGR,
                 (3,3):HI_DGR,(4,3):HI_DGR,(5,3):LO_DGR,(1,4):LO_DGR,(2,4):HI_DGR,(3,4):HI_DGR,(4,4):HI_DGR,
                 (5,4):HI_DGR,(6,4):LO_DGR,(1,5):LO_DGR,(2,5):HI_DGR,(3,5):HI_DGR,(4,5):HI_DGR,(5,5):LO_DGR,
                 (1,6):LO_DGR,(2,6):LO_DGR,(3,6):HI_DGR,(4,6):HI_DGR,(5,6):LO_DGR,(6,6):LO_DGR,(1,7):LO_DGR,
-                (2,7):LO_DGR,(3,7):HI_DGR,(4,7):LO_DGR,(5,7):LO_DGR,(2,8):LO_DGR,(3,8):LO_DGR,(4,8):LO_DGR,
-                (5,8):LO_DGR,(2,9):LO_DGR,(3,9):LO_DGR,(4,9):LO_DGR}
+                (2,7):LO_DGR,(3,7):HI_DGR,(4,7):LO_DGR,(5,7):LO_DGR,(2,8):LO_DGR,(3,8):HI_DGR,(4,8):HI_DGR,
+                (5,8):LO_DGR,(6,9):HI_DGR,(0,10):HI_DGR,(2,10):HI_DGR,
+                (3,10):HI_DGR,(4,10):HI_DGR,(6,10):HI_DGR,(0,11):LO_DGR,(0,12):LO_DGR,
+                (1,12):LO_DGR,(2,12):HI_DGR,(0,13):LO_DGR,(1,13):HI_DGR,(2,13):HI_DGR,(3,13):HI_DGR,(4,13):LO_DGR,
+                (0,14):LO_DGR,(1,14):HI_DGR,(2,14):HI_DGR,(3,14):HI_DGR,(4,14):HI_DGR,(5,14):LO_DGR,(0,15):LO_DGR,
+                (1,15):HI_DGR,(2,15):HI_DGR,(3,15):HI_DGR,(4,15):LO_DGR,(0,16):LO_DGR,(1,16):LO_DGR,(2,16):HI_DGR,
+                (3,16):HI_DGR,(4,16):LO_DGR,(5,16):LO_DGR,(0,17):LO_DGR,(1,17):LO_DGR,(2,17):HI_DGR,(3,17):LO_DGR,
+                (4,17):LO_DGR,(1,18):LO_DGR,(2,18):LO_DGR,(3,18):LO_DGR,(4,18):LO_DGR,(5,18):LO_DGR,(6,18):LO_DGR,
+                (3,19):LO_DGR,(4,19):LO_DGR,(0,20):HI_DGR,(1,20):HI_DGR,
+                (3,20):HI_DGR,(4,20):HI_DGR,(5,20):HI_DGR,
+                (6,20):HI_DGR,(2,21):LO_DGR,(3,21):LO_DGR,(2,22):LO_DGR,(3,22):LO_DGR,(4,22):HI_DGR,(0,23):HI_DGR,
+                (1,23):HI_DGR,(2,23):HI_DGR,
+                (3,23):HI_DGR,(4,23):HI_DGR,(6,23):LO_DGR,(2,24):LO_DGR,(3,24):HI_DGR,(4,24):HI_DGR,
+                (6,24):HI_DGR,(7,24):LO_DGR,(2,25):LO_DGR,(3,25):HI_DGR,(5,25):HI_DGR,
+                (6,25):LO_DGR,(2,26):LO_DGR,(3,26):LO_DGR,(5,26):HI_DGR,(6,26):LO_DGR,(7,26):LO_DGR,
+                (2,27):LO_DGR,(4,27):HI_DGR,(5,27):LO_DGR,(6,27):LO_DGR,(4,28):LO_DGR,
+                (5,28):LO_DGR,(6,28):LO_DGR,(3,29):LO_DGR,(4,29):LO_DGR,(5,29):LO_DGR}
 LONG_WIDTH = 7
-LONG_HEIGHT = 14
+LONG_HEIGHT = 32
 LONG_BATTERY = (3,3)
-LONG_SHIP = (4,12)
+LONG_SHIP = (4,30)
 
 class LongCrossing(ContestedCrossing):
     def __init__(

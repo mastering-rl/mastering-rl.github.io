@@ -125,9 +125,9 @@ from tabular_value_function import TabularValueFunction
 ccross=ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
-enemy_health = direction = 1
-for x in [1,2]:
-    for y in [1,2]:
+x = y = 2
+for direction in [1,4]:
+    for enemy_health in [1,2]:
         for ship_health in [1,2]:
             print("state: {0} - value: {1}".format((x,y,ship_health,enemy_health,direction),
                                                    round(values.value_table[(x,y,ship_health,enemy_health,direction)],3)))
@@ -139,7 +139,6 @@ This can be difficult to visualise graphically. We can no longer simply assign o
 ccross.visualise_value_function(values, "Value function after 100 iterations",mode=3,cell_size=1.6)
 ccross.visualise_value_function(values, "Value function after 100 iterations, with sub-tables",mode=0,cell_size=1.6)
 ```
-
 
 ```{glue:} ccross_mode3
 

@@ -533,9 +533,9 @@ In a game such as the Contested Crossing example, the addition of even a small n
 
 In the example of CliffWorld, multiple runs of the algorithm above (train for n episodes then test for n episodes) produce a stable optimal policy for when n is at least 500. If we go through the procedure of training and testing for both Q-learning and SARSA multiple times, the final policy gives close to the same output each time.
 
-
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
+
 
 ```
 
@@ -547,6 +547,7 @@ At n=20,000 the optimal policy for Q-learning appears to have been found. There 
 
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
+
 
 ```
 
