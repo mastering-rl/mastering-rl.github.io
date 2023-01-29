@@ -13,7 +13,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
