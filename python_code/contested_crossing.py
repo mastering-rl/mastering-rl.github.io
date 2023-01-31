@@ -420,9 +420,9 @@ class ContestedCrossing(MDP):
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
-    def visualise_policy(self, policy, title="", cell_size=1, gif=False):
+    def visualise_policy(self, policy, title="", cell_size=1, gif=False, mode=0):
         if self.matplotlib_installed():
-            return self.visualise_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif)
+            return self.visualise_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif, mode=mode)
         else:
             print(self.policy_to_string(policy, title=title))
 
@@ -584,7 +584,7 @@ class ContestedCrossing(MDP):
                     ax.scatter(thispoint[0],thispoint[1], s=pt_size, color=img_pt, marker="*")
         if policy is not None and mode==1:
             self._path_plot(ax, policy, cell_size)
-        return fig
+        return fig, ax
 
     def _policy_plot(self,ax, point, gridorigin, cell_size, policy):
         sizefactor=40
@@ -678,7 +678,7 @@ class ContestedCrossing(MDP):
                     ax.plot([linestartx,linestartx+abs(subcell*pt_values['sub_means'][k][d]/BERTH_REWARD)],[liney,liney],
                                  color=bar_colors[pt_values['sub_means'][k][d]>0], linewidth=cell_size)
             hspace+=4.0
-        
+    
     def visualise_as_image(self, agent_position=None, title="", cell_size=1, gif=False, values=None, policy=None, mode=0):
         """
         visualise with optional overlay for values or policy.
@@ -694,14 +694,20 @@ class ContestedCrossing(MDP):
         if current_position is None:
             x,y,_,_,_=self.get_initial_state()
             current_position = (x,y)
-        fig = self.initialise_world(cell_size=cell_size,values=values,policy=policy, mode=mode)
+        fig, ax = self.initialise_world(cell_size=cell_size,values=values,policy=policy, mode=mode)
         shipx,shipy = grid_pos(current_position)
         plt.text(shipx, shipy, SHIP_SYMBOL, **ship_args)
         batx,baty = grid_pos(self.battery)
-        plt.text(batx, baty, BATTERY_SYMBOL, **bat_args)
+        texts = plt.text(batx, baty, BATTERY_SYMBOL, **bat_args)
         plt.title(title)
-        #plt.show()
+        if gif:
+            return texts
+        else:
+            plt.show()
         return fig
+
+    def visualise_policy_as_image(self, policy, title="", agent_position=None,  cell_size=1, gif=False, values=None, mode=0):
+        return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif, values=values, policy=policy, mode=mode)
 
     def execute(self, state, action):
         if state in self.goal_states:

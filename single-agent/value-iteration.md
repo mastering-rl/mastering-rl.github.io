@@ -205,4 +205,3 @@ It is clear to see that the value iteration can be easily parallelised by updati
 
 - For medium-scale problems, it works well, but as the state-space grows, it does not scale well.
 
-````
