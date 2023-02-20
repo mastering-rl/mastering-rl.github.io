@@ -13,10 +13,9 @@ class ModelFreeReinforcementLearner:
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction)
 
-            i=0
-            while not self.mdp.is_terminal(state) and i < 2000:
+            while not self.mdp.is_terminal(state):
                 (next_state, reward) = self.mdp.execute(state, action)
-                i += 1
+                print((state, action, next_state))
                 actions = self.mdp.get_actions(next_state)
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
                 q_value = self.qfunction.get_q_value(state, action)

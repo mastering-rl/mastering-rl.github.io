@@ -1,7 +1,7 @@
-from python_code.advantage_actor_critic import AdvantageActorCritic
-from python_code.deep_nn_policy import DeepNeuralNetworkPolicy
-from python_code.deep_value_function import DeepValueFunction
-from python_code.gridworld import GridWorld
+from advantage_actor_critic import AdvantageActorCritic
+from deep_nn_policy import DeepNeuralNetworkPolicy
+from deep_value_function import DeepValueFunction
+from gridworld import GridWorld
 
 gridworld = GridWorld()
 
@@ -14,9 +14,11 @@ actor = DeepNeuralNetworkPolicy(
 )
 
 advantage_actor_critic = AdvantageActorCritic(mdp=gridworld, actor=actor, critic=critic)
-
+print("1")
 gridworld.visualise_value_function(critic, grid_size=0.8, title=f"Value Function: {0} iterations")
+print("2")
 gridworld.visualise_stochastic_policy(actor)
+print('2')
 gridworld.visualise_policy_as_image(actor)
 
 advantage_actor_critic.execute(100)
