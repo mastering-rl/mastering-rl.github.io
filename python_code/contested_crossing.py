@@ -58,8 +58,8 @@ warnings.filterwarnings('error')
 
 class ContestedCrossing(MDP):
     #labels for actions and states
-    TERMINATE = -1
-    TERMINAL = (-1,-1,-1,-1,-1)
+    TERMINATE = 'terminate'
+    TERMINAL = ('terminal','terminal','terminal','terminal','terminal')
     
     #state of the single-agent game is given by 5 integers:
     #xpos, ypos, ship_damage, battery1_damage, battery2_damage
