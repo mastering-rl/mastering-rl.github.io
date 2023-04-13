@@ -165,7 +165,13 @@ from tabular_value_function import TabularValueFunction
 
 ccross = ContestedCrossing()
 values = TabularValueFunction()
-#ValueIteration(ccross, values).value_iteration(max_iterations=100)
+ValueIteration(ccross, values).value_iteration(max_iterations=100)
+x = y = 2
+for direction in [1,4]:
+    for enemy_health in [1,2]:
+        for ship_health in [1,2]:
+            print("state: {0} - value: {1}".format((x,y, ship_health, enemy_health, direction),
+                                                   round(values.value_table[(x, y, ship_health, enemy_health, direction)], 3)))
 ```
 
 This can be difficult to visualise graphically. We can no longer simply assign one value to each physical location and so map the progress of the agent from each value to the largest adjacent one. We can, however, use other ways to get a general sense of how the state affects the behaviour of an agent at any one point. For instance, we can show the mean and standard deviation values for all state that are at a single location, or we can show tables of values at each location to express the difference between different possible states located there.
@@ -187,8 +193,8 @@ The path plot gives a number of traces of the actual movement of an agent follow
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
-ccross.visualise_as_image(policy=policy, title="Policy Plot", mode=0)
-ccross.visualise_as_image(policy=policy, title="Path Plot", mode=1)
+ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0,plot=True)
+ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1,plot=True)
 ```
 
 
