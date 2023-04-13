@@ -643,7 +643,7 @@ class ContestedCrossing(MDP):
                 state = next_state
 
         
-    def _values_plot(self,ax, gridorigin, cell_size, pt_values, mode = 0):
+    def _values_plot(self,ax, gridorigin, cell_size, pt_values, mode=0):
         text_args = dict(ha='left', va='top', fontsize=cell_size*8, color='#343434')
         smalltext_head = dict(ha='center', va='top', fontsize=cell_size*6, color='#343488')
         smalltext_body = dict(ha='left', va='top', fontsize=cell_size*4, color='#343434')

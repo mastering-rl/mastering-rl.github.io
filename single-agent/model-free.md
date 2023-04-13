@@ -685,5 +685,3 @@ We can also use model-free techniques if we know the MDP model: we just sample t
 If we do *not* know MDP, we need to use model-free techniques:
 
 -   **Offline**: Q-learning, SARSA, and friends.
-
--   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.

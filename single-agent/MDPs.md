@@ -156,21 +156,29 @@ The task is to navigate from the start cell in the bottom left to maximise the e
 
 :::{admonition} Example MDP 2: Contested Crossing
 
-An agent (a ship) is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
+An agent (a ship), denoted using ; is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
 
-At the closest point of the north shore is an enemy. The enemy may shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. In those areas, the ship may also shoot at the enemy, but it cannot do so and turn at the same time - if it chooses to shoot, it will continue sailing in the same direction. 
+SHIP_SYMBOL = "\u03e1" 
+BATTERY_SYMBOL = "\u273A"
 
 ```{glue:} ccross_image
 
 ```
 
--   In areas of low danger, a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship)
+At the closest point of the north shore is an enemy, denoted using the ✺ character. The enemy will shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. THerefore, the enemy's behaviour is completely determined and no choice needs to be made. 
 
--   In areas of high danger, a shot will damage the target 99$\%$ of the time
+In locations with yellow or red stars, the ship may also shoot at the enemy, but it cannot do so and turn at the same time. If it chooses to shoot, it will continue sailing in the same direction. 
 
--   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with one damage it moves successfully 67$\%$ and at two damage, 33$\%$. At three damage, it sinks.
 
--   When the enemy is damaged once, there is no change in its behaviour. When it is damaged twice it is destroyed - at this point the ship is in no further danger
+-   In areas of low danger (yellow), a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship).
+
+-   In areas of high danger (red), a shot will damage the target 99$\%$ of the time.
+
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with  damage leve 1 it moves successfully 67$\%$ and at  damage level 2, 33$\%$; and at damage level 3 , it sinks.
+
+-   When the enemy is at damage level 1, there is no change in its behaviour. When it is at damage level 2 it is destroyed. At this point the ship is in no further danger.
+
+The ship can observe the the entire state: it's location, the enemy location, it's own health, and the health of the enemy.
 
 In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
 :::
