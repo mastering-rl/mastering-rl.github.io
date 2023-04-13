@@ -11,6 +11,12 @@ kernelspec:
 (sec:qfunction-approximation)=
 # Q-function approximation
 
+````{margin}
+```{admonition} Video byte: Introduction to Q-function approximation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 ## Learning Outcomes
 
 1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features
@@ -50,6 +56,12 @@ A Q-table would need to store $12\times 10^{147}$ entries. This is a huge Q-tabl
 
 ## Linear Q-learning (Linear Function Approximation) 
 
+````{margin}
+```{admonition} Video byte: Intuition of Q-function approximation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 The key idea is to *approximate* the Q-function using a linear combination of *features* and their weights. Instead of recording everything in detail, we think about what is most important to know, and model that.
 
 What are some features that are relevant to the Freeway example?
@@ -75,6 +87,13 @@ This requires just six features.
 :::
 
 ### Linear Q-function Representation 
+
+````{margin}
+```{admonition} Video byte: Linear Q-function representation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 In linear Q-learning, we store features and weights, not states. What we need to learn is how important each feature is (its *weight*) for each action.
 
 To represent this, we have two vectors:
@@ -101,6 +120,12 @@ To represent this, we have two vectors:
     action $a$.
 
 ### Defining State-Action Features 
+
+````{margin}
+```{admonition} Video byte: Defining state-action features
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Often it is easier to just define features for states, rather than state-action pairs. The features are just a vector of $n$ functions of the form $f_i(s)$.
 
@@ -176,6 +201,12 @@ $$
 (sec:single-agent:q-function-approximation:linear-update)=
 ### Linear Q-function Update 
 
+````{margin}
+```{admonition} Video byte: Linear Q-function update
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
 
 For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be "good" weights.
@@ -195,7 +226,13 @@ Note that this has the effect of updating Q-values to states that have never bee
 In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from *any* position on the final row.
 ```
 
-```{admonition} Example --- Q-value update for Freeway
+````{margin}
+```{admonition} Video byte: Example --- Linear Q-function update for Freeway
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+```{admonition} Example --- Linear Q-function update for Freeway
 Assume that all weights are 0, therefore, $Q(s,a) = 0$ for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 6 has the value $\frac{r}{D}$, where $r$ is the current row and $D$ is the distance to the other side, then
 we have:
 
@@ -209,6 +246,7 @@ $$
 
 From this, we now can get an estimate of $Q(s,Up)$ from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).
 ```
+
 ### Implementation
 
 To implement linear function approximation, we implement a new class that inherits from `QFunction` called `LinearQFunction`:
@@ -314,13 +352,23 @@ mdp.visualise_as_image(policy=policy,mode=0,title="Low danger: {0}, High danger:
 
 ### Example -- Linear function approximation vs Q-tables
 
-The following interactive visualisation gives an episode-by-episode comparison of linear Q-function approximation vs Q tables for 20 episodes. As we can see, after one episode,
+````{margin}
+```{admonition} Video byte: Q-tables vs. linear Q-functions
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
+Below we see a comparison of how linear Q-functions update over time in Gridworld, compared to standard Q-tables. 
+
+```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
     <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
 </div>
 <p>
+```
+
+We can see that, even after a single update after episode 1, the values of the Up action are updated for all states.
 
 ### Challenges and tips
 
@@ -331,6 +379,12 @@ The key challenge in linear function approximation for Q-learning is the feature
 
 (sec:function-approximation:deep-Q-learning)=
 ## Deep Q-learning
+
+````{margin}
+```{admonition} Video byte: Deep Q-function approximation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions. 
 
@@ -382,13 +436,30 @@ We can now use this implementation by creating a standard Q-learning agent with 
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation, so we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
+````{margin}
+```{admonition} Video byte: Linear Q-functions vs Deep Q-functions
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+Below we see a comparison between deep Q-functions and linear Q-functions. 
+
+```{div} full-width
 <div id="container2" markdown="1" style="text-align: center;">
     <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="linear_qlearning_vs_deep_qlearning" width="900"></gif-player>
 </div>
 <p>
+```
+
+We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we intialise linear weights to 0, so Q-values are all 0.
+
+There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left.
+
+The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.
 
 ### Advantages and disadvantages
+
 
 **Advantages** of deep Q-function approximation  (compared to linear Q-function approximation):
 
@@ -403,6 +474,13 @@ Note the value of the learning rate $\alpha=1.0$. This is because the optimiser 
 Despite this, deep Q-learning  works remarkably well in some areas, especially for tasks that require vision (see the robotic arm grasping unknown objects).
 
 ## Strengths and Limitations of Q-function Approximation
+
+
+````{margin}
+```{admonition} Video byte: Strengths and limitations of Q-function approximation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Approximating Q-functions using machine learning techniques such as linear functions or deep learning  has advantages and disadvantages.
 
@@ -419,6 +497,13 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 
 ## Summary
+
+
+````{margin}
+```{admonition} Video byte: Summary of Q-function approximation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 1.  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
 

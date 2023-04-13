@@ -11,9 +11,15 @@ kernelspec:
   name: python3
 ---
 
-# Model-free reinforcement learning
+# Temporal difference reinforcement learning
 
 ## Learning Outcomes
+
+````{margin}
+```{admonition} Video byte: Introduction to temporal-difference learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 1.  Identify situations in which model-free reinforcement learning is a suitable solution for an MDP
     
@@ -34,6 +40,12 @@ In this section, we look at Q-learning and SARSA, which are *model-free*   techn
 Importantly, in model-free reinforcement learning, we do NOT try to learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy directly.
 
 There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
+
+````{margin}
+```{admonition} Video byte: The Mystery game
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Exercise -- The Mystery game
 
@@ -77,6 +89,12 @@ I would guess that you experimented by pressing the keys 1 to 6, from the outcom
 
 :::
 
+````{margin}
+```{admonition} Video byte: Model-free reinforcement learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 This game is of interest because it is a *model-free* (at least initially) Markov decision process: you didn't know the transition function or the reward function; instead you had to learn it. Similarly, model-free reinforcement learning techniques don't know the transition function or the reward function of an MDP, so they just learn by trying different behaviours and observing what rewards they get. Over time, they learn which behaviours lead to positive rewards, so they *reinforce* the policy to try that behaviour more, and which behaviours lead to negative rewards, and they reinforce the policy to avoid that behaviour.
 
 Imagine how hard it is for a computer that doesn't have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did --- they just construct the policy directly.
@@ -97,6 +115,12 @@ There are many different techniques for model-free reinforcement learning, all w
 
 (sec:model-free:monte-carlo-learning)=
 # Monte-Carlo reinforcement learning
+
+````{margin}
+```{admonition} Video byte: Monte-Carlo simulation
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a [Q-function](sec:mdps:bellman-equation) that records the value $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
@@ -125,6 +149,12 @@ $\quad\quad\quad\quad$ $t \leftarrow t-1$
 This algorithm generates an entire episode following some policy, such $\epsilon$-greedy, observing the reward $r_{t+1}$ at each step $t$. It then calculates the discounted future reward $G$ at each step. If $s_t, a_t$ occurs earlier in the episode, then we do not update $Q(s_t, a_t)$ as we will update it later in the loop. If it does not occur, we update $Q(s_t, a_t)$ as the cumulative average over all executions of $s_t, a_t$ over all episodes. In this algorithm $N(s_t,a_t)$ represents the number of times that $s_t, a_t$ have been evaluated over all episodes.
 
 ## Q-Tables
+
+````{margin}
+```{admonition} Video byte: Q-Tables
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every $Q(s,a)$. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).
 
@@ -209,6 +239,13 @@ The following is an implementation of a Q-table using a Python dictionary:
 
 (sec:model-free:td-learning)=
 ## Temporal difference (TD) reinforcement learning
+
+````{margin}
+```{admonition} Video byte: Temporal difference learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high *variance*. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
 
 *Temporal difference* (TD) methods alleviate this problem using *bootstrapping*. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
@@ -235,6 +272,12 @@ In this chapter, we will look at two TD methods that differ in the way that they
 
 (sec:model-free:q-learning)=
 # Q-Learning: Off-policy temporal-difference learning
+
+````{margin}
+```{admonition} Video byte: Q-learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Q-learning is a foundational method for reinforcement learning. It is TD method that estimates the future reward $V(s')$ using the Q-function itself, assuming that from state $s'$, the best action (according to $Q$) will be executed at each state.
 
@@ -276,6 +319,11 @@ The estimate from the new observations is given by $\delta \leftarrow r + \gamma
 
 Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
 
+````{margin}
+```{admonition} Video byte: Q-learning update example
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 :::{admonition} Example -- Q-learning update
 Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state $s=(2,2)$, and the action $a=Up$ is chosen and executed successfully, which would return to state $s'=(2,2)$ as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:
@@ -296,7 +344,7 @@ Using Q-tables to represent Q-functions, Q-learning will converge to the optimal
 
 ## Policy extraction using Q-functions
 
-We iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
+Using model-free learning, we iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
 
 Once we have such a Q-function, we stop exploring and just exploit. We use [policy extraction](sec:mdps:policy-extraction), exactly as we do for value iteration, except we extract from the Q-function instead of the value function:
 
@@ -348,6 +396,12 @@ policy = qfunction.extract_policy(gridworld)
 gridworld.visualise_policy(policy)
 ```
 
+````{margin}
+```{admonition} Video byte: Convergence
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:
 
 <div id="container" markdown="1" style="text-align: center;">
@@ -358,6 +412,12 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 
 (sec:model-free:sarsa)=
 # SARSA: On-policy reinforcement learning
+
+````{margin}
+```{admonition} Video byte: Introduction to temporal-difference learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 
@@ -458,7 +518,13 @@ This is (probably!) not because the SARSA implementation, but is because of the 
 
 ## SARSA vs. Q-learning example: Cliff world
 
-Consider the example below called "Cliff World". The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
+````{margin}
+```{admonition} Video byte: Cliffworld example
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
+Consider the example below called "Cliff World", which is taken from Chapter 6 of Sutton and Barto's *Introduction to Reinforcement Learning* book (see further reading below). The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
 
 ```{code-cell} ipython3
 from gridworld import CliffWorld
@@ -554,7 +620,14 @@ At n=20,000 the optimal policy for Q-learning appears to have been found. There 
 (sec:model-free:on-policy-vs-off-policy)=
 ### On-policy vs. off-policy: Why do we have both?
 
+````{margin}
+```{admonition} Video byte: On-policy vs. off-policy -- Why do we have both?
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 There are a few reasons why we have both on-policy and off-policy learning.
+
 #### Learning from prior experience
 
 The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by *demonstration*. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
@@ -581,6 +654,12 @@ Another common place for combining off-policy and on-policy learning is when we 
 
 
 ## Limitations of Q-learning and SARSA
+
+````{margin}
+```{admonition} Video byte: Limitations of Q-learning and SARSA
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 The standard versions that we see in this section have two major limitations:
 
@@ -615,6 +694,12 @@ The standard versions that we see in this section have two major limitations:
     
 
 ## Summary 
+
+````{margin}
+```{admonition} Video byte: Summary
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
 

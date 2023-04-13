@@ -147,7 +147,7 @@ We say that $P(A)$ is the *probability measure*, and this measures how likely it
 :::
 
 :::{admonition} The three axioms of probability theory
-Probabilities must satisfy certain *axioms*  to be meaningful measures of likelihood. The following probability laws hold for any event $A$ and any state space $\Imega$:
+Probabilities must satisfy certain *axioms*  to be meaningful measures of likelihood. The following probability laws hold for any event $A$ and any state space $\Omega$:
 
 1. $0\leq P(A) \leq 1$; 
 
