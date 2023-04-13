@@ -58,28 +58,34 @@ warnings.filterwarnings('error')
 
 class ContestedCrossing(MDP):
     #labels for actions and states
-    TERMINATE = -1
-    TERMINAL = (-1,-1,-1,-1,-1)
+    TERMINATE = 'terminate'
+    TERMINAL = ('terminal','terminal','terminal','terminal','terminal')
     
     #state of the single-agent game is given by 5 integers:
     #xpos, ypos, ship_damage, battery1_damage, battery2_damage
     
     def __init__(
         self,
-        high_danger=0.99,
+        high_danger=0.9,
         low_danger=0.1,
         battery_health = 2,
         ship_health = 3,
         discount_factor=0.9,
-        action_cost=0.0
+        action_cost=0.0,
+        width=DEFAULT_WIDTH,
+        height=DEFAULT_HEIGHT,
+        regions=DEFAULT_REGIONS,
+        danger=DEFAULT_DANGER,
+        battery=DEFAULT_BATTERY,
+        ship=DEFAULT_SHIP
     ):
-        self.width = DEFAULT_WIDTH
-        self.height = DEFAULT_HEIGHT
-        self.regions = defaultdict(lambda:SEA,DEFAULT_REGIONS)
+        self.width = width
+        self.height = height
+        self.regions = defaultdict(lambda:SEA,regions)
         self.terrain = self._make_terrain(self.regions)
-        self.danger_zones = defaultdict(lambda:NO_DGR,DEFAULT_DANGER)
-        self.battery = DEFAULT_BATTERY
-        self.ship = DEFAULT_SHIP
+        self.danger_zones = defaultdict(lambda:NO_DGR,danger)
+        self.battery = battery
+        self.ship = ship
         self.high_danger = high_danger
         self.low_danger = low_danger
         self.battery_full_health = battery_health
@@ -106,7 +112,7 @@ class ContestedCrossing(MDP):
         """
         blocks = defaultdict(lambda: False)
         for x in range(self.width):
-            for y in range(self.height-1):
+            for y in range(self.height):
                 if regions[(x,y)] in [LAND, SHORE1,SHORE2]:
                     if regions[(x+1,y)] in [LAND, SHORE1,SHORE2]:
                         blocks[(x,y,E)]=True
@@ -119,7 +125,7 @@ class ContestedCrossing(MDP):
                         blocks[(x+(y%2),y+1,NW)]=True
         for x in range(self.width):
             blocks[(x,0,NW)]=blocks[(x,0,NE)]=True
-            blocks[(x,self.height-1,SE)]=blocks[(x,self.height-1,SE)]=True
+            blocks[(x,self.height-1,SE)]=blocks[(x,self.height-1,SW)]=True
         for y in range(self.height):
             blocks[(0,y,W)]=blocks[(self.width-1,y,E)]=True
             if (y%2==0):
@@ -168,9 +174,9 @@ class ContestedCrossing(MDP):
             return SE
         if x2==x1+(y1%2) and y2==y1-1:
             return NE
-        if x2==x1-(y1%2) and y2==y1+1:
+        if x2==x1-1+(y1%2) and y2==y1+1:
             return SW
-        if x2==x1-(y1%2) and y2==y1-1:
+        if x2==x1-1+(y1%2) and y2==y1-1:
             return NW
         return -1
         
@@ -180,20 +186,21 @@ class ContestedCrossing(MDP):
         """
         x,y=point
         if self.blocks[(x,y,direction)]:
-            return point
-        if direction == E:
-            return right_cell(point)
-        if direction == W:
-            return left_cell(point)
-        if direction == SE:
-            return down_right_cell(point)
-        if direction == NE:
-            return up_right_cell(point)
-        if direction == SW:
-            return down_left_cell(point)
-        if direction == NW:
-            return up_left_cell(point)
-        return point
+            x,y = point
+        elif direction == E:
+            x,y = right_cell(point)
+        elif direction == W:
+            x,y = left_cell(point)
+        elif direction == SE:
+            x,y = down_right_cell(point)
+        elif direction == NE:
+            x,y = up_right_cell(point)
+        elif direction == SW:
+            x,y = down_left_cell(point)
+        elif direction == NW:
+            x,y = up_left_cell(point)
+
+        return max(0,min(x,self.width+1)),max(0,min(y,self.height+1))
         
 
     def _make_goals(self, regions):
@@ -249,6 +256,8 @@ class ContestedCrossing(MDP):
         for act in [W, NW, NE, E, SE, SW]:
           if not self._blocked((x,y),act):
               valid_actions.append(act)
+        if valid_actions==[]:
+            print("no valid actions at {0}".format(state))
         return valid_actions
             
     def get_initial_state(self):
@@ -261,6 +270,15 @@ class ContestedCrossing(MDP):
     def get_current_state(self):
         return self.ship[0], self.ship[1], self.ship_health, self.battery_health, self.direction
 
+    def get_state_danger(self,state):
+        """
+        return danger level for this state
+        """
+        dzone = self.danger_zones[(state[0],state[1])]
+        danger = self.high_danger if dzone==HI_DGR else self.low_danger if dzone==LO_DGR else 0.0
+        death_chance= 1 - pow((1 - pow(danger,state[2])),state[3])
+        return death_chance
+        
 
     def get_transitions(self, state, action):
         """
@@ -389,46 +407,35 @@ class ContestedCrossing(MDP):
             print(self.to_string(title=title))
 
     """ Visualise a Contested Crossing value function """
-    def visualise_value_function(self, value_function, title="", cell_size=1, gif=False, mode=0):
+    def visualise_value_function(self, value_function, title="", cell_size=1, gif=False, mode=3):
         """
         Because the information is 5-dimensional, other metrics must be extracted in order to display it on a 2-D map
+        Default view is just mean (sd) per location
         """
-        flat_values={}
-        for x in range(self.width):
-            for y in range(self.height):
-                vals={k:value_function.value_table[k] for k in value_function.value_table if k[0]==x and k[1]==y}
-                flat_values[(x,y)]={}
-                xyvals = [vals[v] for v in vals]
-                flat_values[(x,y)]['mean'] = 0.0 if xyvals==[] else np.mean(xyvals)
-                flat_values[(x,y)]['sd'] = 0.0 if xyvals==[] else np.std(xyvals)
-                flat_values[(x,y)]['sub_means'] = {}
-                sms = {d:[vals[v] for v in vals if v[2]==d] for d in range(self.ship_full_health+1)}
-                smb = {d:[vals[v] for v in vals if v[3]==d] for d in range(self.battery_full_health+1)}
-                flat_values[(x,y)]['sub_means'][(SHIP_SYMBOL,240)] = {d:np.mean(sms[d]) for d in sms if len(sms[d])>0}
-                flat_values[(x,y)]['sub_means'][(BATTERY_SYMBOL,0)] = {d:np.mean(smb[d]) for d in smb if len(smb[d])>0}
-                flat_values[(x,y)]['key_vals']={k:[] for k in set(xyvals)}
-                for v in vals:
-                    flat_values[(x,y)]['key_vals'][vals[v]].append(v[2:])
+        flat_values = self._make_values_flat(value_function.value_table)
         if self.matplotlib_installed():
-            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, values=flat_values, mode=mode)
+            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, values=flat_values, mode=mode,plot=True)
         else:
             print(self.to_string(values=flat_values, title=title))
 
     def visualise_q_function(self, qfunction, title="", cell_size=1, gif=False):
+        print("visualising")
+        flat_q = self._make_q_flat(qfunction.qtable)
+        print(len(flat_q))
         if self.matplotlib_installed():
-            return self.visualise_q_function_as_image(qfunction, title=title, cell_size=cell_size, gif=gif)
+            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, qfunction=flat_q, plot=True)
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
     def visualise_policy(self, policy, title="", cell_size=1, gif=False, mode=0):
         if self.matplotlib_installed():
-            return self.visualise_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif, mode=mode)
+            return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, policy=policy, mode=mode, plot=True)
         else:
             print(self.policy_to_string(policy, title=title))
 
     def visualise_stochastic_policy(self, policy, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_stochastic_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif)
+            return self.visualise_stochastic_policy_as_image(policy, title=title, cell_size=cell_size, gif=gif, plot=True)
         else:
             # TODO make a stochastic policy to string
             pass
@@ -529,7 +536,7 @@ class ContestedCrossing(MDP):
         #TODO
         return ""
 
-    def initialise_world(self, cell_size=1, values=None, policy=None, mode=0):
+    def initialise_world(self, cell_size=1, values=None, policy=None, qfunction=None, mode=0):
         x_cell = cell_size
         y_cell = cell_size * (1/np.sqrt(2))
         pt_size = cell_size*100
@@ -578,9 +585,11 @@ class ContestedCrossing(MDP):
                     self._values_plot(ax,thispoint,cell_size,values[(x,y)], mode)
                 if policy is not None:
                     if mode==0:
-                        self._policy_plot(ax,(x,y),thispoint, cell_size,policy.policy_table)
+                        self._policy_plot(ax,(x,y),thispoint, cell_size, policy.policy_table)
                     ax.scatter(thispoint[0],thispoint[1], s=pt_size*10, color=img_pt+"33", marker="o",edgecolor='none')
-                else:
+                if qfunction is not None:
+                    self._q_plot(ax, (x,y), thispoint, cell_size, qfunction)
+                if policy is None and qfunction is None:
                     ax.scatter(thispoint[0],thispoint[1], s=pt_size, color=img_pt, marker="*")
         if policy is not None and mode==1:
             self._path_plot(ax, policy, cell_size)
@@ -623,11 +632,14 @@ class ContestedCrossing(MDP):
         y_cell = cell_size * (1/np.sqrt(2))
         grid_pos = lambda o:((o[0]+(o[1]%2)/2)*x_cell,(self.height-o[1])*y_cell)
         pathcount=100
+        breaktime=200
         ship_health_cols = {(a,b):(1-(a/self.ship_full_health),0,1-(b/self.battery_full_health),0.5) for a in range (self.ship_full_health+1)
                             for b in range (self.battery_full_health+1)}
         for i in range(pathcount):
             state = self.get_initial_state()
-            while not self.is_terminal(state):
+            endcheck=0
+            while endcheck<breaktime and not self.is_terminal(state):
+                endcheck+=1
                 action = policy.select_action(state)
                 (next_state, reward) = self.execute(state, action)
                 thispoint=grid_pos(state[:2])
@@ -643,6 +655,22 @@ class ContestedCrossing(MDP):
                 state = next_state
 
         
+    def _q_plot(self, ax, point, gridorigin, cell_size, qtab):
+        x,y = point
+        move_offsets = {E:(0.2,0),NE:(0.1,0.17),NW:(-0.1,0.17),W:(-0.2,0),SW:(-0.1,-0.17),SE:(0.1,-0.17)}
+        text_args = dict(ha='center', va='center', fontsize=cell_size*3, color='#000000')
+        greyed_args = dict(ha='center', va='center', fontsize=cell_size*3, color='#00000022')
+        shoot_text='{0}\n({1})'.format(round(qtab[(x,y,SHOOT)]['mean'],2),round(qtab[(x,y,SHOOT)]['sd'],2))
+        args = greyed_args if qtab[(x,y,SHOOT)]['mean'] == 0 and qtab[(x,y,SHOOT)]['sd'] == 0 else text_args
+        ax.text(gridorigin[0],gridorigin[1],shoot_text,**args)
+        for m in move_offsets:
+            move_text='{0}\n({1})'.format(round(qtab[(x,y,m)]['mean'],2),round(qtab[(x,y,m)]['sd'],2))
+            args = greyed_args if qtab[(x,y,m)]['mean'] == 0 and qtab[(x,y,m)]['sd'] == 0 else text_args
+            xpos=gridorigin[0]+cell_size*move_offsets[m][0]
+            ypos=gridorigin[1]+cell_size*move_offsets[m][1]
+            ax.text(xpos, ypos, move_text, **args)
+            
+
     def _values_plot(self,ax, gridorigin, cell_size, pt_values, mode = 0):
         text_args = dict(ha='left', va='top', fontsize=cell_size*8, color='#343434')
         smalltext_head = dict(ha='center', va='top', fontsize=cell_size*6, color='#343488')
@@ -678,8 +706,40 @@ class ContestedCrossing(MDP):
                     ax.plot([linestartx,linestartx+abs(subcell*pt_values['sub_means'][k][d]/BERTH_REWARD)],[liney,liney],
                                  color=bar_colors[pt_values['sub_means'][k][d]>0], linewidth=cell_size)
             hspace+=4.0
-    
-    def visualise_as_image(self, agent_position=None, title="", cell_size=1, gif=False, values=None, policy=None, mode=0):
+
+    def _make_values_flat(self, value_table):
+        flat_values = {}
+        for x in range(self.width):
+            for y in range(self.height):
+                vals={k:value_table[k] for k in value_table if k[0]==x and k[1]==y}
+                flat_values[(x,y)]={}
+                xyvals = [vals[v] for v in vals]
+                flat_values[(x,y)]['mean'] = 0.0 if xyvals==[] else np.mean(xyvals)
+                flat_values[(x,y)]['sd'] = 0.0 if xyvals==[] else np.std(xyvals)
+                flat_values[(x,y)]['sub_means'] = {}
+                sms = {d:[vals[v] for v in vals if v[2]==d] for d in range(self.ship_full_health+1)}
+                smb = {d:[vals[v] for v in vals if v[3]==d] for d in range(self.battery_full_health+1)}
+                flat_values[(x,y)]['sub_means'][(SHIP_SYMBOL,240)] = {d:np.mean(sms[d]) for d in sms if len(sms[d])>0}
+                flat_values[(x,y)]['sub_means'][(BATTERY_SYMBOL,0)] = {d:np.mean(smb[d]) for d in smb if len(smb[d])>0}
+                flat_values[(x,y)]['key_vals']={k:[] for k in set(xyvals)}
+                for v in vals:
+                    flat_values[(x,y)]['key_vals'][vals[v]].append(v[2:])
+        return flat_values
+
+    def _make_q_flat(self, qtable):
+        flat_values = {}
+        for x in range(self.width):
+            for y in range(self.height):
+                for act in self.get_actions():
+                    vals={k:qtable[k] for k in qtable if k[0][0]==x and k[0][1]==y and k[1]==act}
+                    flat_values[(x,y,act)]={}
+                    xyavals = [vals[v] for v in vals]
+                    flat_values[(x,y,act)]['mean'] = 0.0 if xyavals==[] else np.mean(xyavals)
+                    flat_values[(x,y,act)]['sd'] = 0.0 if xyavals==[] else np.std(xyavals)
+        return flat_values
+
+                
+    def visualise_as_image(self, agent_position=None, title="", cell_size=1, gif=False, values=None, policy=None, qfunction=None, mode=0, plot=False):
         """
         visualise with optional overlay for values or policy.
         values modes:0 - numeric means, 1 - graphical means, 2 - key values
@@ -694,12 +754,13 @@ class ContestedCrossing(MDP):
         if current_position is None:
             x,y,_,_,_=self.get_initial_state()
             current_position = (x,y)
-        fig, ax = self.initialise_world(cell_size=cell_size,values=values,policy=policy, mode=mode)
+        fig, ax = self.initialise_world(cell_size=cell_size,values=values,policy=policy, qfunction=qfunction, mode=mode)
         shipx,shipy = grid_pos(current_position)
         plt.text(shipx, shipy, SHIP_SYMBOL, **ship_args)
         batx,baty = grid_pos(self.battery)
         texts = plt.text(batx, baty, BATTERY_SYMBOL, **bat_args)
         plt.title(title)
+
         if gif:
             return texts
         else:
@@ -713,3 +774,70 @@ class ContestedCrossing(MDP):
         if state in self.goal_states:
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
+
+LONG_REGIONS = {(2,0):SHORE2,(3,0):LAND,(4,0):LAND,(5,0):LAND,(6,0):LAND,(7,0):LAND,(2,1):SHORE2,(3,1):LAND,
+                (4,1):LAND,(5,1):LAND,(6,1):LAND,(3,2):SHORE2,(4,2):LAND,(5,2):LAND,(6,2):LAND,(7,2):LAND,
+                (3,3):SHORE2,(4,3):SHORE2,(5,3):SHORE2,(6,3):SHORE2,(5,27):SHORE1,(6,27):SHORE1,(5,28):SHORE1,
+                (6,28):LAND,(7,28):LAND,(4,29):SHORE1,(5,29):LAND,(6,29):LAND,(4,30):SHORE1,(5,30):LAND,
+                (6,30):LAND,(7,30):LAND,(3,31):SHORE1,(4,31):LAND,(5,31):LAND,(6,31):LAND,(7,31):LAND}
+
+LONG_DANGER =  {(1,1):LO_DGR,(2,1):LO_DGR,(1,2):LO_DGR,(2,2):LO_DGR,(3,2):HI_DGR,(1,3):LO_DGR,(2,3):HI_DGR,
+                (3,3):HI_DGR,(4,3):HI_DGR,(5,3):LO_DGR,(1,4):LO_DGR,(2,4):HI_DGR,(3,4):HI_DGR,(4,4):HI_DGR,
+                (5,4):HI_DGR,(6,4):LO_DGR,(1,5):LO_DGR,(2,5):HI_DGR,(3,5):HI_DGR,(4,5):HI_DGR,(5,5):LO_DGR,
+                (1,6):LO_DGR,(2,6):LO_DGR,(3,6):HI_DGR,(4,6):HI_DGR,(5,6):LO_DGR,(6,6):LO_DGR,(1,7):LO_DGR,
+                (2,7):LO_DGR,(3,7):HI_DGR,(4,7):LO_DGR,(5,7):LO_DGR,(2,8):LO_DGR,(3,8):HI_DGR,(4,8):HI_DGR,
+                (5,8):LO_DGR,(6,9):HI_DGR,(0,10):HI_DGR,(2,10):HI_DGR,
+                (3,10):HI_DGR,(4,10):HI_DGR,(6,10):HI_DGR,(0,11):LO_DGR,(0,12):LO_DGR,
+                (1,12):LO_DGR,(2,12):HI_DGR,(0,13):LO_DGR,(1,13):HI_DGR,(2,13):HI_DGR,(3,13):HI_DGR,(4,13):LO_DGR,
+                (0,14):LO_DGR,(1,14):HI_DGR,(2,14):HI_DGR,(3,14):HI_DGR,(4,14):HI_DGR,(5,14):LO_DGR,(0,15):LO_DGR,
+                (1,15):HI_DGR,(2,15):HI_DGR,(3,15):HI_DGR,(4,15):LO_DGR,(0,16):LO_DGR,(1,16):LO_DGR,(2,16):HI_DGR,
+                (3,16):HI_DGR,(4,16):LO_DGR,(5,16):LO_DGR,(0,17):LO_DGR,(1,17):LO_DGR,(2,17):HI_DGR,(3,17):LO_DGR,
+                (4,17):LO_DGR,(1,18):LO_DGR,(2,18):LO_DGR,(3,18):LO_DGR,(4,18):LO_DGR,(5,18):LO_DGR,(6,18):LO_DGR,
+                (3,19):LO_DGR,(4,19):LO_DGR,(0,20):HI_DGR,(1,20):HI_DGR,
+                (3,20):HI_DGR,(4,20):HI_DGR,(5,20):HI_DGR,
+                (6,20):HI_DGR,(2,21):LO_DGR,(3,21):LO_DGR,(2,22):LO_DGR,(3,22):LO_DGR,(4,22):HI_DGR,(0,23):HI_DGR,
+                (1,23):HI_DGR,(2,23):HI_DGR,
+                (3,23):HI_DGR,(4,23):HI_DGR,(6,23):LO_DGR,(2,24):LO_DGR,(3,24):HI_DGR,(4,24):HI_DGR,
+                (6,24):HI_DGR,(7,24):LO_DGR,(2,25):LO_DGR,(3,25):HI_DGR,(5,25):HI_DGR,
+                (6,25):LO_DGR,(2,26):LO_DGR,(3,26):LO_DGR,(5,26):HI_DGR,(6,26):LO_DGR,(7,26):LO_DGR,
+                (2,27):LO_DGR,(4,27):HI_DGR,(5,27):LO_DGR,(6,27):LO_DGR,(4,28):LO_DGR,
+                (5,28):LO_DGR,(6,28):LO_DGR,(3,29):LO_DGR,(4,29):LO_DGR,(5,29):LO_DGR}
+LONG_WIDTH = 7
+LONG_HEIGHT = 32
+LONG_BATTERY = (3,3)
+LONG_SHIP = (4,30)
+
+class LongCrossing(ContestedCrossing):
+    def __init__(
+        self,
+        high_danger=0.9,
+        low_danger=0.1,
+        battery_health = 2,
+        ship_health = 3,
+        discount_factor=0.9,
+        action_cost=0.0,
+        width=LONG_WIDTH,
+        height=LONG_HEIGHT,
+        regions=LONG_REGIONS,
+        danger=LONG_DANGER,
+        battery=LONG_BATTERY,
+        ship=LONG_SHIP
+    ):
+        super().__init__(
+            high_danger=high_danger,
+            low_danger=low_danger,
+            battery_health = battery_health,
+            ship_health = ship_health,
+            discount_factor=discount_factor,
+            action_cost=action_cost,
+            width=width,
+            height=height,
+            regions=regions,
+            danger=danger,
+            battery=battery,
+            ship=ship
+
+        )
+        
+
+

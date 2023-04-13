@@ -151,9 +151,9 @@ from tabular_value_function import TabularValueFunction
 ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
-enemy_health = direction = 1
-for x in [1,2]:
-    for y in [1,2]:
+x = y = 2
+for direction in [1,4]:
+    for enemy_health in [1,2]:
         for ship_health in [1,2]:
             print("state: {0} - value: {1}".format((x,y, ship_health, enemy_health, direction),
                                                    round(values.value_table[(x, y, ship_health, enemy_health, direction)], 3)))
@@ -174,8 +174,8 @@ The path plot gives a number of traces of the actual movement of an agent follow
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
-ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0)
-ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1)
+ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0,plot=True)
+ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1,plot=True)
 ```
 
 
