@@ -294,9 +294,25 @@ $
 
 At this point, there are no further states left to update, so the inner loop terminates, and we start a new episode.
 
+## Implementation
+
+Below is a Python implementation of n-step temporal difference learning. We first implement an abstract superclass ```NStepReinforcementLearner```, which contains most of the code we need, except the part that determines the value of state $s'$ in the Q-function update, which is left to the subclass so we can support both n-step Q-learning and n-step SARSA:
+
+```{code-cell} ipython3
+:load: ../python_code/n_step_reinforcement_learner.py
+```
+
+We inherit from this class to implement the n-step Q-learning algorithm:
+
+```{code-cell} ipython3
+:load: ../python_code/n_step_qlearning.py
+```
+
+
+
 ### Example -- 1-step Q-learning vs 5-step Q-learning
 
-Using the simulation below, we compare 1-step vs. 5-step Q-learning over the first 20 episodes of learning. Using 1-step Q-learning, reaching the reward only informs the state from which it is reached in the first episode; whereas for 5-step Q-learning, it informs the previous five steps. Then, in the 2nd episode, if any action reaches a state that has been visited, it can access the TD-estimate for that state. There are five such states in 5-step Q-learning; and just one in 1-step Q-learning. On all subsequent iterations, there is more chance of encountering a state with a TD estimate and those estimates are better informed. The end result is that the estimates 'spread' throughout the Q-table more quickly:
+Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning over the first 20 episodes of learning in the GridWorld task. Using 1-step Q-learning, reaching the reward only informs the state from which it is reached in the first episode; whereas for 5-step Q-learning, it informs the previous five steps. Then, in the 2nd episode, if any action reaches a state that has been visited, it can access the TD-estimate for that state. There are five such states in 5-step Q-learning; and just one in 1-step Q-learning. On all subsequent iterations, there is more chance of encountering a state with a TD estimate and those estimates are better informed. The end result is that the estimates 'spread' throughout the Q-table more quickly:
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
@@ -306,6 +322,8 @@ Using the simulation below, we compare 1-step vs. 5-step Q-learning over the fir
 <p>
 ```
 
+
+## Values of *n*
 
 **Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Doing this, which is called *Monte-Carlo simulation*, does not work so well in practice. In effect, we would no longer have an TD estimates in the update rule, which leads to more variance in the learning. 
 

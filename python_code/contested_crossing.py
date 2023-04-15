@@ -352,7 +352,6 @@ class ContestedCrossing(MDP):
 
     def is_terminal(self, state):
         if state == self.TERMINAL:
-            self.rewards += [self.episode_rewards]
             return True
         return False
 
@@ -769,6 +768,7 @@ class ContestedCrossing(MDP):
 
     def execute(self, state, action):
         if state in self.goal_states:
+            self.rewards += [self.episode_rewards]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 

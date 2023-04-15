@@ -153,7 +153,7 @@ class GridWorld(MDP):
 
     def is_terminal(self, state):
         if state == self.TERMINAL:
-            self.rewards += [self.episode_rewards]
+            #self.rewards += [self.episode_rewards]
             return True
         return False
 
@@ -825,6 +825,7 @@ class GridWorld(MDP):
 
     def execute(self, state, action):
         if state in self.goal_states:
+            self.rewards += [self.episode_rewards]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
@@ -933,6 +934,7 @@ class OneDimensionalGridWorld(GridWorld):
         # If we are in a goal state then terminate automatically execute
         # a terminate action to immediately terminate
         if state in self.goal_states:
+            self.rewards += [self.episode_rewards]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 

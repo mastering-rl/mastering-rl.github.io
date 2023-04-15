@@ -1,5 +1,5 @@
 from gridworld import CliffWorld
-from qlearning_vs_sarsa import qlearning_vs_sarsa
+from compare_convergence_curves import qlearning_vs_sarsa
 from gridworld import CliffWorld
 from tests.plot import Plot
 

@@ -1,11 +1,11 @@
 
-igh priority:
+High priority:
 - add contested crossing throughout notes
-- add n-step learning implementation
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Reward shaping example using contested crossing?
 - To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.
+- Video of policy executions
 
 
 Low priority:
@@ -17,11 +17,9 @@ Low priority:
 - Consistent learning outcomes
 - Add google analytics: https://jupyterbook.org/advanced/html.html
 - If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
-- Add more complex MDP example; e.g. what if there is some alternate reward 'along the way'
 - License: https://github.com/uds-se/fuzzingbook/blob/master/LICENSE.md
 - Policy gradient slide: https://twitter.com/hbouammar/status/1489215674014703618
 - Good policy gradient overview: https://core-robotics.gatech.edu/2020/12/16/bootcamp-summer-2020-week-4-policy-iteration-and-policy-gradient/
-- Mouse maze example: https://medium.com/machine-learning-for-humans/reinforcement-learning-6eacf258b265
 - Multi-objective problems: https://github.com/LucasAlegre/mo-gym
 
 
