@@ -251,7 +251,7 @@ mdp.visualise_policy(policy)
 q_learning_rewards = mdp.get_rewards()
 ```
 
-If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal::
+If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal:
 
 ```{code-cell} ipython3
 from plot import Plot

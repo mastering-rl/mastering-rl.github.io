@@ -419,9 +419,7 @@ class ContestedCrossing(MDP):
             print(self.to_string(values=flat_values, title=title))
 
     def visualise_q_function(self, qfunction, title="", cell_size=1, gif=False):
-        print("visualising")
         flat_q = self._make_q_flat(qfunction.qtable)
-        print(len(flat_q))
         if self.matplotlib_installed():
             return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, qfunction=flat_q, plot=True)
         else:
@@ -762,10 +760,9 @@ class ContestedCrossing(MDP):
         plt.title(title)
 
         if gif:
-            return texts
-        else:
-            plt.show()
-        return fig
+            return fig, ax
+        #else:
+         #   return fig
 
     def visualise_policy_as_image(self, policy, title="", agent_position=None,  cell_size=1, gif=False, values=None, mode=0):
         return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif, values=values, policy=policy, mode=mode)

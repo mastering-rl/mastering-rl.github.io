@@ -5,7 +5,37 @@ from scipy.ndimage import gaussian_filter1d
 class Plot():
 
     # Average rewards over a window
-    window_size = 250
+    DEFAULT_WINDOW_SIZE = 250
+
+    '''
+    Calculate the average reward per episode over a set of training runs
+    '''
+    def get_average_step_rewards(runs):
+        num_runs, num_episodes = len(runs), len(runs[0])
+        max_num_steps = 0
+        for run in runs:
+            for episode in run:
+                if len(episode) > max_num_steps:
+                    max_num_steps = len(episode)
+
+        average_reward_episodes = [[0 for j in range(max_num_steps)] for i in range(num_episodes)]
+        
+        #calculate the average reward for each episode in each run
+        for episode in range(num_episodes):
+            num_steps = 0
+            for run in range(num_runs):
+                if len(runs[run][episode]) > num_steps:
+                    num_steps = len(runs[run][episode])
+                
+            for step in range(num_steps):
+                step_rewards = []
+                for run in range(num_runs):
+                    if step < len(runs[run][episode]):
+                        step_rewards += [runs[run][episode][step]]
+                average_reward_episodes[episode][step] = np.mean(step_rewards)
+            
+        return average_reward_episodes
+
 
     '''
     Calculate the average reward per step over all episodes of a simulation.
@@ -24,7 +54,7 @@ class Plot():
         Calculate the average reward for each episode,
         averaging the last 'windowSize' number of episodes
     '''
-    def get_average_rewards_per_episode(rewards):
+    def get_average_rewards_per_episode(rewards, window_size=DEFAULT_WINDOW_SIZE):
         summed_rewards = []
 
         for episode in rewards:
@@ -32,7 +62,7 @@ class Plot():
 
         average_rewards = []
         for i in range(len(summed_rewards)):
-            window = summed_rewards[max(0, i - Plot.window_size): i + 1]
+            window = summed_rewards[max(0, i - window_size): i + 1]
             average_rewards += [sum(window)/len(window)]
         return average_rewards
 
@@ -71,11 +101,11 @@ class Plot():
     '''
     Plot the rewards per episode of several methods.
     '''
-    def plot_rewards_per_episode(labels, reward_list):
+    def plot_rewards_per_episode(labels, reward_list, window_size=DEFAULT_WINDOW_SIZE):
         index = 0
         linestyles = ['--', '-', ':', '-.']
         for rewards in reward_list:
-            y = Plot.get_average_rewards_per_episode(rewards)
+            y = Plot.get_average_rewards_per_episode(rewards, window_size=window_size)
             x = np.linspace(0, len(y), len(y))
             y_smoothed = gaussian_filter1d(y, sigma=5)
             plt.plot(x, y_smoothed,
