@@ -329,6 +329,14 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 **What is the best value for $n$ then?** Unfortunately, there is no theoretically best value for $n$. It depends on the particular application and reward function that is being trained. In practice, it seems that values of $n$ around 4-8 give good updates because we can easily assign credit to each of the 4-8 actions; that is, we can tell whether the 4-8 actions in the lookahead contributed to the score, because we use the TD estimates. 
 
+## Summary
+
+- n-step reinforcement learning propagates rewards back $n$ steps to help with learning.
+
+- It is conceptually quite simple, but the implementation requires a lot of 'book-keeping'.
+
+- Choosing a value of $n$ for a domain requires experimentation and intuition.
+
 ## Further Reading
 
 -   Chapter 7 of *Introduction to Reinforcement Learning* \[*Sutton and

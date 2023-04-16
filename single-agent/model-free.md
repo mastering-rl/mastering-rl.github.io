@@ -574,10 +574,7 @@ However, *during* learning, the agent will still fall off the cliff sometimes wh
 
 Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode:
 
-```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_vs_sarsa.py
 
-```
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
@@ -690,7 +687,6 @@ The standard versions that we see in this section have two major limitations:
 
     Available at: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
-    
 
 ## Summary 
 
@@ -700,20 +696,20 @@ The standard versions that we see in this section have two major limitations:
 ```
 ````
 
-On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
+- On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
 
-Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+- Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
 
-SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
+- SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
 
-If we know the MDP, we can use model-based techniques:
+- If we know the MDP, we can use model-based techniques:
 
--   **Offline**: Value Iteration
+    -   **Offline**: Value Iteration
 
--   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
+    -   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
 
-We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
+- We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
 
-If we do *not* know MDP, we need to use model-free techniques:
+- If we do *not* know MDP, we need to use model-free techniques:
 
--   **Offline**: Q-learning, SARSA, and friends.
+    -  **Offline**: Q-learning, SARSA, and friends.

@@ -505,11 +505,11 @@ Approximating Q-functions using machine learning techniques such as linear funct
 ```
 ````
 
-1.  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
+-  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
 
-2.  Using simple linear methods in which we select features and learn weights are effective and guarantee convergence.
+-  Using simple linear methods in which we select features and learn weights are effective and guarantee convergence.
 
-3.  Deep Q-learning offers alternatives in which we do not need to select features, but requires more training data (more episodes) and has no convergence guarantees.
+-  Deep Q-learning offers alternatives in which we do not need to select features, but requires more training data (more episodes) and has no convergence guarantees.
 
 
 ## Further Reading
