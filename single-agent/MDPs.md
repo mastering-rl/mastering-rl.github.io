@@ -158,14 +158,11 @@ The task is to navigate from the start cell in the bottom left to maximise the e
 
 An agent (a ship), denoted using ; is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
 
-SHIP_SYMBOL = "\u03e1" 
-BATTERY_SYMBOL = "\u273A"
-
 ```{glue:} ccross_image
 
 ```
 
-At the closest point of the north shore is an enemy, denoted using the ✺ character. The enemy will shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. THerefore, the enemy's behaviour is completely determined and no choice needs to be made. 
+At the closest point of the north shore is an enemy, denoted using the ✺ character. The enemy will shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. Therefore, the enemy's behaviour is completely determined and no choice needs to be made. 
 
 In locations with yellow or red stars, the ship may also shoot at the enemy, but it cannot do so and turn at the same time. If it chooses to shoot, it will continue sailing in the same direction. 
 
@@ -174,7 +171,7 @@ In locations with yellow or red stars, the ship may also shoot at the enemy, but
 
 -   In areas of high danger (red), a shot will damage the target 99$\%$ of the time.
 
--   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with  damage leve 1 it moves successfully 67$\%$ and at  damage level 2, 33$\%$; and at damage level 3 , it sinks.
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with  damage level 1 it moves successfully 67$\%$ and at  damage level 2, 33$\%$; and at damage level 3 , it sinks.
 
 -   When the enemy is at damage level 1, there is no change in its behaviour. When it is at damage level 2 it is destroyed. At this point the ship is in no further danger.
 

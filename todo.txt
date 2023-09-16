@@ -3,6 +3,7 @@ High priority:
 - add summary to n-step RL and any other page that doesn't have it!
 - add contested crossing throughout notes
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
+- Maybe add grid lock and key as an example. Mor's AAMAS deception paper
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Reward shaping example using contested crossing?
 - To MDP: Add discussion on state, actions, etc. that COMP90054 students will already know.

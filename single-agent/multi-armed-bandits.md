@@ -76,7 +76,7 @@ $$Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t}  X_{a,i}$$
 
 where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, and $X_{a,i}$ is the *reward* obtained in the $i$-th round for playing arm $a$..
 
-The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of $Q(a)$ start to stabilise), we start selecting $\max_a Q(a)$. This is known as the *$\epsilon$-first* strategy, where the parameter $\epsilon$ (epsilon), determines how many rounds to select random actions before moving to the greedy action.
+The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of $Q(a)$ start to stabilise), we start selecting $\argmax_a Q(a)$. This is known as the *$\epsilon$-first* strategy, where the parameter $\epsilon$ (epsilon), determines how many rounds to select random actions before moving to the greedy action.
 
 **But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Why not focus also on the *most promising actions* given the rewards we have received so far.
 
@@ -98,10 +98,10 @@ Given a policy $\pi$ and $t$ number of arm pulls, regret is defined formally as:
 
  $$\mathcal {R(\pi, t) }  =  t \cdot \max_a Q^*(a) - \mathbb{E} [ \sum_{k=1}^{t} X_{\pi(k), k} ]$$
 
-where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $ \max_a Q^*(a)$ each round.
+where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $ \argmax_a Q^*(a)$ each round.
 :::
 
-Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the *expected loss* from not taking the best action. If I take always action $\max_a Q^*(a)$ (the best action), my regret is 0. 
+Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the *expected loss* from not taking the best action. If I take always action $\argmax_a Q^*(a)$ (the best action), my regret is 0. 
 
 The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.
 
