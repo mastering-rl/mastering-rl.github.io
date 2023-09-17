@@ -89,6 +89,23 @@ class Plot():
         plt.show()
 
     '''
+    Plot the rewards per episode of several runs of the same method - 
+    don't distinguish between lines.
+    '''
+    def plot_multirun_rewards_per_episode(reward_list,method_label):
+        index = 0
+        for rewards in reward_list:
+            y = Plot.get_average_rewards_per_episode(rewards)
+            x = np.linspace(0, len(y), len(y))
+            y_smoothed = gaussian_filter1d(y, sigma=2)
+            plt.plot(x, y_smoothed, color='#2222aa')
+            index += 1
+
+        plt.xlabel("Episode")
+        plt.ylabel("Av reward per ep - {0}".format(method_label))
+        plt.show()
+
+    '''
     Plot the average length of episode.
     '''
     def plot_episode_length(labels, reward_list):

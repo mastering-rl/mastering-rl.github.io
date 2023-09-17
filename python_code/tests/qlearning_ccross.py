@@ -1,14 +1,17 @@
+from contested_crossing import ContestedCrossing
 from gridworld import GridWorld
 from qtable import QTable
 from qlearning import QLearning
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-print("==========\nTabular Q-learning: Gridworld\n==========")
+print("==========\nTabular Q-learning: Contested crossing\n==========")
 
-mdp = GridWorld()
+mdp = ContestedCrossing()
 qfunction = QTable()
 QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=1000)
 print(mdp.q_function_to_string(qfunction))
 
+#mdp.visualise_q_function(qfunction)
 policy = qfunction.extract_policy(mdp)
-print(mdp.policy_to_string(policy))
+mdp.visualise_policy(policy, "Policy plot", mode=0)
+mdp.visualise_policy(policy, "Path plot", mode=1)

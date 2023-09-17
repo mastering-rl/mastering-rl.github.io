@@ -151,9 +151,9 @@ from tabular_value_function import TabularValueFunction
 ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
-enemy_health = direction = 1
-for x in [1,2]:
-    for y in [1,2]:
+x = y = 2
+for direction in [1,4]:
+    for enemy_health in [1,2]:
         for ship_health in [1,2]:
             print("state: {0} - value: {1}".format((x,y, ship_health, enemy_health, direction),
                                                    round(values.value_table[(x, y, ship_health, enemy_health, direction)], 3)))
@@ -168,14 +168,14 @@ ccross.visualise_value_function(values, "Value function after 100 iterations, wi
 
 An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. The visualisation which includes means for different values of ship health and enemy health (the two smaller columns) shows a more complicated picture. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.
 
-Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the 'shoot' action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities - it is simply a representation of the fact that multiple states exist at one location.
+Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the 'shoot' action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities. This is simply a representation of the fact that multiple states are visualised at one location because the problem is complex enough that visualising individual states is difficult.
 
 The path plot gives a number of traces of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents which have been damaged tend to follow the safer path round the outside of the map while agents which have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
-ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0)
-ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1)
+ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0,plot=True)
+ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1,plot=True)
 ```
 
 
@@ -205,4 +205,3 @@ It is clear to see that the value iteration can be easily parallelised by updati
 
 - For medium-scale problems, it works well, but as the state-space grows, it does not scale well.
 
-````
