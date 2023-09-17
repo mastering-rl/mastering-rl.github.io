@@ -141,7 +141,7 @@ $\quad\quad$ $t \leftarrow T-1$\
 $\quad\quad$ While $t \geq 0$\
 $\quad\quad\quad\quad$ $G \leftarrow r_{t+1} + \gamma \cdot G$\
 $\quad\quad\quad\quad$ If $s_t, a_t$ does not appear in $s_0, a_0,\ldots, s_{t-1}, a_{t-1}$ then\
-$\quad\quad\quad\quad\quad\quad$ $Q(s_t, a_t) \leftarrow \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]$\
+$\quad\quad\quad\quad\quad\quad$ $Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]$\
 $\quad\quad\quad\quad\quad\quad$ $N(s_t, a_t) \leftarrow N(s_t, a_t) + 1$\
 $\quad\quad\quad\quad$ $t \leftarrow t-1$
 :::
