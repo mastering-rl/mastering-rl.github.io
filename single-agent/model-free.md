@@ -17,7 +17,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=0s" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

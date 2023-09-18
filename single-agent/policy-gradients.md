@@ -16,7 +16,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

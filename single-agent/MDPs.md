@@ -18,7 +18,9 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MDPs
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=0s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Link:  [My link Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
 ```
 ````
 
@@ -339,6 +341,33 @@ Let's break this down into its parts:
 - Finally, the discount factor is simply a parameter to the MDP in this code, with default value 0.9.
 
 In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
+
+
+:::{admonition} Example MDP 2: Contested Crossing
+
+An agent (a ship) is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
+
+At the closest point of the north shore is an enemy. The enemy may shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. In those areas, the ship may also shoot at the enemy, but it cannot do so and turn at the same time - if it chooses to shoot, it will continue sailing in the same direction. 
+
+```{glue:} ccross_image
+
+```
+
+-   In areas of low danger, a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship)
+
+-   In areas of high danger, a shot will damage the target 99$\%$ of the time.
+
+-   When the ship is hit by a shot, it's health will reduce by one-third.
+
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with one damage it moves successfully 67$\%$ and at two damage, 33$\%$. At three damage, it sinks.
+
+-   When the enemy is damaged once, there is no change in its behaviour. When it is damaged twice it is destroyed - at this point the ship is in no further danger.
+
+In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
+
+For  the GridWorld problem, it is easy for us to see the optional solution by simply looking at the problem. However, the Contested Crossing problem, the optimal solution is not so straightforward. The best move depends on the amount of damage the ship has received, the damage to the enemy, and the location. But at each location, what is the optimal move? In these notes, we look at different methods for solving problems that are difficult to solve optimally using simple heuristics.
+:::
+
 
 (sec:mdps:policies)=
 ## Policies

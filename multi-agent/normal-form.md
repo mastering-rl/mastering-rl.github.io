@@ -24,7 +24,7 @@ Then, we look at *extensive form games*, which are sequential games, meaning tha
 
 ````{margin}
 ```{admonition} Video byte: Introduction to normal form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

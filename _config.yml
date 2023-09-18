@@ -47,3 +47,4 @@ parse:
 sphinx:
   config:
     html_extra_path: ['assets']  # This is required to embed the gifs in the html
+    latex_toplevel_sectioning: 'part'

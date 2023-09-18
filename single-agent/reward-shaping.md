@@ -13,7 +13,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to reward shaping
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=0s" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
