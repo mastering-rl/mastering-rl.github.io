@@ -1,4 +1,4 @@
-# COMP90054: Reinforcement Learning
+# Introduction
 
 These notes are for the 2nd half of the subject [COMP90054 -- AI Planning for Autonomy](https://handbook.unimelb.edu.au/subjects/comp90054) at [The University of Melbourne](http://www.unimelb.edu.au).
 

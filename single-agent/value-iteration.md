@@ -103,6 +103,7 @@ Below is a Python implementation for value iteration. In this implementation, th
 
 
 ```
+### Example: Value iteration for GridWorld
 
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
 
@@ -139,43 +140,66 @@ Using the visualisation below, stepping through the 100 iterations, we can see t
 </div>
 <p>
 
-+++
+### Example: Value iteration for maze solving
+
+We can use the same technique to solve a maze. Below is the value function, obtained using value iteration, of a small maze with two rewards: +1 for existing the maze, and +5 for picking up an object along the way. It is not possible to visualise the value function in a single static image like this, because one part of the MDP state is a Boolean indicating whether the +5 reward has been collected already. However, we can see here the value function would produce a policy that ensure the +5 reward was collected before going to the exit:
+
+```{code-cell} ipython3
+from gridworld import GridWorld
+from value_iteration import ValueIteration
+from tabular_value_function import TabularValueFunction
+
+maze = GridWorld.open('../python_code/layouts/maze.txt')
+values = TabularValueFunction()
+ValueIteration(maze, values).value_iteration(max_iterations=100)
+maze.visualise_value_function(values, "Maze value function after 100 iterations")
+```
+
+### Example: Value iteration in Contested Crossing
 
 The process works in exactly the same way for the Contested Crossing problem. However, in this case, the state space is no longer represented only by the coordinates of the agent. We also have to take into account non-locational information - damage to the ship, damage to the enemy, and the previous direction of travel - since these features will also affect the likelihood of the ship reaching its goal.
+
+
+This can be difficult to visualise graphically. We can no longer simply assign one value to each physical location and so map the progress of the agent from each value to the largest adjacent one. We can, however, use other ways to get a general sense of how the state affects the behaviour of an agent at any one point. For instance, we can show the mean and standard deviation values for all states that are at a single location, as follows
+
 
 ```{code-cell} ipython3
 from contested_crossing import ContestedCrossing
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
 
+
 ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
-x = y = 2
-for direction in [1,4]:
-    for enemy_health in [1,2]:
-        for ship_health in [1,2]:
-            print("state: {0} - value: {1}".format((x,y, ship_health, enemy_health, direction),
-                                                   round(values.value_table[(x, y, ship_health, enemy_health, direction)], 3)))
+ccross.visualise_value_function(values, "Value function after 100 iterations", mode=3, cell_size=1.6)
 ```
 
-This can be difficult to visualise graphically. We can no longer simply assign one value to each physical location and so map the progress of the agent from each value to the largest adjacent one. We can, however, use other ways to get a general sense of how the state affects the behaviour of an agent at any one point. For instance, we can show the mean and standard deviation for all states at a particular location, or we can show tables of values at each location to express the differnece between different possible states located there.
+In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are average into the figure.
+
+An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. 
+
+Below, we include a  visualisation that includes means for different values of ship health and enemy health (the two smaller columns). In this, there are two columns associated with each location: one for the ship and one for the enemy. Each columns shows the mean value of $V(s)$ if the ship (enemy) has the corresponding health value. So, in the top left location, if the shop has health value of 0, the average value of the state is -10.0. 
+
+
 
 ```{code-cell} ipython3
-ccross.visualise_value_function(values, "Value function after 100 iterations", mode=3, cell_size=1.6)
+
 ccross.visualise_value_function(values, "Value function after 100 iterations, with sub-tables", mode=0, cell_size=1.6)
 ```
 
-An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. The visualisation which includes means for different values of ship health and enemy health (the two smaller columns) shows a more complicated picture. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.
+The behaviour we could extract from this shows a more complicated picture than if we just consider the mean value of the states at the location. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.
+
 
 Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the 'shoot' action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities. This is simply a representation of the fact that multiple states are visualised at one location because the problem is complex enough that visualising individual states is difficult.
 
-The path plot gives a number of traces of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents which have been damaged tend to follow the safer path round the outside of the map while agents which have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
+The path plot gives a number of traces of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents that have been damaged tend to follow the safer path round the outside of the map while agents that have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
-ccross.visualise_as_image(policy=policy,title="Policy Plot",mode=0,plot=True)
-ccross.visualise_as_image(policy=policy,title="Path Plot",mode=1,plot=True)
+
+ccross.visualise_as_image(policy=policy,title="Policy Plot", mode=0, plot=True)
+ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)
 ```
 
 

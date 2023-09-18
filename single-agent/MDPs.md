@@ -156,6 +156,32 @@ But! Things can go wrong --- sometimes the effects of the actions are not what w
 The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?
 :::
 
+:::{admonition} Example MDP 2: Contested Crossing
+
+An agent (a ship), denoted using ; is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.
+
+```{glue:} ccross_image
+
+```
+
+At the closest point of the north shore is an enemy, denoted using the ✺ character. The enemy will shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. Therefore, the enemy's behaviour is completely determined and no choice needs to be made. 
+
+In locations with yellow or red stars, the ship may also shoot at the enemy, but it cannot do so and turn at the same time. If it chooses to shoot, it will continue sailing in the same direction. 
+
+
+-   In areas of low danger (yellow), a shot will damage the target 10$\%$ of the time (either the ship firing at the enemy, or the enemy firing at the ship).
+
+-   In areas of high danger (red), a shot will damage the target 99$\%$ of the time.
+
+-   When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100$\%$ of the time, with  damage level 1 it moves successfully 67$\%$ and at  damage level 2, 33$\%$; and at damage level 3 , it sinks.
+
+-   When the enemy is at damage level 1, there is no change in its behaviour. When it is at damage level 2 it is destroyed. At this point the ship is in no further danger.
+
+The ship can observe the the entire state: it's location, the enemy location, it's own health, and the health of the enemy.
+
+In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
+:::
+
 :::{admonition} Example MDP model
 *Probabilistic PDDL* is one way to represent an MDP. It extends PDDL with a few additional constructs. Of most relevance is that outcomes can be associated with probabilities. The following describes the "Bomb and Toilet" problem, in which one of two packages contains a bomb. The bomb can be diffused by dunking it into a toilet, but there is a 0.05 probability of the bomb clogging the toilet.
 

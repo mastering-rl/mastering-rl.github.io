@@ -56,7 +56,7 @@ The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}
 ```
 ````
 
-The goal of gradient ascent is to find weights of a policy function that maximises the expected return. This is done in an iterative by calculating the gradient from some data and updating the weights of the policy
+The goal of gradient ascent is to find weights of a policy function that maximises the expected return. This is done iteratively by calculating the gradient from some data and updating the weights of the policy.
 
 The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$ with parameters $\theta$ is defined as:
 
@@ -337,3 +337,13 @@ So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (
 
 The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.
 
+
+## Summary
+
+- Policy gradients methods such as REINFORCE and actor-critic approaches directly learn a policy instead of first learning a value function or Q-function.
+
+- Using trajectories, the parameters for a policy are updated by following the gradient upwards -- the same as gradient descent but in the opposite direction.
+
+- Unlike policy iteration, policy gradient approaches are *model free*.
+
+- Actor critic methods also learn a value function or Q-function to reduce the variance in the cumulative rewards.

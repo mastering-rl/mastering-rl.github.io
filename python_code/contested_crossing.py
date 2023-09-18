@@ -352,7 +352,6 @@ class ContestedCrossing(MDP):
 
     def is_terminal(self, state):
         if state == self.TERMINAL:
-            self.rewards += [self.episode_rewards]
             return True
         return False
 
@@ -419,9 +418,7 @@ class ContestedCrossing(MDP):
             print(self.to_string(values=flat_values, title=title))
 
     def visualise_q_function(self, qfunction, title="", cell_size=1, gif=False):
-        print("visualising")
         flat_q = self._make_q_flat(qfunction.qtable)
-        print(len(flat_q))
         if self.matplotlib_installed():
             return self.visualise_as_image(title=title, cell_size=cell_size, gif=gif, qfunction=flat_q, plot=True)
         else:
@@ -654,7 +651,7 @@ class ContestedCrossing(MDP):
                         ax.scatter(endpoint[0],endpoint[1], s=cell_size*250, color=(0,0,0,0.5), marker="*")
                 state = next_state
 
-        
+
     def _q_plot(self, ax, point, gridorigin, cell_size, qtab):
         x,y = point
         move_offsets = {E:(0.2,0),NE:(0.1,0.17),NW:(-0.1,0.17),W:(-0.2,0),SW:(-0.1,-0.17),SE:(0.1,-0.17)}
@@ -669,7 +666,7 @@ class ContestedCrossing(MDP):
             xpos=gridorigin[0]+cell_size*move_offsets[m][0]
             ypos=gridorigin[1]+cell_size*move_offsets[m][1]
             ax.text(xpos, ypos, move_text, **args)
-            
+
 
     def _values_plot(self,ax, gridorigin, cell_size, pt_values, mode = 0):
         text_args = dict(ha='left', va='top', fontsize=cell_size*8, color='#343434')
@@ -762,16 +759,16 @@ class ContestedCrossing(MDP):
         plt.title(title)
 
         if gif:
-            return texts
-        else:
-            plt.show()
-        return fig
+            return fig, ax
+        #else:
+         #   return fig
 
     def visualise_policy_as_image(self, policy, title="", agent_position=None,  cell_size=1, gif=False, values=None, mode=0):
         return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif, values=values, policy=policy, mode=mode)
 
     def execute(self, state, action):
         if state in self.goal_states:
+            self.rewards += [self.episode_rewards]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 

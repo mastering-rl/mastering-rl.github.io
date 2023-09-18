@@ -547,7 +547,7 @@ policy = qfunction.extract_policy(cliffworld)
 cliffworld.visualise_policy(policy)
 ```
 
-We can see that the policy will take from initially up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
+We can see that the policy will initially move hte agent up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
 
 Now, let's try training the same problem with SARSA:
 
@@ -574,9 +574,9 @@ However, *during* learning, the agent will still fall off the cliff sometimes wh
 
 Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode:
 
-```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_cliffworld.py
 
+```{code-cell} ipython3
+:load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
 ```
 
@@ -597,23 +597,19 @@ What happens when we train on a more complicated example?
 
 In a game such as the Contested Crossing example, the addition of even a small number of extra actions and outcomes has a significant effect on the ability of both Q-learning and SARSA to find a good policy.
 
-In the example of CliffWorld, multiple runs of the algorithm above (train for n episodes then test for n episodes) produce a stable optimal policy for when n is at least 500. If we go through the procedure of training and testing for both Q-learning and SARSA multiple times, the final policy gives close to the same output each time.
+In the example of CliffWorld, multiple runs of the algorithm above (train for *n* episodes then test for n episodes) produce a stable optimal policy for when *n* is about 500. If we go through the procedure of training and testing for both Q-learning and SARSA multiple times, the final policy gives close to the same output each time.
 
-```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
+In the case of Contested Crossing, there are seven actions available (compared to four for CliffWorld), the number of steps taken in executing the policy is somewhere between 6 and around 20 depending on the amount of damage the ship takes (compared to 7 for CliffWorld using Q-learning and 9 using SARSA) and the amount of chance involved is significantly higher, because a ship can shoot or be shot at any time within the danger zones, with medium or high probability.
 
+The result of this is to considerably increase the amount of time taken to converge towards a good policy, for either Q-learning or SARSA. For $n=2000$, the policy found by Q-learning is usually -- but not always -- superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
 
-```
+At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature. 
 
-In the case of Contested Crossing, there are seven actions available (compared to four for CliffWorld), the number of steps taken in executing the policy is somewhere between 6 and around 20 depending on the amount of damage the ship takes (compared to 7 for CliffWorld using Q-learning and 9 using SARSA) and the amount of chance involved is significantly higher (because a ship can shoot or be shot at any time within the danger zones, with medium or high probability).
+The resulting final policies, when executed after 20,000 episodes, also show that the Q-learning policy receives a higher reward per episode than SARSA.
 
-The result of this is to considerably increase the amount of time taken to find a good policy, for either Q-learning or SARSA. For n=2,000, the policy found by Q-learning is usually - but not always - superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
-
-At n=20,000 the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at n=20,000 have still not converged and (as in the CliffWorld example) are less good than the Q-learning policies
 
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
-
 
 ```
 
@@ -691,7 +687,6 @@ The standard versions that we see in this section have two major limitations:
 
     Available at: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
 
-    
 
 ## Summary 
 
@@ -701,22 +696,20 @@ The standard versions that we see in this section have two major limitations:
 ```
 ````
 
-On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
+- On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
 
-Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+- Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
 
-SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
+- SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
 
-If we know the MDP, we can use model-based techniques:
+- If we know the MDP, we can use model-based techniques:
 
--   **Offline**: Value Iteration
+    -   **Offline**: Value Iteration
 
--   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
+    -   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
 
-We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
+- We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
 
-If we do *not* know MDP, we need to use model-free techniques:
+- If we do *not* know MDP, we need to use model-free techniques:
 
--   **Offline**: Q-learning, SARSA, and friends.
-
--   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
+    -  **Offline**: Q-learning, SARSA, and friends.
