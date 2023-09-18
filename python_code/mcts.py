@@ -81,6 +81,7 @@ class MCTS:
             # Find a state node to expand
             selected_node = root_node.select()
             if not self.mdp.is_terminal(selected_node):
+
                 child = selected_node.expand()
                 reward = self.simulate(child)
                 selected_node.back_propagate(reward, child)

@@ -17,7 +17,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

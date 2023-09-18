@@ -14,7 +14,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy-based approaches and policy iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

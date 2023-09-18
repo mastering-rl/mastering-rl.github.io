@@ -19,7 +19,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?start=0s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
