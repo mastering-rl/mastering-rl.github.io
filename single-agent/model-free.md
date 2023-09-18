@@ -706,7 +706,7 @@ The standard versions that we see in this section have two major limitations:
 
     -   **Offline**: Value Iteration
 
-    -   **Online**: [Monte Carlo Tree Search](sec:monte-carlo-tree-search) and friends.
+    -   **Online**: [Monte Carlo Tree Search](sec:mcts) and friends.
 
 - We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
 
