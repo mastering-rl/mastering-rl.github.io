@@ -14,7 +14,7 @@
 \tikzstyle{level 5}=[sibling distance=1.5cm]
 \node [reg_n, text width=2em] {\scriptsize{s\\[-1mm]N=9}}
 child{ node [prob_n] {} 
-	child{ node [idle, text width=2em] {\scriptsize{t$'$\\[-1mm]N=14}} 
+	child{ node [idle, text width=2em] {\scriptsize{t$'$\\[-1mm]N=3}} 
 		child{ node [prob_n] {}	
 			child{ node [idle] {...} 
 				edge from parent node[sloped, anchor=south] {0.99}
@@ -47,7 +47,7 @@ child{ node [prob_n] {}
 	edge from parent [draw,red,thick] node[above left] {a} 
 }   
 child{ node [prob_n] {}
-	child{ node [idle, text width=2em] {\scriptsize{u\\N=18}} 
+	child{ node [idle, text width=2em] {\scriptsize{u\\N=3}} 
 %		child{ node [prob_n,xshift=30.0] {}
 %			child{ node [idle] {$w$}
 %				edge from parent node[sloped, anchor=south] {0.5}
@@ -67,7 +67,7 @@ child{ node [prob_n] {}
 %		}
 		edge from parent node[sloped, anchor=south] {0.5}
 	} 
-	child{ node [idle, text width=2em] {\scriptsize{u$'$\\N=12}}         
+	child{ node [idle, text width=2em] {\scriptsize{u$'$\\N=2}}         
 		edge from parent node[sloped, anchor=south] {0.5}    
 	}
 	edge from parent node[above right] {b}
