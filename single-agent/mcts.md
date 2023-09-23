@@ -280,10 +280,14 @@ $$
 \begin{array}{lll}
    Q(y, g) & = & \gamma^{2} \times 31.25~~\textrm{(simulation is 3 steps long and receives reward of 31.25)}\\
           & = &   20\\
-  ~~\\
+~~\\
+N(t,f) & \leftarrow & N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
+~~\\
   Q(t,f)   & = &  Q(t,f) + \frac{1}{N(t, f)}[r + \gamma G - Q(t,f)]\\
           & = &  0   + \frac{1}{2}[0 + 0.8 \cdot 20 - 0]\\
           & = &  8\\
+~~\\
+  N(s,a) & \leftarrow & N(s,a) + 1 = N(t) + N(t') + 1 = 5
 ~~\\
   Q(s,a)    & = & Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]\\
             & = & 18   + \frac{1}{5}[6 + 0.8 \cdot (0.8 \cdot 20) - 18]\\            
