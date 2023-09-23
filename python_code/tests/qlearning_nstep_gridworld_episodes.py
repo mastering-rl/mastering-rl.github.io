@@ -1,5 +1,5 @@
 from gridworld import GridWorld
-from compare_convergence_curves import qlearning_vs_nstep
+from tests.compare_convergence_curves import qlearning_vs_nstep
 from gridworld import CliffWorld
 from tests.plot import Plot
 

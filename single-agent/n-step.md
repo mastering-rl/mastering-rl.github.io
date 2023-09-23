@@ -237,7 +237,7 @@ Imagine the first episode consisting of the following (very lucky!) trace:
 tags: [remove-input]
 ---
 from gridworld import GridWorld
-from print_gridworld_sequence import draw_action_sequence
+from tests.print_gridworld_sequence import draw_action_sequence
 
 
 draw_action_sequence((0,0), [GridWorld.UP, GridWorld.UP, GridWorld.RIGHT, GridWorld.RIGHT, GridWorld.DOWN, GridWorld.UP, GridWorld.RIGHT])
