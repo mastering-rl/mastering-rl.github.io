@@ -47,11 +47,11 @@ Let us assume that there are 12 rows and about 40 columns. This grossly underest
 
 This leads to:
 
-$$480^2 \times  2^{480} \approx 3 \times 10^{147} \text{ states}$$ 
+$$480^2 \times  2^{480} \approx 7 \times 10^{149} \text{ states}$$ 
 
 There are four actions: left, right, up, down.
 
-A Q-table would need to store $12\times 10^{147}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
+A Q-table would need to store $28\times 10^{149}$ entries. This is a huge Q-table for what is a trivial example compared to many other problems.
 :::
 
 ## Linear Q-learning (Linear Function Approximation) 

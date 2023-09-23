@@ -32,7 +32,7 @@ kernelspec:
 
 ## Overview
 
-In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes *sparse*. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a [UCT algorithm playing Freeway](sec:monte-carlo-tree-search:demo).
+In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes *sparse*. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a [UCT algorithm playing Freeway](sec:mcts:demo).
 
 In this section, we look at two simple approaches that can improve temporal difference methods:
 

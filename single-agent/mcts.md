@@ -421,7 +421,7 @@ To mitigate this, we can then use MCTS (online planning) to search from the actu
 
 Later in this chapter, we see an example of this with [AlphaZero](sec:mcts:alpha-zero).
 
-(sec:monte-carlo-tree-search:demo)=
+(sec:mcts:demo)=
 ## Why does it work so well (sometimes)?
 
 It addresses exploitation vs. exploration comprehensively.

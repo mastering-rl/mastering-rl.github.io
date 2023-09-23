@@ -14,7 +14,7 @@ The field of multi-agent reinforcement learning has become quite vast, and there
 
 ## Chapter overview
 
-Recall the idea of [ExpectiMax trees](sec:mcts:expectimax-trees) which we first encountered in the section on [Monte-Carlo tree search](sec:monte-carlo-tree-search). ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:
+Recall the idea of [ExpectiMax trees](sec:mcts:expectimax-trees) which we first encountered in the section on [Monte-Carlo tree search](sec:mcts). ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:
 
 ```{figure} ../single-agent/latex/mcts_expectimax.png
 :name: expectimax-duplicate
