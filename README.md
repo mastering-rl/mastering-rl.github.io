@@ -1,7 +1,7 @@
 This project contains a Jupyter Book project for an introduction to reinforcement learning interactive book.
 
 # 1. Installing dependencies
-- Install the required libraries to make sure the code can run properly in the notebook
+- Install required libraries to make sure the code can run properly in the notebook
 ```
 conda env create -f environment.yml
 conda activate rlnotes
@@ -11,7 +11,7 @@ conda activate rlnotes
 conda activate rlnotes
 conda env update --file environment.yml --prune
 ```
-- Include all the python codes to execute the code cells
+- Include all python codes to execute code cells
 ```
 export PYTHONPATH="$PWD/python_code"
 ```
