@@ -1,0 +1,14 @@
+name: rlnotes
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - jupyter-book
+  - ghp-import
+  - matplotlib
+  - scipy
+  - numpy
+  - python-graphviz
+  - imageio
+  - pytorch
