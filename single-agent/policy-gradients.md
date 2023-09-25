@@ -62,7 +62,7 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, so we use policy gradient algorithms to approximate it. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible trace from $s_0$ to every terminal state, which may be an infinite number of traces. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -123,7 +123,7 @@ REINFORCE  generates an entire episode using Monte-Carlo simulation by following
 
 Comparing to value-based techniques, we can see that REINFORCE (and other policy-gradient approaches)  do not evaluate each action in the policy improvement process. In policy iteration, we update the policy $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)} Q^\pi(s,a)$. In REINFORCE, the most recently sampled action and its reward are used to calculate the gradient and update.
 
-This has the advantage that policy-gradient approaches can be when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-gradient approaches are often more efficient than value-based approaches when there are a large number of actions.
+This has the advantage that policy-gradient approaches can be applied when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-gradient approaches are often more efficient than value-based approaches when there are a large number of actions.
 
 :::{note}
 From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-free:on-policy-vs-off-policy) approach. The sample trajectories from directly from $\pi_{\theta}$ and the update happens
@@ -140,10 +140,11 @@ The implementation of REINFORCE takes a policy, but this policy must be differen
 
 We need a differentiable policy so that we can calculate the gradient and update. To illustrate this from first principles, let's look at an implementation of a policy that uses logistic regression. This basic implementation supports environments with only two actions, but it is sufficient to illustrate the basics of policy gradient methods from first principles.
 
-The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
+The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ that returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
 
 ```{code-cell} ipython3
 :load: "../python_code/logistic_regression_policy.py"
+
 ```
 
 The `update` method, as well as the `gradient_log_pi` method that it calls, are where the policy gradient theorem is applied. In `update`, for every state-action transition in the trajectory, we calculate the gradient and then update the parameters $\theta$ using the corresponding partial derivative.
@@ -179,7 +180,7 @@ $$
 
 This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
 
-Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridworth that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
+Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridword that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -246,6 +247,7 @@ It inherits from the `StochasticPolicy` and then implement the `update`, `select
 
 ```{code-cell} ipython3
 :load: "../python_code/deep_nn_policy.py"
+
 ```
 
 As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implementation, PyTorch does not support strings as values, so we need to encode action names and states as integers.
@@ -339,8 +341,34 @@ So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (
 
 The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.
 
+## Implementation
 
-## Summary
+To implement the Q Actor Critic framework, we first create a new base class called `ActorCritic`, which can be used as a base for other types of actor critic methods, such as *advantage actor critics*, which we will not discuss here.
+
+The `ActorCritic` class is an abstract class that looks similar to that of `QLearning`, except that we update both the actor and the critic:
+
+```{code-cell} ipython3
+:load: "../python_code/actor_critic.py"
+```
+
+Note from the code above that we use the actor (the policy) to choose an action, and then update both the critic and the actor. In this particular implementation, we batch update the actor policy at the end of the episode.
+
+Next, we have to instantite the  `ActorCritic` class as a `QActorCric` class to implement the `update_actor` and `update_critic` classes:
+
+```{code-cell} ipython3
+:load: "../python_code/q_actor_critic.py"
+```
+
+Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose `DeepNeuralNetworkPolicy` and `DeepQFunction` with `QLearning` updates. 
+
+```{code-cell} ipython3
+:load: "../python_code/tests/deep_q_actor_critic_run.py"
+
+```
+
+We can see that the actor critic agent has learnt both a policy that is very good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
+
+# Summary
 
 - Policy gradients methods such as REINFORCE and actor-critic approaches directly learn a policy instead of first learning a value function or Q-function.
 

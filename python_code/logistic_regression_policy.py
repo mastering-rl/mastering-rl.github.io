@@ -9,7 +9,7 @@ from policy import StochasticPolicy
 
 class LogisticRegressionPolicy(StochasticPolicy):
 
-    """Create a new policy, with given parameters theta (randomly initialised if theta is None)"""
+    """ Create a new policy, with given parameters theta (randomly if theta is None)"""
 
     def __init__(self, actions, num_params, theta=None):
         assert len(actions) == 2
@@ -29,11 +29,11 @@ class LogisticRegressionPolicy(StochasticPolicy):
         # With a probability of 'probability' take the first action
         if random.random() < probability:
             return self.actions[0]
-        else:
-            return self.actions[1]
+        return self.actions[1]
 
     """ Update our policy parameters according using the gradient descent formula:
-          theta <- theta + alpha * G * nabla J(theta), where G is the future discounted reward
+          theta <- theta + alpha * G * nabla J(theta), 
+          where G is the future discounted reward
     """
 
     def update(self, states, actions, deltas):
@@ -46,7 +46,8 @@ class LogisticRegressionPolicy(StochasticPolicy):
     """ Get the probability of applying an action in a state """
 
     def get_probability(self, state, action):
-        # Calculate y as the linearly weight product of the policy parameters (theta) and the state
+        # Calculate y as the linearly weight product of the 
+        # policy parameters (theta) and the state
         y = self.dot_product(state, self.theta)
 
         # Pass y through the logistic regression function to convert it to a probability
@@ -70,8 +71,7 @@ class LogisticRegressionPolicy(StochasticPolicy):
         y = self.dot_product(state, self.theta)
         if action == self.actions[0]:
             return [s_i - s_i * self.logistic_function(y) for s_i in state]
-        else:
-            return [-s_i * self.logistic_function(y) for s_i in state]
+        return [-s_i * self.logistic_function(y) for s_i in state]
 
     """ Standard logistic function """
 

@@ -14,11 +14,8 @@ actor = DeepNeuralNetworkPolicy(
 )
 
 advantage_actor_critic = AdvantageActorCritic(mdp=gridworld, actor=actor, critic=critic)
-print("1")
 gridworld.visualise_value_function(critic, grid_size=0.8, title=f"Value Function: {0} iterations")
-print("2")
 gridworld.visualise_stochastic_policy(actor)
-print('2')
 gridworld.visualise_policy_as_image(actor)
 
 advantage_actor_critic.execute(100)

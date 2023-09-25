@@ -2,7 +2,7 @@ from gridworld import GridWorld
 from deep_qfunction import DeepQFunction
 from qlearning import QLearning
 from deep_nn_policy import DeepNeuralNetworkPolicy
-from deep_q_actor_critic import DeepQActorCritic
+from python_code.q_actor_critic import QActorCritic
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from gif_maker import GifMaker
 from side_by_side_comparison import join_gif
@@ -17,7 +17,7 @@ actor = DeepNeuralNetworkPolicy(
     gridworld, state_space=len(gridworld.get_initial_state()), action_space=4
 )
 
-learner = DeepQActorCritic(mdp=gridworld, actor=actor, critic=critic)
+learner = QActorCritic(mdp=gridworld, actor=actor, critic=critic)
 
 qfunction_gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
 policy_gif_maker = GifMaker(gridworld, grid_size=2.0)

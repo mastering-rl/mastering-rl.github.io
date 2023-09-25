@@ -9,8 +9,8 @@ from policy import StochasticPolicy
 
 class DeepNeuralNetworkPolicy(StochasticPolicy):
     """
-    An implementation of a policy that uses a PyTorch (https://pytorch.org/) deep neural network
-    to represent the underlying policy.
+    An implementation of a policy that uses a PyTorch (https://pytorch.org/) 
+    deep neural network to represent the underlying policy.
     """
 
     def __init__(self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001):
@@ -74,7 +74,8 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
 
         action_log_probs = self.evaluate_actions(states, actions)
 
-        # Construct a loss function, using negative because we want to descend, not ascend the gradient
+        # Construct a loss function, using negative because we want to descend,
+        # not ascend the gradient
         loss = -(action_log_probs * deltas).mean()
         self.optimiser.zero_grad()
         loss.backward()

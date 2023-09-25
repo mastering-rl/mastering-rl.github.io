@@ -11,7 +11,7 @@ class DeepQFunction(QFunction, DeepAgent):
     """
 
     def __init__(
-        self, mdp, state_space, action_space, hiddem_dim=64, alpha=0.001
+        self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001
     ) -> None:
         self.mdp = mdp
         self.state_space = state_space
@@ -20,11 +20,11 @@ class DeepQFunction(QFunction, DeepAgent):
 
         # Create a sequential neural network to represent the Q function
         self.q_network = nn.Sequential(
-            nn.Linear(in_features=self.state_space, out_features=hiddem_dim),
+            nn.Linear(in_features=self.state_space, out_features=hidden_dim),
             nn.ReLU(),
-            nn.Linear(in_features=hiddem_dim, out_features=hiddem_dim),
+            nn.Linear(in_features=hidden_dim, out_features=hidden_dim),
             nn.ReLU(),
-            nn.Linear(in_features=hiddem_dim, out_features=self.action_space),
+            nn.Linear(in_features=hidden_dim, out_features=self.action_space),
         )
         self.optimiser = Adam(self.q_network.parameters(), lr=self.alpha)
 

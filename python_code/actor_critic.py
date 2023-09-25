@@ -1,5 +1,3 @@
-import gridworld 
-
 class ActorCritic:
     def __init__(self, mdp, actor, critic, alpha=0.1):
         self.alpha = alpha  # Learning rate (gradient update step-size)
@@ -28,10 +26,16 @@ class ActorCritic:
 
                 state = next_state
 
-            self.update_actor(rewards=rewards, states=states, actions=actions, next_states=next_states)
+            self.update_actor(
+                rewards=rewards, states=states, actions=actions, next_states=next_states
+            )
+
+    """ Update the actor using a batch of rewards, states, actions, and next states """
 
     def update_actor(self, rewards, states, actions, next_states):
         abstract
+
+    """ Update the critc using a reward, state, action, and next state """
 
     def update_critic(self, reward, state, action, next_state):
         abstract
