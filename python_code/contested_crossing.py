@@ -401,7 +401,7 @@ class ContestedCrossing(MDP):
 
     def visualise(self, agent_position=None, title="", cell_size=1, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif)
+            return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=True)[0]
         else:
             print(self.to_string(title=title))
 
@@ -553,6 +553,7 @@ class ContestedCrossing(MDP):
         img_up_tri = [[REGION_COLOURS[NO_DGR] for _ in range(self.width)] for _ in range(self.height)]
 
         # Set appropriate colours
+        
         for y in range(self.height-1):
             for x in range(self.width):
                 img_pt=REGION_COLOURS[self.danger_zones[(x,y)]]
@@ -588,6 +589,7 @@ class ContestedCrossing(MDP):
                     self._q_plot(ax, (x,y), thispoint, cell_size, qfunction)
                 if policy is None and qfunction is None:
                     ax.scatter(thispoint[0],thispoint[1], s=pt_size, color=img_pt, marker="*")
+        
         if policy is not None and mode==1:
             self._path_plot(ax, policy, cell_size)
         return fig, ax
@@ -739,8 +741,9 @@ class ContestedCrossing(MDP):
     def visualise_as_image(self, agent_position=None, title="", cell_size=1, gif=False, values=None, policy=None, qfunction=None, mode=0, plot=False):
         """
         visualise with optional overlay for values or policy.
-        values modes:0 - numeric means, 1 - graphical means, 2 - key values
+        values modes: 0 - numeric means, 1 - graphical means, 2 - key values
         """
+
         ship_args = dict(ha='center', va='center', fontsize=cell_size*25, color=SHIP_COLOR, rotation=240)
         bat_args = dict(ha='center', va='center', fontsize=cell_size*15, color=BATTERY_COLOR)
         x_cell = cell_size
@@ -751,17 +754,17 @@ class ContestedCrossing(MDP):
         if current_position is None:
             x,y,_,_,_=self.get_initial_state()
             current_position = (x,y)
-        fig, ax = self.initialise_world(cell_size=cell_size,values=values,policy=policy, qfunction=qfunction, mode=mode)
-        shipx,shipy = grid_pos(current_position)
-        plt.text(shipx, shipy, SHIP_SYMBOL, **ship_args)
-        batx,baty = grid_pos(self.battery)
+        fig, ax = self.initialise_world(cell_size=cell_size, values=values, policy=policy, qfunction=qfunction, mode=mode)
+        shipx, shipy = grid_pos(current_position)
+        ship_texts = plt.text(shipx, shipy, SHIP_SYMBOL, **ship_args)
+        batx, baty = grid_pos(self.battery)
         texts = plt.text(batx, baty, BATTERY_SYMBOL, **bat_args)
         plt.title(title)
 
         if gif:
             return fig, ax
-        #else:
-         #   return fig
+        else:
+            plt.show()
 
     def visualise_policy_as_image(self, policy, title="", agent_position=None,  cell_size=1, gif=False, values=None, mode=0):
         return self.visualise_as_image(agent_position=agent_position, title=title, cell_size=cell_size, gif=gif, values=values, policy=policy, mode=mode)

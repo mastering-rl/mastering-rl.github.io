@@ -240,6 +240,8 @@ The policy uses a three layer network with the following:
 3. The third and final layer is the output layer, which returns a categorical distribution with a dimensionality the same size as the action space, so that each action is associated with a probability of being selected.
 4. We use a non-linear ReLU (rectified linear unit) between layers.
 
+Recall from the section on [deep Q learning](sec:function-approximation:deep-Q-learning) that the `Linear` layers are dense layers in PyTorch.
+
 It inherits from the `StochasticPolicy` and then implement the `update`, `select_action`, and `get_probability` methods. These take advantage of optimisations with the PyTorch framework, so the calculation of the gradient is 'hidden' by the PyTorch library. The line `self.optimiser.zero_grad()` then 'zeros' out the existing gradient so that the new gradient can be calculated. The gradient is calculated using `loss.backwards()`. Then `self.optimiser.step()` adjusts the parameters $\theta$ in the direction of the gradient:
 
 ```{code-cell} ipython3

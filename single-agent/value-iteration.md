@@ -114,6 +114,7 @@ from tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
 values = TabularValueFunction()
+
 ValueIteration(gridworld, values).value_iteration(max_iterations=100)
 gridworld.visualise_value_function(values, "Value function after 100 iterations")
 ```

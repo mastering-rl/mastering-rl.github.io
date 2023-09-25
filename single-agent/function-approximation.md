@@ -257,6 +257,8 @@ To implement linear function approximation, we implement a new class that inheri
 
 A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
 
+### Example: Linear Q-function approximation on Gridworld
+
 To use on an example, we need a feature extractor. The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here: 
 
 1. The distance from the goal on the X-axis.
@@ -307,7 +309,11 @@ This is because our linear approximation learns one weight for going right, left
 
 The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward. 
 
-We can solve this by improving our feature engineering. One way is to encode specific features that learn that we are e.g. in state $(2,1)$, but the more of these features we engineer, the more domain knowledge we are encoding into our solution. A slightly better solution (because it is more general) is to add two new features that true 1 if and only if we are in the same column (or row respectively) as the goal:
+We can solve this by improving our features using feature engineering. One way is to encode specific features that learn that we are e.g. in state $(2,1)$. Our learning algorithm will then learn that when this feature value is true, going right is a bad move. 
+
+However, more of these features we engineer, the more domain knowledge we are encoding into our solution.
+
+A more general to engineering features about specific states is to add two new features that are true (1) if and only if we are in the same column (or row respectively) as the goal:
 
 ```{code-cell} ipython3
 :load: '../python_code/gridworld_better_feature_extractor.py'
@@ -331,7 +337,17 @@ However, this is still not perfect. As we see, the policy recommends going up in
 
 We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
 
-In the Contested Crossing example, there is more continuous territory in which a similar policy makes sense, so the function approximation can learn quite a good policy fairly quickly. However it has some blind spots - particularly around avoiding the 'shoot' action in some regions where this would make sense.
+### Example: Linear Q-function approximation on Contested Crossing
+
+In the Contested Crossing example, a similar set of features to the Gridworld problem works: distance to the other side of the crossing. However, using only the distance ignores other important factors, such as the risk of being shot the amount of health remaining. For this example, we use four features: 
+
+1. the (normalised) x-distance to the other side of the crossing;
+2. the (normalised) y-distance to the other side of the crossing;
+3. the health level; and
+4. the (normalised) difference between the Manhattan distance to the other side of the crossing minus the amount of damage done to the ship. Intuitively, the amount of moves required to successfully cross interacts with the health remaining, so have these as separate features in a linear model will not capture this interaction.
+
+This results in the following policy visualisation:
+
 
 ```{code-cell} ipython3
 from qlearning import QLearning
@@ -410,13 +426,15 @@ where $\nabla_{\theta} Q(s,a; \theta)$ is the *gradient* of the Q-function. In t
 
 Deep Q-learning is identical to tabular or linear Q-learning, except that we use a deep neural network to represent the Q-function instead of a Q-table or a linear equation.
 
-In this implementation, we use  the PyTorch deep learning framework  (https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code.
+In this implementation, we use  the PyTorch deep learning framework  (https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.
 
-Using PyTorch, we create a sequence neural network with the following:
+Using PyTorch, we create a sequential neural network with the following:
 1. The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.
 2. We have a hidden layer, with a default number of 64 hidden dimensions, but this is parameterised by the variable `hidden_dim` in the `__init__` constructor.
 3. The third and final layer is the output layer, whose dimensionality is the same as the action space, so that each action has a Q-value associated with it.
 3. We use a non-linear ReLU (rectified linear unit) between layers.
+
+The input, hidden, and output layers are all `Linear` layers, which is the name for a dense layer in PyTorch. This just means that the layers each learn linear weights, and during inference, they feed these values forward to the next layer. The ReLU layers in between prevent values less than 0 from activating, creating non-linear effects between layers.
 
 From this, we implement the `update` method, which uses the PyTorch implementation to update the network parameters $\theta$, rather than calculating the gradient itself. We could also get the gradient and update $\theta$, but using an off-the-shelf implementation allows us to take advantage of optimisations.
 
@@ -426,15 +444,16 @@ We also need to implement the `get_q_value` method to pass through the network t
 :load: "../python_code/deep_qfunction.py"
 ```
 
-Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as integers.
+Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.
 
 We can now use this implementation by creating a standard Q-learning agent with a deep Q network as the Q function:
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_qlearning_run.py"
+
 ```
 
-Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation, so we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
+Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation. Therefore, we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-functions vs Deep Q-functions
@@ -454,7 +473,7 @@ Below we see a comparison between deep Q-functions and linear Q-functions.
 
 We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we intialise linear weights to 0, so Q-values are all 0.
 
-There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left.
+There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus underfitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
 
 The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.
 
