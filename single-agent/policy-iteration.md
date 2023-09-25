@@ -162,7 +162,7 @@ PolicyIteration(gridworld, policy).policy_iteration(max_iterations=100)
 gridworld.visualise_policy(policy)
 ```
 
-We can see that this matches the optimal policy according to [value iteration](sec:value_iteration).
+We can see that this matches the optimal policy according to [value iteration](sec:value-iteration).
 
 Let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action (left) and using that for every state:
 
