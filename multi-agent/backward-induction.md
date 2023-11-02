@@ -108,6 +108,7 @@ solution = backward_induction.backward_induction(tictactoe.get_initial_state())
 gv = GraphVisualisation(max_level = 1)
 tictactoe_subgraph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
 tictactoe_subgraph
+
 ```
 
 Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is 'empty'), and the third row is empty, playing in the middle cell will guarantee a winfor 'x' to win regardless what player 'o' does:
@@ -127,6 +128,7 @@ solution = backward_induction.backward_induction(next_state)
 gv = GraphVisualisation(max_level = 100)
 tictactoe_subgraph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
 tictactoe_subgraph
+
 ```
 
 As a result, the equilibrium of this sub-game is (1, -1). No matter which move player 'o' takes, they cannot draw or win if player 'x' follows the strategy highlighted.

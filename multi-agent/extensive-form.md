@@ -90,16 +90,13 @@ Then, we need to implement this interface to create an extensive form game:
 We can visualise extensive form games as *trees*, where the edges are actions, and the nodes are states.  The root node is the initial state. Consider the following extensive form game tree for the sharing game. The labels next to nodes indicate whose turn it is ("B" for brother and "S" for sister), and the tuples in nodes are the payoffs at that node (blank if there are no payoffs):
 
 ```{code-cell} ipython3
----
-tags: [remove-input]
----
 from sharing_game import SharingGame
 sharing = SharingGame()
 from graph_visualisation import GraphVisualisation
 
 gv = GraphVisualisation(max_level = 5)
 graph = gv.node_to_graph(sharing, sharing.game_tree())
-graph
+graph 
 ```
 
 ## Solutions for extensive form games
@@ -129,9 +126,6 @@ Therefore, a sub-game perfect equilibria is the best response for every agent in
 As an example, consider the sharing game. In this case, the same game on the left and middle have two equilibria because the payoffs for each of the moves are zero for the sister. In such a case, ties can be broken randomly or we can take all best responses. We can represent the subgame-perfect equilibria for the sharing game as follows, where the thicker arcs specify the move that the player should make (where the ties are broken randomly):
 
 ```{code-cell} ipython3
----
-tags: [remove-input]
----
 from sharing_game import SharingGame
 from backward_induction import BackwardInduction
 sharing = SharingGame()

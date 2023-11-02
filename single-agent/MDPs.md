@@ -42,9 +42,15 @@ The learning outcomes of this chapter are:
 ```
 ````
 
-Classical planning algorithms assume that action are deterministic. *Markov Decision Processes* (MDPs) remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability.
 
-For example:
+A *Markov Decision Process* (MDPs) is a framework for describing sequential decision making problems. In machine learning, problems such as classification and regression are one-time tasks. That is, a classification/regression model is given an input and returns an output. Then, the next input it is given it entirely independent from the first. In sequential decision making problems, we need to make a series of decisions over time, in which each decision influences the possible future. For example, navigating from one place to another requires us to choose a direction and velocity, move in that direction at the velocity, and then make this decision again and again until we reach our destination. So, even at that first step, we have to consider how each move affects the future. As another example, a clinician making medical treatment decisions has to consider whether decisions taken today will impact future decisions about their patients.
+
+In the language of reinforcement learning, we say that the decision maker is the **agent**, and their decisions are **actions** that they execute in an **environment** or **state**.
+
+
+Techniques like classical planning algorithms assume that action are *deterministic* -- that is, before  an agent executes an action in a state, it knows that the outcome of the action will be. MDPs  remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability. If there is only one outcome for each action (with probability 1), then the problem is deterministic. Otherwise, it is **non-deterministic**. MDPs consider **stochastic** non-determinism; that is, where there is a probability distribution over outcomes.
+
+Here are some examples of stochastic actions:
 
 -   Flipping a coin has two outcomes: heads ($\frac{1}{2}$) and tails
     ($\frac{1}{2}$)
@@ -54,6 +60,7 @@ For example:
     two outcomes: successful ($\frac{4}{5}$) and unsuccessful
     ($\frac{1}{5}$)
 -   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.
+-   When we send a patient for a test, there is a 20% the test will come back negative, and an 80% chance it will come back positive.
 
 MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.
 
@@ -74,7 +81,7 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 -   initial state $s_0 \in S$
 
--   actions $A(s) \subseteq A$ applicable in each state $s \in S$
+-   actions $A(s) \subseteq A$ applicable in each state $s \in S$ that our agent can execute.
 
 -   **transition probabilities** $P_a(s' \mid s)$ for $s \in S$ and
     $a \in A(s)$
@@ -85,15 +92,22 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 -   a **discount factor** $0 \leq \gamma < 1$
 :::
 
-What is different between an MDP and the models from classical planning? There are four main differences:
+Let's break down the above points in model detail.
 
--   The transition function is not deterministic. Each action has a probability of $P_a(s' \mid s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
+**States** are the possible situations in which the agent can be in. Each state captures the information required to make a decision. For example, in robot navigation, the state consists of the position of the robot, the current velocity of the robot, the direction it is heading, and  the position of obstacles, doors, etc. In an application for scheduling maintenance on vehicles for a delivery company, the state would consiste of vehicle IDs, vehicle properties such as make, maximum load, etc., location of vehicles, number of kilometres since their last maintenance check, etc.
 
--   There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.
+The **state space** is simple the set of all possible states. That is, the combination of all vehicle IDs, vehicle properties, maximum loads, etc.
 
--   There are no action costs. Actions costs are modelled as negative rewards.
+**Actions** allow agents to affect the environment/state --- that is, actions transition the environment from one state to another. They are also the choices that are available to an agent in each state: *which action should I choose now?* For now, we assume that the agent is the only entity that can affect a state. 
 
--   We have a *discount factor*.
+As noted above, an action can have multiple possible outcomes. Exactly one outcome will occur, but the agent does not know which one until after the action is executed.
+
+**Transition probabilities** tell us the effect(s) of each action, including the probabilities of each outcome. For example, in the vehicle maintenance task, when our agent schedules a vehicle to be inspected, possible outcomes could be: (a) no further maintenance required (80% chance); (b) minor maintenance required (15% chance); or (c) major maintenance required (5% chance).
+
+**Rewards** specifies the benefit or cost of executing a particular action in a particular state. For example, a robot navigating to its destination receives a positive reward (benefit) for eaching its destination, a small negative reward (cost) for running into objects on the way; and a large negative reward for running into people.
+
+
+
 
 ````{margin}
 ```{admonition} Video byte: Discounted rewards
@@ -128,6 +142,7 @@ gridworld = GridWorld()
 gridworld_image = gridworld.visualise()
 glue("gridworld_image", gridworld_image, display=False)
 ```
+
 
 :::{admonition} Example MDP: Grid World
 
@@ -347,6 +362,21 @@ Let's break this down into its parts:
 - Finally, the discount factor is simply a parameter to the MDP in this code, with default value 0.9.
 
 In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.
+
+
+### MDPs vs deterministic search
+
+You may have studied search algorithms previously, such as the problem of classical planning.
+
+What is different between an MDP and the models from classical planning? There are four main differences:
+
+-   The transition function is not deterministic. Each action has a probability of $P_a(s' \mid s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
+
+-   There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.
+
+-   There are no action costs. Actions costs are modelled as negative rewards.
+
+-   We have a discount factor. In classical planning, executing an action typically has a cost. A discount factor of less than 1 implicitly rewards shorter plans, all other things being equal.
 
 
 (sec:mdps:policies)=

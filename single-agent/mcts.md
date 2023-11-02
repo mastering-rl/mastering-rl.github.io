@@ -376,6 +376,7 @@ root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(
 gv = GraphVisualisation(max_level=6)
 graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
 graph
+
 ```
 
 The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.

@@ -1,5 +1,9 @@
 # Introduction
 
+These notes provide a foundational introduction to the problem of **reinforcement learning**.
+
+
+
 These notes are for the 2nd half of the subject [COMP90054 -- AI Planning for Autonomy](https://handbook.unimelb.edu.au/subjects/comp90054) at [The University of Melbourne](http://www.unimelb.edu.au).
 
 The first half of the subject details with *classical planning and search*. Classical planning tools can produce solutions quickly in large search spaces, but they make the following assumptions about the problem:
@@ -22,6 +26,16 @@ These notes should be used in combination with the videos, problem-solving lectu
 
 All code in this book is executable. You can download the code from [here](https://gibberblot.github.io/rl-notes/_static/code.zip).
 
+```{note}
+The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the [Kera RL](https://github.com/keras-rl/keras-rl) reinforcement learning package.
+
+If you understand the code in these notes, you will have little problem using production-level packages such as Kera RL.
+
+The code in this book is written with the attempt to use very little Python-specific syntax, to enable those less familiar with Python to understand code snippets.
+
+The code in this book is written using as few external libraries as possible, to make this easy to download and run yourself.
+```
+
 Once you have downloaded, unzip the code and add the folder to your PYTHONPATH variable if you want to download the Jupyter notebooks.
 
 Most files in the code have a ``main`` function that can be run using just ``python <filename>py``. For most of these, no external libraries are required. However, if you want to plot the graphs or draw the trees, you will need to install:
@@ -31,6 +45,10 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 2. The [Scipy library](https://www.scipy.org/) for helping with the graph plotting. You can download from the website or install with ``pip install scipy``.
 
 3. The [Graphviz Python library](https://graphviz.readthedocs.io/en/stable/) for drawing trees. You can download from the website or use ``pip install graphviz``. To render the generated graphs, you will also need to install [Graphviz the tool](https://www.graphviz.org/download/), which is called by the Python package.
+
+## The Author
+
+These notes are written and maintained by [Tim Miller](https://uqtmiller.github.io/), Professor of Artifical Intelligence at  [The University of Queensland](https://uq.edu.au/), Brisbane/Meaanjin, Australia.
 
 ## Acknowledgements
 
