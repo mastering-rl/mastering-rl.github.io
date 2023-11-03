@@ -280,6 +280,7 @@ Simulating the process of training the policy, we can see that initially, all fo
 - **Sample inefficiency**:  A disadvantage of REINFORCE is known as *sample inefficiency*. Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward).
 - **Loss of explainability**: Model-free reinforcement learning is a particularly challenging case to understand and explain why a policy is making a decision. This is largely due to the model-free property: there are no action definitions that can used as these are unknown. However, policy gradients are particularly difficult because the values of states are unknown: we just have a resulting policy. With value-based approaches, knowing $V$ or $Q$ provides some insight into why actions are chosen by a policy; although explainability problems still remain.
 
+(sec:policy-gradient:actor-critic)=
 # Actor critic methods
 
 ````{margin}
