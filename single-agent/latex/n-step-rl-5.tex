@@ -1,0 +1,47 @@
+\input{../../latex/tikz-macros}
+\usetikzlibrary{decorations.pathreplacing}
+
+\begin{document}
+\begin{tikzpicture}[scale=1]
+    % Define styles
+    \tikzstyle{state} = [circle, thick, draw, inner sep=3pt, font=\Large]
+    \tikzstyle{arrow} = [->, thick, font=\Large]
+
+    % Place the states
+    \node[state] (s0) at (0,0) {$s_0$};
+    \node[state] (s1) at (2,0) {$s_1$};
+    \node[state] (s2) at (4,0) {$s_2$};
+    \node[state] (s3) at (6,0) {$s_3$};
+    \node[state] (s4) at (8,0) {$s_4$};
+    \node[state] (s5) at (10,0) {$s_5$};
+
+    % Draw some dummy states to allow the bracket to span states before/after the trace
+    \node (sm1) at (-2,0) {};
+    \node (sm1) at (-4,0) {};
+    \node (s6)  at (12,0) {};
+    \node (s7)  at (14,0) {};
+
+    % Draw arrows to represent actions
+    \draw[arrow] (s0) -- node[above] {$a_0$} (s1);
+    \draw[arrow] (s1) -- node[above] {$a_1$} (s2);
+    \draw[arrow] (s2) -- node[above] {$a_2$} (s3);
+    \draw[arrow] (s3) -- node[above] {$a_3$} (s4);
+    \draw[arrow] (s4) -- node[above] {$a_3$} (s5);
+
+    % Add rewards above the states
+    \node[font=\large] at ([yshift=5pt]s1.north) {$r_1$};
+    \node[font=\large] at ([yshift=5pt]s2.north) {$r_2$};
+    \node[font=\large] at ([yshift=5pt]s3.north) {$r_3$};
+    \node[font=\large] at ([yshift=5pt]s4.north) {$r_4$};
+    \node[font=\large] at ([yshift=5pt]s5.north) {$r_5$};
+
+    % Add curly brace (move down and flip over)
+    \draw[decorate,decoration={brace,amplitude=10pt, mirror},thick, font=\Large] ([yshift=-5pt]s3.south) -- ([yshift=-5pt]s5.south) node[midway,below=10pt, font=\Large] 
+         {$\delta \leftarrow r_3+ \gamma r_4+ \gamma^2 r_5 - Q(s_2,a_2)$};
+
+    \node[font=\Large] at ([yshift=\qupdate]s4.south)
+         {$Q(s_2,a_2) \leftarrow Q(s_2, a_2) + \alpha \cdot \delta$};
+
+    \node[below, align=center, font=\Large] at \timetitle {$t=5$};
+\end{tikzpicture}
+\end{document}

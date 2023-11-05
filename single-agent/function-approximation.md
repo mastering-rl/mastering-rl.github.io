@@ -434,7 +434,7 @@ Using PyTorch, we create a sequential neural network with the following:
 3. The third and final layer is the output layer, whose dimensionality is the same as the action space, so that each action has a Q-value associated with it.
 3. We use a non-linear ReLU (rectified linear unit) between layers.
 
-The input, hidden, and output layers are all `Linear` layers, which is the name for a dense layer in PyTorch. This just means that the layers each learn linear weights, and during inference, they feed these values forward to the next layer. The ReLU layers in between prevent values less than 0 from activating, creating non-linear effects between layers.
+The input, hidden, and output layers are all `Linear` layers, which is the name for a dense (fully connected) layer in PyTorch. This just means that the layers each learn linear weights, and during inference, they feed these values forward to the next layer. The ReLU layers in between prevent values less than 0 from activating, creating non-linear effects between layers.
 
 From this, we implement the `update` method, which uses the PyTorch implementation to update the network parameters $\theta$, rather than calculating the gradient itself. We could also get the gradient and update $\theta$, but using an off-the-shelf implementation allows us to take advantage of optimisations.
 

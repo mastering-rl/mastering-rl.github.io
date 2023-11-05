@@ -65,6 +65,13 @@ When $n=2$, the algorithm looks one step beyond the immediate reward, $n=3$ it l
 Both Q-learning and SARSA have an n-step version. We will look at n-step learning more generally, and then show an algorithm for n-step
 SARSA. The version for Q-learning is similar.
 
+### Intuition
+
+The details and algorithm for n-step reinforcement learning making it seem more complicated than it really is. 
+At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received.
+
+
+
 ### Discounted Future Rewards (again)
 
 When calculating a discounted reward over a trace, we simply sum up the rewards over the trace:

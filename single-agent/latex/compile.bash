@@ -10,3 +10,7 @@ for f in $TEX; do
 done
 
 rm *.aux *.log *.pdf
+
+convert -delay 100 -loop 0 n-step*.png n_step_window.gif
+
+rm n-step-[0-7].png

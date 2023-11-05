@@ -1,0 +1,35 @@
+\input{../../latex/tikz-macros}
+\usetikzlibrary{decorations.pathreplacing}
+
+\begin{document}
+\begin{tikzpicture}[scale=1]
+    % Define styles
+    \tikzstyle{state} = [circle, thick, draw, inner sep=3pt, font=\Large]
+    \tikzstyle{arrow} = [->, thick, font=\Large]
+
+    % Place the states
+    \node[state] (s0) at (0,0) {$s_0$};
+    \node[state] (s1) at (2,0) {$s_1$};
+
+    % Draw some dummy states to allow the bracket to span states before/after the trace
+    \node (sm1) at (-2,0) {};
+    \node (sm2) at (-4,0) {};
+    \node (s6)  at (12,0) {};
+    \node (s7)  at (14,0) {};
+
+    % Draw arrows to represent actions
+    \draw[arrow] (s0) -- node[above] {$a_0$} (s1);
+
+    % Add rewards above the states
+    \node[font=\large] at ([yshift=5pt]s1.north) {$r_1$};
+
+    % Add curly brace (move down and flip over)
+    \draw[decorate,decoration={brace,amplitude=10pt, mirror},thick, font=\Large] ([yshift=-13.5pt]sm1.south) -- ([yshift=-5pt]s1.south) node[midway,below=10pt, font=\Large] 
+         {No update};
+
+    \node[font=\Large] at ([yshift=\qupdate]s0.south)
+         {\phantom{$Q(s,a)$}};
+
+    \node[below, align=center, font=\Large] at \timetitle {$t=1$};
+\end{tikzpicture}
+\end{document}
