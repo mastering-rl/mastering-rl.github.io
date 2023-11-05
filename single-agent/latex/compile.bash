@@ -11,6 +11,6 @@ done
 
 rm *.aux *.log *.pdf
 
-convert -delay 100 -loop 0 n-step*.png n-step-window.gif
+convert -delay 100 -loop 0 n-step*.png ../../assets/gifs/n-step-window.gif
 
 rm n-step-rl-[0-7].png
