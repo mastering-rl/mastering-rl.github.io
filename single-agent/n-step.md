@@ -68,7 +68,9 @@ SARSA. The version for Q-learning is similar.
 ### Intuition
 
 The details and algorithm for n-step reinforcement learning making it seem more complicated than it really is. 
-At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received.
+At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received, plus the discounted future rewards from $n$ states ahead.
+
+Consider the following interative gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
@@ -77,6 +79,24 @@ At an intuitive level, it is quite straightforward: at each step, instead of upd
 </div>
 <p>
 ```
+
+At time $t=0$, no update can be made because there is no action.
+
+At time $t=1$, after action $a_0$, no update is done yet. In standard TD learning, we would update $Q(s_0, s_0)$ here. However, because we have only one reward instead of three ($n=3$), we delay the update.
+
+At time $t=2$, after action $a_1$, again we do not update because we have just two rewards, instead of three.
+
+At time $t=3$, after action $a_2$, we have three rewards, so we do our first update. But note: we update $Q(s_0, a_0)$ -- the first state-action pair in the sequence, rather than the most recent state action pair $(s_2,a_2)$. Notice that we consider the rewards $r_1$, $r_2$, and $r_3$ (appropriately discounted), and use the discounted future reward $V(s_3)$.  Effectively, the update of $Q(s_0, a_0)$ "looks forward" three actions into the future instead one, because $n=3$.
+
+At time $t=4$, after action $a_3$, the update is similar: we now update $Q(s_1, a_1)$.
+
+At time $t=5$, it is similar again, except that state $s_5$ is a terminal state, so we do not include the discounted future reward -- there is no state $s_6$ such that we can estimate $V(s_6)$, so it is omitted.
+
+At time $t=6$, we can see that the window slides beyond the length of the episode. However, even though we have reached the terminal state, we continue updating --- this time updating $Q(s_3, s_3)$. We need to do this because we have still not updated the Q-values for all state-action pairs that we have executed.
+
+At time $t=7$, we do the final update --- this time for $Q(s_4,a_4)$; and the episode is complete.
+
+So, we can see that, intuitively, $n$-step reinforcement learning is quite straightfoward. However, to implement this, we need data structures to keep track of the last $n$ states, actions, and rewards, and modifications to the standard TD learning algorithm to both delay Q-value updates in the first $n$ steps of an episode, and to continue updating beyond the end of the episode for ensure the last $n$ state-action pairs are updated. This "book-keeping" code can be confusing at first, unless we already have an intuitive understanding of what it achieves.
 
 ### Discounted Future Rewards (again)
 
