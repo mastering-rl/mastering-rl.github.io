@@ -70,7 +70,13 @@ SARSA. The version for Q-learning is similar.
 The details and algorithm for n-step reinforcement learning making it seem more complicated than it really is. 
 At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received.
 
-
+```{div} full-width
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="n_step_window" src="https://gibberblot.github.io/rl-notes/gifs/n-step-window.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="n_step_window" width="900"></gif-player>
+</div>
+<p>
+```
 
 ### Discounted Future Rewards (again)
 
