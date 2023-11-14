@@ -1,3 +1,8 @@
+
+```{figure} ./logo-3D.svg
+:name: logo
+```
+
 # Introduction
 
 This book provides a foundational introduction to the problem of **reinforcement learning**.

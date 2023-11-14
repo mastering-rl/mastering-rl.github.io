@@ -3,7 +3,7 @@
 
 title: Introduction to Reinforcement Learning
 author: Tim Miller, The University of Queensland
-logo: logo.png
+logo: logo-3D.svg
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

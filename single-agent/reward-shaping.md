@@ -67,8 +67,7 @@ solved.
 ```
 ````
 
-:::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to
-learn how to get the kangaroo across the freeway?
+:::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to learn how to get the kangaroo across the freeway?
 
 ![image](./figs/freeway_screenshot.png)
 :::

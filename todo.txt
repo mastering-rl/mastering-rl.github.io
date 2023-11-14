@@ -1,8 +1,15 @@
+Images:
+- n-armed bandit
+- td vs n-step v MC
+- n-step window
+- policy evaluation -> policy improvement loop
+- gradients
+- actor critic
 
 High priority:
+- italics -> bold for definitions
 - add visualisation of RL training
 - add introductory chapter solving an atari game using deep rl
-- Figure for N-step reinforcement learning: forward view and sliding window
 - add summary to n-step RL and any other page that doesn't have it!
 - add eligibility traces
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
