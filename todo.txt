@@ -7,6 +7,7 @@ Images:
 - actor critic
 
 High priority:
+- Use coloured boxed for learning outcomes and end-of-chapter "takeaways"
 - italics -> bold for definitions
 - add visualisation of RL training
 - add introductory chapter solving an atari game using deep rl
