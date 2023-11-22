@@ -28,6 +28,7 @@ repository:
 html:
   use_issues_button: true
   use_repository_button: true
+  google_analytics_id: G-MJY0T8BLG8
 
 # Enable extended syntax
 parse:

@@ -1,5 +1,6 @@
 Images:
-- n-armed bandit
+- deterministic vs stochastic policies.
+- n-armed banditt
 - td vs n-step v MC
 - n-step window
 - policy evaluation -> policy improvement loop
@@ -7,6 +8,7 @@ Images:
 - actor critic
 
 High priority:
+- evaluating policies during learning
 - Use coloured boxed for learning outcomes and end-of-chapter "takeaways"
 - italics -> bold for definitions
 - add visualisation of RL training
@@ -16,11 +18,13 @@ High priority:
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - add contested crossing throughout notes
 - n-step learning videos
+- MARL non-stationarity
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
 - Maybe add grid lock and key as an example. Mor's AAMAS deception paper
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Reward shaping example using contested crossing?
 - Video or gif of policy executions
+- RLHF
 
 
 Low priority:
