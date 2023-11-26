@@ -141,6 +141,111 @@ Using the visualisation below, stepping through the 100 iterations, we can see t
 </div>
 <p>
 
+
+## Evaluating policies 
+
+We can see the improvement that value iteration has on each iteration by extracting the policy after each iteration, running the policy on the GridWorld, and plotting the cumulative reward that is received. We run value iteration on GridWorld for 1 iteration, but 50 times, using the same value function each time, meaning the the value iteration algorithm will update the value function. After each iteration, we extract the policy and execute the policy for 1 episode, recording the cumulative reward that was received:
+
+```{code-cell} ipython3
+gridworld = GridWorld()
+values = TabularValueFunction()
+policy = values.extract_policy(gridworld)
+rewards = gridworld.execute_policy(policy, episodes=1)
+for _ in range(50):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
+    policy = values.extract_policy(gridworld)
+    rewards += gridworld.execute_policy(policy, episodes=1)
+```
+
+The `rewards` variables contains the cumulative reward for each of the 50 episodes. We can plot this:
+
+```{code-cell} ipython3
+from tests.plot import Plot
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
+```
+
+As we can see, there is quite a bit of noise. This is because of the randomness in the GridWorld problem: each time an agent executes an action, it is successful 80% of the time, but fails 20%. Sometimes, the agent will fall into the hole in cell (2,1), and will receive reward -1.
+
+However, we can smooth out the noise by plotting the exponential moving average (EMA), which averages the rewards received so far, but exponentially discounting rewards that are further in the past (earlier in the list).  This is a standard way of smoothing time series data. Given a **smoothing factor** $\alpha \in [0,1]$, we calculate the smoothed value $s_t$ at step (or time) $t$, the EMA for a sequence $\vec{x}$ is calculated:
+
+$\quad\quad s_0 = \vec{x}_0$\
+$\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \textrm{when} t > 0$
+
+A higher value of $\alpha$ smooths the data more --- that is, earlier values have more influence on $s_t$. A value of $\alpha=0$ just means that $s_t = \vec{x}_t$ (see the example above where we plot the cumulative rewards with `smoothing_factor=0.0`); while a value of $\alpha=1$ means that $s_t = \vec{x}_0$ for any $t$.
+
+An implemenation of the EMA in Python is shown below:
+
+```{code-cell}
+def get_ema(rewards, smoothing_factor=0.9):
+    smoothed_rewards = []
+    for reward in rewards:
+        if smoothed_rewards == []:
+            smoothed_rewards = [reward]
+        else:
+            smoothed_rewards += [
+                smoothed_rewards[-1] * smoothing_factor
+                + reward * (1 - smoothing_factor)
+            ]
+    return smoothed_rewards
+```
+
+Setting the smoothing factor $\alpha=0.9$, we can better see the trend that the policy gets increasingly better values:
+
+```{code-cell} ipython3
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.9)
+```
+
+Even though the value function (and policy) are monotonically converging towards their optimal values, the curve still has some noise because of randomness in the GridWorld problem.
+
+We can show this by creating an instance of a deterministic `GridWorld` class, using the parameter `noise=0.0`. The `noise` parameter controls action failures in `GridWorld`, so that when the agent selects an action, it will fail with probabiliy `noise`. When `noise==0.0`, the action will always be successful:
+
+```{code-cell} ipython3
+
+values = TabularValueFunction()
+gridworld = GridWorld(noise=0.0)
+policy = values.extract_policy(gridworld)
+rewards = gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+for _ in range(50):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
+    policy = values.extract_policy(gridworld)
+    rewards += gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+```
+
+:::{note}
+Compared to when we evaluated the policy earlier, there is a difference in the code above (other than `noise=0.0`): when we execute the policy, we have set the parameter `random_on_duplicate=True`. This means that when we are executing the policy, if we encounter a state that has been visited previously, a random action should be selected.
+
+Why do this? 
+
+Because a policy can contain loops! That is, in state $s_1$, the policy tells us to execute action $a_1$, taking us to state $s_2$. Then from state $s_2$, the policy tells us to execute action $a_2$, which takes us back to state $s_1$. Again, the policy will tell us to execute action $a_1$, return to state $s_2$:
+
+$$ 
+\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
+$$
+
+This will loop infinitely long when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic).  
+
+When `noise>0.0` in GridWorld, a loop does not matter --- eventually the randomness will break us out of this loop.
+
+However, when `noise=0.0`, because we are using a deterministic tabular policy, loops can occur. This is particularly the case in early iterations, when we have minimal information to select actions. Therefore, when we visit a state we have seen previously, we randomly select an action, and the loop will eventually be exited.
+:::
+
+Plotting this with no smoothing shows that we reach the optimal policy in much fewer iterations than value iteration terminates:
+
+```{code-cell} ipython3
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
+```
+
+Plotting this with smoothing at $\alpha=0.9$ shows the gradual convergence nicely:
+
+```{code-cell} ipython3
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.9)
+```
+
+## Further examples
+
 ### Example: Value iteration for maze solving
 
 We can use the same technique to solve a maze. Below is the value function, obtained using value iteration, of a small maze with two rewards: +1 for existing the maze, and +5 for picking up an object along the way. It is not possible to visualise the value function in a single static image like this, because one part of the MDP state is a Boolean indicating whether the +5 reward has been collected already. However, we can see here the value function would produce a policy that ensure the +5 reward was collected before going to the exit:
@@ -173,7 +278,9 @@ from tabular_value_function import TabularValueFunction
 ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
-ccross.visualise_value_function(values, "Value function after 100 iterations", mode=3, cell_size=1.6)
+ccross.visualise_value_function(
+    values, "Value function after 100 iterations", mode=3, cell_size=1.6
+)
 ```
 
 In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are average into the figure.
@@ -186,7 +293,9 @@ Below, we include a  visualisation that includes means for different values of s
 
 ```{code-cell} ipython3
 
-ccross.visualise_value_function(values, "Value function after 100 iterations, with sub-tables", mode=0, cell_size=1.6)
+ccross.visualise_value_function(
+    values, "Value function after 100 iterations, with sub-tables", mode=0, cell_size=1.6
+)
 ```
 
 The behaviour we could extract from this shows a more complicated picture than if we just consider the mean value of the states at the location. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.

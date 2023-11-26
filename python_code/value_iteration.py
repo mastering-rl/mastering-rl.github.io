@@ -1,6 +1,5 @@
-from gridworld import *
-from tabular_value_function import *
-from qtable import *
+from tabular_value_function import TabularValueFunction
+from qtable import QTable
 
 
 class ValueIteration:

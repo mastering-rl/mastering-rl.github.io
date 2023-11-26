@@ -6,7 +6,7 @@ from gridworld_potential_function import GridWorldPotentialFunction
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 print("==========\nTabular Q-learning: Gridworld\n==========")
-mdp = GridWorld()
+mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 qfunction = QTable()
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 policy = qfunction.extract_policy(mdp)
@@ -15,7 +15,7 @@ print(mdp.policy_to_string(policy))
 q_learning_rewards = mdp.get_rewards()
 
 print("==========\nReward Shaped Q-learning: Gridworld\n==========")
-mdp = GridWorld()
+mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 qfunction = QTable()
 potential = GridWorldPotentialFunction(mdp)
 RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute()

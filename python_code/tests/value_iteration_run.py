@@ -1,26 +1,49 @@
 from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
+from tests.plot import Plot
 
 
-mdp = GridWorld()
-mdp.visualise()
-
+gridworld = GridWorld()
 for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
     values = TabularValueFunction()
-    ValueIteration(mdp, values).value_iteration(max_iterations=iterations)
-    mdp.visualise_value_function(values, "After %d iterations" % (iterations))
+    ValueIteration(gridworld, values).value_iteration(max_iterations=iterations)
+    gridworld.visualise_value_function(values, "After %d iterations" % (iterations))
 
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=100)
-policy = values.extract_policy(mdp)
-mdp.visualise_policy(policy, "Policy after 100 iterations")
+ValueIteration(gridworld, values).value_iteration(max_iterations=100)
+policy = values.extract_policy(gridworld)
+gridworld.visualise_policy(policy, "Policy after 100 iterations")
 
-mdp = GridWorld.open('layouts/room.txt')
-mdp.visualise(grid_size=0.8)
+maze = GridWorld.open("../python_code/layouts/maze.txt")
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=100)
-mdp.visualise_value_function(values, grid_size=0.8, title="100 iterations")
-policy = values.extract_policy(mdp)
-mdp.visualise_policy(policy, "", grid_size=0.8)
+ValueIteration(maze, values).value_iteration(max_iterations=100)
+maze.visualise_value_function(values, grid_size=0.8, title="100 iterations")
+policy = values.extract_policy(maze)
+maze.visualise_policy(policy, "", grid_size=0.8)
 
+values = TabularValueFunction()
+gridworld = GridWorld()
+policy = values.extract_policy(gridworld)
+rewards = gridworld.execute_policy(policy, episodes=1)
+for _ in range(50):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
+    policy = values.extract_policy(gridworld)
+    rewards += gridworld.execute_policy(policy, episodes=1)
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.9)
+
+
+# Plot the curve on a deterministic version of GridWorld (noise=0.0)
+values = TabularValueFunction()
+gridworld = GridWorld(noise=0.0)
+policy = values.extract_policy(gridworld)
+rewards = gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+for _ in range(50):
+    ValueIteration(gridworld, values).value_iteration(max_iterations=1)
+    policy = values.extract_policy(gridworld)
+    rewards += gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.9)

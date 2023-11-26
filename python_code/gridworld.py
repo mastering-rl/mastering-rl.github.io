@@ -38,9 +38,13 @@ class GridWorld(MDP):
         else:
             self.goal_states = dict(goals)
 
-        # A list of lists thatrecords all rewards given at each step
+        # A list of lists that records all rewards given at each step
         # for each episode of a simulated gridworld
         self.rewards = []
+
+        # A list of cumulative rewards for each episode
+        self.cumulative_rewards = []
+    
         # The rewards for the current episode
         self.episode_rewards = []
 
@@ -153,17 +157,25 @@ class GridWorld(MDP):
 
     def is_terminal(self, state):
         if state == self.TERMINAL:
-            #self.rewards += [self.episode_rewards]
             return True
         return False
 
     """
         Returns a list of lists, which records all rewards given at each step
-        for each episodeof a simulated gridworld
+        for each episode of a simulated gridworld
     """
 
     def get_rewards(self):
         return self.rewards
+    
+
+    """
+        Returns a list of all cumulative rewards
+        for each episode of a simulated gridworld
+    """
+
+    def get_cumulative_rewards(self):
+        return self.cumulative_rewards
 
     """
         Create a gridworld from an array of strings: one for each line
@@ -826,6 +838,7 @@ class GridWorld(MDP):
     def execute(self, state, action):
         if state in self.goal_states:
             self.rewards += [self.episode_rewards]
+            self.cumulative_rewards += [sum(self.episode_rewards)]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
@@ -935,6 +948,7 @@ class OneDimensionalGridWorld(GridWorld):
         # a terminate action to immediately terminate
         if state in self.goal_states:
             self.rewards += [self.episode_rewards]
+            self.cumulative_rewards += [sum(self.episode_rewards)]
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 

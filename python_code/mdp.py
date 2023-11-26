@@ -1,7 +1,8 @@
 import random
 
+
 class MDP:
-    """ Return all states of this MDP """
+    """Return all states of this MDP"""
 
     def get_states(self):
         abstract
@@ -66,19 +67,36 @@ class MDP:
                     + str(state)
                 )
 
-        raise (
+        raise BaseException(
             "No outcome state in simulation for action"
             + str(action)
             + " from "
             + str(state)
         )
 
-    """ Execute a policy on this mdp for a number of episodes """
+    """ 
+    Execute a policy on this mdp for a number of episodes.
+    Return the cumulative reward of each episode as a list.
+    When True, random_on_duplicate detects when a state has been visited before, and selects a random action to avoid infinitely looping policies.
+    """
 
-    def execute_policy(self, policy, episodes=100):
+    def execute_policy(self, policy, episodes=100, random_on_duplicate=False):
+        cumulative_rewards = []
+        states = set()
         for _ in range(episodes):
+            cumulative_reward = 0.0
             state = self.get_initial_state()
+            step = 0
             while not self.is_terminal(state):
-                action = policy.select_action(state)
+                if state in states and random_on_duplicate:
+                    action = random.choice(self.get_actions(state))
+                else:
+                    action = policy.select_action(state)
+                    if random_on_duplicate: states.add(state)
+
                 (next_state, reward) = self.execute(state, action)
+                cumulative_reward += reward * (self.discount_factor ** step)
                 state = next_state
+                step += 1
+            cumulative_rewards += [cumulative_reward]
+        return cumulative_rewards

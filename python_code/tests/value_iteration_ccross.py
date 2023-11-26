@@ -1,24 +1,50 @@
 from contested_crossing import ContestedCrossing
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
+from tests.plot import Plot
 
-mdp = ContestedCrossing()
+
+ccross = ContestedCrossing()
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=10)
+ValueIteration(ccross, values).value_iteration(max_iterations=10)
 enemy_health = direction = 1
-for x in [1,2]:
-    for y in [1,2]:
-        for ship_health in [1,2]:
-            print("state: {0} - value: {1}".format((x,y, ship_health, enemy_health, direction),
-                                                   round(values.value_table[(x, y, ship_health, enemy_health, direction)], 3)))
+for x in [1, 2]:
+    for y in [1, 2]:
+        for ship_health in [1, 2]:
+            print(
+                "state: {0} - value: {1}".format(
+                    (x, y, ship_health, enemy_health, direction),
+                    round(
+                        values.value_table[
+                            (x, y, ship_health, enemy_health, direction)
+                        ],
+                        3,
+                    ),
+                )
+            )
 
 for iterations in [10]:
     values = TabularValueFunction()
-    ValueIteration(mdp, values).value_iteration(max_iterations=iterations)
-    mdp.visualise_value_function(values, "After %d iterations" % (iterations), mode=3)
+    ValueIteration(ccross, values).value_iteration(max_iterations=iterations)
+    ccross.visualise_value_function(
+        values, "After %d iterations" % (iterations), mode=3, cell_size=1.6
+    )
 
 values = TabularValueFunction()
-ValueIteration(mdp, values).value_iteration(max_iterations=2)
-policy = values.extract_policy(mdp)
-mdp.visualise_policy(policy, "Policy plot after 100 iterations", mode=0)
-mdp.visualise_policy(policy, "Path Plot after 100 iterations", mode=1)
+ValueIteration(ccross, values).value_iteration(max_iterations=2)
+policy = values.extract_policy(ccross)
+ccross.visualise_policy(policy, "Policy plot after 100 iterations", mode=0)
+ccross.visualise_policy(policy, "Path Plot after 100 iterations", mode=1)
+
+
+values = TabularValueFunction()
+ccross = ContestedCrossing()
+policy = values.extract_policy(ccross)
+rewards = ccross.execute_policy(policy, episodes=1, random_on_duplicate=True)
+for _ in range(50):
+    ValueIteration(ccross, values).value_iteration(max_iterations=1)
+    policy = values.extract_policy(ccross)
+    rewards += ccross.execute_policy(policy, episodes=1, random_on_duplicate=True)
+
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
+Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.9)
