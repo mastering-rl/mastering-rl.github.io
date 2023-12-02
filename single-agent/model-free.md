@@ -99,7 +99,7 @@ This game is of interest because it is a *model-free* (at least initially) Marko
 
 Imagine how hard it is for a computer that doesn't have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did --- they just construct the policy directly.
 
-## Intuition of model-free reinforcement learning
+### Intuition of model-free reinforcement learning
 
 There are many different techniques for model-free reinforcement learning, all with the same basis:
 
@@ -114,7 +114,7 @@ There are many different techniques for model-free reinforcement learning, all w
 -   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
 (sec:model-free:monte-carlo-learning)=
-# Monte-Carlo reinforcement learning
+## Monte-Carlo reinforcement learning
 
 ````{margin}
 ```{admonition} Video byte: Monte-Carlo simulation
@@ -271,7 +271,7 @@ In this chapter, we will look at two TD methods that differ in the way that they
 
 
 (sec:model-free:q-learning)=
-# Q-Learning: Off-policy temporal-difference learning
+## Q-Learning: Off-policy temporal-difference learning
 
 ````{margin}
 ```{admonition} Video byte: Q-learning
@@ -304,7 +304,7 @@ $\quad\quad\quad\quad s \leftarrow s'$\
 $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 :::
 
-## Updating the Q-function
+### Updating the Q-function
 
 Updating the Q-function is where the learning happens:
 
@@ -342,7 +342,7 @@ $$
 Using Q-tables to represent Q-functions, Q-learning will converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often. 
 :::
 
-## Policy extraction using Q-functions
+### Policy extraction using Q-functions
 
 Using model-free learning, we iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.
 
@@ -352,7 +352,7 @@ $$\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)$$
 
 This selects the action with the maximum Q-value. Given an optimal Q-function (for the MDP), this results in optimal behaviour.
 
-## Implementation
+### Implementation
 
 To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains most of the code we need:
 
@@ -411,7 +411,7 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 <p>
 
 (sec:model-free:sarsa)=
-# SARSA: On-policy reinforcement learning
+## SARSA: On-policy temporal difference learning
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
@@ -480,7 +480,7 @@ Q((2,2),N) & \leftarrow & Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N
 $$
 :::
 
-## Implementation
+### Implementation
 
 As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
@@ -516,7 +516,7 @@ gridworld.visualise_policy(policy)
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
 
-## SARSA vs. Q-learning example: Cliff world
+### SARSA vs. Q-learning example: Cliff world
 
 ````{margin}
 ```{admonition} Video byte: Cliffworld example
@@ -591,7 +591,7 @@ However, once training is complete, we extract a policy. Because the actions are
 
 The end result for the SARSA (on policy) method is a sub-optimal policy, but one that achieves stronger rewards during training.
 
-## SARSA vs. Q-learning example: Contested crossing
+### SARSA vs. Q-learning example: Contested crossing
 
 What happens when we train on a more complicated example?
 
@@ -614,7 +614,7 @@ The resulting final policies, when executed after 20,000 episodes, also show tha
 ```
 
 (sec:model-free:on-policy-vs-off-policy)=
-### On-policy vs. off-policy: Why do we have both?
+## On-policy vs. off-policy: Why do we have both?
 
 ````{margin}
 ```{admonition} Video byte: On-policy vs. off-policy -- Why do we have both?
@@ -624,11 +624,11 @@ The resulting final policies, when executed after 20,000 episodes, also show tha
 
 There are a few reasons why we have both on-policy and off-policy learning.
 
-#### Learning from prior experience
+### Learning from prior experience
 
 The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by *demonstration*. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
 
-#### Learning on the job
+### Learning on the job
 
 The main advantage of on-policy approaches is that they are useful for 'learning on the job', meaning that it is better for cases in which we want an agent to learn optimal behaviour while operating in its environment. 
 
@@ -638,7 +638,7 @@ As such, if the average reward *per episode* is better using on-policy, this wou
 
 If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.
 
-#### Combining off-policy and on-policy learning
+### Combining off-policy and on-policy learning
 
 We can combine the two approaches for particular applications. For example, if we use take our cloud platform from above, it would be silly to start with a random policy. We would quickly lose customers as the scheduling etc., would be terrible. 
 
@@ -648,6 +648,64 @@ However, this new policy will merely mimic the hand-crafted algorithm. Presumabl
 
 Another common place for combining off-policy and on-policy learning is when we have an existing approach and we can use data from this with an off-policy approach to come up with an initial policy, which can be refined using on-policy.
 
+## Evaluation and termination
+
+How do we know how many episodes we should train a model-free learning algorithm for?
+
+With [value iteration](sec:value-iteration), we terminate the algorithm once the improvement in value function reaches some threshold. However, in the model-free environment, we are not aiming to learn a complete policy -- only enough to get us from the initial state to an absorbing state; or, in the case of an infinite MDP, to maximise rewards. Due to the randomness of the exploration and the fact that an episode may visit a state it has rarely visited, it is likely that for each episode, a Q-value of at least one state-action pair changes.
+
+With model-free learning, we can instead evalute the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
+
+There are a few ways we can measure this:
+1. We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use [epsilon-greedy](sec:multi-armed-bandits:epsilon-greedy) to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability $\epsilon$. This means that we are not evaluating our real policy --- we are evaluating our really policy plus some random actions. 
+2. We can pause our learning every now and then, and run our actual policy on the MDP. The strength of this is that we avoid randomness in action selection. However, we still have randomness caused by the stochastic nature of the MDP. The weakness is that it requires us to run more episodes; or more accurately, we are executing episodes and not learning from them.
+3. To avoid stochasticity in both the environment and the exploration strategy, we can average the reward over a number of simulations. The weakness is that this is more costly -- it requires us to run additional episodes that do not explore and learn.
+
+In these notes, we use the strategy in item 2 above. Every 20 episodes, we run our policy and record the cumulative reward. As we don't know what the maximum reward could be, we monitor the learning and terminate when the [exponential moving average](sec:value-iteration:evaluating-policies) of our reward is no longer increasing, similar to what we did in [evaluating the value iteration policy](sec:value-iteration:evaluating-policies). Here, we plot the **learning curve** for Q-learning on the GridWorld example:
+
+```{code-cell} ipython3
+episodes = 2000
+episodes_per_evaluation = 20
+qfunction = QTable()
+mdp = GridWorld()
+policy = qfunction.extract_policy(mdp)
+rewards = mdp.execute_policy(policy, episodes=1)
+for _ in range(int(episodes / episodes_per_evaluation)):
+    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
+    policy = qfunction.extract_policy(mdp)
+    rewards += mdp.execute_policy(policy, episodes=1)
+```
+
+Once we have the rewards of the episodes, we can plot the rewards:
+
+```{code-cell} ipython3
+Plot.plot_cumulative_rewards(
+    ["Q-learning"], [rewards], episodes_per_evaluation=episodes_per_evaluation
+)
+```
+
+We can see that the policy converges at around 1000 episodes. However, recalling that this is smoothed using the exponential moving average, it probably converges in fewer episodes, but the early episodes weight on the average still.
+
+Next, we do the same for the contested crossing example:
+
+```{code-cell} ipython3
+episodes = 2000
+episodes_per_evaluation = 20
+qfunction = QTable()
+mdp = ContestedCrossing()
+policy = qfunction.extract_policy(mdp)
+rewards = mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
+for _ in range(int(episodes / episodes_per_evaluation)):
+    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
+    policy = qfunction.extract_policy(mdp)
+    rewards += mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
+
+Plot.plot_cumulative_rewards(
+    ["Q-learning"], [rewards], episodes_per_evaluation=episodes_per_evaluation
+)
+```
+
+We can see a convergence at about 1250-1500 episodes.
 
 ## Limitations of Q-learning and SARSA
 
@@ -663,7 +721,7 @@ The standard versions that we see in this section have two major limitations:
 
 2. If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory or at least so large that it will take many episodes to sample all state-action pairs.
 
-### Applications of Reinforcement Learning
+## Applications of Reinforcement Learning
 
 -   Checkers (Samuel, 1959): first use of RL in an interesting real game
 
@@ -681,11 +739,10 @@ The standard versions that we see in this section have two major limitations:
     
 -   TD-Gammon and Jellyfish (Tesauro, Dahl): World's best backgammon player. Grandmaster level
 
-### Further Reading
+## Further Reading
 
--   Chapter 6 of *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]
-
-    Available at: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+-   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and
+    Barto](https://incompleteideas.net/book/the-book-2nd.html)
 
 
 ## Summary 

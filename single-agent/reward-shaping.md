@@ -306,8 +306,8 @@ Once we start learning over episodes, we will select those actions with a higher
 
 ### Related Reading
 
--   Chapter 9 (Approximate Solution Methods) of *Introduction to
-    Reinforcement Learning* \[*Sutton and Barto*\]: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+-   Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and
+    Barto](https://incompleteideas.net/book/the-book-2nd.html)
 
 
-[^1]: Wiewiora: ?Potential-based shaping and Q-value initialization are equivalent.? (JAIR, 2003)
+[^1]: Wiewiora, Eric. "Potential-based shaping and Q-value initialization are equivalent." Journal of Artificial Intelligence Research 19 (2003): 205-208. [https://www.jair.org/index.php/jair/article/download/10338/24713/](https://www.jair.org/index.php/jair/article/download/10338/24713/)

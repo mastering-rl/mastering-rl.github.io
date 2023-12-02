@@ -533,7 +533,8 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 ## Further Reading
 
-- Chapter 9 (Approximate Solution Methods) of *Introduction to Reinforcement Learning* \[*Sutton and Barto*\]: <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>
+- Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and
+    Barto](https://incompleteideas.net/book/the-book-2nd.html)
 
 - Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
 

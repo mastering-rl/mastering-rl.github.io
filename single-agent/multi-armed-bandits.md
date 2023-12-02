@@ -165,6 +165,7 @@ So, these algorithms choose an arm, and then add the reward from that to a cumul
 
 The key difference between the solutions we will look at is how the $\textrm{select}$ function is implemented. This is what determines the policy $\pi(k)$ for the multi-armed bandit problem.
 
+(sec:multi-armed-bandits:epsilon-greedy)=
 ### Epsilon-greedy strategy
 
 ````{margin}
@@ -276,6 +277,8 @@ plot_softmax(drift=True)
 ```
 As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
 
+Note that higher values of tau also work when the drift is more gradual, rather than a sudden change as we simulate here.
+
 ### Upper Confidence Bounds (UCB1)
 
 ````{margin}
@@ -324,7 +327,6 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_comparison.py"
-
 ```
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.
@@ -336,7 +338,9 @@ plot_comparison(drift=True)
 
 ```
 
-From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previous good are no longer good, thus encouraging exploration to other actions, but also, those that had poor Q-values but are now good actions would not have been visited as much previously, which also encourages exploration. Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.
+From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previously good are no longer good. This encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration. 
+
+Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.
 
 While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case if the underlying probability distributions change or drift regularly. In those cases, softmax may be a better choice.
 

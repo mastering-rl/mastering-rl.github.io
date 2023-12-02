@@ -358,7 +358,7 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ## Values of *n*
 
-**Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Doing this, which is called *Monte-Carlo simulation*, does not work so well in practice. In effect, we would no longer have an TD estimates in the update rule, which leads to more variance in the learning. 
+**Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Doing this is the same as [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning), as we would no longer use TD estimates in the update rule. As we have seen, this leads to more variance in the learning.
 
 **What is the best value for $n$ then?** Unfortunately, there is no theoretically best value for $n$. It depends on the particular application and reward function that is being trained. In practice, it seems that values of $n$ around 4-8 give good updates because we can easily assign credit to each of the 4-8 actions; that is, we can tell whether the 4-8 actions in the lookahead contributed to the score, because we use the TD estimates. 
 
@@ -372,6 +372,6 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ## Further Reading
 
--   Chapter 7 of *Introduction to Reinforcement Learning* \[*Sutton and
-    Barto*\]  https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html
+-   Chapter 7 of [Introduction to Reinforcement Learning, Sutton and
+    Barto](https://incompleteideas.net/book/the-book-2nd.html)
 

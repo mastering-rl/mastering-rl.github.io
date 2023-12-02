@@ -19,11 +19,26 @@ mdp.visualise_policy(policy, "Path plot", mode=1)
 
 qfunction = QTable()
 mdp = ContestedCrossing()
-rewards = [] 
-for i in range(200):
-    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=20)
-    policy = qfunction.extract_policy(mdp)
-    rewards += mdp.execute_policy(policy, episodes=1)
+rewards = []
 
-Plot.plot_cumulative_rewards(["Q-learning"], [rewards], smoothing_factor=0.0)
-Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
+episodes = 2000
+episodes_per_evaluation = 20
+qfunction = QTable()
+mdp = ContestedCrossing()
+policy = qfunction.extract_policy(mdp)
+rewards = mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
+for _ in range(int(episodes / episodes_per_evaluation)):
+    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
+    policy = qfunction.extract_policy(mdp)
+    rewards += mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
+
+
+Plot.plot_cumulative_rewards(
+    ["Q-learning"],
+    [rewards],
+    smoothing_factor=0.0,
+    episodes_per_evaluation=episodes_per_evaluation,
+)
+Plot.plot_cumulative_rewards(
+    ["Q-learning"], [rewards], episodes_per_evaluation=episodes_per_evaluation
+)

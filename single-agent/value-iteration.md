@@ -142,6 +142,7 @@ Using the visualisation below, stepping through the 100 iterations, we can see t
 <p>
 
 
+(sec:value-iteration:evaluating-policies)=
 ## Evaluating policies 
 
 We can see the improvement that value iteration has on each iteration by extracting the policy after each iteration, running the policy on the GridWorld, and plotting the cumulative reward that is received. We run value iteration on GridWorld for 1 iteration, but 50 times, using the same value function each time, meaning the the value iteration algorithm will update the value function. After each iteration, we extract the policy and execute the policy for 1 episode, recording the cumulative reward that was received:

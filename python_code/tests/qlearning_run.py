@@ -14,12 +14,13 @@ print(mdp.q_function_to_string(qfunction))
 policy = qfunction.extract_policy(mdp)
 print(mdp.policy_to_string(policy))
 
+episodes = 2000
 episodes_per_evaluation = 20
 qfunction = QTable()
 mdp = GridWorld()
 policy = qfunction.extract_policy(mdp)
-rewards = mdp.execute_policy(policy, episodes=1)
-for _ in range(int(2000 / episodes_per_evaluation)):
+rewards = mdp.execute_policy(policy, episodes=episodes_per_evaluation)
+for _ in range(int(episodes / episodes_per_evaluation)):
     QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
     policy = qfunction.extract_policy(mdp)
     rewards += mdp.execute_policy(policy, episodes=1)
