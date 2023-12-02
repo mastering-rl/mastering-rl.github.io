@@ -10,20 +10,19 @@ kernelspec:
 ---
 
 (sec:policy-based:policy-gradients)=
-# Policy gradient methods
-
-## Learning outcomes
+# Policy gradients
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
 <iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
-
+```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1. Apply policy gradients and actor critic methods to solve small-scale MDP problems manually and program policy gradients and actor critic algorithms to solve medium-scale MDP problems automatically
 2. Compare and contrast policy-based reinforcement learning with value-based reinforcement learning
+```
 
 ## Overview
 
@@ -62,7 +61,7 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible trace from $s_0$ to every terminal state, which may be an infinite number of traces. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -369,12 +368,15 @@ Now, we can create a policy and Q-function using any differentiable policy and a
 
 We can see that the actor critic agent has learnt both a policy that is very good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
 
-# Summary
+## Takeaways
 
-- Policy gradients methods such as REINFORCE and actor-critic approaches directly learn a policy instead of first learning a value function or Q-function.
+```{admonition} Takeaways
+
+- **Policy gradient methods** such as REINFORCE and actor-critic approaches directly learn a policy instead of first learning a value function or Q-function.
 
 - Using trajectories, the parameters for a policy are updated by following the gradient upwards -- the same as gradient descent but in the opposite direction.
 
 - Unlike policy iteration, policy gradient approaches are *model free*.
 
-- Actor critic methods also learn a value function or Q-function to reduce the variance in the cumulative rewards.
+- **Actor critic** methods also learn a value function or Q-function to reduce the variance in the cumulative rewards.
+```

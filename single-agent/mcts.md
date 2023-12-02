@@ -12,14 +12,14 @@ kernelspec:
 (sec:mcts)=
 # Monte-Carlo Tree Search (MCTS)
 
-## Learning Outcomes
-
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MCTS
 <iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
 
 1.  Explain the difference between offline and online planning for MDPs.
     
@@ -32,6 +32,7 @@ kernelspec:
 6.  Compare and contrast MCTS to value iteration
 
 6.  Discuss the strengths and weaknesses of the MCTS family of algorithms.
+```
 
 ## Offline Planning & Online Planning for MDPs
 
@@ -381,7 +382,7 @@ graph
 
 The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.
 
-If we visualise the Q-function, we can see that only the actions that occur early in traces have any informed Q-values:
+If we visualise the Q-function, we can see that only the actions that occur early in episodes have any informed Q-values:
 
 ```{code-cell} ipython3
 gridworld.visualise_q_function(qfunction)
@@ -513,20 +514,22 @@ name: AlphaZero
 The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 ```
 
-## Summary
-
 ````{margin}
 ```{admonition} Video byte: Summary of MCTS
 <iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
--   Monte Carlo Tree Search (MCTS) is an anytime search algorithm, especially good for stochastic domains, such as MDPs.
+## Takeaways
+
+```{admonition} Takeaways
+-   **Monte Carlo Tree Search** (MCTS) is an anytime search algorithm, especially good for stochastic domains, such as MDPs.
 
     - It can be used for model-based or simulation-based problems.
     - Smart selection strategies are *crucial* for good performance.
 
--   UCT is the combination of MCTS and UCB1, and is a successful algorithm on many problems.
+-   **UCT** is the combination of MCTS and UCB1, and is a successful algorithm on many problems.
+```
 
 ## Further Reading
 

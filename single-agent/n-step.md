@@ -10,7 +10,9 @@ kernelspec:
 ---
 # n-step reinforcement learning
 
-## Learning outcomes
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
+
 
 1.  Manually apply n-step reinforcement learning approximation to solve small-scale MDP problems
 
@@ -18,6 +20,7 @@ kernelspec:
     medium-scale MDP problems automatically
 
 3.  Argue the strengths and weaknesses of n-step reinforcement learning
+```
 
 ## Overview
 
@@ -46,9 +49,9 @@ These two methods have some weaknesses in this basic format:
     of $Q(s,a)$, even if we have visited states that are very similar to
     $s$.
 
-To get around limitations 1 and 2, we are going to look at n-step temporal difference learning: 'Monte Carlo' techniques execute entire traces and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
+To get around limitations 1 and 2, we are going to look at n-step temporal difference learning: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
-n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire traces are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
+n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire episodes are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
 
 ```{figure} ./figs/RL_approaches.png
 :name: RL_approaches
@@ -100,7 +103,7 @@ So, we can see that, intuitively, $n$-step reinforcement learning is quite strai
 
 ### Discounted Future Rewards (again)
 
-When calculating a discounted reward over a trace, we simply sum up the rewards over the trace:
+When calculating a discounted reward over a episode, we simply sum up the rewards over the episode:
 
  $$ G_t   =   r_1 + \gamma r_2 + \gamma^2 r_3 + \gamma^3 r_4 + \ldots $$
 
@@ -263,7 +266,7 @@ Computationally, this is not much worse than 1-step learning. We need to store t
 
 Consider our simple 2D navigation task, in which we do not know the probability transitions nor the rewards. Initially, the reinforcement learning algorithm will be required to search randomly until it finds a reward. Propagating this reward back n-steps will be helpful.
 
-Imagine the first episode consisting of the following (very lucky!) trace:
+Imagine the first episode consisting of the following (very lucky!) episode:
 
 ```{code-cell} ipython3
 ---
@@ -358,17 +361,20 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ## Values of *n*
 
-**Can we  just increase $n$ to be infinity so that we get the reward for the entire trace?** Doing this is the same as [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning), as we would no longer use TD estimates in the update rule. As we have seen, this leads to more variance in the learning.
+**Can we  just increase $n$ to be infinity so that we get the reward for the entire episode?** Doing this is the same as [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning), as we would no longer use TD estimates in the update rule. As we have seen, this leads to more variance in the learning.
 
 **What is the best value for $n$ then?** Unfortunately, there is no theoretically best value for $n$. It depends on the particular application and reward function that is being trained. In practice, it seems that values of $n$ around 4-8 give good updates because we can easily assign credit to each of the 4-8 actions; that is, we can tell whether the 4-8 actions in the lookahead contributed to the score, because we use the TD estimates. 
 
-## Summary
+## Takeaways
+
+```{admonition} Takeaways
 
 - n-step reinforcement learning propagates rewards back $n$ steps to help with learning.
 
 - It is conceptually quite simple, but the implementation requires a lot of 'book-keeping'.
 
 - Choosing a value of $n$ for a domain requires experimentation and intuition.
+```
 
 ## Further Reading
 

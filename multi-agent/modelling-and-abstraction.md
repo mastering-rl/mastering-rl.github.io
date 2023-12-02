@@ -2,13 +2,13 @@
 
 # Modelling and abstraction for multi-agent games
 
-## Learning outcomes
-
+```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1.  Describe modelling and abstraction strategies to scale algorithms for multi-agent games.
     
 2.  Apply modelling and abstraction strategies to non-trivial multi-agent games.
+```
 
 ## Overview
 
@@ -30,3 +30,12 @@ Similar to ignoring the opponent is to limit our own reasoning about our opponen
 **Focus on known feasible opponent actions.** Quite often in multi-agent games, we may have very limited knowledge about what our opponent can do; for example, they have some private information such as cards. So, it is often infeasible to consider all of their possible actions. Instead, we may be better focusing only on the moves that we know our opponent can make, as these are more likely to be made because we know they can be made. Therefore, it is more valuable to spend time analysing these.
 
 **Focus on opponents' most promising actions only.** Another way is to use [heuristic techniques](sec:single-agent:modelling-and-abstraction:heuristics) over our opponents' moves. Sometimes we may not need to consider ALL possible actions our opponents can make in a state, but just to consider a small handful to get an idea of the value of the state. Of most use will be those that the opponents are more likely to make. We could calculate how likely they are using an heuristic or even a hand-coded opponent. In the former, this is the same as [state/action pruning for single-agent problems](sec:single-agent:modelling-and-abstraction:heuristics), except that we are pruning our opponents moves. Often, we can prune more aggressively for our opponents because we cannot control their actions.  For the latter, we can prune all but the most promising actions. If we have a reasonable hand-coded agent but we want to learn to play better, we can use the hand-coded opponent to give us its best action for our opponent, rather than exploring multiple options. These techniques again allow us to search deeper and broader to gain information about our own actions. 
+
+
+## Takeaways
+
+```{admonition} Takeaways
+- The addition of other agents often create further **scalability** issues in stochastic games. 
+- Using modelling tricks, we can find problems that are easier to solve, and apply them back to the original problem.
+- Ignoring or approximating opponents can be good in some stochastic games, but not always.
+```

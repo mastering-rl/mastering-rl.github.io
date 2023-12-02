@@ -13,13 +13,16 @@ kernelspec:
 
 # Temporal difference reinforcement learning
 
-## Learning Outcomes
+
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
 <iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=0s" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
 
 1.  Identify situations in which model-free reinforcement learning is a suitable solution for an MDP
     
@@ -28,6 +31,7 @@ kernelspec:
 3.  Apply temporal difference methods Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically
     
 4.  Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning
+```
 
 ## Model-based vs model-free 
 
@@ -739,13 +743,6 @@ The standard versions that we see in this section have two major limitations:
     
 -   TD-Gammon and Jellyfish (Tesauro, Dahl): World's best backgammon player. Grandmaster level
 
-## Further Reading
-
--   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and
-    Barto](https://incompleteideas.net/book/the-book-2nd.html)
-
-
-## Summary 
 
 ````{margin}
 ```{admonition} Video byte: Summary
@@ -753,11 +750,16 @@ The standard versions that we see in this section have two major limitations:
 ```
 ````
 
-- On-Policy reinforcement learning: Uses the action chosen by the policy for the update.
+## Takeaways
 
-- Off-Policy reinforcement learning: Assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+```{admonition} Takeaways
+- **On-policy** reinforcement learning uses the action chosen by the policy for the update.
 
-- SARSA (on-policy) learns action values relative to the policy it follows, while Q-Learning (off-policy) does it relative to the greedy policy.
+- **Off-policy** reinforcement learning assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.
+
+- **Q-Learning** (off-policy) does it relative to the greedy policy.
+
+- **SARSA** (on-policy) learns action values relative to the policy it follows.
 
 - If we know the MDP, we can use model-based techniques:
 
@@ -770,3 +772,11 @@ The standard versions that we see in this section have two major limitations:
 - If we do *not* know MDP, we need to use model-free techniques:
 
     -  **Offline**: Q-learning, SARSA, and friends.
+```
+
+
+## Further Reading
+
+-   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and
+    Barto](https://incompleteideas.net/book/the-book-2nd.html)
+

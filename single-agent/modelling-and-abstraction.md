@@ -1,13 +1,13 @@
 (sec:single-agent:modelling-and-abstraction)=
 # Modelling and abstraction for MDPs
-## Learning outcomes
 
+```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1.  Describe modelling and abstraction strategies to scale MDP algorithms to problems.
     
 2.  Apply modelling and abstraction strategies to non-trivial MDP problems..
-
+```
 
 ## Overview
 
@@ -108,7 +108,11 @@ Using heuristics is a good way to speed up learning. There are three places wher
 
 **Shorter episodes and simulations.** Finally, we can use heuristics to terminate episodes/simulations early. As we move towards terminal states, our heuristic values are likely to be more accurate, because it is "easier" to estimate how good a state is as we gain more information. As such, we can use heuristics to terminate episodes early. For example, in MCTS, instead of simulating until a terminal state, we can simulate for $X$ number of actions and then return the heuristic value of the state. This is an estimate, but early in the learning process, it can often be more valuable to shorter simulations that return heurstic values rather than much longer ones that take more time and often involve a lot of actions that were not helpful.  In fact, this is precisely what temporal different methods like [Q-learning](sec:model-free:q-learning) and [SARSA](sec:model-free:sarsa) do! They use $\max_a Q(s',a')$ and $Q(s',a')$ as heuristic estimates of the value of state $s'$ so that we can assign 'credit' to the previously executed action. In those techniques, we are learning the heuristic. Hand-crafting a heuristic will be more helpful in earlier episodes.
 
-## Summary
 
-- Techniques for solving MDPs face scalability issues. Using modelling tricks, we can find problems that are easier to solve, and apply them back
+## Takeaways
+
+```{admonition} Takeaways
+- Techniques for solving MDPs face **scalability** issues. 
+- Using modelling tricks, we can find problems that are easier to solve, and apply them back to the original problem.
 - Sometimes the smaller problem is enough to solve our problem; other times, it is not.
+```

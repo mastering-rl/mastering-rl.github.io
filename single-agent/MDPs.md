@@ -14,7 +14,18 @@ kernelspec:
 (sec:mdps)=
 # Markov Decision Processes
 
-## Learning outcomes
+```{admonition} Learning outcomes
+
+The learning outcomes of this chapter are:
+
+1. Define 'Markov Decision Process'.  
+
+2. Identify situations in which Markov Decisions Processes (MDPs) are a suitable model of a problem.
+   
+3. Compare MDPs to model of classical planning
+
+4. Explain how Bellman equations are solutions to MDP problems
+```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MDPs
@@ -24,15 +35,7 @@ Link:  [My link Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
 ```
 ````
 
-The learning outcomes of this chapter are:
 
-1.  Define 'Markov Decision Process'.  
-
-2. Identify situations in which Markov Decisions Processes (MDPs) are a suitable model of a problem.
-   
-3.  Compare MDPs to model of classical planning
-
-4.  Explain how Bellman equations are solutions to MDP problems
 
 ## Chapter Overview
 
@@ -593,3 +596,24 @@ POMDP is a **belief state**, which defined the probability of being in each stat
 Like MDPs, solutions are policies that map belief states into actions. Optimal policies maximise the expected reward.
 
 We will not cover this in detail in these notes. However, POMDPs are  a generalisation of MDPs, and they are more suited to practical solutions in  planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.
+
+
+## Takeaways
+
+
+```{admonition} Takeaways
+
+* **Markov Decision Processes** (MDPs) model sequential decision-making problems in which the outcome of an action is stochastic; although the agent can observe the state once the action is executed.
+
+* MDPs can be defined using code, simulators, or models.
+
+* The solution to an MDP is a **policy**.
+
+* A **deterministic policy** is a mapping from states to actions. For policy $\pi$, the term $\pi(s)$ returns the action to execute in state $s$.
+
+* A **stochastic policy** is a mapping from state actions pairs to probabilities. For policy $\pi$, the term $\pi(s,a)$ returns the probability of selecting action $a$ in state $s$.
+
+* An **optimal policy** maximises the expected discounted reward.
+
+* The **Bellman equation** describes the condition that must hold for a policy to be optimal.
+```

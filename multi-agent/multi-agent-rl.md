@@ -12,7 +12,15 @@ kernelspec:
 
 The field of multi-agent reinforcement learning has become quite vast, and there are several algorithms for solving them. We are just going to look at how we can extend the lessons leant in the first part of these notes to work for *stochastic games*, which are generalisations of extensive form games.
 
-## Chapter overview
+```{admonition}  Learning outcomes
+The learning outcomes for this chapter are:
+
+1. Define 'stochastic game'.
+2. Explain the difference between single-agent reinforcement learning and multi-agent reinforcement learning.
+
+```
+
+## Overview
 
 Recall the idea of [ExpectiMax trees](sec:mcts:expectimax-trees) which we first encountered in the section on [Monte-Carlo tree search](sec:mcts). ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:
 
@@ -166,8 +174,6 @@ Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic M
 3. **Simulate**: We then simulate as before, and we learn the rewards when we receive them. Recall that the rewards are a vector of rewards: one for each player.
 4. **Backpropagate**: The backpropagation step is the same as before, except that we need to keep the value of the node for every player, not just ourselves. 
 
-## Summary
-
 
 ````{margin}
 ```{admonition} Video byte: Summary of extensive form games
@@ -175,7 +181,10 @@ Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic M
 ```
 ````
 
+## Takeaways
+
+```{admonition} Takeaways
 - For solving extensive form games in a model-free or simulated environment, we can extend techniques like Q-learning, SARSA, and MCTS from single-agent to multi-agent environments in a straightforward way.
 
 - Other more sophisticated techniques exist for true stochastic games (with simultaneous moves), such as *mean field Q-learning*, which reduces the number of possible interactions between actions by approximating joint actions between all pairs of actions, rather than all global interactions among the agents.
-
+```

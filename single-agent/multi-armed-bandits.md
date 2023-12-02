@@ -13,18 +13,17 @@ kernelspec:
 # Multi-armed bandits
 
 
-## Learning outcomes
-
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
 <iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?start=0s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
-
+```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1. Select and apply multi-armed bandit algorithms for a given problem
 2. Compare and contrast  the strengths a weaknesses of different multi-armed bandit algorithms
+```
 
 ## Overview
 
@@ -344,19 +343,21 @@ Epsilon decreasing never recovers because by the time the probabilities change, 
 
 While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case if the underlying probability distributions change or drift regularly. In those cases, softmax may be a better choice.
 
-## Summary
 
 ````{margin}
 ```{admonition} Video byte: Summary of multi-armed bandits
 <iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1334s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+## Takeaways
 
+```{admonition} Takeaways
 - Multi-armed bandits are problems in where we must make a selection from a set of options, but we do not know the probability of success (or the expected return) of each options
 
 - Several techniques can be used to solve these. This chapter looks at just a few: $\epsilon$-greedy, $\epsilon$-decreasing, softmax, and UCB1 strategy. 
 
 - In a simple experiment, we found that UCB1 was the fastest learner and recovered from shift quickly. However, this is just one experiment -- other domains will have different properties.
+```
 
 ## Further reading
 

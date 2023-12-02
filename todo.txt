@@ -8,10 +8,7 @@ Images:
 - actor critic
 
 High priority:
-- evaluating policies during learning
-- Use coloured boxed for learning outcomes and end-of-chapter "takeaways"
 - italics -> bold for definitions
-- add visualisation of RL training
 - add introductory chapter solving an atari game using deep rl
 - add eligibility traces
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf

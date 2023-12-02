@@ -13,7 +13,8 @@ kernelspec:
 
 (sec:value-iteration)=
 # Value Iteration
-## Learning outcomes
+
+```{admonition}  Learning outcomes
 
 The learning outcomes of this chapter are:
 
@@ -22,6 +23,7 @@ The learning outcomes of this chapter are:
 2.  Construct a policy from a value function
 
 3.  Discuss the strengths and weaknesses of value iteration
+```
 
 ## Overview
 
@@ -304,7 +306,7 @@ The behaviour we could extract from this shows a more complicated picture than i
 
 Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the 'shoot' action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities. This is simply a representation of the fact that multiple states are visualised at one location because the problem is complex enough that visualising individual states is difficult.
 
-The path plot gives a number of traces of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents that have been damaged tend to follow the safer path round the outside of the map while agents that have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
+The path plot gives a number of episodes of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents that have been damaged tend to follow the safer path round the outside of the map while agents that have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
 
 ```{code-cell} ipython3
 policy = values.extract_policy(ccross)
@@ -326,7 +328,8 @@ The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterat
 
 It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step $t + 1$ are dependent only on the value of other states at step $t$.
 
-## Summary
+## Takeaways
+
 
 ````{margin}
 ```{admonition} Video byte: Summary: MDPs and value iteration
@@ -334,9 +337,16 @@ It is clear to see that the value iteration can be easily parallelised by updati
 ```
 ````
 
-- Value iteration is an algorithm for calculating a  value function $V$, from which a policy can be extracted using policy extraction.
+```{admonition} Takeaways
 
-- It produces an optimal policy  an infinite amount of time.
+* Value iteration is an algorithm for calculating a  value function $V$, from which a policy can be extracted using policy extraction.
 
-- For medium-scale problems, it works well, but as the state-space grows, it does not scale well.
+* It produces an optimal policy  an infinite amount of time.
+
+* For medium-scale problems, it can converge on the optimal policy in a "reasonable" amount of time, but does not scale as well as some other techniques.
+
+```
+
+
+
 

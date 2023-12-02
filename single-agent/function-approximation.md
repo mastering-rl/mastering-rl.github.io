@@ -17,7 +17,8 @@ kernelspec:
 ```
 ````
 
-## Learning Outcomes
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
 
 1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features
     
@@ -26,7 +27,7 @@ kernelspec:
 3.  Argue the strengths and weaknesses of function approximation approaches
     
 4.  Compare and contrast linear Q-learning with deep Q-learning
-
+```
 
 ## Overview
 Using a Q-table has two main limitations:
@@ -515,21 +516,21 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 
 
-## Summary
-
 
 ````{margin}
 ```{admonition} Video byte: Summary of Q-function approximation
 <iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+## Takeaways
 
--  We can scale reinforcement learning by approximating Q-functions, rather than storing complete Q-tables.
+```{admonition} Takeaways
+-  We can scale reinforcement learning by **approximating Q-functions**, rather than storing complete Q-tables.
 
--  Using simple linear methods in which we select features and learn weights are effective and guarantee convergence.
+-  Using simple **linear methods** in which we select features and learn weights are effective and guarantee convergence.
 
--  Deep Q-learning offers alternatives in which we do not need to select features, but requires more training data (more episodes) and has no convergence guarantees.
-
+-  **Deep Q-learning** offers an alternative in which we can learn a state representation, but requires more training data (more episodes) and has no convergence guarantees.
+```
 
 ## Further Reading
 

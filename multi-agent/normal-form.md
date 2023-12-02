@@ -20,13 +20,14 @@ First, we look at *normal form* games, which are single-shot (non-sequential) ga
 
 Then, we look at *extensive form games*, which are sequential games, meaning that there are multiple actions played in sequence.
 
-## Learning outcomes
 
 ````{margin}
 ```{admonition} Video byte: Introduction to normal form games
 <iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
+```{admonition}  Learning outcomes
 
 The learning outcomes of this chapter are:
 
@@ -35,7 +36,7 @@ The learning outcomes of this chapter are:
 2. Manually calculate the best responses and Nash equilibria for two-player normal form games.
 
 3. Compare and contrast pure strategies and mixed strategies.
-
+```
 
 ## Chapter overview
 
@@ -435,11 +436,11 @@ So, the defender should choose to defend Terminal 1 with the probability $\frac{
 <iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+## Takeaways
 
-## Summary
+```{admonition} Takeaways
 
+- **Normal form games** model non-sequential games where agents take actions simultaneously.
 
-- Normal form games model non-sequential games where agents take actions simultaneously.
-
-- Pure strategies and mixed strategies can be used by agents. We analyse which strategies are good and also how these relate to Nash equilibria.
-
+- **Pure strategies** and **mixed strategies** can be used by agents. We analyse which strategies are good and also how these relate to Nash equilibria.
+```

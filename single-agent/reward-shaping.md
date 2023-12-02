@@ -17,7 +17,8 @@ kernelspec:
 ```
 ````
 
-## Learning Outcomes
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
 
 1.  Explain how reward shaping can be used to help model-free
     reinforcement learning methods to converge
@@ -29,6 +30,7 @@ kernelspec:
     problems automatically
 
 4.  Compare and contrast reward shaping with Q-function initialisation
+```
 
 ## Overview
 
@@ -113,7 +115,7 @@ The purpose of the function is to give an additional reward $F(s,s')$ when any a
 We say that $r + F(s,s')$ is the *shaped reward* for an action.
 
 Further, we say that $G^{\Phi} = \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))$ is the
-shaped reward for the entire trace.
+shaped reward for the entire episode.
 
 If we define $F(s,s') > 0$ for states $s$ and $s'$, then this provides a small positive reward for transitioning from $s$ to $s'$, thus encouraging actions that transition from $s$ to $s'$ in future exploitation. If we define $F(s,s') < 0$ for states $s$ and $s'$, then this provides a small *negative* reward for transitioning from $s$ to $s'$, thus discouraging actions that transition like this in future exploitation.
 
@@ -291,19 +293,21 @@ $$
 
 Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential funtion! A poor potential function will give an inaccurate initial Q-function, which may take longer to converge.
 
-## Summary
 
 ````{margin}
 ```{admonition} Video byte: Summary
 <iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=1142" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+## Takeaways
 
+```{admonition} Takeaways
 - A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.
-- Reward shaping takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.
-- Q-function initialisation is a "guess" of the initial Q-function to guide early exploration
+- **Reward shaping** takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.
+- **Q-function initialisation** is a "guess" of the initial Q-function to guide early exploration
 - Reward sharping and Q-function initialisation are equivalent if our potential function is static.
-
+- **Potential-based reward shaping** guarantees that the policy will converge to the same policy without reward shaping.
+```
 ### Related Reading
 
 -   Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and

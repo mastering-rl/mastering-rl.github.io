@@ -10,19 +10,19 @@ kernelspec:
 ---
 (sec:policy-iteration)=
 # Policy iteration
-## Learning outcomes
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy-based approaches and policy iteration
 <iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
-
+```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1. Apply policy iteration to solve small-scale MDP problems manually and program policy iteration algorithms to solve medium-scale MDP problems automatically
 2. Discuss the strengths and weaknesses of policy iteration
 3. Compare and contrast policy iteration to value iteration
+```
 
 ## Overview
 
@@ -186,16 +186,18 @@ gridworld.visualise_policy(policy)
 
 This terminates in 19 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.
 
-## Summary
 
 ````{margin}
 ```{admonition} Video byte: Summary of policy iteration
 <iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=1182" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+## Takeaways
 
-- Policy iteration is a dynamic programming technique for calculating a policy directly, rather than calculating an optimal $V(s)$ and extracting a policy; but one that uses the concept of values.
+```{admonition} Takeaways
+- **Policy iteration** is a dynamic programming technique for calculating a policy directly, rather than calculating an optimal $V(s)$ and extracting a policy; but one that uses the concept of values.
 
 - It produces an optimal policy in a finite number of steps.
 
 - Similar to value iteration, for medium-scale problems, it works well, but as the state-space grows, it does not scale well.
+```

@@ -11,10 +11,12 @@ kernelspec:
 
 # Backward induction
 
-## Learning outcomes
+```{admonition}  Learning outcomes
+The learning outcomes of this chapter are:
 
 1. Manually apply backward indunction to solve small-scale extensive form games.
 2. Design and implement a backward induction algorithm to solve medium-scale extensive form games automatically.
+```
 
 ## Overview
 
