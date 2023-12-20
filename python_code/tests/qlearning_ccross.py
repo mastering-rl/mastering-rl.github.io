@@ -17,10 +17,6 @@ mdp.visualise_policy(policy, "Policy plot", mode=0)
 mdp.visualise_policy(policy, "Path plot", mode=1)
 """
 
-qfunction = QTable()
-mdp = ContestedCrossing()
-rewards = []
-
 episodes = 2000
 episodes_per_evaluation = 20
 qfunction = QTable()

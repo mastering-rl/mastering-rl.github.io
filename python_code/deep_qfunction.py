@@ -66,3 +66,9 @@ class DeepQFunction(QFunction, DeepAgent):
                 arg_max_q = action
                 max_q = value
         return (arg_max_q, max_q)
+
+    def save(self, filename):
+        torch.save(self.q_network.state_dict(), filename)
+
+    def load(self, filename):
+        self.q_network.load_state_dict(torch.load(filename))

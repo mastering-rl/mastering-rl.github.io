@@ -8,15 +8,15 @@ Images:
 - actor critic
 
 High priority:
-- italics -> bold for definitions
 - add introductory chapter solving an atari game using deep rl
+- remove random_on_duplicate and replace with stochastic policy that uses a given bandit
+- italics -> bold for definitions
 - add eligibility traces
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - add contested crossing throughout notes
 - n-step learning videos
 - MARL non-stationarity
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
-- Maybe add grid lock and key as an example. Mor's AAMAS deception paper
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
 - Reward shaping example using contested crossing?
 - Video or gif of policy executions

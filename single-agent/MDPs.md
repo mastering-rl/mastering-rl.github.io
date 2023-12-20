@@ -600,7 +600,6 @@ We will not cover this in detail in these notes. However, POMDPs are  a generali
 
 ## Takeaways
 
-
 ```{admonition} Takeaways
 
 * **Markov Decision Processes** (MDPs) model sequential decision-making problems in which the outcome of an action is stochastic; although the agent can observe the state once the action is executed.
