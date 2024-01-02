@@ -2,6 +2,7 @@ from gridworld import GridWorld
 from qtable import QTable
 from n_step_qlearning import NStepQLearning
 from qlearning import QLearning
+from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 # Illustrate the n-step feedback from the first episode
@@ -20,5 +21,5 @@ qfunction = QTable()
 NStepQLearning(mdp, EpsilonGreedy(), qfunction, 5, alpha=0.4).execute(episodes=1000)
 print(mdp.q_function_to_string(qfunction))
 
-policy = qfunction.extract_policy(mdp)
+policy = QPolicy(qfunction)
 print(mdp.policy_to_string(policy))

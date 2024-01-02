@@ -475,10 +475,10 @@ class GridWorld(MDP):
             for x in range(self.width):
                 if (x, y) in self.blocked_states:
                     result += " | ###"
-                elif policy.select_action((x, y)) == self.TERMINATE:
+                elif policy.select_action((x, y), self.get_actions((x, y))) == self.TERMINATE:
                     result += " | {:+0d} ".format(self.goal_states[(x, y)])
                 else:
-                    result += " |  " + policy.select_action((x, y)) + " "
+                    result += " |  " + policy.select_action((x, y), self.get_actions((x, y))) + " "
             result += " |\n"
             result += line
 
@@ -807,8 +807,8 @@ class GridWorld(MDP):
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.blocked_states and (x, y) not in self.goal_states:
-                    if policy.select_action((x, y)) != self.TERMINATE:
-                        action = arrow_map[policy.select_action((x, y))]
+                    if policy.select_action((x, y), self.get_actions((x, y))) != self.TERMINATE:
+                        action = arrow_map[policy.select_action((x, y), self.get_actions((x, y)))]
                         fontsize = "xx-large"
                     texts.append(plt.text(
                                 x,

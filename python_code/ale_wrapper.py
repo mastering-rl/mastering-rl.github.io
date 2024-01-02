@@ -16,6 +16,8 @@ class ALEWrapper(MDP):
         observation, info = self.env.reset()
         self.terminated = False
         self.discount_factor = discount_factor
+        self.observation_space = self.env.observation_space
+        self.action_space = self.env.action_space
 
     def get_actions(self, state=None):
         num_actions = self.env.action_space.n
@@ -24,6 +26,14 @@ class ALEWrapper(MDP):
     def get_initial_state(self):
         observation, info = self.env.reset()
         return tuple(observation)
+
+    def reset(self):
+        observation, info = self.env.reset()
+        #**** return tuple(observation)
+        return tuple(observation)
+
+    def step(self, action):
+        return self.env.step(action)
 
     """ Return true if and only if state is a terminal state of this MDP """
 
@@ -43,4 +53,4 @@ class ALEWrapper(MDP):
     def execute(self, state, action):
         observation, reward, terminated, truncated, info = self.env.step(action)
         self.terminated = terminated or truncated
-        return (tuple(observation), reward)
+        return (tuple(observation), reward, terminated)

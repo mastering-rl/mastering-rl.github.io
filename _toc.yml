@@ -8,7 +8,7 @@ parts:
     sections:
     - file: single-agent/value-iteration
     - file: single-agent/multi-armed-bandits
-    - file: single-agent/model-free
+    - file: single-agent/temporal-difference-learning
     - file: single-agent/n-step
     - file: single-agent/mcts
     - file: single-agent/function-approximation

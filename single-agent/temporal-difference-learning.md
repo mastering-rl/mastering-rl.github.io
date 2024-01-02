@@ -35,15 +35,15 @@ The learning outcomes of this chapter are:
 
 ## Model-based vs model-free 
 
-Value iteration is part of a class of solutions known as *model-based* techniques. This means that we need to know the model; in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
+Value iteration is part of a class of solutions known as **model-based** techniques. This means that we need to know the model; in particular, we have access to $P_a(s' \mid s)$ and $r(s,a,s')$.
 
-In this section, we look at Q-learning and SARSA, which are *model-free*   techniques. This means that we do NOT know $P_a(s' \mid s)$ and $r(s,a,s')$ of our model
+In this section, we look at Q-learning and SARSA, which are **model-free**   techniques. This means that we do NOT know $P_a(s' \mid s)$ and $r(s,a,s')$ of our model
 
-*How can we calculate a policy if we don't know the transitions and the rewards?!* We *learn through experience* by trying actions and seeing what the results is, making this machine learning problem.
+*How can we calculate a policy if we don't know the transitions and the rewards?!* We **learn through experience** by trying actions and seeing what the results is, making this machine learning problem.
 
 Importantly, in model-free reinforcement learning, we do NOT try to learn $P_a(s' \mid s)$ or $r(s,a,s')$ --- we learn a value function or a policy directly.
 
-There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a *simulator*, so we can *simulate* $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
+There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a **simulator**, so we can **simulate** $P_a(s' \mid s)$ and $r(s,a,s')$ and learn a policy with a model-free technique, but we cannot "see" $P_a(s' \mid s)$ and $r(s,a,s')$, so model-based techniques like value iteration are not possible.
 
 ````{margin}
 ```{admonition} Video byte: The Mystery game
@@ -99,7 +99,7 @@ I would guess that you experimented by pressing the keys 1 to 6, from the outcom
 ```
 ````
 
-This game is of interest because it is a *model-free* (at least initially) Markov decision process: you didn't know the transition function or the reward function; instead you had to learn it. Similarly, model-free reinforcement learning techniques don't know the transition function or the reward function of an MDP, so they just learn by trying different behaviours and observing what rewards they get. Over time, they learn which behaviours lead to positive rewards, so they *reinforce* the policy to try that behaviour more, and which behaviours lead to negative rewards, and they reinforce the policy to avoid that behaviour.
+This game is of interest because it is a **model-free** (at least initially) Markov decision process: you didn't know the transition function or the reward function; instead you had to learn it. Similarly, model-free reinforcement learning techniques don't know the transition function or the reward function of an MDP, so they just learn by trying different behaviours and observing what rewards they get. Over time, they learn which behaviours lead to positive rewards, so they reinforce the policy to try that behaviour more, and which behaviours lead to negative rewards, and they reinforce the policy to avoid that behaviour.
 
 Imagine how hard it is for a computer that doesn't have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did --- they just construct the policy directly.
 
@@ -107,13 +107,13 @@ Imagine how hard it is for a computer that doesn't have any assumptions or intui
 
 There are many different techniques for model-free reinforcement learning, all with the same basis:
 
--   We execute many different *episodes* of the problem we want to solve, and from that we learn a *policy*.
+-   We execute many different **episodes** of the problem we want to solve, and from that we learn a **policy**.
     
 -   During learning, we try to learn the value of applying particular actions in particular states.
     
 -   During each episode, we need to execute some actions. After each action, we get a reward (which may be 0) and we can see the new state.
     
--   From this, we *reinforce* our estimates of applying the previous action in the previous state.
+-   From this, we **reinforce** our estimates of applying the previous action in the previous state.
     
 -   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
 
@@ -128,7 +128,7 @@ There are many different techniques for model-free reinforcement learning, all w
 
 Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a [Q-function](sec:mdps:bellman-equation) that records the value $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
-It is called *Monte-Carlo* reinforcement learning after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
+It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
 
 :::{admonition} Algorithm -- Monte-Carlo reinforcement learning
 
@@ -166,6 +166,7 @@ Initially, we would have an arbitrary Q-table, which may look something like thi
 
 ```{code-cell} ipython3
 :tags: [remove-input]
+
 
 import matplotlib.pyplot as plt
 
@@ -218,6 +219,7 @@ After some training, we may end up with a Q-function that looks something like t
 ```{code-cell} ipython3
 :tags: [remove-input]
 
+
 data = [[(0, 0), 0.50, 0.42, 0.39, 0.42],
         [(0, 1), 0.56, 0.44, 0.51, 0.51],
         [(0, 2), 0.58, 0.51, 0.63, 0.57],
@@ -238,7 +240,6 @@ The following is an implementation of a Q-table using a Python dictionary:
 ```{code-cell} ipython3
 :load: ../python_code/qtable.py
 
-
 ```
 
 (sec:model-free:td-learning)=
@@ -250,9 +251,9 @@ The following is an implementation of a Q-table using a Python dictionary:
 ```
 ````
 
-Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high *variance*. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
+Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high **variance**. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
 
-*Temporal difference* (TD) methods alleviate this problem using *bootstrapping*. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
+**Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
 
 In TD methods, our update rules always follow a pattern:
 
@@ -262,7 +263,7 @@ $$
 
 
 $V(s')$ is our TD estimate of the average future reward, and is  the bootstrapped value of our future discounted reward. 
-The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the *learning rate*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
+The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the **learning rate(*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
 
 The idea  is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
 
@@ -319,9 +320,12 @@ $$Q(s,a) \leftarrow
 
 We can see that at each step, $Q(s,a)$ is update by taking the old value of $Q(s,a)$ and adding this to the new information.  
 
-The estimate from the new observations is given by $\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')$, where $\delta$ (pronounced "delta") is the difference between the previous estimate and the most recent observation, $r$ is the reward that was received by executing action $a$ in state $s$, and $r + \gamma  \cdot \max_{a'} Q(s',a')$ is the *temporal difference* target. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The definition of $\delta$ is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference target. 
+The estimate from the new observations is given by $\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')$, where $\delta$ (pronounced "delta") is the difference between the previous estimate and the most recent observation, $r$ is the reward that was received by executing action $a$ in state $s$, and $r + \gamma  \cdot \max_{a'} Q(s',a')$ is the **temporal difference** target. What this says is that the estimate of $Q(s,a)$ based on the new information is the reward $r$, plus the estimated discounted future reward from being in state $s'$.  The definition of $\delta$ is the update similar to that of the Bellman equation. We do not know $P_a(s' \mid s)$, so we cannot calculate the Bellman update directly, but we can estimate the value using $r$ and the temporal difference target. 
 
-Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the *estimated best action* for the update. This is known as *off policy* learning --- more on this later.
+```{note}
+Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means it *ignores* the actual next action that will be executed, and instead updates based on the **estimated best action** for the update. This is known as **off policy** learning --- more on this later.
+```
+
 
 ````{margin}
 ```{admonition} Video byte: Q-learning update example
@@ -358,13 +362,24 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 
 ### Implementation
 
-To implement Q-learning, we first implement an abstract superclass ```ModelFreeReinforcementLearner```, which contains most of the code we need:
+To implement Q-learning, we first implement an abstract superclass `ModelFreeLearner` that defines the interface for any model-free learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/model_free_reinforcement_learner.py
+:load: ../python_code/model_free_learner.py
 
 
 ```
+
+Next, we implement a second abstract superclass `TemporalDifferenceLearner`, which contains most of the code we need:
+
+```{code-cell} ipython3
+:load: ../python_code/temporal_difference_learner.py
+
+
+```
+
+We will see later that we inherit from `TemporalDifferenceLearner` for other algorithms that are very similar to Q-learning.
+
 
 We inherit from this class to implement the Q-learning algorithm:
 
@@ -372,16 +387,20 @@ We inherit from this class to implement the Q-learning algorithm:
 :load: ../python_code/qlearning.py
 
 
+
 ```
 
-We can see that the `ModelFreeReinforcementLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
+We can see that the `TemporalDifferenceLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
 
-Using this implementation, we execute 100 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the signalled direction:
+Using this implementation, we execute 100 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the respective direction:
 
 ```{code-cell} ipython3
+
 from gridworld import GridWorld
 from qtable import QTable
 from qlearning import QLearning
+from q_policy import QPolicy
+from stochastic_q_policy import StochasticQPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
@@ -389,6 +408,7 @@ gridworld = GridWorld()
 qfunction = QTable()
 QLearning(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
 gridworld.visualise_q_function(qfunction, "Q-Function")
+
 ```
 
 If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
@@ -396,8 +416,9 @@ If we compare this to the value function for the [value iteration implementation
 Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(gridworld)
+policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
+
 ```
 
 ````{margin}
@@ -423,13 +444,14 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 ```
 ````
 
-SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as *on-policy reinforcement learning*. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
+SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as **on-policy reinforcement learning**. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 
-:::{admonition} Definition -- On-policy reinforcement learning
+:::{admonition} Definition -- On-policy and off-policy reinforcement learning
 
-Instead of estimating $Q(s',a')$ for the best estimated future state during update, *on-policy reinforcement learning* uses the actual next action to update.
+Instead of estimating $Q(s',a')$ for the best estimated future state during update, **on-policy reinforcement learning** uses the actual next action to update.
 
-On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, whereas off-policy learning estimates the policy independent of the current behaviour
+On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, 
+whereas **off-policy learning **estimates the policy independent of the current behaviour
 :::
 
 To illustrate how this differs, let's take a look at the SARSA algorithm.
@@ -443,7 +465,7 @@ Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
 
 Repeat (for each episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using $Q$ and a multi-armed bandit algorithm such as epsilon-greedy\
+$\quad\quad$ Select action $a$ to apply in $s$ using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ Execute action $a$ in state $s$\
 $\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
@@ -457,13 +479,13 @@ $\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
 
 The difference between the Q-learning and SARSA algorithms is what happens in the update in the loop body.
 
-Q-learning: (1) selects an action $a$; (2) takes that actions and observes the reward & next state $s'$; and (3) updates *optimistically* by assuming the future reward is $\max_{a'}Q(s',a')$ -- that is, it assumes that future behaviour will be optimal (according to its policy).
+Q-learning: (1) selects an action $a$; (2) takes that actions and observes the reward & next state $s'$; and (3) updates **optimistically** by assuming the future reward is $\max_{a'}Q(s',a')$ -- that is, it assumes that future behaviour will be optimal (according to its policy).
 
 SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next iteration, takes that action and observes the reward & next state $s'$; (3) only then chooses $a'$ for the next iteration; and (4) updates using the estimate for the actual next action chosen -- which may not be the greediest one (e.g. it could be selected so that it can explore).
 
 *So what difference does this really make?* There are two main differences:
 
--   Q-learning will converge to the optimal policy irrelevant of the policy followed, because it is *off-policy*: it uses the greedy reward estimate in its update rather than following the policy such as $\epsilon$-greedy). Using a random policy, Q-learning will still  converge to the optimal policy, but SARSA will not (necessarily).
+-   Q-learning will converge to the optimal policy irrelevant of the policy followed, because it is **off-policy**: it uses the greedy reward estimate in its update rather than following the policy such as $\epsilon$-greedy). Using a random policy, Q-learning will still  converge to the optimal policy, but SARSA will not (necessarily).
 
 -   Q-learning learns an optimal policy, but this can be 'unsafe' or risky *during training*.
 
@@ -486,10 +508,11 @@ $$
 
 ### Implementation
 
-As with the Q-learning agent, we inherit from the `ModelFreeReinforcementLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
+As with the Q-learning agent, we inherit from the `TemporalDifferenceLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
 :load: ../python_code/sarsa.py
+
 
 
 ```
@@ -509,13 +532,15 @@ gridworld = GridWorld()
 qfunction = QTable()
 SARSA(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
 gridworld.visualise_q_function(qfunction)
+
 ```
 
 Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up.
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(gridworld)
+policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
+
 ```
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
@@ -535,6 +560,7 @@ from gridworld import CliffWorld
 
 cliffworld = CliffWorld()
 cliffworld_image = cliffworld.visualise()
+
 ```
 
 Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
@@ -542,16 +568,22 @@ Let's try training this with Q-learning for 2000 episodes, using an epsilon gree
 ```{code-cell} ipython3
 qfunction = QTable()
 QLearning(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+
+
+
 ```
 
 From this, we extract the following policy:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(cliffworld)
+policy = QPolicy(qfunction)
 cliffworld.visualise_policy(policy)
+
+
+
 ```
 
-We can see that the policy will initially move hte agent up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
+We can see that the policy will initially move the agent up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
 
 Now, let's try training the same problem with SARSA:
 
@@ -559,13 +591,17 @@ Now, let's try training the same problem with SARSA:
 cliffworld = CliffWorld()
 qfunction = QTable()
 SARSA(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+
+
 ```
 
 Extracting the policy, we get:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(cliffworld)
+policy = QPolicy(qfunction)
 cliffworld.visualise_policy(policy)
+
+
 ```
 
 We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*
@@ -582,6 +618,7 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
+
 ```
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
@@ -589,7 +626,7 @@ Q-learning learns the optimal policy, meaning that once we extract the policy, i
 
 *How is it possible that on-policy learning has a sub-optimal policy but higher rewards during training?*
 
-Consider a case of two agents training: one with Q-learning and one with SARSA, both using epsilon-greedy with epsilon=0.2. Then, consider training episode 100 for each agent. From the plot above,  we can see that both policies are close to converged. 
+Consider a case of two agents training: one with Q-learning and one with SARSA, both using $\epsilon$-greedy with epsilon=0.2. Then, consider training episode 100 for each agent. From the plot above,  we can see that both policies are close to converged. 
 
 However, once training is complete, we extract a policy. Because the actions are deterministic, the Q-learning policy is optimal: it will follow the path next to the cliff, but will not fall off. The SARSA agent will follow the safe path, but this safety is no longer required because no exploration is done.
 
@@ -615,6 +652,7 @@ The resulting final policies, when executed after 20,000 episodes, also show tha
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
 
+
 ```
 
 (sec:model-free:on-policy-vs-off-policy)=
@@ -630,7 +668,7 @@ There are a few reasons why we have both on-policy and off-policy learning.
 
 ### Learning from prior experience
 
-The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by *demonstration*. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
+The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by **demonstration**. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
 
 ### Learning on the job
 
@@ -661,31 +699,22 @@ With [value iteration](sec:value-iteration), we terminate the algorithm once the
 With model-free learning, we can instead evalute the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
 
 There are a few ways we can measure this:
-1. We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use [epsilon-greedy](sec:multi-armed-bandits:epsilon-greedy) to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability $\epsilon$. This means that we are not evaluating our real policy --- we are evaluating our really policy plus some random actions. 
+1. We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use a [multi-armed bandit](sec:multi-armed-bandits) to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability $\epsilon$. This means that we are not evaluating our real policy --- we are evaluating our really policy plus some random actions. 
 2. We can pause our learning every now and then, and run our actual policy on the MDP. The strength of this is that we avoid randomness in action selection. However, we still have randomness caused by the stochastic nature of the MDP. The weakness is that it requires us to run more episodes; or more accurately, we are executing episodes and not learning from them.
 3. To avoid stochasticity in both the environment and the exploration strategy, we can average the reward over a number of simulations. The weakness is that this is more costly -- it requires us to run additional episodes that do not explore and learn.
 
 In these notes, we use the strategy in item 2 above. Every 20 episodes, we run our policy and record the cumulative reward. As we don't know what the maximum reward could be, we monitor the learning and terminate when the [exponential moving average](sec:value-iteration:evaluating-policies) of our reward is no longer increasing, similar to what we did in [evaluating the value iteration policy](sec:value-iteration:evaluating-policies). Here, we plot the **learning curve** for Q-learning on the GridWorld example:
 
 ```{code-cell} ipython3
-episodes = 2000
-episodes_per_evaluation = 20
 qfunction = QTable()
 mdp = GridWorld()
-policy = qfunction.extract_policy(mdp)
-rewards = mdp.execute_policy(policy, episodes=1)
-for _ in range(int(episodes / episodes_per_evaluation)):
-    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
-    policy = qfunction.extract_policy(mdp)
-    rewards += mdp.execute_policy(policy, episodes=1)
+rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
 ```
 
 Once we have the rewards of the episodes, we can plot the rewards:
 
 ```{code-cell} ipython3
-Plot.plot_cumulative_rewards(
-    ["Q-learning"], [rewards], episodes_per_evaluation=episodes_per_evaluation
-)
+Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
 ```
 
 We can see that the policy converges at around 1000 episodes. However, recalling that this is smoothed using the exponential moving average, it probably converges in fewer episodes, but the early episodes weight on the average still.
@@ -693,20 +722,11 @@ We can see that the policy converges at around 1000 episodes. However, recalling
 Next, we do the same for the contested crossing example:
 
 ```{code-cell} ipython3
-episodes = 2000
-episodes_per_evaluation = 20
 qfunction = QTable()
 mdp = ContestedCrossing()
-policy = qfunction.extract_policy(mdp)
-rewards = mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
-for _ in range(int(episodes / episodes_per_evaluation)):
-    QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=episodes_per_evaluation)
-    policy = qfunction.extract_policy(mdp)
-    rewards += mdp.execute_policy(policy, episodes=1, random_on_duplicate=True)
+rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
 
-Plot.plot_cumulative_rewards(
-    ["Q-learning"], [rewards], episodes_per_evaluation=episodes_per_evaluation
-)
+Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
 ```
 
 We can see a convergence at about 1250-1500 episodes.
@@ -769,7 +789,7 @@ The standard versions that we see in this section have two major limitations:
 
 - We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.
 
-- If we do *not* know MDP, we need to use model-free techniques:
+- If we do **not** know MDP, we need to use model-free techniques:
 
     -  **Offline**: Q-learning, SARSA, and friends.
 ```

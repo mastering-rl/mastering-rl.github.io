@@ -1,16 +1,16 @@
 Images:
 - deterministic vs stochastic policies.
-- n-armed banditt
-- td vs n-step v MC
-- n-step window
+- monte-carlo learning vs td learning 
 - policy evaluation -> policy improvement loop
 - gradients
 - actor critic
 
 High priority:
 - add introductory chapter solving an atari game using deep rl
-- remove random_on_duplicate and replace with stochastic policy that uses a given bandit
-- italics -> bold for definitions
+- test experience replay code
+- add experience replay code to notes
+- update policy gradient code to use experience variable instead of having three lists 
+    + and use separate 'actions' variable in select_action instead of a direct call.
 - add eligibility traces
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - add contested crossing throughout notes
@@ -25,7 +25,6 @@ High priority:
 
 Low priority:
 - add prioritised sweeping for value iteration (or approximate value iteration)
-- Move to OpenAI gym interface?
 - align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
 - add multi-objective RL to Chapter 1. Don't spend much time on solutions, but an example may be good.

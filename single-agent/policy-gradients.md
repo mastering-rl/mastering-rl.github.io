@@ -42,8 +42,8 @@ In policy gradient methods, we approximate the policy from the rewards and actio
 ```
 ````
 
-1. The policy is represented using some function that is *differentiable* with respect to its parameters. For a non-differentiable policy, we cannot calculate the gradient.
-2. Typically, we want the policy to be *stochastic*. Recall from the section on [policies](sec:mdps:policies) that a stochastic policy specifies a *probability distribution* over actions, defining the probability with which each action should be chosen.
+1. The policy is represented using some function that is **differentiable** with respect to its parameters. For a non-differentiable policy, we cannot calculate the gradient.
+2. Typically, we want the policy to be **stochastic**. Recall from the section on [policies](sec:mdps:policies) that a stochastic policy specifies a **probability distribution** over actions, defining the probability with which each action should be chosen.
 
 The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}(s, a)$ via gradient ascent on the expected return. Gradient ascent will find the best parameters $\theta$ for the particular MDP.
 
@@ -61,10 +61,10 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by *ascending* the gradient of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by **ascending the gradient** of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
-Given a policy objective $J(\theta)$, the *policy gradient* of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
+Given a policy objective $J(\theta)$, the **policy gradient** of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
 
 $$
 \nabla_{\theta}J(\theta) = \begin{pmatrix} \frac{\partial J(\theta)}{\partial \theta_1} \\ \vdots \\ \frac{\partial J(\theta)}{\partial \theta_n} \end{pmatrix}
@@ -79,7 +79,7 @@ $$\theta \leftarrow \theta + \alpha \nabla J(\theta)$$
 
 where $\alpha$ is a learning rate parameter that dictates how big the step in the direction of the gradient should be.
 
-The question is: what is $\nabla J(\theta)$? The *policy gradient theorem* (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi_{\theta}$, state $s$, and action $a$, that $\nabla J(\theta)$ is:
+The question is: what is $\nabla J(\theta)$? The **policy gradient theorem** (see Sutton and Barto, Section 13.2) says that for any differentiable policy $\pi_{\theta}$, state $s$, and action $a$, that $\nabla J(\theta)$ is:
 
 $$\nabla J(\theta) = \mathbb{E}[\nabla\ \textrm{ln} \pi_{\theta}(s, a) Q(s,a)]$$
 
@@ -203,6 +203,7 @@ policy = LogisticRegressionPolicy(
 policy_gradient = PolicyGradient(gridworld, policy, alpha=0.1)
 policy_gradient.execute(episodes=1000)
 policy_image = gridworld.visualise_stochastic_policy(policy)
+
 ```
 
 We can see here that this is a stochastic policy --- instead of giving us an action (left or right) in each cell, we get the probability that the policy will select each of these actions. The policy learns to select right with a  much higher probability because the positive reward is to the right.
@@ -246,7 +247,6 @@ It inherits from the `StochasticPolicy` and then implement the `update`, `select
 
 ```{code-cell} ipython3
 :load: "../python_code/deep_nn_policy.py"
-
 ```
 
 As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implementation, PyTorch does not support strings as values, so we need to encode action names and states as integers.
@@ -255,6 +255,7 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_nn_policy_gradient.py"
+
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
@@ -276,7 +277,7 @@ Simulating the process of training the policy, we can see that initially, all fo
 
 ## Disadvantages
 
-- **Sample inefficiency**:  A disadvantage of REINFORCE is known as *sample inefficiency*. Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward).
+- **Sample inefficiency**:  Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward), and therefore which to sample.
 - **Loss of explainability**: Model-free reinforcement learning is a particularly challenging case to understand and explain why a policy is making a decision. This is largely due to the model-free property: there are no action definitions that can used as these are unknown. However, policy gradients are particularly difficult because the values of states are unknown: we just have a resulting policy. With value-based approaches, knowing $V$ or $Q$ provides some insight into why actions are chosen by a policy; although explainability problems still remain.
 
 (sec:policy-gradient:actor-critic)=
@@ -290,9 +291,9 @@ Simulating the process of training the policy, we can see that initially, all fo
 
 The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards $G$ over episodes leads to instability.
 
-Actor critic methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the *actor* and the  value function is called the *critic*. The primary idea is that the actor produces actions, and as in [temporal difference learning](sec:model-free:td-learning), the  value function (the critic) provides feedback or "criticism" about these actions as a way of bootstrapping.
+**Actor critic** methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the **actor** and the  value function is called the **critic**. The primary idea is that the actor produces actions, and as in [temporal difference learning](sec:model-free:td-learning), the  value function (the critic) provides feedback or "criticism" about these actions as a way of bootstrapping.
 
-The *Q Actor Critic* algorithm uses a Q-function as the critic.
+The **Q Actor Critic** algorithm uses a Q-function as the critic.
 
 ````{margin}
 ```{admonition} Video byte: Q actor critic
@@ -343,20 +344,22 @@ The reason the actor critic methods still work like this is because the actor po
 
 ## Implementation
 
-To implement the Q Actor Critic framework, we first create a new base class called `ActorCritic`, which can be used as a base for other types of actor critic methods, such as *advantage actor critics*, which we will not discuss here.
+To implement the Q Actor Critic framework, we first create a new base class called `ActorCritic`, which can be used as a base for other types of actor critic methods, such as **advantage actor critics**, which we will not discuss here.
 
 The `ActorCritic` class is an abstract class that looks similar to that of `QLearning`, except that we update both the actor and the critic:
 
 ```{code-cell} ipython3
 :load: "../python_code/actor_critic.py"
+
 ```
 
 Note from the code above that we use the actor (the policy) to choose an action, and then update both the critic and the actor. In this particular implementation, we batch update the actor policy at the end of the episode.
 
-Next, we have to instantite the  `ActorCritic` class as a `QActorCric` class to implement the `update_actor` and `update_critic` classes:
+Next, we have to instantite the  `ActorCritic` class as a `QActorCritic` class to implement the `update_actor` and `update_critic` classes:
 
 ```{code-cell} ipython3
 :load: "../python_code/q_actor_critic.py"
+
 ```
 
 Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose `DeepNeuralNetworkPolicy` and `DeepQFunction` with `QLearning` updates. 
@@ -374,9 +377,9 @@ We can see that the actor critic agent has learnt both a policy that is very goo
 
 - **Policy gradient methods** such as REINFORCE and actor-critic approaches directly learn a policy instead of first learning a value function or Q-function.
 
-- Using trajectories, the parameters for a policy are updated by following the gradient upwards -- the same as gradient descent but in the opposite direction.
+- Using trajectories, the parameters for a policy are updated by **following the gradient upwards** -- the same as gradient descent but in the opposite direction.
 
-- Unlike policy iteration, policy gradient approaches are *model free*.
+- Unlike policy iteration, policy gradient approaches are **model free**.
 
 - **Actor critic** methods also learn a value function or Q-function to reduce the variance in the cumulative rewards.
 ```

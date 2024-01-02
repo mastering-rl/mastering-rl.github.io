@@ -37,7 +37,7 @@ Using a Q-table has two main limitations:
 2. It requires us to maintain a table of size $|A| \times |S|$, which is prohibitively large for any non-trivial problem.
 
 
-To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at *linear function approximation* and approximation using *deep learning* (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of $Q(s,a)$ *even if we have not applied action $a$ in state $s$ previously*. 
+To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at **linear function approximation** and approximation using **deep learning** (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of $Q(s,a)$ *even if we have not applied action $a$ in state $s$ previously*. 
 
 :::{admonition} Example --- Freeway
 Conside the game *Freeway*, in which a kangaroo needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
@@ -63,7 +63,7 @@ A Q-table would need to store $28\times 10^{149}$ entries. This is a huge Q-tabl
 ```
 ````
 
-The key idea is to *approximate* the Q-function using a linear combination of *features* and their weights. Instead of recording everything in detail, we think about what is most important to know, and model that.
+The key idea is to **approximate** the Q-function using a linear combination of **features** and their **weights**. Instead of recording everything in detail, we think about what is most important to know, and model that.
 
 What are some features that are relevant to the Freeway example?
 
@@ -71,8 +71,7 @@ The overall process is:
 
 1.  For the states, consider what are the features that determine its representation.
 
-2.  During learning, perform updates based on the *weights* of
-    *features* instead of states.
+2.  During learning, perform updates based on the **weights of features** instead of states.
 
 3.  Estimate $Q(s,a)$ by summing the features and their weights.
 
@@ -95,11 +94,11 @@ This requires just six features.
 ```
 ````
 
-In linear Q-learning, we store features and weights, not states. What we need to learn is how important each feature is (its *weight*) for each action.
+In linear Q-learning, we store features and weights, not states. What we need to learn is how important each feature is (its **weight**) for each action.
 
 To represent this, we have two vectors:
 
-1.  A *feature vector*, $f(s,a)$, which is a vector of $n \cdot |A|$
+1.  A **feature vector**, $f(s,a)$, which is a vector of $n \cdot |A|$
     different functions, where $n$ is the number of state features and
     $|A|$ the number of actions. Each function extracts the value of a
     feature for state-action pair $(s,a)$. We say $f_i(s,a)$ extracts
@@ -116,7 +115,7 @@ To represent this, we have two vectors:
     times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance kangaroo 1 is away from the goal. The function $f_{3}(s, Up)$
      returns the distance to the nearest car in the row above the first kangaroo. 
 
-2.  A *weight* vector $w$ of size $n \times |A|$: one weight for each
+2.  A **weight vector** $w$ of size $n \times |A|$: one weight for each
     feature-action pair. $w^a_i$ defines the weight of a feature $i$ for
     action $a$.
 
@@ -293,13 +292,14 @@ from gridworld import GridWorld
 from qlearning import QLearning
 from linear_qfunction import LinearQFunction
 from gridworld_feature_extractor import GridWorldFeatureExtractor
+from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 features = GridWorldFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
-policy = qfunction.extract_policy(mdp)
+policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
 ```
@@ -328,8 +328,8 @@ from gridworld_better_feature_extractor import GridWorldBetterFeatureExtractor
 mdp = GridWorld()
 features = GridWorldBetterFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
-QLearning(mdp, EpsilonGreedy(), qfunction).execute()
-policy = qfunction.extract_policy(mdp)
+linear_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
+policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
 ```
@@ -337,6 +337,24 @@ mdp.visualise_policy(policy)
 However, this is still not perfect. As we see, the policy recommends going up in state (1,0), which runs straight into the blocked cell. This is the downside of using linear function approximation. While it comes with convergence guarantees, it will not produce optimal policies if the underlying problem is non-linear.
 
 We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
+
+Is there much value using function approximation? Comparing the reward curves of tabular Q-learning and linear Q-function approximation, we see that the linear version converges to the optimal policy earlier, at about 350 episodes instead of about 600 for tabular Q-learning:
+
+```{code-cell} ipython3
+from qtable import QTable
+mdp = GridWorld()
+qfunction = QTable()
+tabular_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
+```
+
+```{code-cell} ipython3
+from plot import Plot
+
+Plot.plot_cumulative_rewards(
+    ["Tabular Q-learning", "Linear Q-learning"],
+    [tabular_qlearning_rewards, linear_qlearning_rewards]
+)
+```
 
 ### Example: Linear Q-function approximation on Contested Crossing
 
@@ -354,6 +372,7 @@ This results in the following policy visualisation:
 from qlearning import QLearning
 from linear_qfunction import LinearQFunction
 from ccross_feature_extractor import CCrossFeatureExtractor
+from stochastic_q_policy import StochasticQPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 import contested_crossing
 
@@ -362,9 +381,13 @@ mdp = contested_crossing.ContestedCrossing()
 features = CCrossFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
 QLearning(mdp, EpsilonGreedy(), qfunction).execute()
-policy = qfunction.extract_policy(mdp)
-mdp.visualise_as_image(policy=policy,mode=0,title="Low danger: {0}, High danger: {1}".format(mdp.low_danger,mdp.high_danger),plot=True)
-
+policy = StochasticQPolicy(qfunction)
+mdp.visualise_as_image(
+    policy=policy,
+    mode=0,
+    title="Low danger: {0}, High danger: {1}".format(mdp.low_danger,mdp.high_danger),
+    plot=True
+)
 ```
 
 ### Example -- Linear function approximation vs Q-tables
@@ -385,13 +408,14 @@ Below we see a comparison of how linear Q-functions update over time in Gridworl
 <p>
 ```
 
+
 We can see that, even after a single update after episode 1, the values of the Up action are updated for all states.
 
 ### Challenges and tips
 
 The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.
 
-**Tip:** Note that to make analysis and debugging easier, our feature values can be *normalised* using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.
+**Tip:** Note that to make analysis and debugging easier, our feature values can be **normalised** using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.
 
 
 (sec:function-approximation:deep-Q-learning)=
@@ -421,13 +445,13 @@ The deep reinforcement learning TD update is:
 
 $$\theta \leftarrow \theta + \alpha \cdot \delta \cdot \nabla_{\theta} Q(s,a; \theta)$$
 
-where $\nabla_{\theta} Q(s,a; \theta)$ is the *gradient* of the Q-function. In these notes, we will not cover how to calculate the gradient of the Q-function: there are many excellent text books that cover gradients.
+where $\nabla_{\theta} Q(s,a; \theta)$ is the **gradient** of the Q-function. In these notes, we will not cover how to calculate the gradient of the Q-function: there are many excellent text books that cover gradients, such as [Dive into Deep Learning](https://d2l.ai/).
 
 ### Implementation
 
 Deep Q-learning is identical to tabular or linear Q-learning, except that we use a deep neural network to represent the Q-function instead of a Q-table or a linear equation.
 
-In this implementation, we use  the PyTorch deep learning framework  (https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.
+In this implementation, we use  the [PyTorch deep learning framework](https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.
 
 Using PyTorch, we create a sequential neural network with the following:
 1. The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.

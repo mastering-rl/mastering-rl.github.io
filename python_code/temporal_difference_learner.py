@@ -1,17 +1,22 @@
-class ModelFreeReinforcementLearner:
-    def __init__(self, mdp, bandit, qfunction, alpha=0.1):
+from model_free_learner import ModelFreeLearner
+
+class TemporalDifferenceLearner(ModelFreeLearner):
+    def __init__(self, mdp, bandit, qfunction, alpha=0.01):
         self.mdp = mdp
         self.bandit = bandit
         self.alpha = alpha
         self.qfunction = qfunction
 
-    def execute(self, episodes=100):
+    def execute(self, episodes=2000):
 
+        rewards = []
         for _ in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction)
 
+            episode_reward = 0.0
+            step = 0
             while not self.mdp.is_terminal(state):
                 (next_state, reward) = self.mdp.execute(state, action)
                 actions = self.mdp.get_actions(next_state)
@@ -21,6 +26,12 @@ class ModelFreeReinforcementLearner:
                 self.qfunction.update(state, action, delta)
                 state = next_state
                 action = next_action
+                episode_reward += reward * (self.mdp.discount_factor ** step)
+                step += 1
+
+            rewards.append(episode_reward)
+
+        return rewards
 
     """ Calculate the delta for the update """
 

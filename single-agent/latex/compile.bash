@@ -1,6 +1,6 @@
 #!/etc/bash
 
-TEX=*.tex
+TEX=$1*.tex
 
 for f in $TEX; do
 	basename=`basename $f .tex`

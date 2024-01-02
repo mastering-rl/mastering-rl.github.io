@@ -11,14 +11,14 @@ kernelspec:
 
 # Normal form games
 
-In the following chapters, we will look at *games*. By  "games", we do not only mean games like Chess or digital games -- the term "game" is a more general term to describe a problem that involves *multiple agents* or *players*.
+In the following chapters, we will look at **games**. By  "games", we do not only mean games like Chess or digital games -- the term "game" is a more general term to describe a problem that involves **multiple agents or players**.
 
 The standard definition of an MDP is for a single agent, who controls all of the actions. In a multi-agent system, we face further challenges: the effects of actions and the rewards we receive are dependent also on the actions of the agents. In fact, the other agents can even be our adversaries, so they may be working to minimise our rewards.
 
-First, we look at *normal form* games, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or *payoff* that they receive is dependent on the moves of the other agents.
+First, we look at **normal form games**, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or **payoff** that they receive is dependent on the moves of the other agents.
 
 
-Then, we look at *extensive form games*, which are sequential games, meaning that there are multiple actions played in sequence.
+Then, we look at **extensive form games**, which are sequential games, meaning that there are multiple actions played in sequence.
 
 
 ````{margin}
@@ -75,12 +75,12 @@ This problem can be represented by the following two-dimensional matrix:
                               |
 ```
 
-Here, Prisoner A and Prisoner B are the *players*, admit and deny are the *actions*, and the values in the cells are the *utility* or *payoffs* given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left cell is Prisoner A and the right cell is Prisoner B.
+*Prisoner A* and *Prisoner B* are the **players**, *admit* and *deny* are the **actions**, and the values in the cells are the **utility** or **payoffs** given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left cell is Prisoner A and the right cell is Prisoner B.
 
 So, what should each prisoner do? Let's first list some assumptions about the game, which are genreal assumptions that we are going to hold throughout this chapter:
-1. We assume that all agents are *rational*, which means that they aim to maximise their total utility.
-2. We assume that all agents are *self-interested*, which means that they do not care about the other agents' utility.
-3. We assume that the game is a *perfect information* game, which means that rules of the game are *common knowledge* for all agents; that is, all agents know the rules, including the actions and utilities for all other agents, and all agents know that all agents know the rules, and all agents know that all agents know that all agents know the rules, and all agents know that.... *ad infinitum*. In short, there is no way to "trick" another agent by taking advantage of something that they don't know.
+1. We assume that all agents are **rational**, which means that they aim to maximise their total utility.
+2. We assume that all agents are **self-interested**, which means that they do not care about the other agents' utility.
+3. We assume that the game is a **perfect information** game, which means that rules of the game are **common knowledge** for all agents; that is, all agents know the rules, including the actions and utilities for all other agents, and all agents know that all agents know the rules, and all agents know that all agents know that all agents know the rules, and all agents know that.... *ad infinitum*. In short, there is no way to "trick" another agent by taking advantage of something that they don't know.
 
 Given these assumptions, both agents should choose to admit, with the result being that both receive two years in prison. This may seem surprising: If both agents choose to deny, they would both receive just one year in prison. Why do these choose to spend more time in prison?
 
@@ -95,7 +95,7 @@ If we reason this way, it is clear to see why both players admit. The game is sy
 
 So, whatever my opponent does, my best action is to admit. Similarly, my opponent can reason in the same way, and their best action is to admit as well. Because both of us reason like this an both of us are self interested, we both end up spending two years in prison instead of one.  Interestingly, we cannot use this to out-reason our opponent. If we "know" they will admit, switching to deny is not a good response: we will end up with four years in prison instead of two! This is why it is known as the Prisoner's *dilemma*: both prisoners know there is a better outcome for them both, but neither of them has an incentive to deny.
 
-Now that we have seen an example, let's look at a more formal definition of *normal form game*.
+Now that we have seen an example, let's look at a more formal definition of normal form game.
 
 ````{margin}
 ```{admonition} Video byte: Definition -- Normal form game
@@ -104,11 +104,11 @@ Now that we have seen an example, let's look at a more formal definition of *nor
 ````
 
 :::{admonition} Definition -- Normal form game
-A normal  form game is a tuple $G = (N, A, u)$
+A **normal form game** is a tuple $G = (N, A, u)$
 
 - $N$ is a set of $n$ number of players
-- $A = A_1 \times \ldots \times A_n$ is an *action profile*, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
-- $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the *utility* for an action.
+- $A = A_1 \times \ldots \times A_n$ is an **action profile**, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
+- $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the **utility** for an action.
 :::
 
 Normal game games can be visualised as matrices, as shown above for the prisoner's dilemma, with each agent representing one dimension of the matrix, each row represents an action for a player, and each cell represents the utility received when the players each take the action.
@@ -116,47 +116,49 @@ Normal game games can be visualised as matrices, as shown above for the prisoner
 
 ## Solutions for normal form games: strategies
 
-In normal form games, the solution for a player in the game is known as a *strategy*. There are several types of strategy.
+In normal form games, the solution for a player in the game is known as a **strategy**. There are several types of strategy.
 
 :::{admonition} Definition -- Pure strategy
-A *pure strategy* for an agent is when the agent selects a single action and plays it. If the agent were to play the game multiple times, they would choose the same action every time.
+A **pure strategy** for an agent is when the agent selects a single action and plays it. If the agent were to play the game multiple times, they would choose the same action every time.
 :::
 
 :::{admonition} Definition -- Mixed strategy
-A *mixed strategy* is when an agent selects the action to play based on some probability distribution. That is, we choose action $a$ with probability 0.8 and action $b$ with probability 0.2. If the agent were to play the game an infinite number of times, it would select $a$ 80% of the time and $b$ 20% of the time.
+A **mixed strategy** is when an agent selects the action to play based on some probability distribution. That is, we choose action $a$ with probability 0.8 and action $b$ with probability 0.2. If the agent were to play the game an infinite number of times, it would select $a$ 80% of the time and $b$ 20% of the time.
 :::
 
 Note that a pure strategy is a special case of a mixed strategy where one of the actions has a probability of 1.
 
-We call the set of strategies for an agent a *strategy profile*. The strategy profile for agent $i$ is denoted $S_i$. Note that $S_i \neq A_i$ because $S_i$ contains mixed strategies. The set of mixed-strategy profiles for all agents is simply $S = S_1 \times \ldots S_n$.
+We call the set of strategies for an agent a **strategy profile**. The strategy profile for agent $i$ is denoted $S_i$. Note that $S_i \neq A_i$ because $S_i$ contains mixed strategies. The set of mixed-strategy profiles for all agents is simply $S = S_1 \times \ldots S_n$.
 
 We use the notation $S_{-i}$ to denote the set of mixed-strategy profiles for all agents except for agent $i$, and $s_{-i} \in S_{-i}$ to denote an element of this.
 
 It is not immediately obvious why an agent would want to use randomisation when select an action, but we will see examples where this is important.
 
 :::{admonition} Definition --- Dominant strategy
-Strategy $s_i$ for player $i$  *weakly dominates* strategy $s'_i$ if the utility received by the agent for playing strategy $s_i$  is greater than or equal to  the utility received by that agent for playing $s'_i$. Formally, $s_i$ weakly dominates $s'_i$ iff and only if:
+Strategy $s_i$ for player $i$  **weakly dominates** strategy $s'_i$ if the utility received by the agent for playing strategy $s_i$  is greater than or equal to  the utility received by that agent for playing $s'_i$. Formally, $s_i$ weakly dominates $s'_i$ iff and only if:
 
 $$
 \textrm{for all}\ s_{-i} \in S_{-i}, \textrm{we have that } u_i(s_i, s_{-i}) \geq u_i(s'_i, s_{-i})
 $$
 
-Strategy $s_i$ *strongly dominates* strategy $s'_i$ if its utility is strictly greater. Formally: 
+Strategy $s_i$ **strongly dominates** strategy $s'_i$ if its utility is strictly greater. Formally: 
 
 $$
 \textrm{for all}\ s_{-i} \in S_{-i}, \textrm{we have that } u_i(s_i, s_{-i}) > u_i(s'_i, s_{-i})
 $$
 
-A strategy is a *weakly (resp. strictly)  dominant strategy*  if it weakly (resp. strictly) dominates all other strategies.
+A strategy is a **weakly (resp. strictly)  dominant strategy**  if it weakly (resp. strictly) dominates all other strategies.
 :::
 
-A dominant strategy is *strategy-proof*: we can even tell our opponents beforehand that this is the strategy that we are going to choose and this would not give them any advantage: it would still be a dominant strategy.
+A dominant strategy is **strategy-proof**: we can even tell our opponents beforehand that this is the strategy that we are going to choose and this would not give them any advantage: it would still be a dominant strategy.
 
 In the Prisoner's dilemma game, the strategy to admit is strictly dominant: is the best action to take for any of the strategies that an opponent can play.
 
 ## Best response and Nash equilibria
 
-First, we look at how to solve games from the perspective of one of the agents, known as the agent's *best response*. Then, we look at solutions at the concept of *equilibria*, which captures solutions to the entire game.
+First, we look at how to solve games from the perspective of one of the agents, known as the agent's **best response**. 
+
+Then, we look at solutions at the concept of **equilibria**, which captures solutions to the entire game.
 
 ````{margin}
 ```{admonition} Video byte: Best response and Nash equilibria
@@ -168,18 +170,18 @@ First, we look at how to solve games from the perspective of one of the agents, 
 Informally, the concept of a best response refers to the best strategy that an agent  could select *if* it know how all of the other agents in the game were going to play.
 
 :::{admonition} Definition -- Best response
-The *best response* for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_(s^*_i, s_{-i}) \geq u_(s'_i, s_{-i})$ for all strategies $s'_i \in S_i$
+The **best response** for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_(s^*_i, s_{-i}) \geq u_(s'_i, s_{-i})$ for all strategies $s'_i \in S_i$
 :::
 
 Note that for many problems, there can be multiple best responses.
 
-Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who in his PhD thesis provide that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a *stable* strategy profile for all agents in $N$ such that no agent has an incentive to change strategy if all other agents kept their strategy the same.
+Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who in his PhD thesis provide that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a **stable** strategy profile for all agents in $N$ such that no agent has an incentive to change strategy if all other agents kept their strategy the same.
 
 :::{admonition} Definition -- Nash equilibrium
-A strategy profile $s = (s_1,\ldots, s_n)$ is a *Nash equilbrium* if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
+A strategy profile $s = (s_1,\ldots, s_n)$ is a **Nash equilbrium** if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
 :::
 
-If the strategies in a Nash equilibrium are all pure strategies, then we call this a *pure-strategy Nash equilibrium*. Otherwise, if is a *mixed-strategy Nash equilibrium*.
+If the strategies in a Nash equilibrium are all pure strategies, then we call this a **pure-strategy Nash equilibrium**. Otherwise, if is a **mixed-strategy Nash equilibrium**.
 
 ## Calculating best response and Nash equilibria
 
@@ -263,7 +265,7 @@ What are the Nash equilibria. There are in fact three Nash equilibria for this g
 
 ## Mixed strategies
 
-Recall from earlier in this chapter where we defined *mixed strategies*, which are strategies that use randomisation. To illustrate why these are necessary, consider the following simple game.
+Recall from earlier in this chapter where we defined **mixed strategies**, which are strategies that use randomisation. To illustrate why these are necessary, consider the following simple game.
 
 ````{margin}
 ```{admonition} Video byte: Example -- Matching pennies game
@@ -271,8 +273,8 @@ Recall from earlier in this chapter where we defined *mixed strategies*, which a
 ```
 ````
 
-:::{admonition} Example -- Matching pennies
-In *matching pennies*, two players each have a penny, and simultaneously they need to show either a $head$ or a $tail$ of their penny to their opponent. The $Odd$ player will win if there is just one head, and the $Even$ player will win if there are two heads. We can model this as follows:
+:::{admonition} Example -- Matching Pennies
+In the *Matching Pennies* game, two players each have a penny, and simultaneously they need to show either a $head$ or a $tail$ of their penny to their opponent. The $Odd$ player will win if there is just one head, and the $Even$ player will win if there are two heads. We can model this as follows:
 
 ```
                          Player Odd
@@ -286,7 +288,7 @@ In *matching pennies*, two players each have a penny, and simultaneously they ne
 
 It is clear that neither agent has a dominant strategy and there are no pure-strategy equilibria: in every call, there is an incentive for the agent receiving -1 to deviate from their strategy.
 
-So, what strategy should we play? If we were to play this game a number of times, clearly picking either $heads$ or $tails$ every time would be a bad strategy: our opponent would learn this and would start picking their strategy to beat us. Instead, we need to *randomise* by choosing $heads$ sometimes and $tails$ sometimes. Intuitively, we would choose each with probability 0.5; but can we calculate this analytically?
+So, what strategy should we play? If we were to play this game a number of times, clearly picking either $heads$ or $tails$ every time would be a bad strategy: our opponent would learn this and would start picking their strategy to beat us. Instead, we need to **randomise** by choosing $heads$ sometimes and $tails$ sometimes. Intuitively, we would choose each with probability 0.5; but can we calculate this analytically?
 :::
 
 ````{margin}
@@ -295,10 +297,10 @@ So, what strategy should we play? If we were to play this game a number of times
 ```
 ````
 
-To do this, we need to define the concepts of *expected utility* and *indifference*. 
+To do this, we need to define the concepts of **expected utility** and **indifference**. 
 
 :::{admonition} Definition -- Expected utility of a pure strategy
-Expected utility is the weighted average  received by an playing a particular pure strategy. For an action $a_i \in A_i$, the expected utility  of that action is:
+**Expected utility** is the weighted average  received by an playing a particular pure strategy. For an action $a_i \in A_i$, the expected utility  of that action is:
 
 $$
 U_i(a_i) = p_1 \times u_i(a_i,a^1_{-i}) + \ldots + p_m \times u_i(a_i, a^m_{-i})
@@ -316,7 +318,7 @@ In theory, we can maximise our overall  utility by picking the pure strategy wit
 ````
 
 :::{admonition} Definition -- Indifference
-An agent $i$ is indifferent between a set of pure strategies $I \subseteq A_i$ if for all $a_i, a_j \in I$, we have that $U_i(a_i) = U_i(a_j)$. 
+An agent $i$ is **indifferent** between a set of pure strategies $I \subseteq A_i$ if for all $a_i, a_j \in I$, we have that $U_i(a_i) = U_i(a_j)$. 
 :::
 
 Informally, this states that an agent is indifferent between a set of pure strategies if the expected return of all strategies is the same. The agent is therefore indifferent between these pure strategies because it does not matter which action they choose.
@@ -328,7 +330,7 @@ Informally, this states that an agent is indifferent between a set of pure strat
 ````
 
 :::{admonition} Definition -- Mixed-strategy Nash equilibria
-A *mixed-strategy Nash equilibria* is a mixed-strategy profile $S$ such that the strategy for each agent $i \in N$ is a tuple of probabilities $P_i = (p_1, \ldots, p_m)$, one for each pure strategy, such that $p_1 + \ldots + p_m = 1$ and that all opponents $j$ are indifferent to their pure strategies $A_j$..
+A **mixed-strategy Nash equilibria** is a mixed-strategy profile $S$ such that the strategy for each agent $i \in N$ is a tuple of probabilities $P_i = (p_1, \ldots, p_m)$, one for each pure strategy, such that $p_1 + \ldots + p_m = 1$ and that all opponents $j$ are indifferent to their pure strategies $A_j$..
 :::
 
 Informally, this states that each agent should choose a mixed strategy such that it makes their opponents indifferent to their own actions. Intuitively, this does not really make much sense: each agents' strategy is to make its opponents indifferent to their own strategy. However, if we analyse it from the perspective of the opponent, it becomes clear: if we select the probabilities for a mixed strategy such that our opponent is *not* indifferent, then this means there is at least one strategy that has a higher expected utility than all others. In that case, the opponent would play that strategy.
@@ -356,7 +358,7 @@ $$
 Therefore, $Odd$ should play $heads$ and $tails$ with probability $\frac{1}{2}$ each. If we solve for player $Even$, we would find the same answer.
 :::
 
-In this example, the probabilities of the game are reasonably clear without having to solve. Now, let's look at a more complicated game, which is an example of a *security game*.
+In this example, the probabilities of the game are reasonably clear without having to solve. Now, let's look at a more complicated game, which is an example of a **security game**.
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- Security game

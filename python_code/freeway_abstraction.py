@@ -27,6 +27,7 @@ class FreewayAbstraction(Freeway):
 
         # get the concrete state
         state = super().observation_to_abstract_state(observation)
+        
         # abstract the position of the player into a lane
         # Lane i lane starts at 16i + 13, and ends at 16(i + 1) + 13 (https://arxiv.org/abs/2109.01220)
         lane_height = 17

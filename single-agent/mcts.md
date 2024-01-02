@@ -42,7 +42,7 @@ The learning outcomes of this chapter are:
 ```
 ````
 
-We saw value iteration in the previous section. This is an *offline* planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. 
+We saw value iteration in the previous section. This is an **offline** planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act. 
 
 Yet the state space $S$ is usually *far* too big to determine $V(s)$ or $\pi$ exactly. Even games like Go, which are famously difficult for reinforcement learning, requiring computational power available to only a handful of organisations, are small compared to many real-world problems.
     
@@ -54,7 +54,7 @@ There are methods to approximate the MDP by reducing the dimensionality of $S$, 
 ```
 ````
 
-In *online* planning, planning is undertaken immediately before executing an action. Once an action (or perhaps a sequence of actions) is executed, we start planning again from the new state. As such, planning and execution are interleaved such that:
+In **online** planning, planning is undertaken immediately before executing an action. Once an action (or perhaps a sequence of actions) is executed, we start planning again from the new state. As such, planning and execution are interleaved such that:
 
 -   For each state $s$ visited, the set of all available actions $A(s)$ partially evaluated
 
@@ -62,11 +62,11 @@ In *online* planning, planning is undertaken immediately before executing an act
     
 -   The chosen action is $\textrm{argmax}_{a'} Q(s,a)$
 
-In online planning, we need access to a *simulator* that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
+In online planning, we need access to a **simulator** that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
 
 The simulator allows us to run repeated simulations of possible futures to gain an idea of what moves are likely to be good moves compared to others.
 
-The question is: how to we do the repeated simuations? *Monte Carlo* methods are by far the most widely-used approach.
+The question is: how to we do the repeated simuations? **Monte Carlo** methods are by far the most widely-used approach.
 
 ## Overview
 
@@ -81,7 +81,7 @@ Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based aro
 ```
 ````
 
-To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called *ExpectiMax* trees:
+To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called **ExpectiMax** trees:
 
 ```{figure} ./latex/mcts_expectimax.png
 ---
@@ -98,14 +98,14 @@ The algorithm is online, which means the action selection is interleaved with ac
 
 Fundamental features:
 
-1.  The Q-value $Q(s,a)$ for each is approximated using *random simulation*.
+1.  The Q-value $Q(s,a)$ for each is approximated using **random simulation**.
 
-2.  For a single-agent problem, an ExpectiMax *search tree* is built incrementally
+2.  For a single-agent problem, an ExpectiMax **search tree** is built incrementally
 
-3.  The search terminates when some pre-defined computational budget is used up, such as a time limit or a number of expanded nodes. Therefore, it is an *anytime* algorithm, as it can be terminated at any time and still give an answer.
+3.  The search terminates when some pre-defined computational budget is used up, such as a time limit or a number of expanded nodes. Therefore, it is an **anytime** algorithm, as it can be terminated at any time and still give an answer.
     
 4.  The best performing action is returned.
-	-   This is complete if there are *no* dead--ends.
+	-   This is complete if there are no dead--ends.
 	-   This is optimal if an entire search can be performed (which is unusual -- if the problem is that small we should just use a dynamic programming technique such as  value iteration).
 
 ## The Framework: Monte Carlo Tree Search (MCTS)
@@ -116,19 +116,19 @@ Fundamental features:
 ```
 ````
 
-The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is *incrementally* built be iterating over the following four steps:
+The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is **incrementally** built be iterating over the following four steps:
 
--   *Select*: Select a single node in the tree that is *not fully expanded*. By this, we mean at least one of its children is not yet explored.
+-   **Select**: Select a single node in the tree that is **not fully expanded**. By this, we mean at least one of its children is not yet explored.
     
--   *Expand*: Expand this node by applying one available action (as defined by the MDP) from the node.
+-   **Expand**: Expand this node by applying one available action (as defined by the MDP) from the node.
     
--   *Simulation*: From one of the outcomes of the expanded, perform a complete random simulation of the MDP to a terminating state. This therefore assumes that the simulation is finite, but versions of MCTS exist in which we just execute for some time and then estimate the outcome.
+-   **Simulate**: From one of the outcomes of the expanded, perform a complete random simulation of the MDP to a terminating state. This therefore assumes that the simulation is finite, but versions of MCTS exist in which we just execute for some time and then estimate the outcome.
     
--   *Backpropagate*: Finally, the value of the node is *backpropagated* to the root node, updating the value of each ancestor node on the way using expected value.
+-   **Backpropagate**: Finally, the value of the node is backpropagated to the root node, updating the value of each ancestor node on the way using expected value.
 
 ### Selection
 
-Start at the root node, and successively select a child until we reach a node that is not fully expanded.
+Start at the root node, and successively **select a child node** until we reach a node that is not fully expanded.
 
 ```{figure} ./latex/mcts_selection.png 
 ---
@@ -139,7 +139,7 @@ MCTS Selection step. The red arcs and nodes are those that have been selected
 
 ### Expansion
 
-Unless the node we end up at is a terminating state, expand the children of the selected node by choosing an action and creating new nodes using the action outcomes.
+Unless the node we end up at is a terminating state, **expand the children** of the selected node by choosing an action and creating new nodes using the action outcomes.
 
 ```{figure} ./latex/mcts_expansion.png
 ---
@@ -150,7 +150,7 @@ MCTS Expansion step. The blue arcs and nodes are those that have been selected.
 
 ### Simulation
 
-Choose one of the new nodes and perform a random simulation of the MDP to the terminating state:
+Choose one of the new nodes and perform a **random simulation** of the MDP to the terminating state:
 
 ```{figure} ./latex/mcts_simulation.png 
 ---
@@ -161,7 +161,7 @@ MCTS Simulation step. The pink nodes and arcs represent the simulation.
 
 ### Backpropagation
 
-Given the reward $r$ at the terminating state, *backpropagate* the reward to calculate the value $V(s)$ at each state along the path.
+Given the reward $r$ at the terminating state, **backpropagate** the reward to calculate the value $V(s)$ at each state along the path.
 
 ```{figure} ./latex/mcts_backpropagation.png 
 ---
@@ -225,7 +225,7 @@ Given this, there are four main parts to the algorithm above:
 
    To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.
 
-4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the *discount factor*! For each state $s$ and action $a$ selected in the Select step, update the cumulative reward of that state.
+4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the discount factor! For each state $s$ and action $a$ selected in the Select step, update the cumulative reward of that state.
 
     :::{admonition} Procedure -- $\textrm{Backpropagation}(s : S; a : A)$
 
@@ -242,11 +242,11 @@ Given this, there are four main parts to the algorithm above:
     :::
 
 
-Because action outcomes are selected according to $P_a(s' \mid s)$, this will converge to the average expected reward. This is why the tree is called an *ExpectiMax* tree:  we maximise the expected return.
+Because action outcomes are selected according to $P_a(s' \mid s)$, this will converge to the average expected reward. This is why the tree is called an **ExpectiMax** tree:  we maximise the expected return.
 
 **But:** what if we do not know $P_a(s' \mid s)$?
 
-Provided that we can *simulate* the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is not a *model-free* approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
+Provided that we can **simulate** the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is not a **model-free** approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
 
 ````{margin}
 ```{admonition} Video byte: MCTS example
@@ -320,7 +320,7 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorith, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
 
-The *Upper Confidence Trees* (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
+The **Upper Confidence Trees** (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
 
 $$UCT = MCTS + UCB1$$
 
@@ -369,6 +369,7 @@ from gridworld import GridWorld
 from graph_visualisation import GraphVisualisation
 from qtable import QTable
 from single_agent_mcts import SingleAgentMCTS
+from q_policy import QPolicy
 from multi_armed_bandit.ucb import UpperConfidenceBounds
 
 gridworld = GridWorld()
@@ -391,7 +392,7 @@ gridworld.visualise_q_function(qfunction)
 Therefore, the extracted policy is not yet very good:
 
 ```{code-cell} ipython3
-policy = qfunction.extract_policy(gridworld)
+policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
 ```
 
@@ -423,7 +424,7 @@ In particular, we can use an off-line method such as Q-learning or SARSA with Q-
 To mitigate this, we can then use MCTS (online planning) to search from the actual state, but starting with the pre-trained Q-function. This has two benefits:
 
 1. The MCTS supplements the pre-trained Q-function by running simulations from the actual initial state $s_0$, which may  reflect the real rewards more accurately than the pre-trained Q-function given that it is an approximation.
-2. The pre-trained Q-function improves the MCTS search by guiding the *selection* step. In effect, the early simulations are not as random because there is some signal to use. This helps to mitigate the 'cold start' problem.
+2. The pre-trained Q-function improves the MCTS search by guiding the selection step. In effect, the early simulations are not as random because there is some signal to use. This helps to mitigate the **cold start** problem, which is when we have no information to exploit at the start of learning.
 
 Later in this chapter, we see an example of this with [AlphaZero](sec:mcts:alpha-zero).
 
@@ -432,11 +433,11 @@ Later in this chapter, we see an example of this with [AlphaZero](sec:mcts:alpha
 
 It addresses exploitation vs. exploration comprehensively.
 
--   UCT is *systematic*:
+-   UCT is **systematic**:
 
-    -   Policy evaluation is *exhaustive* up to a certain depth.
+    -   Policy evaluation is **exhaustive** up to a certain depth.
 
-    -   Exploration aims at *minimising regret*.
+    -   Exploration aims to **minimise regret**.
 
 ````{margin}
 ```{admonition} Video byte: MCTS demo
@@ -473,18 +474,18 @@ MCTS (and other search methods) methods thus can be used by just taking samples 
 
 This is important: value iteration is then more expensive for many problems, however, for an agent operating in its environment, we only solve exhaustively once, and we can use the resulting policy many times no matter state we are in latter.
 
-For MCTS, we need to solve *online* each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heurist for rollouts), this can be improved.
+For MCTS, we need to solve **online** each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heurist for rollouts), this can be improved.
 
 (sec:mcts:alpha-zero)=
 ## Combining MCTS and TD learning: Alpha Zero
 
-Alpha Zero (or more accurately its predecessor AlphaGo) made headlines when it beat Go world champion Lee Sodol in 2016. It uses a combination of MCTS and (deep) reinforcement learning to learn a policy. 
+**Alpha Zero** (or more accurately its predecessor AlphaGo) made headlines when it beat Go world champion Lee Sodol in 2016. It uses a combination of MCTS and (deep) reinforcement learning to learn a policy. 
 
 A simple overview:
 
-1.  AlphaZero uses a deep neural network to estimate the Q-function. More accurately, it gives an estimate of the probability of selecting action $a$ in state $s$ ($P(a|s)$), and the *value* of the state ($V(s)$), which represents the probability of the player winning from $s$.
+1.  AlphaZero uses a deep neural network to estimate the Q-function. More accurately, it gives an estimate of the probability of selecting action $a$ in state $s$ ($P(a|s)$), and the value of the state ($V(s)$), which represents the probability of the player winning from $s$.
 
-2.  It is trained via *self-play*. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.
+2.  It is trained via **self-play***. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.
 
 3.  At each move, AlphaZero:
 

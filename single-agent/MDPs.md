@@ -18,11 +18,11 @@ kernelspec:
 
 The learning outcomes of this chapter are:
 
-1. Define 'Markov Decision Process'.  
+1. Define **Markov Decision Process**. 
 
 2. Identify situations in which Markov Decisions Processes (MDPs) are a suitable model of a problem.
    
-3. Compare MDPs to model of classical planning
+3. Compare MDPs to models of search, such as classical planning and heuristic search.
 
 4. Explain how Bellman equations are solutions to MDP problems
 ```
@@ -46,12 +46,12 @@ Link:  [My link Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
 ````
 
 
-A *Markov Decision Process* (MDPs) is a framework for describing sequential decision making problems. In machine learning, problems such as classification and regression are one-time tasks. That is, a classification/regression model is given an input and returns an output. Then, the next input it is given it entirely independent from the first. In sequential decision making problems, we need to make a series of decisions over time, in which each decision influences the possible future. For example, navigating from one place to another requires us to choose a direction and velocity, move in that direction at the velocity, and then make this decision again and again until we reach our destination. So, even at that first step, we have to consider how each move affects the future. As another example, a clinician making medical treatment decisions has to consider whether decisions taken today will impact future decisions about their patients.
+A **Markov Decision Process** (MDPs) is a framework for describing sequential decision making problems. In machine learning, problems such as classification and regression are one-time tasks. That is, a classification/regression model is given an input and returns an output. Then, the next input it is given it entirely independent from the first. In sequential decision making problems, we need to make a series of decisions over time, in which each decision influences the possible future. For example, navigating from one place to another requires us to choose a direction and velocity, move in that direction at the velocity, and then make this decision again and again until we reach our destination. So, even at that first step, we have to consider how each move affects the future. As another example, a clinician making medical treatment decisions has to consider whether decisions taken today will impact future decisions about their patients.
 
 In the language of reinforcement learning, we say that the decision maker is the **agent**, and their decisions are **actions** that they execute in an **environment** or **state**.
 
 
-Techniques like classical planning algorithms assume that action are *deterministic* -- that is, before  an agent executes an action in a state, it knows that the outcome of the action will be. MDPs  remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability. If there is only one outcome for each action (with probability 1), then the problem is deterministic. Otherwise, it is **non-deterministic**. MDPs consider **stochastic** non-determinism; that is, where there is a probability distribution over outcomes.
+Techniques like heuristic search and classical planning algorithms assume that action are **deterministic** -- that is, before  an agent executes an action in a state, it knows that the outcome of the action will be. MDPs  remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability. If there is only one outcome for each action (with probability 1), then the problem is deterministic. Otherwise, it is **non-deterministic**. MDPs consider **stochastic** non-determinism; that is, where there is a probability distribution over outcomes.
 
 Here are some examples of stochastic actions:
 
@@ -77,7 +77,7 @@ MDPs have been successfully applied to planning in many domains: robot navigatio
 
 :::{admonition} Definition -- Markov Decision Process
 
-A **Markov Decision Processes** (MDP) is a  *fully observable, probabilistic* state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
+A **Markov Decision Process** (MDP) is a  **fully observable**, **probabilistic** state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
 Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ containing:
 
 -   a state space $S$
@@ -149,7 +149,7 @@ glue("gridworld_image", gridworld_image, display=False)
 
 :::{admonition} Example MDP: Grid World
 
-An agent is in the bottom left cell of a grid. The grey cell is a wall. The two coloured cells give a *reward*. There is a reward of 1 of being in the top-right (green) cell, but a negative value of -1 for the cell immediately below (red).
+An agent is in the bottom left cell of a grid. The grey cell is a wall. The two coloured cells give a **reward**. There is a reward of 1 of being in the top-right (green) cell, but a negative value of -1 for the cell immediately below (red).
 
 ```{glue:} gridworld_image
 
@@ -369,9 +369,9 @@ In later chapters, we will see how to use these code-based models in several way
 
 ### MDPs vs deterministic search
 
-You may have studied search algorithms previously, such as the problem of classical planning.
+You may have studied search algorithms previously, such as classical planning or heuristic search algorithms like A$*$
 
-What is different between an MDP and the models from classical planning? There are four main differences:
+What is different between an MDP and search-based solutions? There are four main differences:
 
 -   The transition function is not deterministic. Each action has a probability of $P_a(s' \mid s)$ of ending in state $s'$ if $a$ is executed in the state $s$, whereas in classical planning, the outcome of each action is known in advance.
 
@@ -391,17 +391,17 @@ What is different between an MDP and the models from classical planning? There a
 ```
 ````
 
-The planning problem for discounted-reward MDPs is different to that of classical planning because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
+The planning problem for discounted-reward MDPs is different to that of classical planning or heuristic search because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a *policy*.
 
 :::{admonition} Definition -- Policy
-A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be *deterministic* or *stochastic*.
+A **policy** $\pi$ is a function that tells an agent which is the best action to choose in each state. A policy can be **deterministic** or **stochastic**.
 :::
 
 
 (sec:mdp:deterministic-vs-stochastic-policies)=
 ### Deterministic vs. stochastic policies
 
-A *deterministic policy* $\pi : S \rightarrow A$ is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
+A **deterministic policy** $\pi : S \rightarrow A$ is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state $s$, our agent should choose the action defined by $\pi(s)$.
 A graphical representation of the policy for Grid World is:
 
 ```{code-cell} ipython3
@@ -410,11 +410,12 @@ A graphical representation of the policy for Grid World is:
 from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
+from value_policy import ValuePolicy
 
 gridworld = GridWorld()
 values = TabularValueFunction()
 ValueIteration(gridworld, values).value_iteration(max_iterations=100)
-policy = values.extract_policy(gridworld)
+policy = ValuePolicy(gridworld, values)
 gridworld.visualise_policy(policy, "")
 ```
 
@@ -422,7 +423,7 @@ So, in the initial state (bottom left cell), following this policy the agent sho
 
 Of course, agents do not work with graphical policies. The output from a planning algorithm would be a dictionary-like object or a function that takes a state and returns an action.
 
-A *stochastic policy* $\pi : S \times A \rightarrow \mathbb{R}$ specifies the *probability distribution* from which an agent should select an action. Intuitively, $\pi(s,a)$ specifies the probability that action $a$ should be executed in state $s$.
+A **stochastic policy** $\pi : S \times A \rightarrow \mathbb{R}$ specifies the **probability distribution** from which an agent should select an action. Intuitively, $\pi(s,a)$ specifies the probability that action $a$ should be executed in state $s$.
 
 To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probabilistically such that actions with higher probability are chosen proportionally to their relative probabilities.
 
@@ -455,7 +456,7 @@ As we see later in the section on [policy gradients](sec:policy-based:policy-gra
 ```
 ````
 
-For discounted-reward MDPs, optimal solutions maximise the *expected discounted accumulated reward* from the initial state $s_0$. But what is the expected discounted accumulated reward?
+For discounted-reward MDPs, optimal solutions maximise the **expected discounted accumulated reward** from the initial state $s_0$. But what is the expected discounted accumulated reward?
 
 (defn:expected-discounted-reward)=
 :::{admonition} Definition -- Expected discounted reward
@@ -544,7 +545,7 @@ So, if the value function $V$ is optimal, we can select the action with the high
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
 
-This is known as *policy extraction*, because it extracts a policy for a value function (or Q-function). This can be calculated 'on the fly' at runtime, or we can extract a policy beforehand and use this.
+This is known as **policy extraction**, because it extracts a policy for a value function (or Q-function). This can be calculated 'on the fly' at runtime, or we can extract a policy beforehand and use this.
 
 Alternatively, given a Q-function instead of a value function, we can use:
 

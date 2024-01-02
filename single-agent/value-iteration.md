@@ -27,7 +27,7 @@ The learning outcomes of this chapter are:
 
 ## Overview
 
-*Value Iteration* is a method for finding the optimal value function $V^*$ by solving the
+**Value Iteration** is a method for finding the optimal value function $V^*$ by solving the
 Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
 
 ````{margin}
@@ -87,7 +87,7 @@ Value iteration converges to the optimal policy as iterations continue: $V \maps
 
 
 
-Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the *residual*  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
+Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the **residual**  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
 A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
 
@@ -113,6 +113,8 @@ Given this, we can create a GridWorld MDP, and solve using value iteration. The 
 from gridworld import GridWorld
 from value_iteration import ValueIteration
 from tabular_value_function import TabularValueFunction
+from value_policy import ValuePolicy
+from stochastic_value_policy import StochasticValuePolicy
 
 gridworld = GridWorld()
 values = TabularValueFunction()
@@ -124,7 +126,7 @@ gridworld.visualise_value_function(values, "Value function after 100 iterations"
 From the value function, we extract a policy:
 
 ```{code-cell} ipython3
-policy = values.extract_policy(gridworld)
+policy = ValuePolicy(gridworld, values)
 gridworld.visualise_policy(policy, "Policy after 100 iterations")
 ```
 
@@ -152,13 +154,15 @@ We can see the improvement that value iteration has on each iteration by extract
 ```{code-cell} ipython3
 gridworld = GridWorld()
 values = TabularValueFunction()
-policy = values.extract_policy(gridworld)
+policy = ValuePolicy(gridworld, values)
 rewards = gridworld.execute_policy(policy, episodes=1)
 for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    policy = values.extract_policy(gridworld)
+    policy = ValuePolicy(gridworld, values)
     rewards += gridworld.execute_policy(policy, episodes=1)
 ```
+
+
 
 The `rewards` variables contains the cumulative reward for each of the 50 episodes. We can plot this:
 
@@ -207,16 +211,16 @@ We can show this by creating an instance of a deterministic `GridWorld` class, u
 
 values = TabularValueFunction()
 gridworld = GridWorld(noise=0.0)
-policy = values.extract_policy(gridworld)
-rewards = gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+policy = StochasticValuePolicy(gridworld, values)
+rewards = gridworld.execute_policy(policy, episodes=1)
 for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    policy = values.extract_policy(gridworld)
-    rewards += gridworld.execute_policy(policy, episodes=1, random_on_duplicate=True)
+    policy = StochasticValuePolicy(gridworld, values)
+    rewards += gridworld.execute_policy(policy, episodes=1)
 ```
 
 :::{note}
-Compared to when we evaluated the policy earlier, there is a difference in the code above (other than `noise=0.0`): when we execute the policy, we have set the parameter `random_on_duplicate=True`. This means that when we are executing the policy, if we encounter a state that has been visited previously, a random action should be selected.
+Compared to when we evaluated the policy earlier, there is a difference in the code above (other than `noise=0.0`): when use a `StochasticValuePolicy`, which uses a [multi-armed bandit](sec:multi-armed-bandits) to sometimes (5\% of the time) selects a random action instead of the action that leads to the best value. 
 
 Why do this? 
 
@@ -230,7 +234,7 @@ This will loop infinitely long when: (a) the policy is deterministic (not stocha
 
 When `noise>0.0` in GridWorld, a loop does not matter --- eventually the randomness will break us out of this loop.
 
-However, when `noise=0.0`, because we are using a deterministic tabular policy, loops can occur. This is particularly the case in early iterations, when we have minimal information to select actions. Therefore, when we visit a state we have seen previously, we randomly select an action, and the loop will eventually be exited.
+However, when `noise=0.0`, we can end up in an infinite loop. This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.
 :::
 
 Plotting this with no smoothing shows that we reach the optimal policy in much fewer iterations than value iteration terminates:
@@ -309,7 +313,7 @@ Another way to visualise this is by aggregate policy plot or path plot of actual
 The path plot gives a number of episodes of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of 'shoot' actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents that have been damaged tend to follow the safer path round the outside of the map while agents that have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.
 
 ```{code-cell} ipython3
-policy = values.extract_policy(ccross)
+policy = ValuePolicy(ccross, values)
 
 ccross.visualise_as_image(policy=policy,title="Policy Plot", mode=0, plot=True)
 ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)

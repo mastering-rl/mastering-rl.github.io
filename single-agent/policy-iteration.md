@@ -32,9 +32,9 @@ The learning outcomes of this chapter are:
 ```
 ````
 
-The other common way that MDPs are solved is using *policy iteration* -- an approach that is similar to value iteration. While value iteration iterates over value functions, policy iteration iterates over policies themselves, creating a strictly improved policy in each iteration (except if the iterated policy is already optimal).
+The other common way that MDPs are solved is using **policy iteration** -- an approach that is similar to value iteration. While value iteration iterates over value functions, policy iteration iterates over policies themselves, creating a strictly improved policy in each iteration (except if the iterated policy is already optimal).
 
-Policy iteration first starts with some (non-optimal) policy, such as a random policy, and then calculates the value of each state of the MDP given that policy --- this step is called the *policy evaluation*. It then updates the policy itself for every state by calculating the expected reward of each action applicable from that state.
+Policy iteration first starts with some (non-optimal) policy, such as a random policy, and then calculates the value of each state of the MDP given that policy --- this step is called  **policy evaluation**. It then updates the policy itself for every state by calculating the expected reward of each action applicable from that state.
 
 The basic idea here is that policy evaluation is easier to computer than value iteration because the set of actions to consider is fixed by the policy that we have so far.
 
@@ -46,9 +46,9 @@ The basic idea here is that policy evaluation is easier to computer than value i
 ```
 ````
 
-An important concept in policy iteration is *policy evaluation*, which is an evaluation of the expected reward of a policy.
+An important concept in policy iteration is **policy evaluation**, which is an evaluation of the expected reward of a policy.
 
-The *expected reward* of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted average of reward of the possible state sequences defined by that policy times their probability given $\pi$.
+The **expected reward** of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted average of reward of the possible state sequences defined by that policy times their probability given $\pi$.
 
 :::{admonition} Definition
 *Policy evaluation* can be characterised as $V^{\pi}(s)$ as defined by  the following equation:
@@ -76,7 +76,7 @@ $\quad\quad V^\pi \leftarrow V'^\pi$\
 $\text{Until}~ \Delta \leq \theta$
 :::
 
-The *optimal expected reward* $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the *optimal policy* is the $\textrm{arg max}$
+The **optimal expected reward** $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the **optimal policy** is the $\textrm{arg max}$
 
 ## Policy improvement
 
@@ -86,7 +86,7 @@ The *optimal expected reward* $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the *optimal
 ```
 ````
 
-If we have a policy and we want to improve it, we can change the policy (that is, change the actions recommended for states) by updating the actions it recommends based on $V(s)$ that we receive from the policy evaluation.
+If we have a policy and we want to improve it, we can use **policy improvement** to change the policy (that is, change the actions recommended for states) by updating the actions it recommends based on $V(s)$ that we receive from the policy evaluation.
 
 Let $Q^{\pi}(s,a)$ be the expected reward from $s$ when doing $a$ first and then following the policy $\pi$. Recall from the chapter on [Markov Decision Processes](sec:mdps) that we define define this as:
 
@@ -94,7 +94,7 @@ $$Q^{\pi}(s,a)  =  \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') \, + \,  \gamma\ V
 
 In this case,  $V^{\pi}(s')$ is the value function from the policy evaluation.
 
-If there is an action $a$ such that $Q^{\pi}(s,a) > Q^{\pi}(s,\pi(s))$, then the policy $\pi$ can be *strictly improved* by setting $\pi(s) \leftarrow a$. This will improve the overall policy.
+If there is an action $a$ such that $Q^{\pi}(s,a) > Q^{\pi}(s,\pi(s))$, then the policy $\pi$ can be **strictly improved** by setting $\pi(s) \leftarrow a$. This will improve the overall policy.
 
 ## Policy iteration
 
@@ -104,7 +104,7 @@ If there is an action $a$ such that $Q^{\pi}(s,a) > Q^{\pi}(s,\pi(s))$, then the
 ```
 ````
 
-Pulling together policy evaluation and policy improvement, we can define an *policy Iteration*, which computes an optimal $\pi$ by performing a sequence of interleaved policy evaluations and improvements:
+Pulling together policy evaluation and policy improvement, we can define **policy iteration**, which computes an optimal $\pi$ by performing a sequence of interleaved policy evaluations and improvements:
 
 ````{margin}
 ```{admonition} Video byte: Example --- Policy iteration in Gridworld

@@ -49,7 +49,7 @@ These two methods have some weaknesses in this basic format:
     of $Q(s,a)$, even if we have visited states that are very similar to
     $s$.
 
-To get around limitations 1 and 2, we are going to look at n-step temporal difference learning: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
+To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
 n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire episodes are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
 
@@ -127,7 +127,7 @@ estimated (discounted) future reward from $t+1$. $V(s_{t+1})$ is
 estimated using the maximum expected return (Q-learning) or the
 estimated value of the next action (SARSA).
 
-This is a *one-step return*.
+This is a **one-step return**.
 
 ### Truncated Discounted Rewards
 
@@ -139,12 +139,11 @@ a three-step return:
 
 $$ G^3_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} +  \gamma^3 V(s_{t+3}) $$
 
-or n-step returns:
+or **n-step returns**:
 
 $$ G^n_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \ldots  \gamma^n V(s_{t+n}) $$
 
-In this above expression $G^n_t$ is the full reward, *truncated* at $n$
-steps, at time $t$. 
+In this above expression $G^n_t$ is the full reward, **truncated** at $n$ steps, at time $t$. 
 
 The basic idea of n-step reinforcement learning is that we do not update the Q-value
 immediately after executing an action: we wait $n$ steps and update it
@@ -369,7 +368,7 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ```{admonition} Takeaways
 
-- n-step reinforcement learning propagates rewards back $n$ steps to help with learning.
+- n-step reinforcement learning **propagates** rewards back $n$ steps to help with learning.
 
 - It is conceptually quite simple, but the implementation requires a lot of 'book-keeping'.
 

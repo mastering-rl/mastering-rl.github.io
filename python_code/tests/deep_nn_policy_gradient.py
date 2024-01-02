@@ -8,3 +8,5 @@ policy = DeepNeuralNetworkPolicy(
 )
 policy_gradient = PolicyGradient(gridworld, policy, alpha=0.1).execute(episodes=1000)
 gridworld_image = gridworld.visualise_stochastic_policy(policy)
+
+gridworld.visualise_policy(policy)

@@ -33,7 +33,7 @@ The learning outcomes of this chapter are:
 ```
 ````
 
-*Multi-armed bandit* techniques are not techniques for solving MDPs, but they are used throughout a lot of reinforcement learning techniques that do solve MDPs.
+**Multi-armed bandit** techniques are not techniques for solving MDPs, but they are used throughout a lot of reinforcement learning techniques that do solve MDPs.
 
 The problem of multi-armed bandits can be illustrated as follows:
 
@@ -42,7 +42,7 @@ The problem of multi-armed bandits can be illustrated as follows:
 
 ```
 
-> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called *one-armed bandits*, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are morely likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
+> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are morely likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
 
 The question is: without knowing the probability distribution beforehand, how should we select the arms to increase our total payoff?  Multi-armed bandit techniques aim to solve this problem. 
 
@@ -56,17 +56,17 @@ The question is: without knowing the probability distribution beforehand, how sh
 
 :::{admonition} Definition
 
-A **multi-armed bandit** (also known as an **$N$-armed bandit**) is defined by a set of *random variables* $X_{i,k}$ where:
+A **multi-armed bandit** (also known as an **$N$-armed bandit**) is defined by a set of random variables $X_{i,k}$ where:
 
--   $1 \leq i \leq N$, such that $i$ is the *arm* of the bandit; and
+-   $1 \leq i \leq N$, such that $i$ is the **arm** of the bandit; and
 
--   $k$ the index of the *play* of arm $i$;
+-   $k$ the index of the **play** of arm $i$;
 
 Successive plays $X_{i,1}, X_{j,2}, X_{k,3}\ldots$ are assumed to be independently distributed, but we do not know the probability distributions of the random variables.
 
 The idea is that a gambler iteratively plays rounds, observing the reward from the arm after each round, and can adjust their strategy each time. The aim is to maximise the sum of the rewards collected over all  rounds.
 
-Multi-arm bandit strategies aim to learn a *policy* $\pi(k)$, where $k$ is the play. 
+Multi-arm bandit strategies aim to learn a **policy** $\pi(k)$, where $k$ is the play. 
 
 :::
 
@@ -76,11 +76,11 @@ Then, the Q-value for an action $a$ can be estimated using the following formula
 
 $$Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t}  X_{a,i}$$
 
-where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, and $X_{a,i}$ is the *reward* obtained in the $i$-th round for playing arm $a$..
+where $t$ is the number of rounds so far, $N(a)$ is the number of times $a$ selected in previous rounds, and $X_{a,i}$ is the **reward** obtained in the $i$-th round for playing arm $a$..
 
 The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of $Q(a)$ start to stabilise), we start selecting $\text{argmax}_a Q(a)$. This is known as the *$\epsilon$-first* strategy, where the parameter $\epsilon$ (epsilon), determines how many rounds to select random actions before moving to the greedy action.
 
-**But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Why not focus also on the *most promising actions* given the rewards we have received so far.
+**But what is the issue?** Time is wasted equally in all actions using the uniform distribution. Instead, we can focus on the *most promising actions* given the rewards we have received so far.
 
 ## Exploration vs. Exploitation
 
@@ -90,24 +90,24 @@ The idea here is that for a multi-armed bandit problem, we explore the options u
 ```
 ````
 
-What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, at first, we do not have information to tell us what the best actions are. Thus, we want strategies that *exploit* what we think are the best actions so far, but still *explore* other actions.
+What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, at first, we do not have information to tell us what the best actions are. Thus, we want strategies that **exploit** what we think are the best actions so far, but still **explore** other actions.
 
-But how much should we exploit and how much should we explore? This is known as the *exploration vs. exploitation dilemma*. It is driven by the *The Fear of Missing Out* (FOMO). FOMO drives us to search for strategies that *minimise regret*.
+But how much should we exploit and how much should we explore? This is known as the **exploration vs. exploitation dilemma**. It is driven by the *The Fear of Missing Out* (FOMO). FOMO drives us to search for strategies that **minimise regret**.
 
 :::{admonition} Definition --- Regret
 
-Given a policy $\pi$ and $t$ number of arm pulls, regret is defined formally as:
+Given a policy $\pi$ and $t$ number of arm pulls, **regret** is defined formally as:
 
  $$\mathcal {R(\pi, t) }  =  t \cdot \max_a Q^*(a) - \mathbb{E} [ \sum_{k=1}^{t} X_{\pi(k), k} ]$$
 
 where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $\text{argmax}_a Q^*(a)$ each round.
 :::
 
-Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the *expected loss* from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
+Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the **expected loss** from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
 
 The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.
 
-A *zero-regret* strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.
+A **zero-regret** strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.
 
 ### Implementation
 
@@ -128,7 +128,7 @@ Each strategy must implement the  `select` method, which takes the list of avail
 ```
 ````
 
-To demonstrate the effect of different multi-armed bandit strategies and their parameters, we use the following simple simulation. The simulation is an implementation of a simple multi-armed bandit problem with five actions, ```actions = [0, 1, 2, 3, 4]```.  Each action has a probability associated with it: ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]```. The simulation runs  2000 *episodes* of a bandit problem, with each episode being 1000 *steps* long. At each step, the agent must chose an action. For the action `a` it chooses,  it receives a reward of 5 with a probability `probability[a]`.  With a probability of ```1 - probability[a]``` it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.
+To demonstrate the effect of different multi-armed bandit strategies and their parameters, we use the following simple simulation. The simulation is an implementation of a simple multi-armed bandit problem with five actions, ```actions = [0, 1, 2, 3, 4]```.  Each action has a probability associated with it: ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]```. The simulation runs  2000 episodes of a bandit problem, with each episode being 1000 steps long. At each step, the agent must chose an action. For the action `a` it chooses,  it receives a reward of 5 with a probability `probability[a]`.  With a probability of ```1 - probability[a]``` it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.
 
 The simulation returns a list of lists, representing the reward received at each step of each episode. The aim for the bandit is to maximise the expected rewards over each episode.
 
@@ -165,7 +165,7 @@ So, these algorithms choose an arm, and then add the reward from that to a cumul
 The key difference between the solutions we will look at is how the $\textrm{select}$ function is implemented. This is what determines the policy $\pi(k)$ for the multi-armed bandit problem.
 
 (sec:multi-armed-bandits:epsilon-greedy)=
-### Epsilon-greedy strategy
+### $\epsilon$-greedy strategy
 
 ````{margin}
 ```{admonition} Video byte: Epsilon greedy
@@ -173,7 +173,7 @@ The key difference between the solutions we will look at is how the $\textrm{sel
 ```
 ````
 
-The $\epsilon$-greedy strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in [0,1]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
+The $\epsilon$-greedy (pronounced "epsilon-greedy") strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter $\epsilon \in [0,1]$ (pronounced "epsilon") controls how much we explore and how much we exploit. 
 
 Each time we need to choose an action, we do the following:
 
@@ -201,7 +201,7 @@ As we can see, higher  values of epsilon tend to have a lower reward over time, 
 
 But we can also see that while epsilon = 0.05 ends up with a higher return after about 350 steps, initially it does not do as well as epsilon = 0.1, because it does not explore enough. Can we do better? Yes, we can! 
 
-### Epsilon-decreasing strategy
+### $\epsilon$-decreasing strategy
 
 ````{margin}
 ```{admonition} Video byte: Epsilon decreasing
@@ -209,15 +209,15 @@ But we can also see that while epsilon = 0.05 ends up with a higher return after
 ```
 ````
 
-This follows a similar idea to epsilon greedy, however, it recognises that initially, we have very little feedback so exploiting is not a good strategy to being with: we need to explore first. Then, as we gather more data, we should exploit more.
+**$\epsilon$-decreasing** (pronounced "epsilon-decreasing")  follows a similar idea to epsilon greedy, however, it recognises that initially, we have very little feedback so exploiting is not a good strategy to being with: we need to explore first. Then, as we gather more data, we should exploit more.
 
-The epsilon-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is used to decrease $\epsilon$ over time. For this reason, $\alpha$ is called the *decay*.
+The $\epsilon$-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is used to decrease $\epsilon$ over time. For this reason, $\alpha$ is called the **decay**.
 
 The selection mechanism is the same as epsilon greedy, but then after each selection, we set  $\epsilon := \epsilon \times \alpha$. We start initially with a higher value of $\epsilon$ to explore, and it will slowly decay to a low number such that we explore less and less as we gather more feedback.
 
 #### Implementation
 
-The following implementation for the epsilon-decreasing strategy uses the epsilon-greedy strategy, just decreasing the epsilon value each step:
+The following implementation for the $\epsilon$-decreasing strategy uses the $\epsilon$-greedy strategy, just decreasing the epsilon value each step:
 
 ```{code-cell} ipython3
 :load: "../python_code/multi_armed_bandit/epsilon_decreasing.py"
@@ -240,13 +240,13 @@ This indicates that for this particular problem, a value of 0.99 for alpha has a
 ```
 ````
 
-Softmax is *probability matching strategy*, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the *Boltzman* distribution for that action:
+**Softmax** is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzman distribution for that action:
 
 $$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}$$ 
 
-where $N$ is the number of arms, and $\tau >  0$ (pronounced "tau") is the *temperature*, which dictates how much of an influence the past data has on the decision. A higher value of $\tau$ would mean that the probability of selecting each action is close to each other (as $\tau$ approaches infinity, softmax approaches a uniform strategy), while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^{Q(a)}$, and as $\tau$ approaches 0, softmax approaches a greedy strategy.
+where $N$ is the number of arms, and $\tau >  0$ (pronounced "tau") is the **temperature**, which dictates how much of an influence the past data has on the decision. A higher value of $\tau$ would mean that the probability of selecting each action is close to each other (as $\tau$ approaches infinity, softmax approaches a uniform strategy), while a lower value of $\tau$ would imply that the probabilities are closer to their Q values. When $\tau=1$, the probabilities are just $e^{Q(a)}$, and as $\tau$ approaches 0, softmax approaches a greedy strategy.
 
-As with the epsilon-decreasing strategy, we can add a decay parameter $\alpha$ that allows the value of $\tau$ to decay until it reaches 1. This encourages exploration in earlier phases, and exploration less as we gather more feedback.
+As with the $\epsilon$-decreasing strategy, we can add a decay parameter $\alpha$ that allows the value of $\tau$ to decay until it reaches 1. This encourages exploration in earlier phases, and exploration less as we gather more feedback.
 
 #### Implementation
 
@@ -265,7 +265,7 @@ As before, we plot the average reward at each step of our simulation, this time 
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
 
-The softmax strategy is designed to work well under *drift*; that is, when the underlying probability distributions (in this case, the probability of receiving a reward) change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly.
+The softmax strategy is designed to work well under **drift**; that is, when the underlying probability distributions (in this case, the probability of receiving a reward) change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly.
 
 So, what happens if we change the value of our underlying probabilities? In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]``` to ```probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]```.  This is a sudden change in which the Q-values are almost worthless.
 
@@ -286,7 +286,7 @@ Note that higher values of tau also work when the drift is more gradual, rather 
 ```
 ````
 
-A highly effective multi-armed bandit strategy is the *Upper Confidence Bounds* (UCB1) strategy.
+A highly effective multi-armed bandit strategy is the **Upper Confidence Bounds** (UCB1) strategy.
 
 Using the UCB1 strategy, we select the next action  using the following:
 
@@ -339,7 +339,7 @@ plot_comparison(drift=True)
 
 From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previously good are no longer good. This encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration. 
 
-Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the epsilon-decreasing strategy is good only for static problems.
+Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the $\epsilon$-decreasing strategy is good only for static problems.
 
 While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case if the underlying probability distributions change or drift regularly. In those cases, softmax may be a better choice.
 
