@@ -1,12 +1,17 @@
 (sec:single-agent:modelling-and-abstraction)=
 # Modelling and abstraction for MDPs
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 1.  Describe modelling and abstraction strategies to scale MDP algorithms to problems.
     
-2.  Apply modelling and abstraction strategies to non-trivial MDP problems..
+2.  Apply modelling and abstraction strategies to non-trivial MDP problems.
 ```
 
 ## Overview

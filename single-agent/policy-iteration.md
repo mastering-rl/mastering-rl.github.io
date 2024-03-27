@@ -11,6 +11,11 @@ kernelspec:
 (sec:policy-iteration)=
 # Policy iteration
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ````{margin}
 ```{admonition} Video byte: Introduction to policy-based approaches and policy iteration
 <iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -19,9 +24,9 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1. Apply policy iteration to solve small-scale MDP problems manually and program policy iteration algorithms to solve medium-scale MDP problems automatically
-2. Discuss the strengths and weaknesses of policy iteration
-3. Compare and contrast policy iteration to value iteration
+1. Apply policy iteration to solve small-scale MDP problems manually and program policy iteration algorithms to solve medium-scale MDP problems automatically.
+2. Discuss the strengths and weaknesses of policy iteration.
+3. Compare and contrast policy iteration to value iteration.
 ```
 
 ## Overview
@@ -50,7 +55,7 @@ An important concept in policy iteration is **policy evaluation**, which is an e
 
 The **expected reward** of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted average of reward of the possible state sequences defined by that policy times their probability given $\pi$.
 
-:::{admonition} Definition
+:::{admonition} Definition -- Policy evaluation
 *Policy evaluation* can be characterised as $V^{\pi}(s)$ as defined by  the following equation:
 
 $$V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]$$
@@ -62,21 +67,26 @@ Note that this is very similar to the [Bellman equation](sec:mdps:bellman-equati
 
 Once we understand the definition of policy evaluation, the implementation is straightforward. It is the same as value iteration except that we use the policy evaluation equation instead of the Bellman equation.
 
-:::{admonition} Algorithm -- Policy evaluation
+```{prf:algorithm} Policy evaluation
+:label: algorithm:policy-evaluation
 
-**Input:** $\pi$ the policy for evaluation, $V^\pi$ value function, and MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Value function $V^\pi$
+$
+\begin{array}{l}
+\alginput:\  \pi\ \text{the policy for evaluation}, V^\pi\ \text{value function, and}\\
+\quad\quad\quad\quad \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Value function}\ V^\pi\\[2mm]
+\algrepeat\\
+\quad\quad \Delta \leftarrow 0\\
+\quad\quad \algforeach\ s \in S\\
+\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
+\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'^\pi(s) - V^\pi(s)|)\\
+\quad\quad V^\pi \leftarrow V'^\pi\\
+\alguntil\ \Delta \leq \theta
+\end{array}
+$
+```
 
-$\text{Repeat}$\
-$\quad\quad \Delta \leftarrow 0$\
-$\quad\quad \text{For each}~ s \in S$\
-$\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}$\
-$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'^\pi(s) - V^\pi(s)|)$\
-$\quad\quad V^\pi \leftarrow V'^\pi$\
-$\text{Until}~ \Delta \leq \theta$
-:::
-
-The **optimal expected reward** $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the **optimal policy** is the $\textrm{arg max}$
+The **optimal expected reward** $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the **optimal policy** is $\textrm{argmax}_{\pi} V^\pi(s)$.
 
 ## Policy improvement
 
@@ -112,21 +122,23 @@ Pulling together policy evaluation and policy improvement, we can define **polic
 ```
 ````
 
-:::{admonition} Algorithm -- Policy Iteration
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Policy $\pi$
-
-Set $V^\pi$ to arbitrary value function; e.g., $V^\pi(s)=0$ for all $s$.
-
-Set $\pi$ to arbitrary policy; e.g. $\pi(s) = a$ for all $s$, where $a \in A$ is an arbitrary action.
-
-$\text{Repeat}$\
-$\quad\quad$ Compute $V^\pi(s)$ for all $s$ using policy evaluation\
-$\quad\quad$ $\text{For each}~ s \in S$\
-$\quad\quad\quad\quad$ $\pi(s) \leftarrow \textrm{argmax}_{a \in A(s)}Q^{\pi}(s,a)$\
-$\text{Until}~ \pi$ does not change
-:::
+```{prf:algorithm} Policy iteration
+:label: algorithm:policy-iteration
+$
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\  Policy\ \pi\\[2mm]
+\text{Set}\ V^\pi\ \text{to arbitrary value function; e.g.,}\ V^\pi(s)=0\ \text{for all}\ s\\
+\text{Set}\ \pi\ \text{to arbitrary policy; e.g.}\ \pi(s) = a\  \text{for all}\ s,\ \text{where}\ a \in A\ \text{is an arbitrary action}\\[2mm]
+\algrepeat\\
+\quad\quad \text{Compute}\ V^\pi(s)\ \text{for all}\ s\ \text{using policy evaluation}\\
+\quad\quad \algforeach\ s \in S\\
+\quad\quad\quad\quad \pi(s) \leftarrow \textrm{argmax}_{a \in A(s)}Q^{\pi}(s,a)\\
+\alguntil\  \pi\ \text{does not change}
+\end{array}
+$
+```
 
 ````{margin}
 ```{admonition} Video byte: Convergence of policy iteration

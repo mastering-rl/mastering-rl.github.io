@@ -11,6 +11,11 @@ kernelspec:
 (sec:single-agent:reward-shaping)=
 # Reward shaping
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ````{margin}
 ```{admonition} Video byte: Introduction to reward shaping
 <iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=0s" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -21,15 +26,15 @@ kernelspec:
 The learning outcomes of this chapter are:
 
 1.  Explain how reward shaping can be used to help model-free
-    reinforcement learning methods to converge
+    reinforcement learning methods to converge.
 
 2.  Manually apply reward shaping for a given potential function to
-    solve small-scale MDP problems
+    solve small-scale MDP problems.
 
 3.  Design and implement potential functions to solve medium-scale MDP
-    problems automatically
+    problems automatically.
 
-4.  Compare and contrast reward shaping with Q-value initialisation
+4.  Compare and contrast reward shaping with Q-value initialisation.
 ```
 
 ## Overview
@@ -73,7 +78,7 @@ solved.
 ```
 ````
 
-:::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to learn how to get the kangaroo across the freeway?
+:::{admonition} Exercise: Freeway What would be a good heuristic for the Freeway game to learn how to get the chicken across the freeway?
 
 ![image](./figs/freeway_screenshot.png)
 :::
@@ -316,7 +321,7 @@ Once we start learning over episodes, we will select those actions with a higher
 ### Related Reading
 
 -   Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and
-    Barto](https://incompleteideas.net/book/the-book-2nd.html)
+    Barto](http://incompleteideas.net/book/the-book-2nd.html)
 
 
 [^1]: Wiewiora, Eric. "Potential-based shaping and Q-value initialization are equivalent." Journal of Artificial Intelligence Research 19 (2003): 205-208. [https://www.jair.org/index.php/jair/article/download/10338/24713/](https://www.jair.org/index.php/jair/article/download/10338/24713/)

@@ -14,6 +14,11 @@ kernelspec:
 (sec:mdps)=
 # Markov Decision Processes
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition} Learning outcomes
 
 The learning outcomes of this chapter are:
@@ -24,20 +29,18 @@ The learning outcomes of this chapter are:
    
 3. Compare MDPs to models of search, such as classical planning and heuristic search.
 
-4. Explain how Bellman equations are solutions to MDP problems
+4. Explain how Bellman equations are solutions to MDP problems.
 ```
 
 ````{margin}
-```{admonition} Video byte: Introduction to MDPs
+```{admonition} [Video byte: Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
 <iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=0s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-Link:  [My link Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
 ```
 ````
 
 
 
-## Chapter Overview
+## Overview
 
 ````{margin}
 ```{admonition} Video byte: MDPs -- An intuition
@@ -56,12 +59,12 @@ Techniques like heuristic search and classical planning algorithms assume that a
 Here are some examples of stochastic actions:
 
 -   Flipping a coin has two outcomes: heads ($\frac{1}{2}$) and tails
-    ($\frac{1}{2}$)
+    ($\frac{1}{2}$).
 -   Rolling two dices together has twelve outcomes: 2 ($\frac{1}{36}$),
-    3 ($\frac{1}{18}$), 4 ($\frac{3}{36}$), ..., 12 ($\frac{1}{36}$)
+    3 ($\frac{1}{18}$), 4 ($\frac{3}{36}$), ..., 12 ($\frac{1}{36}$).
 -   When trying to pick up an object with a robot arm, there could be
     two outcomes: successful ($\frac{4}{5}$) and unsuccessful
-    ($\frac{1}{5}$)
+    ($\frac{1}{5}$).
 -   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.
 -   When we send a patient for a test, there is a 20% the test will come back negative, and an 80% chance it will come back positive.
 
@@ -80,19 +83,19 @@ MDPs have been successfully applied to planning in many domains: robot navigatio
 A **Markov Decision Process** (MDP) is a  **fully observable**, **probabilistic** state model. The most common formulation of MDPs is a **Discounted-Reward Markov Decision
 Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ containing:
 
--   a state space $S$
+-   a state space $S$;
 
--   initial state $s_0 \in S$
+-   initial state $s_0 \in S$;
 
--   actions $A(s) \subseteq A$ applicable in each state $s \in S$ that our agent can execute.
+-   actions $A(s) \subseteq A$ applicable in each state $s \in S$ that our agent can execute;
 
 -   **transition probabilities** $P_a(s' \mid s)$ for $s \in S$ and
-    $a \in A(s)$
+    $a \in A(s)$;
 
 -   **rewards** $r(s,a,s')$ positive or negative of transitioning from
-    state $s$ to state $s'$ using action $a$
+    state $s$ to state $s'$ using action $a$; and
 
--   a **discount factor** $0 \leq \gamma < 1$
+-   a **discount factor** $0 \leq \gamma < 1$.
 :::
 
 Let's break down the above points in model detail.
@@ -118,7 +121,7 @@ As noted above, an action can have multiple possible outcomes. Exactly one outco
 ```
 ````
 
-The **discount factor**  determines how much a future reward should be discounted compared to a current reward.
+The **discount factor** $\gamma$ (prounced "gamma") determines how much a future reward should be discounted compared to a current reward.
 
 For example, would you prefer \$100 today or \$100 in a year's time? We (humans) often *discount* the future and place a higher value on nearer-term rewards.
 

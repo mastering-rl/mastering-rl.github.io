@@ -6,24 +6,37 @@ Images:
 - actor critic
 
 High priority:
+- update policy gradient code to use experience variable instead of having three lists 
+    + and use separate 'actions' variable in select_action instead of a direct call.
 - add introductory chapter solving an atari game using deep rl
 - test experience replay code
 - add experience replay code to notes
-- update policy gradient code to use experience variable instead of having three lists 
-    + and use separate 'actions' variable in select_action instead of a direct call.
-- add eligibility traces
+- beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
+- PPO
+- reward shaping in Frogger?
+- torch.tensor calls: 29sec for original + 0.007 for cat, 446sec in update
+- add videos are sidebar instead of margin
+- restructure book: Introduction (including MDPS), Value-based, Policy-based, Scaling, Multi-agent (including MA games)
+- PDF format
+- replace definitions, remarks, etc., with latex equivalents: https://jupyterbook.org/en/stable/content/proof.html
+- RLHF
+- add unit tests 
+- logo example: https://youtube.com/watch?v=xW75rGCMiRk&si=tPZCugWPGwKuKtpb
+- update videos to remove COMP90054 tags.
+- excellent explanation of using a target network: https://stackoverflow.com/questions/54237327/why-is-a-target-network-required
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - add contested crossing throughout notes
-- n-step learning videos
-- MARL non-stationarity
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
-- Reward shaping example using contested crossing?
-- Video or gif of policy executions
-- RLHF
 
 
 Low priority:
+- add eligibility traces
+- n-step learning videos
+- In 1D gridworld, set 'get_actions' to just have the two actions and then update LogRegression policy
+- titles: 'mastering rl: from theory to practice'
+- use returned rewards in the reward shaping notes, instead of mdp.get_rewards()
+- reward shaping with frogger (require finding the frogger state structure)
 - add prioritised sweeping for value iteration (or approximate value iteration)
 - align Q-learning and policy gradients on 'dot product', which is used in policy gradients but not in linear Q learning.
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
@@ -34,3 +47,59 @@ Low priority:
 - Policy gradient slide: https://twitter.com/hbouammar/status/1489215674014703618
 - Good policy gradient overview: https://core-robotics.gatech.edu/2020/12/16/bootcamp-summer-2020-week-4-policy-iteration-and-policy-gradient/
 - Multi-objective problems: https://github.com/LucasAlegre/mo-gym
+
+
+Latex/HTML only:
+```{only} html
+For the HTML version:
+
+$$
+A =  1 & 1 \\ 2 & 1\\ 3 & 2 ,\ b= 2\\ 3 \\ 4,\ \gamma = 0.5
+$$
+```
+
+```{only} latex
+For the latex version:
+
+$$
+A =  1 & 1 \\ 2 & 1\\ 3 & 2 ,\ b= 2\\ 3 \\ 4,\ \gamma = 0.5
+$$
+```
+
+Hide some stuff in latex:
+From: https://github.com/executablebooks/jupyter-book/issues/1968
+
+(for some reason we need more than one tag for this to work)
+
+```{code-cell} ipython3
+:tags: [latex,other]
+print("latex only")
+```
+
+```{code-cell} ipython3
+:tags: [html,other]
+print("html only")
+```
+
+
+"My strategy for my thesis (when I knew less of Sphinx) was to create a simple extension.
+
+With this config
+
+sphinx:
+  recursive_update: true
+  local_extensions:
+    # Hide any :dropdown: or {toggle} content for LaTeX
+    hide_builder_classes: ./sphinx-ext
+  config:
+    builder_ignore_classes:
+        latex:
+            - dropdown
+            - toggle
+            - margin
+            - tag_no-latex
+The LaTeX builder hides dropdowns, toggles, margins, and also any cells with a tag of no-latex. This means that you can add no-latex tags to the cells that should not be shown.
+
+If you wanted to hide only the output (and keep the source), I think you'd need to be more specific in the extension, e.g. look for cell output nodes explicitly.
+
+There may be other ways to do this, but this was my starting point!"

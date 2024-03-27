@@ -11,6 +11,11 @@ kernelspec:
 
 # Normal form games
 
+```{contents}
+:local:
+:depth: 2
+```
+
 In the following chapters, we will look at **games**. By  "games", we do not only mean games like Chess or digital games -- the term "game" is a more general term to describe a problem that involves **multiple agents or players**.
 
 The standard definition of an MDP is for a single agent, who controls all of the actions. In a multi-agent system, we face further challenges: the effects of actions and the rewards we receive are dependent also on the actions of the agents. In fact, the other agents can even be our adversaries, so they may be working to minimise our rewards.
@@ -134,7 +139,7 @@ We use the notation $S_{-i}$ to denote the set of mixed-strategy profiles for al
 
 It is not immediately obvious why an agent would want to use randomisation when select an action, but we will see examples where this is important.
 
-:::{admonition} Definition --- Dominant strategy
+:::{admonition} Definition -- Dominant strategy
 Strategy $s_i$ for player $i$  **weakly dominates** strategy $s'_i$ if the utility received by the agent for playing strategy $s_i$  is greater than or equal to  the utility received by that agent for playing $s'_i$. Formally, $s_i$ weakly dominates $s'_i$ iff and only if:
 
 $$
@@ -187,19 +192,27 @@ If the strategies in a Nash equilibrium are all pure strategies, then we call th
 
 The set of best responses for a normal form game can be calculated by searching through all strategies to find those with the highest payoff.
 
-:::{admonition} Algorithm -- Best response
-**Input:** Normal form game $G =  (N, A, u)$, agent $i$, and strategy profile $s_{-i}$ for agents other than $i$\
-**Output:** Set of best responses
 
-$best\_response = \emptyset$\
-$best\_response\_value = -\infty$\
-$\text{For each}~s_i \in S_i$\
-$\quad\quad\quad\quad \text{if}\ u(s_i, s_{-i}) > best\_response\_value\ \text{then}$\
-$\quad\quad\quad\quad\quad\quad best\_response = \{s_i\}$\
-$\quad\quad\quad\quad \text{else if}\ u(s_i, s_{-i}) = best\_response\_value\ \text{then}$\
-$\quad\quad\quad\quad\quad\quad best\_response = best\_response \cup \{s_i\}$\
-$\text{return}\ best\_response$
-:::
+```{prf:algorithm} Best response
+:label: algorithm:best-response
+
+$
+\begin{array}{l}
+\alginput:\ \text{Normal form game}\ G =  (N, A, u)\\
+\alginput:\ \text{agent}\ i\\
+\alginput:\ \text{and strategy profile}\ s_{-i}\ \text{for agents other than}\ i\\
+\algoutput:\ \text{Set of best responses}\\[2mm]
+best\_response = \emptyset\\
+best\_response\_value = -\infty\\
+\algforeach\ s_i \in S_i\\
+\quad\quad \algif\ u(s_i, s_{-i}) > best\_response\_value\ \algthen\\
+\quad\quad\quad\quad best\_response = \{s_i\}\\
+\quad\quad \algelsif\ u(s_i, s_{-i}) = best\_response\_value\ \algthen\\
+\quad\quad\quad\quad best\_response = best\_response \cup \{s_i\}\\
+\algreturn\ best\_response
+\end{array}
+$
+```
 
 This has complexity $O(|S_i|)$: we check each strategy once. 
 
@@ -207,17 +220,23 @@ As an example, consider the Prisoner's dilemma. Clearly, the best response for b
 
 Finding Nash equilibria involves searching through all strategy profiles and finding those in which all agents strategies are a best response in that profile. Here is an algorithm for finding the Nash equilibria for a two-player normal form game:
 
-:::{admonition} Algorithm -- Nash equilibria
-**Input:** Normal form game $G =  (N, A, u)$\
-**Output:** Set of Nash equilibria
 
-$nash\_equilibria = \emptyset$\
-$\text{For each}~s_1 \in A_1$\
-$\quad\quad \text{For each}~s_2 \in A_2$\
-$\quad\quad\quad\quad \text{if}\ s_i \in BestResponse(i, s_j)\ \text{and}\ s_j \in BestResponse(j, s_i)\ \text{then}$\
-$\quad\quad\quad\quad\quad\quad nash\_equilibria = nash\_equilibria \cup \{(s_i, s_j)\}$\
-$\text{return}\ nash\_equilibria$
-:::
+```{prf:algorithm} Nash equilibria
+:label: algorithm:nash-equilibria
+
+$
+\begin{array}{l}
+\alginput:\ \text{Normal form game}\ G =  (N, A, u)\\
+\algoutput:\ \text{Set of Nash equilibria}\\[2mm]
+nash\_equilibria = \emptyset\\
+\algforeach\ s_1 \in A_1\\
+\quad\quad \algforeach\ s_2 \in A_2\\
+\quad\quad\quad\quad \algif \ s_i \in BestResponse(i, s_j)\ \algand\ s_j \in BestResponse(j, s_i)\ \algthen\\
+\quad\quad\quad\quad\quad\quad nash\_equilibria = nash\_equilibria \cup \{(s_i, s_j)\}\\
+\algreturn\ nash\_equilibria
+\end{array}
+$
+```
 
 Informally, given a normal form game, we can look at each cell $(s_1, s_2)$ of the game, and search along the rows and columns to determine whether any player can do better by changing their strategy (while all other agents' strategies state the same). 
 

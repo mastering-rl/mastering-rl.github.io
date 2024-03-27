@@ -9,8 +9,8 @@ gif_maker = GifMaker(mdp=gridworld)
 policy = DeepNeuralNetworkPolicy(
     gridworld, state_space=len(gridworld.get_initial_state()), action_space=4
 )
-for iterations in range(0, 100):
-    title = "%s after episode %d" % (learner_name, episode)
+for episode in range(0, 100):
+    title = "Episode %d" % (episode)
     image_texts = gridworld.visualise_stochastic_policy(policy, title=title, gif=True)
     gif_maker.add_frame(image_texts, title=title)
     PolicyGradient(gridworld, policy, alpha=0.1).execute(episodes=1)

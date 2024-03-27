@@ -14,15 +14,20 @@ kernelspec:
 (sec:value-iteration)=
 # Value Iteration
 
-```{admonition}  Learning outcomes
+```{contents}
+:local:
+:depth: 2
+```
+
+```{admonition} Learning outcomes
 
 The learning outcomes of this chapter are:
 
-1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to  solve medium-scale MDP problems automatically
+1.  Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to  solve medium-scale MDP problems automatically.
     
-2.  Construct a policy from a value function
+2.  Construct a policy from a value function.
 
-3.  Discuss the strengths and weaknesses of value iteration
+3.  Discuss the strengths and weaknesses of value iteration.
 ```
 
 ## Overview
@@ -41,58 +46,62 @@ Bellman equations iteratively. It uses the concept of dynamic programming to mai
 
 Once we understand the Bellman equation, the value iteration algorithm is straightforward: we just repeatedly calculate $V$ using the Bellman equation until we converge to the solution or we execute a pre-determined number of iterations.
 
-:::{admonition} Algorithm -- Value Iteration
+```{prf:algorithm} Value iteration
+:label: algorithm:value-iteration
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Value function $V$
+$
+\begin{array}{l}
+  \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+  \algoutput:\ \text{Value function}\ V\\[2mm]
+  \text{Set}\ V\ \text{to arbitrary value function; e.g., }\ V(s) = 0\ \text{for all}\ s\\[2mm]
+  \algrepeat\ \\
+  \quad\quad \Delta \leftarrow 0 \\
+  \quad\quad \algforeach\ s \in S \\
+  \quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}} \\
+  \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'(s) - V(s)|) \\
+  \quad\quad V \leftarrow V' \\
+  \alguntil\ \Delta \leq \theta 
+\end{array}
+$
 
-Set $V$ to arbitrary value function; e.g., $V(s)=0$ for all $s$
-
-$\text{Repeat}$\
-$\quad\quad \Delta \leftarrow 0$\
-$\quad\quad \text{For each}~ s \in S$\
-$\quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}}$\
-$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'(s) - V(s)|)$\
-$\quad\quad V \leftarrow V'$\
-$\text{Until}~ \Delta \leq \theta$
-:::
+```
 
 ````{margin}
-```{admonition} Video byte: Example: Value iteration on GridWorld
+```{admonition} Video byte: Example -- Value iteration on GridWorld
 <iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 As we can see, this is just applying the Bellman equation iteratively until either the value function $V$ doesn't change anymore, or until it changes in by a very small amount ($\theta$).
 
-
-
 ````{margin}
-```{admonition} Video byte: Quiz: Value iteration in GridWorld
+```{admonition} Video byte: Quiz -- Value iteration in GridWorld
 <iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 We could also write the algorithm using the idea of Q-values, which is closer to a code-based implementation. For this, the loop is:
 
-$\quad\quad \Delta \leftarrow 0$\
-$\quad\quad \text{For each}~ s \in S$\
-$\quad\quad\quad\quad \text{For each}~ a \in A(s)$\
-$\quad\quad\quad\quad\quad\quad Q(s,a) \leftarrow \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]$\
-$\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |\max_{a \in A(s)} Q(s,a) - V(s)|)$\
-$\quad\quad\quad\quad V(s) \leftarrow \max_{a \in A(s)} Q(s,a)$
+$
+\begin{array}{l}
+  \quad\quad \Delta \leftarrow 0 \\
+  \quad\quad \algforeach\ s \in S \\
+  \quad\quad\quad\quad \algforeach\ a \in A(s) \\
+  \quad\quad\quad\quad\quad\quad Q(s,a) \leftarrow \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ] \\
+  \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |\max_{a \in A(s)} Q(s,a) - V(s)|) \\
+  \quad\quad\quad\quad V(s) \leftarrow \max_{a \in A(s)} Q(s,a)
+\end{array}
+$
 
 
 Value iteration converges to the optimal policy as iterations continue: $V \mapsto V^*$ as $i \mapsto \infty$, where $i$ is the number of iterations. So, given an infinite amount of iterations, it will be optimal.
 
 
+Value iteration **converges** to the optimal value function $V^*$ asymptotically, but in practice, the algorithm terminates when the **residual**  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-Value iteration converges to the optimal value function $V^*$ asymptotically, but in practice, the algorithm is stopped when the **residual**  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
-
-A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using policy extraction. The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
 
 Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
-
 
 
 (sec:value-iteration:implementation)=
@@ -119,19 +128,17 @@ from stochastic_value_policy import StochasticValuePolicy
 gridworld = GridWorld()
 values = TabularValueFunction()
 
+
 ValueIteration(gridworld, values).value_iteration(max_iterations=100)
-gridworld.visualise_value_function(values, "Value function after 100 iterations")
+gridworld.visualise_value_function(values, "Value function after iteration 100")
 ```
 
 From the value function, we extract a policy:
 
 ```{code-cell} ipython3
 policy = ValuePolicy(gridworld, values)
-gridworld.visualise_policy(policy, "Policy after 100 iterations")
+gridworld.visualise_policy(policy, "Policy after iteration 100")
 ```
-
-Using the visualisation below, stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:
-
 
 ````{margin}
 ```{admonition} Video byte: Convergence of value iteration
@@ -139,11 +146,28 @@ Using the visualisation below, stepping through the 100 iterations, we can see t
 ```
 ````
 
+Stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:
+
+```{only} html
 <div id="container" markdown="1" style="text-align: center;">
     <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="gridworld_value_function" width=500></gif-player>
 </div>
 <p>
+```
+
+```{code-cell} ipython3
+:tags: [latex,other]
+gridworld = GridWorld()
+for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
+    values = TabularValueFunction()
+    ValueIteration(gridworld, values).value_iteration(max_iterations=iterations)
+    gridworld.visualise_value_function(values, 
+                                       "After iteration %s" % (iterations), 
+                                        grid_size=0.75)
+
+```
+
 
 
 (sec:value-iteration:evaluating-policies)=
@@ -265,7 +289,8 @@ from tabular_value_function import TabularValueFunction
 maze = GridWorld.open('../python_code/layouts/maze.txt')
 values = TabularValueFunction()
 ValueIteration(maze, values).value_iteration(max_iterations=100)
-maze.visualise_value_function(values, "Maze value function after 100 iterations")
+maze.visualise_value_function(values, "Maze value function after iteration 100")
+
 ```
 
 ### Example: Value iteration in Contested Crossing
@@ -286,7 +311,7 @@ ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=100)
 ccross.visualise_value_function(
-    values, "Value function after 100 iterations", mode=3, cell_size=1.6
+    values, "Value function after iteration 100", mode=3, cell_size=1.25
 )
 ```
 
@@ -301,7 +326,7 @@ Below, we include a  visualisation that includes means for different values of s
 ```{code-cell} ipython3
 
 ccross.visualise_value_function(
-    values, "Value function after 100 iterations, with sub-tables", mode=0, cell_size=1.6
+    values, "Value function after iteration 100, with sub-tables", mode=0, cell_size=1.25
 )
 ```
 

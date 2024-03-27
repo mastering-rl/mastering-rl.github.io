@@ -54,10 +54,11 @@ class DeepQFunction(QFunction, DeepAgent):
         #self.multi_update([(state, action, delta)])
 
     def multi_update(self, experiences):
-        (states, actions, deltas) = zip(*experiences)
+        (states, actions, deltas, dones) = zip(*experiences)
         states_tensor = torch.tensor(states, dtype=torch.float32)
         actions_tensor = torch.tensor(actions, dtype=torch.long)
         deltas_tensor = torch.tensor(deltas, dtype=torch.float32)
+        dones_tensor = torch.tensor(dones, dtype=torch.float32)
 
         q_values = self.q_network(states_tensor).gather(dim=1, index=actions_tensor.unsqueeze(1))
 

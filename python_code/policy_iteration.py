@@ -29,7 +29,7 @@ class PolicyIteration:
 
         return values
 
-    """ Implmentation of policy iteration iteration. Returns the number of iterations exected """
+    """ Implmentation of policy iteration iteration. Returns the number of iterations executed """
 
     def policy_iteration(self, max_iterations=100, theta=0.001):
 

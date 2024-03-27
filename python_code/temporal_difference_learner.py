@@ -1,7 +1,7 @@
 from model_free_learner import ModelFreeLearner
 
 class TemporalDifferenceLearner(ModelFreeLearner):
-    def __init__(self, mdp, bandit, qfunction, alpha=0.01):
+    def __init__(self, mdp, bandit, qfunction, alpha=0.1):
         self.mdp = mdp
         self.bandit = bandit
         self.alpha = alpha
@@ -23,7 +23,9 @@ class TemporalDifferenceLearner(ModelFreeLearner):
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
                 q_value = self.qfunction.get_q_value(state, action)
                 delta = self.get_delta(reward, q_value, state, next_state, next_action)
+
                 self.qfunction.update(state, action, delta)
+
                 state = next_state
                 action = next_action
                 episode_reward += reward * (self.mdp.discount_factor ** step)

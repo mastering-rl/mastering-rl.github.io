@@ -12,6 +12,11 @@ kernelspec:
 (appendix:intro-to-probability-theory)=
 # Introduction to basic probability theory
 
+```{contents}
+:local:
+:depth: 2
+```
+
 This chapter covers basic probability theory, with enough understanding for the main chapters of this book.
 
 ## Overview

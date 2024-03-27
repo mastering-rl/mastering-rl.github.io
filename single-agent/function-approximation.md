@@ -11,6 +11,11 @@ kernelspec:
 (sec:qfunction-approximation)=
 # Q-function approximation
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ````{margin}
 ```{admonition} Video byte: Introduction to Q-function approximation
 <iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -20,13 +25,13 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features
+1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features.
     
-2.  Select suitable features and design & implement Q-function approximation for model-free reinforcement learning techniques to solve medium-scale MDP problems automatically
-    
-3.  Argue the strengths and weaknesses of function approximation approaches
-    
-4.  Compare and contrast linear Q-learning with deep Q-learning
+2.  Select suitable features and design & implement Q-function approximation for model-free reinforcement learning techniques to solve medium-scale MDP problems automatically.
+
+3.  Argue the strengths and weaknesses of function approximation approaches.
+
+4.  Compare and contrast linear Q-learning with deep Q-learning.
 ```
 
 ## Overview
@@ -40,11 +45,11 @@ Using a Q-table has two main limitations:
 To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at **linear function approximation** and approximation using **deep learning** (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of $Q(s,a)$ *even if we have not applied action $a$ in state $s$ previously*. 
 
 :::{admonition} Example --- Freeway
-Conside the game *Freeway*, in which a kangaroo needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
+Conside the game *Freeway*, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
 
 ![image](./figs/freeway_screenshot.png)
 
-Let us assume that there are 12 rows and about 40 columns. This grossly underestimates the actual number of rows and columns because the cars move a few pixels at a time, not in columns. This means there are 480 different positions that a kangaroo can be in, and there are two kangaroos. We also need to record whether there is a car in each location. 
+Let us assume that there are 12 rows and about 40 columns. This grossly underestimates the actual number of rows and columns because the cars move a few pixels at a time, not in columns. This means there are 480 different positions that a chicken can be in, and there are two chickens. We also need to record whether there is a car in each location. 
 
 This leads to:
 
@@ -69,19 +74,19 @@ What are some features that are relevant to the Freeway example?
 
 The overall process is:
 
-1.  For the states, consider what are the features that determine its representation.
+1.  for the states, consider what are the features that determine its representation;
 
-2.  During learning, perform updates based on the **weights of features** instead of states.
+2.  during learning, perform updates based on the **weights of features** instead of states; and
 
-3.  Estimate $Q(s,a)$ by summing the features and their weights.
+3.  estimate $Q(s,a)$ by summing the features and their weights.
 
 
 :::{admonition} Example --- Features for *Freeway*
 
-Instead of recording the position of both kangaroos and whether there is a car in every position, we just record the following features:
+Instead of recording the position of both chickens and whether there is a car in every position, we just record the following features:
 
-- the number of rows each kangaroo is away from the other side of the road in (two features -- one for each kangaroo); and
-- how far away the *closest* car is in the row above and below each kangaroo (four features --- two for each kangaroo).
+- the number of rows each chicken is away from the other side of the road in (two features -- one for each chicken); and
+- how far away the *closest* car is in the row above and below each chicken (four features --- two for each chicken).
 
 This requires just six features. 
 :::
@@ -112,8 +117,8 @@ To represent this, we have two vectors:
         \end{pmatrix}$$
 
     In the Freeway example, we have a vector with six state features
-    times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance kangaroo 1 is away from the goal. The function $f_{3}(s, Up)$
-     returns the distance to the nearest car in the row above the first kangaroo. 
+    times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance chicken 1 is away from the goal. The function $f_{3}(s, Up)$
+     returns the distance to the nearest car in the row above the first chicken. 
 
 2.  A **weight vector** $w$ of size $n \times |A|$: one weight for each
     feature-action pair. $w^a_i$ defines the weight of a feature $i$ for
@@ -189,7 +194,7 @@ In practice, we also multiple the feature vector for weights $w^b_n$ for all act
 
 :::{admonition} Example --- Approximate Q-function computation for Freeway
 
-For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state $s$ where the kangaroo is in row 1:
+For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state $s$ where the chicken is in row 1:
 
 $$
 \begin{array}{lll}
@@ -267,9 +272,9 @@ To use on an example, we need a feature extractor. The first thing we need to do
 
 As noted above, normalising features is important to ensure that they are in the same magnitude. So, given the current position $(x,y)$ as the state, we extract the values of the state features as follows:
 
-1. $(x(s) + \epsilon) / (x(g) + \epsilon)$
-2. $(y(s) + \epsilon) / (y(g) + \epsilon)$
-1. $(x(g) - x(s) + y(g) - y(s) + \epsilon) / (x(g) + y(g) + \epsilon)$
+1. $(x(s) + \epsilon) / (x(g) + \epsilon)$.
+2. $(y(s) + \epsilon) / (y(g) + \epsilon)$.
+1. $(x(g) - x(s) + y(g) - y(s) + \epsilon) / (x(g) + y(g) + \epsilon)$.
 
 where $x(s)$ and $y(s)$ return the x and y coordinates of the agent respectively, and $g$ is the goal state. These expressions normalise the feature values to the range $[0,1]$ by dividing by the goal state. The $\epsilon$ is some small value such as $0.01$ to ensure two things: (1) that we do not divide by 0 if the goal is at a coordinator where x or y are 0; and (2) that the state (0,0) has a non-zero value, otherwise there will be no Q-value for it.
 
@@ -559,7 +564,7 @@ Approximating Q-functions using machine learning techniques such as linear funct
 ## Further Reading
 
 - Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and
-    Barto](https://incompleteideas.net/book/the-book-2nd.html)
+    Barto](http://incompleteideas.net/book/the-book-2nd.html)
 
 - Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
 

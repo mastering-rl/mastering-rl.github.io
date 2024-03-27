@@ -8,12 +8,13 @@ logo: logo-3D.svg
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: force
+  execute_notebooks: cache
   timeout: 1000
 
 # Define the name of the latex output file for PDF builds
 latex:
-  latex_engine              : pdflatex  # one of 'pdflatex', 'xelatex' (recommended for unicode), 'luatex', 'platex', 'uplatex
+#  use_jupyterbook_latex: false
+  latex_engine              : xelatex  # one of 'pdflatex', 'xelatex' (recommended for unicode), 'luatex', 'platex', 'uplatex
   latex_documents:
     targetname: book.tex
 
@@ -46,6 +47,57 @@ parse:
 # This ensures that the custom raw html sections can find folders which aren't linked by default during the build
 # see https://jupyterbook.org/advanced/html.html#raw-html-in-markdown
 sphinx:
+  local_extensions:
+    # Hide any :dropdown: or {toggle} content for LaTeX
+    hide_builder_classes: ./sphinx-ext
   config:
+    builder_ignore_classes:
+        latex:
+            - margin
+            - tag_html
+        html:
+            - tag_latex
+    latex_elements:
+      preamble:  \newcommand\alginput{\mathbf{Input}}
+                 \newcommand\algoutput{\mathbf{Output}}
+                 \newcommand\algwhile{\mathbf{while}}
+                 \newcommand\algfor{\mathbf{for}}
+                 \newcommand\algforeach{\mathbf{for\ each}}
+                 \newcommand\algdo{\mathbf{do}}
+                 \newcommand\algif{\mathbf{if}}
+                 \newcommand\algthen{\mathbf{then}}
+                 \newcommand\algelse{\mathbf{else}}
+                 \newcommand\algelsif{\mathbf{elsif}}
+                 \newcommand\algrepeat{\mathbf{repeat}}
+                 \newcommand\alguntil{\mathbf{until}}
+                 \newcommand\algreturn{\mathbf{return}}
+                 \newcommand\algfunction{\mathbf{function}}
+                 \newcommand\algprocedure{\mathbf{procedure}}
+                 \newcommand\algand{\mathbf{and}}
+                 \newcommand\algor{\mathbf{or}}
+                 \newcommand\algnot{\mathbf{not}}
+    mathjax_config:
+      tex:
+        macros:
+          "alginput": "\\mathbf{Input}"
+          "algoutput": "\\mathbf{Output}"
+          "algwhile": "\\mathbf{while}"
+          "algfor": "\\mathbf{for}"
+          "algforeach": "\\mathbf{for~each}"
+          "algdo": "\\mathbf{do}"
+          "algif": "\\mathbf{if}"
+          "algthen": "\\mathbf{then}"
+          "algelse": "\\mathbf{else}"
+          "algelsif": "\\mathbf{elsif}"
+          "algrepeat": "\\mathbf{repeat}"
+          "alguntil": "\\mathbf{until}"
+          "algreturn": "\\mathbf{return}"
+          "algfunction": "\\mathbf{function}"
+          "algprocedure": "\\mathbf{procedure}"
+          "algand": "\\mathbf{and}"
+          "algor": "\\mathbf{or}"
+          "algnot": "\\mathbf{not}"
     html_extra_path: ['assets']  # This is required to embed the gifs in the html
     latex_toplevel_sectioning: 'part'
+  extra_extensions:
+    - sphinx_proof

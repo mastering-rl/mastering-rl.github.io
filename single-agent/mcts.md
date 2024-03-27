@@ -12,6 +12,10 @@ kernelspec:
 (sec:mcts)=
 # Monte-Carlo Tree Search (MCTS)
 
+```{contents}
+:local:
+:depth: 2
+```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MCTS
@@ -23,13 +27,13 @@ The learning outcomes of this chapter are:
 
 1.  Explain the difference between offline and online planning for MDPs.
     
-2.  Apply MCTS solve small-scale MDP problems manually and program MCTS algorithms to solve medium-scale MDP problems automatically
-    
-3.  Construct a policy from Q-functions resulting from MCTS algorithms
+2.  Apply MCTS solve small-scale MDP problems manually and program MCTS algorithms to solve medium-scale MDP problems automatically.
 
-5.  Integrate multi-armed bandit algorithms (including UCB) to MCTS algorithms
+3.  Construct a policy from Q-functions resulting from MCTS algorithms.
+
+4.  Integrate multi-armed bandit algorithms (including UCB) to MCTS algorithms.
     
-6.  Compare and contrast MCTS to value iteration
+5.  Compare and contrast MCTS to value iteration.
 
 6.  Discuss the strengths and weaknesses of the MCTS family of algorithms.
 ```
@@ -60,7 +64,7 @@ In **online** planning, planning is undertaken immediately before executing an a
 
 -   The quality of each action $a$ is approximated by averaging the expected reward of trajectories over $S$ obtained by repeated simulations, giving as an approximation for $Q(s,a)$.
     
--   The chosen action is $\textrm{argmax}_{a'} Q(s,a)$
+-   The chosen action is $\text{argmax}_{a'} Q(s,a)$
 
 In online planning, we need access to a **simulator** that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
 
@@ -180,46 +184,63 @@ In a basic MCTS algorithm we incrementally build of the search tree. Each node i
 
 We use this tree to explore different Monte-Carlo simulations to learn a Q-function $Q$.
 
-:::{admonition} Algorithm -- Monte-Carlo Tree Search
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, base value function $Q$, time limit $T$.\
-**Output:** updated Q-function $Q$
+```{prf:algorithm} Monte-Carlo Tree Search
+:label: algorithm:single-agent-mcts
 
-**while** $currentTime < T$\
-$\quad\quad selected\_node \leftarrow \textrm{Select}(s_0)$\
-$\quad\quad child \leftarrow \textrm{Expand}(selected\_node)$ -- expand and choose a child to simulate\
-$\quad\quad G \leftarrow \textrm{Simulate}(child)$ -- simulate from $child$\
-$\quad\quad \textrm{Backpropagate}(selected\_node, child, G)$\
-**return** $Q$
-:::
+$
+\begin{array}{l}
+  \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle, \text{base Q-function}\ Q, \text{time limit}\ T  \\
+  \algoutput:\ \text{updated Q-function}\ Q  \\[2mm]
+  \algwhile\ currentTime < T\ \algdo  \\
+  \quad\quad selected\_node \leftarrow \text{Select}(s_0)  \\
+  \quad\quad child \leftarrow \text{Expand}(selected\_node)\ \text{-- expand and choose a child to simulate}  \\
+  \quad\quad G \leftarrow \text{Simulate}(child)\ \text{ -- simulate from}\ child
+    \\
+  \quad\quad \text{Backpropagate}(selected\_node, child, Q, G)  \\
+  \algreturn \ Q 
+\end{array}
+$
+```
 
 Given this, there are four main parts to the algorithm above:
 
 1. **Selection**: The first loop progressively selects a branch in the tree using a multi-armed bandit algorithm using $Q(s,a)$. The outcome that occurs from an action is chosen according to $P(s' \mid s)$ defined in the MDP.
 
-    :::{admonition} Function -- $\textrm{Select}(s : S)$ 
-    
-    **Input:** state $s$\
-    **Output:** unexpanded state
-    
-    **while** $s$ is fully expanded\
-    $\quad\quad$ Select action $a$ to apply in $s$ using a multi-armed bandit algorithm\
-    $\quad\quad$ Choose one outcome $s'$ according to $P_a(s' \mid s)$\
-    $\quad\quad$ $s \leftarrow s'$\
-    **return** s
-    :::
+
+```{prf:algorithm} Function -- $\text{Select}(s : S)$
+:label: algorithm:mcts:select
+
+$
+\begin{array}{l}
+  \alginput:\ \text{state}\ s  \\
+  \algoutput:\ \text{unexpanded state} s  \\[2mm]
+  \algwhile\ s\ \text{is fully expanded}\ \algdo  \\
+  \quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using a multi-armed bandit algorithm}  \\
+  \quad\quad \text{Choose one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)  \\
+  \quad\quad s \leftarrow s'  \\
+  \algreturn\ s
+\end{array}
+$
+```
 
 2. **Expansion**: Select an action $a$ to apply in  state $s$, either randomly or using an heuristic. Get an outcome state $s'$ from applying action $a$ in state $s$ according to the probability distribution $P(s' \mid s)$. Expand a new environment node and a new state node for that outcome.
 
-    :::{admonition} Function -- $\textrm{Expand}(s : S)$
+```{prf:algorithm} Function -- $\text{Expand}(s : S)$
+:label: algorithm:mcts:expand
 
-    **Input:** state $s$\
-    **Output:** expanded state $s'$
+$
+\begin{array}{l}
+  \alginput:\ \text{state}\ s  \\
+  \algoutput:\ \text{expanded state} s'  \\[2mm]
+  \algif\ s\ \text{is fully expanded}\ \algthen \\
+  \quad\quad \text{Randomly select action}\ a\ \text{to apply in}\ s\   \\
+  \quad\quad \text{Expand one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)\ \textrm{and observe reward}\ r  \\
+  \algreturn\ s'
+\end{array}
+$
+```
 
-    Select an action $a$ from $s$ to apply\
-    Expand one outcome $s'$ according to the distribution $P_a(s' \mid s)$ and observe reward $r$\
-    **return** s'
-    :::
 
 3. **Simulation**: Perform a randomised simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities $P_a(s' \mid s)$ to choose an outcome for each action. Heuristics can be used to improve the random simulation by guiding it towards more promising states. $G$ is the cumulative discounted reward received from the simulation starting at $s'$ until the simulation terminates. 
 
@@ -227,26 +248,30 @@ Given this, there are four main parts to the algorithm above:
 
 4. **Backpropagation**: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the discount factor! For each state $s$ and action $a$ selected in the Select step, update the cumulative reward of that state.
 
-    :::{admonition} Procedure -- $\textrm{Backpropagation}(s : S; a : A)$
+```{prf:algorithm} Function -- $\text{Backpropagation}(s : S; a : A; Q : S\times A \rightarrow \mathbb{R}; G : \mathbb{R})$
+:label: algorithm:mcts:backpropagation
 
-    **Input:** state-action pair $(s, a)$\
-    **Output:** none
-    
-    **do**\
-    $\quad\quad$ $N(s,a) \leftarrow N(s,a) + 1$\
-    $\quad\quad$ $G \leftarrow r + \gamma G$\
-    $\quad\quad$ $Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}[G - Q(s,a)]$\
-    $\quad\quad$ $s \leftarrow $ parent of $s$\
-    $\quad\quad$ $a \leftarrow $ parent action of $s$\
-    **while** $s \neq s_0$
-    :::
+$
+\begin{array}{l}
+  \alginput:\ \text{state-action pair}\ (s, a), \text{Q-function}\ Q,\ \text{rewards}\ G\\
+  \algoutput:\ \text{none} \\[2mm]
+  \algdo  \\
+  \quad\quad N(s,a) \leftarrow N(s,a) + 1  \\
+  \quad\quad G \leftarrow r + \gamma G  \\
+  \quad\quad Q(s,a) \leftarrow Q(s,a) + \tfrac{1}{N(s,a)}[G - Q(s,a)]   \\
+  \quad\quad s \leftarrow\ \text{parent of}\ s  \\
+  \quad\quad a \leftarrow\ \text{parent action of}\ s  \\
+  \algwhile\ s \neq s_0
+\end{array}
+$
+```
 
 
 Because action outcomes are selected according to $P_a(s' \mid s)$, this will converge to the average expected reward. This is why the tree is called an **ExpectiMax** tree:  we maximise the expected return.
 
 **But:** what if we do not know $P_a(s' \mid s)$?
 
-Provided that we can **simulate** the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is not a **model-free** approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
+Provided that we can **simulate** the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is **not a model-free** approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
 
 ````{margin}
 ```{admonition} Video byte: MCTS example
@@ -279,7 +304,7 @@ The backpropagation step is then calculated for the nodes $y$, $t$, and $s$ as f
 
 $$
 \begin{array}{lll}
-   Q(y, g) & = & \gamma^{2} \times 31.25~~\textrm{(simulation is 3 steps long and receives reward of 31.25)}\\
+   Q(y, g) & = & \gamma^{2} \times 31.25~~\text{(simulation is 3 steps long and receives reward of 31.25)}\\
           & = &   20\\
 ~~\\
 N(t,f) & \leftarrow & N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
@@ -302,7 +327,7 @@ $$
 
 Once we have run out of computational time, we select the action that maximises are expected return, which is simply the one with the highest Q-value from our simulations: 
 
-$$\textrm{argmax}_{a \in A(s)} Q(s_0, a)$$ 
+$$\text{argmax}_{a \in A(s)} Q(s_0, a)$$ 
 
 We execute that action and wait to see which outcome occurs for the action.
 
@@ -534,7 +559,7 @@ The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](http
 
 ## Further Reading
 
-- Chapters 2 and 5 of *Reinforcement Learning: An Introduction, second edition*. Freely downloadable at  http://incompleteideas.net/book/the-book.html 
+- Chapters 2 and 5 of [Reinforcement Learning: An Introduction, second edition](http://incompleteideas.net/book/the-book-2nd.html).
 
 - [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 

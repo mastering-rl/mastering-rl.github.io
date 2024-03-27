@@ -12,6 +12,10 @@ kernelspec:
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 
+```{contents}
+:local:
+:depth: 2
+```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
@@ -21,8 +25,9 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1. Select and apply multi-armed bandit algorithms for a given problem
-2. Compare and contrast  the strengths a weaknesses of different multi-armed bandit algorithms
+1. Select and apply multi-armed bandit algorithms for a given problem.
+
+2. Compare and contrast  the strengths a weaknesses of different multi-armed bandit algorithms.
 ```
 
 ## Overview
@@ -37,10 +42,11 @@ The learning outcomes of this chapter are:
 
 The problem of multi-armed bandits can be illustrated as follows:
 
-```{figure} ./figs/multi-armed-bandit.svg
+```{figure} ./figs/multi-armed-bandit.png
 :name: multi-armed-bandits
 
 ```
+
 
 > Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are morely likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
 
@@ -54,7 +60,7 @@ The question is: without knowing the probability distribution beforehand, how sh
 ```
 ````
 
-:::{admonition} Definition
+:::{admonition} Definition -- Multi-armed bandit
 
 A **multi-armed bandit** (also known as an **$N$-armed bandit**) is defined by a set of random variables $X_{i,k}$ where:
 
@@ -142,23 +148,26 @@ There are several basic strategies for minimising regret. In each of these techn
 
 The multi-armed bandit solutions we will look at in these notes all follow the same basic format below, where $T$ is the number of rounds or pulls that we will play, which may be infinite, and $A$ is the set of arms available.
 
-:::{admonition} Algorithm -- Abstract multi-armed bandit
 
-**Input:** Multi-armed bandit problem $M = \langle \{X_{i,k}\}, A, T\rangle$\
-**Output:** Q-function $Q$
+```{prf:algorithm} Abstract multi-armed bandit
+:label: algorithm:multi-armed-bandit
 
-$Q(a) \leftarrow 0$ for all arms $a \in A$\
-$N(a) \leftarrow 0$ for all arms $a \in A$
-
-$k \leftarrow 1$\
-while $k \leq T$\
-$\quad\quad$ $a \leftarrow \textrm{select}(k)$\
-$\quad\quad$ Execute arm $a$ for round $k$ and observe reward $X_{a,k}$\
-$\quad\quad$ $N(a) \leftarrow N(a) + 1$\
-$\quad\quad$ $Q(a) \leftarrow Q(a) + \frac{1}{N(a)}[X_{a,k} - Q(a)]$\
-$\quad\quad$ $k \leftarrow k + 1$
-
-:::
+$
+\begin{array}{l}
+\alginput:\ \text{Multi-armed bandit problem}\ M = \langle \{X_{i,k}\}, A, T\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+Q(a) \leftarrow 0\ \text{for all arms}\ a \in A\\
+N(a) \leftarrow 0\ \text{for all arms}\ a \in A\\[2mm]
+k \leftarrow 1\\
+\algwhile\ k \leq T\ \algdo\\
+\quad\quad a \leftarrow \textrm{select}(k)\\
+\quad\quad \text{Execute arm}\ a\ \text{for round}\ k\ \text{and observe reward}\ X_{a,k}\\
+\quad\quad N(a) \leftarrow N(a) + 1\\
+\quad\quad Q(a) \leftarrow Q(a) + \frac{1}{N(a)}[X_{a,k} - Q(a)]\\
+\quad\quad k \leftarrow k + 1
+\end{array}
+$
+```
 
 So, these algorithms choose an arm, and then add the reward from that to a cumulative average of playing that arm so far. 
 
@@ -177,14 +186,14 @@ The $\epsilon$-greedy (pronounced "epsilon-greedy") strategy  is a simple and ef
 
 Each time we need to choose an action, we do the following:
 
-- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$. If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
-- With probability $\epsilon$ we choose a random arm with uniform probability.
+- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$ (**exploit**). If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
+- With probability $\epsilon$ we choose a random arm with uniform probability (**explore**).
 
-The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.1 work well as they exploit what they have learnt, while still exploring.
+The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.2 work well as they exploit what they have learnt, while still exploring.
 
 #### Implementation
 
-The implementation for epsilon greedy uses `random()` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If r is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
+The implementation for epsilon greedy uses `random()` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If the number is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
 
 ```{code-cell} ipython3
 :load: "../python_code/multi_armed_bandit/epsilon_greedy.py"
@@ -211,9 +220,11 @@ But we can also see that while epsilon = 0.05 ends up with a higher return after
 
 **$\epsilon$-decreasing** (pronounced "epsilon-decreasing")  follows a similar idea to epsilon greedy, however, it recognises that initially, we have very little feedback so exploiting is not a good strategy to being with: we need to explore first. Then, as we gather more data, we should exploit more.
 
-The $\epsilon$-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is used to decrease $\epsilon$ over time. For this reason, $\alpha$ is called the **decay**.
+The $\epsilon$-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is used to decrease $\epsilon$ over time. For this reason, $\alpha$ is called the **decay**. 
 
-The selection mechanism is the same as epsilon greedy, but then after each selection, we set  $\epsilon := \epsilon \times \alpha$. We start initially with a higher value of $\epsilon$ to explore, and it will slowly decay to a low number such that we explore less and less as we gather more feedback.
+The selection mechanism is the same as epsilon greedy: explore with probability $\epsilon$; and exploit with probability $1-\epsilon$. 
+
+However, after each selection, we decay $\epsilon$ using $\epsilon := \epsilon \times \alpha$. We start initially with a higher value of $\epsilon$, such as $\epsilon=1.0$, to ensure that we explore a lot, and it will slowly decay to a low number such that we explore less and less as we gather more feedback.
 
 #### Implementation
 
@@ -221,13 +232,16 @@ The following implementation for the $\epsilon$-decreasing strategy uses the $\e
 
 ```{code-cell} ipython3
 :load: "../python_code/multi_armed_bandit/epsilon_decreasing.py"
+
+
 ```
+
+In this implementation, we have a minimum value, `lower_bound`, such that $\epsilon$ stop decaying. As $\epsilon$ approaches 0,  the bandit stops exploring and just exploits. During learning, we do not want this, so we add a lower bound.
 
 The following plot shows the average reward over our simulation, varying the value of $\alpha$:
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_decreasing.py"
-
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.

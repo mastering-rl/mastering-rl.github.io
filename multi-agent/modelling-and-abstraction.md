@@ -2,6 +2,11 @@
 
 # Modelling and abstraction for multi-agent games
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -11,6 +16,7 @@ The learning outcomes of this chapter are:
 ```
 
 ## Overview
+
 
 Just as we can use [modelling and abstraction to help us scale algorithms for MDP problems](sec:single-agent:modelling-and-abstraction), we can use it for multi-agent games. All of the strategies described in the [MDP modelling and abstraction section](sec:single-agent:modelling-and-abstraction) can also be applied to multi-agent games. However, when we consider opponents, there are a few other modelling and abstraction strategies we can use.
 

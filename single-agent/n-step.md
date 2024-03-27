@@ -10,16 +10,21 @@ kernelspec:
 ---
 # n-step reinforcement learning
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 
-1.  Manually apply n-step reinforcement learning approximation to solve small-scale MDP problems
+1.  Manually apply n-step reinforcement learning approximation to solve small-scale MDP problems.
 
 2.  Design and implement n-step reinforcement learning to solve
-    medium-scale MDP problems automatically
+    medium-scale MDP problems automatically.
 
-3.  Argue the strengths and weaknesses of n-step reinforcement learning
+3.  Argue the strengths and weaknesses of n-step reinforcement learning.
 ```
 
 ## Overview
@@ -197,7 +202,7 @@ Repeat (for each episode)\
 $\quad\quad$ $T \leftarrow \infty$\
 $\quad\quad$ $t \leftarrow 0$  ($t$ is the current time step of this episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
+$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon-$greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ If $t < T$ then:\
 $\quad\quad\quad\quad\quad\quad$ Execute action $a_t$ in state $s_t$\
@@ -216,37 +221,42 @@ $\quad\quad$ Until $\tau = T - 1$
 :::
 -->
 
-:::{admonition} Algorithm -- n-step SARSA
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\, number of steps $n$\
-**Output:** Q-function $Q$
-
-Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
-
-Repeat (for each episode)\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad$ $ss = \langle s\rangle$\
-$\quad\quad$ $as = \langle a\rangle$\
-$\quad\quad$ $rs = \langle \rangle$\
-$\quad\quad$ While $ss$ is not empty\
-$\quad\quad\quad\quad$ If $s$ is not a terminal state then:\
-$\quad\quad\quad\quad\quad\quad$ Execute action $a$ in state $s$\
-$\quad\quad\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad\quad\quad$ $rs \leftarrow rs + \langle r\rangle$\
-$\quad\quad\quad\quad\quad\quad$ If $s'$ is not a terminal state then:\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using $Q$ and a multi-armed bandit algorithm\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ $ss \leftarrow ss + \langle s' \rangle$\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ $as \leftarrow ss + \langle a' \rangle$\
-$\quad\quad\quad\quad$ If $|rs| = n$ or $s$ is a terminal state then:\
-$\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}rs_i$\
-$\quad\quad\quad\quad\quad\quad$ If $s$ is not a terminal state then: $G \leftarrow G + \gamma^n Q(s', a')$\
-$\quad\quad\quad\quad\quad\quad$ $Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]$\
-$\quad\quad\quad\quad\quad\quad$ $rs \leftarrow rs_{[1 : n + 1]}$\
-$\quad\quad\quad\quad\quad\quad$ $ss \leftarrow ss_{[1 : n + 1]}$\
-$\quad\quad\quad\quad\quad\quad$ $as \leftarrow as_{[1 : n + 1]}$\
-$\quad\quad\quad\quad$ $s \leftarrow s'$\
-$\quad\quad\quad\quad$ $a \leftarrow a'$
-:::
+```{prf:algorithm} n-step SARSA
+:label: algorithm:n-step-SARSA
+$
+\begin{array}{l}
+\alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\, \text{number of steps n}\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g., }\ Q(s,a)=0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using Q-values in}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\ \text{greedy}\\
+\quad\quad ss = \langle s\rangle\\
+\quad\quad as = \langle a\rangle\\
+\quad\quad rs = \langle \rangle\\
+\quad\quad \algwhile\ ss\ \text{is not empty}\ \algdo\\
+\quad\quad\quad\quad\ \algif\ s\ \text{is not a terminal state}\ \algthen\\
+\quad\quad\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad\quad\quad rs \leftarrow rs + \langle r\rangle\\
+\quad\quad\quad\quad\quad\quad \algif\ s'\ \text{is not a terminal state}\ \algthen\\
+\quad\quad\quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
+\quad\quad\quad\quad\quad\quad\quad\quad ss \leftarrow ss + \langle s' \rangle\\
+\quad\quad\quad\quad\quad\quad\quad\quad as \leftarrow ss + \langle a' \rangle\\
+\quad\quad\quad\quad \algif\ |rs| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
+\quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}rs_i\\
+\quad\quad\quad\quad\quad\quad \algif\ s\ \text{is not a terminal state}\ \algthen\\
+ \quad\quad\quad\quad\quad\quad\quad\quad G \leftarrow G + \gamma^n Q(s', a')\\
+\quad\quad\quad\quad\quad\quad Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]\\
+\quad\quad\quad\quad\quad\quad rs \leftarrow rs_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad ss \leftarrow ss_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad as \leftarrow as_{[1 : n + 1]}\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad\quad\quad a \leftarrow a'\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+$
+```
 
 This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $ss$, $as$, and $rs$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $ss_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $ss_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
 
@@ -378,5 +388,5 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 ## Further Reading
 
 -   Chapter 7 of [Introduction to Reinforcement Learning, Sutton and
-    Barto](https://incompleteideas.net/book/the-book-2nd.html)
+    Barto](http://incompleteideas.net/book/the-book-2nd.html)
 

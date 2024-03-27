@@ -568,7 +568,7 @@ class ContestedCrossing(MDP):
     """ Visualise a Contested Crossing value function """
 
     def visualise_value_function(
-        self, value_function, title="", cell_size=1, gif=False, mode=3
+        self, value_function, title="", cell_size=0.5, gif=False, mode=3
     ):
         """
         Because the information is 5-dimensional, other metrics must be extracted in order to display it on a 2-D map

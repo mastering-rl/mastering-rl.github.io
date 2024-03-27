@@ -15,7 +15,7 @@ learner = QLearning(gridworld, EpsilonGreedy(), qfunction)
 run_learner(mdp=gridworld, learner=learner, qfunction=qfunction, learner_name="Linear Q-learning", out_filename="../../assets/gifs/linear_qlearning.gif", episodes=episodes)
 
 gridworld = GridWorld()
-qfunction = DeepQFunction(gridworld, state_space=len(gridworld.get_initial_state()), action_space=5, hiddem_dim=16)
+qfunction = DeepQFunction(gridworld, state_space=len(gridworld.get_initial_state()), action_space=5, hidden_dim=16)
 learner = QLearning(gridworld, EpsilonGreedy(), qfunction, alpha=1.0)
 run_learner(mdp=gridworld, learner=learner, qfunction=qfunction, learner_name="Deep Q-learning", out_filename="../../assets/gifs/deep_qlearning.gif", episodes=episodes)
 

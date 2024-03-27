@@ -109,7 +109,8 @@ class DQN(nn.Module, QFunction):
         state_tensor = torch.tensor(state, dtype=torch.float32, device=device)
         action_tensor = torch.tensor(action, dtype=torch.long, device=device)
         
-        q_values = self(state_tensor)
+        with torch.no_grad():
+            q_values = self.forward(state_tensor)
         q_value = q_values[action]
         #action = torch.tensor([action], device=device)
         #
@@ -126,11 +127,12 @@ class DQN(nn.Module, QFunction):
 
         batch = Transition(*zip(*transitions))
 
+        '''
         state_batch = torch.tensor(batch.state, dtype=torch.float32, device=device)
         action_batch = torch.tensor(batch.action, dtype=torch.long, device=device)
         reward_batch = torch.as_tensor(batch.reward, device=device)
         next_state_batch = torch.tensor(batch.next_state, dtype=torch.float32, device=device)
-        #delta_batch = torch.tensor(batch.delta, dtype=torch.float32, device=device)
+        delta_batch = torch.tensor(batch.delta, dtype=torch.float32, device=device, requires_grad=True)
         
         # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
         # columns of actions taken. These are the actions which would've been taken
@@ -146,8 +148,46 @@ class DQN(nn.Module, QFunction):
         #print("\n\n")
         #print("delta batch = " + str(delta_batch.unsqueeze(1)))
         #sys.exit()
-        loss = nn.functional.mse_loss(state_action_values, (state_action_values.squeeze(1) + deltas).unsqueeze(1))
-        #loss = nn.functional.mse_loss(state_action_values, delta_batch.unsqueeze(1))
+        #loss = nn.functional.mse_loss(state_action_values, (state_action_values.squeeze(1) + deltas).unsqueeze(1))
+        #loss = nn.functional.mse_loss(state_action_values, (state_action_values.squeeze(1) + delta_batch).unsqueeze(1))
+        loss = nn.functional.mse_loss(delta_batch, torch.zeros_like(delta_batch))
+        '''
+
+        states_tensor = torch.tensor(batch.state, dtype=torch.float32, device=device)
+        actions_tensor = torch.tensor(batch.action, dtype=torch.long, device=device)
+        deltas_tensor = torch.tensor(batch.delta, dtype=torch.float32, device=device, requires_grad=True)
+        rewards_tensor = torch.as_tensor(batch.reward, device=device)
+        next_states_tensor = torch.tensor(batch.next_state, dtype=torch.float32, device=device)
+
+        next_state_values = target_net(next_states_tensor).max(1).values
+        expected_state_action_values = (next_state_values * GAMMA) + rewards_tensor
+
+        # Compute Q-values for current states
+        current_q_values = self.forward(states_tensor).gather(1, actions_tensor.unsqueeze(1))
+        
+        #print("current =" + str(current_q_values))
+        #print("\n\n")
+        #print("expected_state_action = " + str(expected_state_action_values.unsqueeze(1)))
+        #print("\n\n")
+        #print("deltas = " + str(torch.neg(deltas_tensor)))
+        #print("\n\n")
+        #print("calculated deltas = " + str(current_q_values - expected_state_action_values.unsqueeze(1)))
+        #print("\n\n")
+        #print("calculated with deltas = " + str(current_q_values - ((current_q_values.squeeze(1) + deltas_tensor).unsqueeze(1))))
+        #sys.exit()
+
+        # Calculate the loss
+        #loss = nn.functional.mse_loss(deltas_tensor, torch.zeros_like(deltas_tensor))
+        #loss = nn.functional.mse_loss(current_q_values, (current_q_values.squeeze(1) + deltas_tensor).unsqueeze(1))
+
+        #loss = nn.functional.mse_loss(deltas_tensor, torch.zeros_like(deltas_tensor))
+        #below seems to learn something but inconsistently and stops learning after a few iterations (maybe one?)
+        #loss = deltas_tensor.mean()
+        #print(loss)
+        #below works
+        loss = nn.functional.mse_loss(current_q_values, expected_state_action_values.unsqueeze(1))
+        #print(loss)
+        #print("\n\n")
 
         # Optimize the model
         optimizer.zero_grad()
@@ -224,9 +264,8 @@ class ExperienceReplay(QLearning):
                 next_state, reward, done = env.execute(state, action)
                 #q_value = policy_net.get_q_value(state, action)
                 #delta = self.get_delta(reward, q_value, state, next_state)
-                delta = 0.0
-                
 
+                delta = 0.0
                 # Store the transition in memory
                 #memory.push(state, action, next_state, reward, not done)
                 memory.push(state, action, next_state, reward, delta)
@@ -249,7 +288,7 @@ class ExperienceReplay(QLearning):
 
             episode_rewards.append(episode_reward)
             torch.save(policy_net.state_dict(), policy_name)
-            plot_rewards(episode_rewards)
+            #plot_rewards(episode_rewards)
 
         return episode_rewards
     
@@ -265,10 +304,20 @@ if extend_existing_policy:
     print("loading existing policy " + policy_name)
 
 
+import numpy as np
+import time
+
 learner = ExperienceReplay(env, EpsilonDecreasing())
-episode_rewards = learner.execute(episodes=1000)
+start = time.time()
+episode_rewards = learner.execute(episodes=30)
+end = time.time()
+print(("{:.2f}, {:.2f}, " + str(episode_rewards)).format(np.mean(episode_rewards), end - start))
+
+#learner = ExperienceReplay(env, EpsilonDecreasing())
+#episode_rewards = learner.execute(episodes=50)
 
 print('Complete')
+sys.exit()
 plot_rewards(episode_rewards, show_result=True)
 plt.ioff()
 plt.show()

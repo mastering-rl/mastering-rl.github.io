@@ -11,6 +11,7 @@ mdp = GridWorld()
 qfunction = QTable()
 QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=1000)
 print(mdp.q_function_to_string(qfunction))
+mdp.visualise_q_function(qfunction)
 
 policy = QPolicy(qfunction)
 print(mdp.policy_to_string(policy))

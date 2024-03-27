@@ -12,6 +12,11 @@ kernelspec:
 (sec:policy-based:policy-gradients)=
 # Policy gradients
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
 <iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -20,8 +25,8 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1. Apply policy gradients and actor critic methods to solve small-scale MDP problems manually and program policy gradients and actor critic algorithms to solve medium-scale MDP problems automatically
-2. Compare and contrast policy-based reinforcement learning with value-based reinforcement learning
+1. Apply policy gradients and actor critic methods to solve small-scale MDP problems manually and program policy gradients and actor critic algorithms to solve medium-scale MDP problems automatically.
+2. Compare and contrast policy-based reinforcement learning with value-based reinforcement learning.
 ```
 
 ## Overview
@@ -88,7 +93,7 @@ So, this is the expected return of taking action $\pi_{\theta}(s,a)$ multiplied 
 
 In these notes, we will not go into details about gradients or algorithms for solving them -- this is itself a large topic that is relevant outside of reinforcement learning. Instead, we will just give the intuition and how to use this for model-free reinforcement learning.
 
-# REINFORCE
+## REINFORCE
 
 ````{margin}
 ```{admonition} Video byte: REINFORCE
@@ -98,19 +103,24 @@ In these notes, we will not go into details about gradients or algorithms for so
 
 The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the sampling process in [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning).
 
-:::{admonition} Algorithm -- REINFORCE
-**Input:** A differentiable policy $\pi_{\theta}(s,a)$, an MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Policy $\pi_{\theta}(s,a)$          
 
-Initialise parameters $\theta$ arbitrarily
+```{prf:algorithm} REINFORCE
+:label: algorithm:reinforce
 
-Repeat\
-$\quad\quad$ Generate episode $(s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})$ by following $\pi_{\theta}$\
-$\quad\quad$ For each $(s_t, a_t)$ in the episode\
-$\quad\quad\quad\quad$ $G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\
-$\quad\quad\quad\quad$ $\theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)$\
-Until some time limit or until $\pi_{\theta}$ converges
-:::
+$
+\begin{array}{l}
+\alginput:\  \text{A differentiable policy}\ \pi_{\theta}(s,a),\ \text{an MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\  \text{Policy}\ \pi_{\theta}(s,a)\\[2mm]
+\text{Initialise parameters}\ \theta\ \text{arbitrarily}\\[2mm]
+\algrepeat\\
+\quad\quad \text{Generate episode}\ (s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})\ \text{by following}\ \pi_{\theta}\\
+\quad\quad \algforeach\ (s_t, a_t)\ \text{in the episode}\\
+\quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)\\
+\alguntil\ \pi_{\theta}\ \text{converges}
+\end{array}
+$
+```
 
 REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
 
@@ -129,7 +139,7 @@ From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-
 :::
 
 (sec:policy-gradients:logistic-regression)=
-## Implementation
+### Implementation
 
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
@@ -200,8 +210,7 @@ policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-policy_gradient = PolicyGradient(gridworld, policy, alpha=0.1)
-policy_gradient.execute(episodes=1000)
+PolicyGradient(gridworld, policy, alpha=0.1).execute(episodes=1000)
 policy_image = gridworld.visualise_stochastic_policy(policy)
 
 ```
@@ -225,7 +234,7 @@ If we step through the policy during training, we can see the gradient updates p
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
 (sec:policy-gradient:deep-policy-gradients)=
-## Deep REINFORCE
+### Deep REINFORCE
 
 Just like we can use deep neural networks to approximate Q-functions in [deep Q learning](sec:function-approximation:deep-Q-learning), we can use deep neural networks to approximate policies. Neural networks are differentiable, so these can be used in policy gradient algorithms such as REINFORCE --- the policy parameters $\theta$ are the parameters to the neural network.
 
@@ -269,19 +278,19 @@ Simulating the process of training the policy, we can see that initially, all fo
 <p>
 
 
-# Advantages and disadvantages of policy gradients (compared to value-based techniques)
+## Advantages and disadvantages of policy gradients (compared to value-based techniques)
 
-## Advantages
+### Advantages
 
 -  **High-dimensional problems**: The major advantage of policy-gradient approaches compared to value-based techniques like Q-learning and SARSA is that they can handle high-dimensional action and state spaces, including actions and states that are continuous. This is because we do not have to iterate over all actions using $\textrm{argmax}_{a \in A(s)}$ as we do in value-based approaches. For continuous problems, $\textrm{argmax}_{a \in A(s)}$ is not possible to calculate, while for a high number of actions, the computational complexity is dependent on the number of actions.
 
-## Disadvantages
+### Disadvantages
 
 - **Sample inefficiency**:  Since the policy gradients algorithm takes an entire episode  to do the update, it is difficult to determine which of the state-action pairs are those that effect the value $G$ (the episode reward), and therefore which to sample.
 - **Loss of explainability**: Model-free reinforcement learning is a particularly challenging case to understand and explain why a policy is making a decision. This is largely due to the model-free property: there are no action definitions that can used as these are unknown. However, policy gradients are particularly difficult because the values of states are unknown: we just have a resulting policy. With value-based approaches, knowing $V$ or $Q$ provides some insight into why actions are chosen by a policy; although explainability problems still remain.
 
 (sec:policy-gradient:actor-critic)=
-# Actor critic methods
+## Actor critic methods
 
 ````{margin}
 ```{admonition} Video byte: Actor-critic methods
@@ -301,28 +310,33 @@ The **Q Actor Critic** algorithm uses a Q-function as the critic.
 ```
 ````
 
-:::{admonition} Algorithm -- Q Actor Critic
 
-**Input:** An MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Input:** A differentiable actor policy $\pi_{\theta}(s,a)$\
-**Input**: A differentiable critic Q-function $Q(s,a)$\
-**Output:** Policy $\pi_{\theta}(s,a)$   
+```{prf:algorithm} Q Actor Critic
+:label: algorithm:q-actor-critic
 
-Initialise actor $\pi$ parameters $\theta$ and critic parameters $w$ arbitrarily
-
-Repeat (for each episode)\
-$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a \sim \pi_\theta(s)$\
-$\quad\quad$ Repeat (for each step in episode $e)$\
-$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
-$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad$ Select action $a' \sim \pi_\theta(s')$\
-$\quad\quad\quad\quad$ $\delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)$\
-$\quad\quad\quad\quad$ $w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)$\
-$\quad\quad\quad\quad$ $\theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)$\
-$\quad\quad\quad\quad$ $s \leftarrow s'$; $a \leftarrow a'$\
-$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
-:::
+$
+\begin{array}{l}
+\alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\alginput:\ \text{A differentiable actor policy}\ \pi_{\theta}(s,a)\\
+\alginput:\ \text{A differentiable critic Q-function}\ Q(s,a)\\
+\algoutput:\ \text{Policy}\ \pi_{\theta}(s,a) \\[2mm]
+\text{Initialise actor}\ \pi\ \text{parameters}\ \theta\ \text{and critic parameters}\ w\ \text{arbitrarily}\\[2mm]
+\algrepeat\ \text{(for each episode}\ e\ \text{)}\\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \text{Select action}\ a \sim \pi_\theta(s)\\
+\quad\quad \algrepeat\ \text{(for each step in episode e)}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s')\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)\\
+\quad\quad\quad\quad w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad s \leftarrow s'; a \leftarrow a'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ \pi_{\theta}\ \text{converges}
+\end{array}
+$
+```
 
 Note that we have two different learning rates $\alpha_w$ and $\alpha_{\theta}$ for the Q-function and policy respectively.
 
@@ -342,7 +356,7 @@ So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (
 
 The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.
 
-## Implementation
+### Implementation
 
 To implement the Q Actor Critic framework, we first create a new base class called `ActorCritic`, which can be used as a base for other types of actor critic methods, such as **advantage actor critics**, which we will not discuss here.
 

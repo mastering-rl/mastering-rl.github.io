@@ -11,13 +11,18 @@ kernelspec:
 
 # Extensive form games
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
 
-1. Define 'extensive form game'
+1. Define 'extensive form game'.
 2. Identify situations in which extensive form games  are a suitable model of a problem.
-3. Define the types of strategy for an extensive form game
+3. Define the types of strategy for an extensive form game.
 4. Manually apply backward induction to small extensive form games.
 5. Design and implement backward induction to solve medium-scale extensive form games automatically.
 ``` 

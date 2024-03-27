@@ -5,14 +5,14 @@ from gridworld import GridWorld
 from gif_maker import GifMaker
 
 
-def run_learner(mdp, learner, qfunction, learner_name, out_filename, episodes=20):
+def run_learner(mdp, learner, qfunction, learner_name, out_filename, grid_size=1.5, episodes=20):
     gridworld = GridWorld()
-    gif_maker = GifMaker(mdp=gridworld, grid_size=2.0)
+    gif_maker = GifMaker(mdp=gridworld, grid_size=grid_size)
 
     for episode in range(0, episodes + 1):
         learner.execute(episodes=1)
         title = "%s after episode %d" % (learner_name, episode)
-        image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=2.0, gif=True)
+        image_texts = gridworld.visualise_q_function(qfunction, title=title, grid_size=grid_size, gif=True)
         gif_maker.add_frame(image_texts, title=title)
 
     gif_maker.save(out_filename)
@@ -30,11 +30,11 @@ def join_gif(filename1, filename2, out_filename):
     new_gif = imageio.get_writer(out_filename)
 
     for frame_number in range(number_of_frames):
-        img1 = gif1.get_next_data()
-        img2 = gif2.get_next_data()
-        # Connect the two images
-        new_image = np.hstack((img1, img2))
-        new_gif.append_data(new_image)
+        if (frame_number < number_of_frames):
+            img1 = gif1.get_data(frame_number)
+            img2 = gif2.get_data(frame_number)
+            new_image = np.hstack((img1, img2))
+            new_gif.append_data(new_image)
 
     gif1.close()
     gif2.close()

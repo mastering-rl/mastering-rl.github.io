@@ -13,7 +13,10 @@ kernelspec:
 
 # Temporal difference reinforcement learning
 
-
+```{contents}
+:local:
+:depth: 2
+```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
@@ -24,13 +27,13 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1.  Identify situations in which model-free reinforcement learning is a suitable solution for an MDP
+1.  Identify situations in which model-free reinforcement learning is a suitable solution for an MDP.
     
-2.  Explain how model-free planning differs from model-based planning
+2.  Explain how model-free planning differs from model-based planning.
 
-3.  Apply temporal difference methods Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically
+3.  Apply temporal difference methods Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically.
     
-4.  Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning
+4.  Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning.
 ```
 
 ## Model-based vs model-free 
@@ -130,25 +133,31 @@ Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement lea
 
 It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
 
-:::{admonition} Algorithm -- Monte-Carlo reinforcement learning
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Q-function $Q$
+```{prf:algorithm} Monte-Carlo reinforcement learning
+:label: algorithm:monte-carlo-reinforcement-learning
 
-Initialise $Q$ arbitrarily; e.g., $Q(s,a) \leftarrow 0$ for all $s$ and $a$\
-$N(s, a) \leftarrow 0$ for all $s$ and $a$
-
-Repeat (for each episode)\
-$\quad\quad$ Generate an episode $(s_0, a_0, r_1, \ldots, s_{T-1}, a_{T-1}, r_T)$; e.g. using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad$ $G \leftarrow 0$\
-$\quad\quad$ $t \leftarrow T-1$\
-$\quad\quad$ While $t \geq 0$\
-$\quad\quad\quad\quad$ $G \leftarrow r_{t+1} + \gamma \cdot G$\
-$\quad\quad\quad\quad$ If $s_t, a_t$ does not appear in $s_0, a_0,\ldots, s_{t-1}, a_{t-1}$ then\
-$\quad\quad\quad\quad\quad\quad$ $Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]$\
-$\quad\quad\quad\quad\quad\quad$ $N(s_t, a_t) \leftarrow N(s_t, a_t) + 1$\
-$\quad\quad\quad\quad$ $t \leftarrow t-1$
-:::
+$
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\
+N(s, a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad \text{Generate an episode}\ (s_0, a_0, r_1, \ldots, s_{T-1}, a_{T-1}, r_T);\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad G \leftarrow 0\\
+\quad\quad t \leftarrow T-1\\
+\quad\quad \algwhile\ t \geq 0\ \algdo\\
+\quad\quad\quad\quad G \leftarrow r_{t+1} + \gamma \cdot G\\
+\quad\quad\quad\quad \algif\ s_t, a_t\ \text{does not appear in}\ s_0, a_0,\ldots, s_{t-1}, a_{t-1}\ \algthen\\
+\quad\quad\quad\quad\quad\quad Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]\\
+\quad\quad\quad\quad\quad\quad N(s_t, a_t) \leftarrow N(s_t, a_t) + 1\\
+\quad\quad\quad\quad t \leftarrow t-1\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+$
+```
 
 This algorithm generates an entire episode following some policy, such $\epsilon$-greedy, observing the reward $r_{t+1}$ at each step $t$. It then calculates the discounted future reward $G$ at each step. If $s_t, a_t$ occurs earlier in the episode, then we do not update $Q(s_t, a_t)$ as we will update it later in the loop. If it does not occur, we update $Q(s_t, a_t)$ as the cumulative average over all executions of $s_t, a_t$ over all episodes. In this algorithm $N(s_t,a_t)$ represents the number of times that $s_t, a_t$ have been evaluated over all episodes.
 
@@ -290,24 +299,30 @@ Below is the Q_learning algorithm. It uses $\max_{a'} Q(s',a')$ as the estimate 
 
 Note that, unlike Monte Carlo reinforcement learning, because Q-learning uses the bootstrapped value, it can interleave execution and update, meaning that $Q$ is improved at each step of an episode, rather than having to wait until the end of the episode to calculate $G$. This has benefit early episodes benefit from learning more than in Monte Carlo reinforcement learning.
 
-:::{admonition} Algorithm -- Q-learning
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Q-function $Q$
+```{prf:algorithm} Q-learning
+:label: algorithm:q-learning
 
-Initialise $Q$ arbitrarily; e.g., $Q(s,a) \leftarrow 0$ for all $s$ and $a$
-
-Repeat (for each episode)\
-$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Repeat (for each step in episode $e$)\
-$\quad\quad\quad\quad$Select action $a$ to apply in $s$; e.g. $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad\quad\quad$Execute action $a$ in state $s$\
-$\quad\quad\quad\quad$Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)$\
-$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
-$\quad\quad\quad\quad s \leftarrow s'$\
-$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
-:::
+$
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)\\
+\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+$
+```
 
 ### Updating the Q-function
 
@@ -386,8 +401,6 @@ We inherit from this class to implement the Q-learning algorithm:
 ```{code-cell} ipython3
 :load: ../python_code/qlearning.py
 
-
-
 ```
 
 We can see that the `TemporalDifferenceLearner` does most of the work. All the `QLearning` class has to do is define what the value of $V(s')$ for the new state $s'$, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on [SARSA](sec:model-free:sarsa), we will see why.
@@ -407,18 +420,16 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 gridworld = GridWorld()
 qfunction = QTable()
 QLearning(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
-gridworld.visualise_q_function(qfunction, "Q-Function")
-
+gridworld.visualise_q_function(qfunction, "Q-Function", grid_size=1.5)
 ```
 
-If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that hte values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.3 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
+If we compare this to the value function for the [value iteration implementation](sec:value-iteration:implementation), we can see that the values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.1 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.
 
 Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:
 
 ```{code-cell} ipython3
 policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
-
 ```
 
 ````{margin}
@@ -456,26 +467,34 @@ whereas **off-policy learning **estimates the policy independent of the current 
 
 To illustrate how this differs, let's take a look at the SARSA algorithm.
 
-:::{admonition} Algorithm -- SARSA
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\
-**Output:** Q-function $Q$
+```{prf:algorithm} SARSA
+:label: algorithm:sarsa
 
-Initialise $Q$ arbitrarily; e.g., $Q(s,a)=0$ for all $s$ and $a$
+$
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s';\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)\\
+\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad\quad\quad a \leftarrow a'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+$
+```
 
-Repeat (for each episode)\
-$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad$ Repeat (for each step in episode $e)$\
-$\quad\quad\quad\quad$ Execute action $a$ in state $s$\
-$\quad\quad\quad\quad$ Observe reward $r$ and new state $s'$\
-$\quad\quad\quad\quad$ Select action $a'$ to apply in $s'$ using $Q$ and a multi-armed bandit algorithm such as $\epsilon$-greedy\
-$\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)$\
-$\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta$\
-$\quad\quad\quad\quad s \leftarrow s'$\
-$\quad\quad\quad\quad a \leftarrow a'$\
-$\quad\quad$ Until $s$ is the last state of episode $e$ (a terminal state)
-:::
 
 The difference between the Q-learning and SARSA algorithms is what happens in the update in the loop body.
 
@@ -532,7 +551,6 @@ gridworld = GridWorld()
 qfunction = QTable()
 SARSA(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
 gridworld.visualise_q_function(qfunction)
-
 ```
 
 Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up.
@@ -540,7 +558,6 @@ Again, we get an approximate Q-function. In this particular run, the policy is n
 ```{code-cell} ipython3
 policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
-
 ```
 
 This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
@@ -560,17 +577,13 @@ from gridworld import CliffWorld
 
 cliffworld = CliffWorld()
 cliffworld_image = cliffworld.visualise()
-
 ```
 
 Let's try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:
 
 ```{code-cell} ipython3
 qfunction = QTable()
-QLearning(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
-
-
-
+rewards = QLearning(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 From this, we extract the following policy:
@@ -578,9 +591,6 @@ From this, we extract the following policy:
 ```{code-cell} ipython3
 policy = QPolicy(qfunction)
 cliffworld.visualise_policy(policy)
-
-
-
 ```
 
 We can see that the policy will initially move the agent up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff. 
@@ -590,9 +600,7 @@ Now, let's try training the same problem with SARSA:
 ```{code-cell} ipython3
 cliffworld = CliffWorld()
 qfunction = QTable()
-SARSA(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
-
-
+rewards = SARSA(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
 ```
 
 Extracting the policy, we get:
@@ -600,8 +608,6 @@ Extracting the policy, we get:
 ```{code-cell} ipython3
 policy = QPolicy(qfunction)
 cliffworld.visualise_policy(policy)
-
-
 ```
 
 We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. *Why is this so?*
@@ -798,5 +804,5 @@ The standard versions that we see in this section have two major limitations:
 ## Further Reading
 
 -   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and
-    Barto](https://incompleteideas.net/book/the-book-2nd.html)
+    Barto](http://incompleteideas.net/book/the-book-2nd.html)
 

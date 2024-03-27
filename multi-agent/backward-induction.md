@@ -11,6 +11,11 @@ kernelspec:
 
 # Backward induction
 
+```{contents}
+:local:
+:depth: 2
+```
+
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -36,24 +41,28 @@ In the pure backward induction that we cover here, the assumption is that only t
 
 In the following algorithm, $best\_child$ is an N-tuple that is used to find the best child value for whose turn it is; while $best\_child(P(s))$ and $child\_reward(P(s))$ return the value from the $best\_child$ and $child\_reward$ tuple for the player who is choosing the action from state $s$.
 
-:::{admonition} Algorithm -- Backward induction
+```{prf:algorithm} Backward induction
+:label: algorithm:backward-induction
 
-**Input:** Extensive form game $G = (N, Agt, S, s_0 A, T, r)$\
-**Output:** Sub-game equilbrium for each state $s \in S$
+$
+\begin{array}{l}
+  \alginput:\ \text{Extensive form game}\ G = (N, Agt, S, s_0, A, T, r)\\
+  \algoutput:\ \text{Sub-game equilbrium for each state}\ s \in S\\[2mm]
+  \algreturn\  BackwardInduction(s_0)\\[2mm]
+  \algfunction\ BackwardInduction(s \in S)  \\
+  \quad\quad \algif\ A(s) = \emptyset\ \algthen  \\
+  \quad\quad\quad\quad \algreturn\ r(s)  \\
+  \quad\quad best\_child \leftarrow (-\infty, \ldots, -\infty)  \\
+  \quad\quad \algforeach\ a \in A(s)  \\
+  \quad\quad\quad\quad s' \leftarrow T(s,a)  \\
+  \quad\quad\quad\quad child\_reward \leftarrow BackwardInduction(s')  \\
+  \quad\quad\quad\quad \algif\ child\_reward(P(s)) > best\_child(P(s))\ \algthen  \\
+  \quad\quad\quad\quad\quad\quad best\_child \leftarrow child\_reward  \\
+  \quad\quad \algreturn\ best\_child
+ \end{array}
+ $
+```
 
-$\text{return}\  BackwardInduction(s_0)$
-
-$\text{function}\ BackwardInduction(s \in S)$\
-$\quad\quad \text{if}\ A(s) = \emptyset\ \text{then}$\
-$\quad\quad\quad\quad \text{return}\ r(s)$\
-$\quad\quad best\_child \leftarrow (-\infty, \ldots, -\infty)$\
-$\quad\quad\text{For each}~ a \in A(s)$\
-$\quad\quad\quad\quad s' \leftarrow T(s,a)$\
-$\quad\quad\quad\quad child\_reward \leftarrow BackwardInduction(s')$\
-$\quad\quad\quad\quad \text{if}\ child\_reward(P(s)) > best\_child(P(s))\ \text{then}$\
-$\quad\quad\quad\quad\quad\quad best\_child \leftarrow child\_reward$\
-$\quad\quad \text{return}\ best\_child$
-:::
 
 
 ````{margin}

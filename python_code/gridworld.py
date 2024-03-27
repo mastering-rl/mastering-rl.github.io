@@ -240,32 +240,32 @@ class GridWorld(MDP):
 
     """ Visualise a Grid World problem """
 
-    def visualise(self, agent_position=None, title="", grid_size=1.5, gif=False):
+    def visualise(self, agent_position=None, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
             return self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size, gif=gif)
         else:
             print(self.to_string(title=title))
 
     """ Visualise a Grid World value function """
-    def visualise_value_function(self, value_function, title="", grid_size=1.5, gif=False):
+    def visualise_value_function(self, value_function, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
             return self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size, gif=gif)
         else:
             print(self.value_function_to_string(value_function, title=title))
 
-    def visualise_q_function(self, qfunction, title="", grid_size=2.0, gif=False):
+    def visualise_q_function(self, qfunction, title="", grid_size=1.5, gif=False):
         if self.matplotlib_installed():
             return self.visualise_q_function_as_image(qfunction, title=title, grid_size=grid_size, gif=gif)
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
-    def visualise_policy(self, policy, title="", grid_size=1.5, gif=False):
+    def visualise_policy(self, policy, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
             return self.visualise_policy_as_image(policy, title=title, grid_size=grid_size, gif=gif)
         else:
             print(self.policy_to_string(policy, title=title))
 
-    def visualise_stochastic_policy(self, policy, title="", grid_size=1.5, gif=False):
+    def visualise_stochastic_policy(self, policy, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
             return self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size, gif=gif)
         else:
@@ -486,8 +486,10 @@ class GridWorld(MDP):
 
 
     """ Initialise a gridworld grid """
-    def initialise_grid(self, grid_size=1.5):
+    def initialise_grid(self, grid_size=1.0):
         fig = plt.figure(figsize=(self.width * grid_size, self.height * grid_size))
+
+        # Trim whitespace 
         plt.subplots_adjust(top=0.92, bottom=0.01, right=1, left=0, hspace=0, wspace=0)
         ax = fig.add_subplot(1, 1, 1)
 
@@ -512,7 +514,7 @@ class GridWorld(MDP):
 
     """ visualise the gridworld problem as a matplotlib image """
 
-    def visualise_as_image(self, agent_position=None, title="", grid_size=1.5, gif=False):
+    def visualise_as_image(self, agent_position=None, title="", grid_size=1.0, gif=False):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
         current_position = (
             self.get_initial_state() if agent_position is None else agent_position
@@ -579,7 +581,7 @@ class GridWorld(MDP):
 
     """ Visualise the value function """
 
-    def visualise_value_function_as_image(self, value_function, title="", grid_size=1.5, gif=False):
+    def visualise_value_function_as_image(self, value_function, title="", grid_size=1.0, gif=False):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
@@ -591,7 +593,7 @@ class GridWorld(MDP):
                         x,
                         y,
                         f"{float(value):+0.2f}",
-                        fontsize="x-large",
+                        fontsize="medium",
                         horizontalalignment="center",
                         verticalalignment="center",
                         color='lightgrey' if value == 0.0 else 'black',
@@ -601,7 +603,7 @@ class GridWorld(MDP):
             return texts
         else:
             ax.imshow(img, origin="lower")
-            plt.title(title)
+            plt.title(title, fontsize="large")
             plt.show()
 
     """ Visualise the value function using a heat-map where green is high value and
@@ -636,7 +638,7 @@ class GridWorld(MDP):
 
     """ Visualise the Q-function with matplotlib """
 
-    def visualise_q_function_as_image(self, qfunction, title="", grid_size=2.0, gif=False):
+    def visualise_q_function_as_image(self, qfunction, title="", grid_size=1.5, gif=False):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
@@ -794,7 +796,7 @@ class GridWorld(MDP):
 
     """ Visualise the policy of the agent with a matplotlib visual """
 
-    def visualise_policy_as_image(self, policy, title="", grid_size=1.5, gif=False):
+    def visualise_policy_as_image(self, policy, title="", grid_size=1.0, gif=False):
         # Map from basic unicode to prettier arrows
         arrow_map = {self.UP:'\u2191',
                      self.DOWN:'\u2193',
@@ -842,7 +844,7 @@ class GridWorld(MDP):
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.5, gif=False):
+    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.0, gif=False):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
