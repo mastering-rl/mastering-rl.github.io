@@ -1,75 +1,112 @@
 import random
+import torch
+
 from collections import namedtuple, deque
+from itertools import count
 
-from temporal_difference_learner import TemporalDifferenceLearner
+Transition = namedtuple(
+    "Transition", ("state", "action", "next_state", "reward", "done")
+)
 
-class ReplayBuffer():
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.memory = deque([], maxlen=capacity)
+class ReplayMemory:
+    def __init__(self, memory_size=10000):
+        self.memory = deque([], maxlen=memory_size)
 
-    def push(self, *args):
-        self.memory.append(Transition(*args))
+    def push(self, state, action, next_state, reward, done):
+        self.memory.append(Transition(state, action, next_state, reward, done))
 
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
-    
-    def get_capacity(self):
-        return self.capacity
 
     def __len__(self):
         return len(self.memory)
 
-class ExperienceReplayLearner(TemporalDifferenceLearner):
-    def __init__(self, mdp, bandit, policy_qfunction, target_qfunction, replay_buffer=ReplayBuffer(10000), alpha=0.001, max_buffer_size=5000, replay_period=1000, batch_size=64):
-        super().__init__(mdp, bandit, policy_qfunction, alpha=alpha)
-        self.replay_buffer = replay_buffer
-        self.replay_period = replay_period
+
+class ExperienceReplayLearner:
+    def __init__(
+        self,
+        mdp,
+        bandit,
+        policy_qfunction,
+        target_qfunction,
+        memory=ReplayMemory(),
+        batch_size=128,
+        memory_size=10000,
+    ):
+        self.mdp = mdp
+        self.bandit = bandit
         self.policy_qfunction = policy_qfunction
         self.target_qfunction = target_qfunction
+        self.batch_size = batch_size
+        self.memory = memory
+        
+        self.target_qfunction.soft_update(self.policy_qfunction)
 
     def execute(self, episodes=100):
 
         rewards = []
-        for _ in range(episodes):
+        for episode in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.policy_qfunction)
 
-            episode_reward = 0.0
-            step = 0
-            while not self.mdp.is_terminal(state):
+            episode_reward = 0
+            for step in count():
                 (next_state, reward, done) = self.mdp.execute(state, action)
                 actions = self.mdp.get_actions(next_state)
-                next_action = self.bandit.select(next_state, actions, self.policy_qfunction)
-                q_value = self.policy_qfunction.get_q_value(state, action)
-                next_state_value = self.state_value(next_state, next_action)
+                next_action = self.bandit.select(
+                    next_state, actions, self.policy_qfunction
+                )
 
-                #delta = self.get_delta(reward, q_value, state, next_state, next_action)
+                self.memory.push(state, action, next_state, reward, done)
 
-                #experience = (state, action, delta, done)
+                # Perform an update on the policy qfunction using a batch
+                if len(self.memory) >= self.batch_size:
+                    transitions = self.memory.sample(self.batch_size)
+                    batch = Transition(*zip(*transitions))
 
-                self.buffer.push(state, action, next_state, reward)
-                if len(self.replay_buffer) >= self.replay_buffer.get_capacity():
-                    transitions = self.replay_buffer.sample(self.batch_size)
-                    self.policy_qfunction.update(transitions)
+                    deltas = self.get_deltas(
+                        batch.reward,
+                        batch.state,
+                        batch.action,
+                        batch.next_state,
+                        batch.done,
+                    )
 
+                    self.policy_qfunction.update(batch.state, batch.action, deltas)
+
+                # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)
 
+                # Move to the next state
                 state = next_state
                 action = next_action
                 episode_reward += reward * (self.mdp.discount_factor ** step)
-                step += 1
+
+                if done:
+                    break
 
             rewards.append(episode_reward)
 
+            # plot_rewards(rewards)
+            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
+
+        print("\n")
         return rewards
 
-    """ Update from a mini batch """
-    def update(self):
-        mini_batch = random.sample(self.buffer, self.batch_size)
-        self.policy_qfunction.multi_update(mini_batch)
+    """ Calculate the deltas for the update """
 
-    def state_value(self, state, action):
-        (_, max_q_value) = self.target_qfunction.get_max_q(state, self.mdp.get_actions(state))
-        return max_q_value
+    def get_deltas(self, rewards, states, actions, next_states, dones):
+        q_values = self.policy_qfunction.get_q_values(states, actions)
+        next_state_q_values = self.state_values(next_states, actions)
+        deltas = [
+            reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
+            if not done else reward
+            for reward, next_state_q_value, q_value, done in zip(
+                rewards, next_state_q_values, q_values, dones
+            )
+        ]
+        return deltas
+
+    def state_values(self, states, actions):
+        return self.target_qfunction.get_max_q_values(states)

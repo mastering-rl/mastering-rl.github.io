@@ -15,10 +15,14 @@ COLOURS = {
 }
 
 # Action symbols from gridworld
-LEFT = '\u25C4'
-UP = '\u25B2'
-RIGHT = '\u25BA'
-DOWN = '\u25BC'
+#LEFT = '\u25C4'
+#UP = '\u25B2'
+#RIGHT = '\u25BA'
+#DOWN = '\u25BC'
+LEFT = 0
+UP = 1
+RIGHT = 2
+DOWN = 3
 
 '''Draw the grid lines to differentiate discrete states'''
 def draw_grid_lines(i, j, img):
@@ -26,7 +30,7 @@ def draw_grid_lines(i, j, img):
 
 
 '''Draw a triangle based on size, center, direction and colour'''
-def draw_triangle(tile_origin, tile_size, img, colour='red', direction='up'):
+def draw_triangle(tile_origin, tile_size, img, colour='red', direction=UP):
     origin_x, origin_y = tile_origin
     for x in range(origin_x + 1, origin_x + tile_size - 1):
         for y in range(origin_y + 1, origin_y + tile_size -1):
@@ -68,13 +72,6 @@ def render_action_probability(tileSize, x, y, action, prob, text_size=6, h_text_
 '''render blocked tile as a black and white criss-cross'''
 def render_blocked_tile(i, j, img):
     img[i][j] = COLOURS['grey']
-    """
-    EDIT
-    if i % 2 == 0 or j % 2 == 0:
-        img[i][j] = COLOURS['black']
-    else:
-        img[i][j] = COLOURS['white']
-    """
 
 def render_full_blocked_tile(x, y, tile_size, img):
     for i in range(x, x+tile_size):

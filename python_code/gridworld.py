@@ -6,12 +6,21 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
+    '''
     TERMINATE = 'terminate'
     TERMINAL = ('terminal', 'terminal')
     LEFT = '\u25C4'
     UP = '\u25B2'
     RIGHT = '\u25BA'
     DOWN = '\u25BC'
+    '''
+    TERMINATE = -1
+    TERMINAL = (-1, -1)
+    LEFT = 0
+    UP = 1
+    RIGHT = 2
+    DOWN = 3
+    #'''
 
     def __init__(
         self,
@@ -466,8 +475,12 @@ class GridWorld(MDP):
         return result
 
     """ Convert a grid world policy to a formatted string """
-
     def policy_to_string(self, policy, title=""):
+        arrow_map = {self.UP:'\u25B2',
+                     self.DOWN:'\u25BC',
+                     self.LEFT:'\u25C4',
+                     self.RIGHT:'\u25BA',
+                    }
         line = " {:-^{n}}\n".format("", n=len(" |  N ") * self.width + 1)
         result = " " + title + "\n"
         result += line
@@ -478,7 +491,7 @@ class GridWorld(MDP):
                 elif policy.select_action((x, y), self.get_actions((x, y))) == self.TERMINATE:
                     result += " | {:+0d} ".format(self.goal_states[(x, y)])
                 else:
-                    result += " |  " + policy.select_action((x, y), self.get_actions((x, y))) + " "
+                    result += " |  " + arrow_map[policy.select_action((x, y), self.get_actions((x, y)))] + " "
             result += " |\n"
             result += line
 
@@ -797,7 +810,7 @@ class GridWorld(MDP):
     """ Visualise the policy of the agent with a matplotlib visual """
 
     def visualise_policy_as_image(self, policy, title="", grid_size=1.0, gif=False):
-        # Map from basic unicode to prettier arrows
+        # Map from action names to prettier arrows
         arrow_map = {self.UP:'\u2191',
                      self.DOWN:'\u2193',
                      self.LEFT:'\u2190',
@@ -870,11 +883,15 @@ class GridWorld(MDP):
                             verticalalignment="center",
                         )
                 elif (x, y) not in self.blocked_states:
+                    left_triangle = '\u25C4'
+                    up_triangle = '\u25B2'
+                    right_triangle = '\u25BA'
+                    down_triangle = '\u25BC'
                     if self.height > 1:
                         texts.append(plt.text(
                             x,
                             y,
-                            f"{prob_up:0.2f}\n{self.UP}\n{prob_left:0.2f}{self.LEFT} {self.RIGHT}{prob_right:0.2f}\n{self.DOWN}\n{prob_down:0.2f}",
+                            f"{prob_up:0.2f}\n{up_triangle}\n{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}\n{down_triangle}\n{prob_down:0.2f}",
                             fontsize="medium",
                             horizontalalignment="center",
                             verticalalignment="center",
@@ -883,7 +900,7 @@ class GridWorld(MDP):
                         texts.append(plt.text(
                             x,
                             y,
-                            f"{prob_left:0.2f}{self.LEFT} {self.RIGHT}{prob_right:0.2f}",
+                            f"{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}",
                             fontsize="medium",
                             horizontalalignment="center",
                             verticalalignment="center",

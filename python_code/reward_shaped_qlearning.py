@@ -6,7 +6,8 @@ class RewardShapedQLearning(QLearning):
         super().__init__(mdp, bandit, qfunction=qfunction, alpha=alpha)
         self.potential = potential
 
-    def get_delta(self, reward, q_value, state, next_state, next_action):
+    def get_delta(self, reward, state, action, next_state, next_action):
+        q_value = self.qfunction.get_q_value(state, action)
         next_state_value = self.state_value(next_state, next_action)
         state_potential = self.potential.get_potential(state)
         next_state_potential = self.potential.get_potential(next_state)

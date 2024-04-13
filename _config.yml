@@ -76,7 +76,8 @@ sphinx:
                  \newcommand\algand{\mathbf{and}}
                  \newcommand\algor{\mathbf{or}}
                  \newcommand\algnot{\mathbf{not}}
-    mathjax_config:
+    mathjax3_config:
+      SVG: true
       tex:
         macros:
           "alginput": "\\mathbf{Input}"

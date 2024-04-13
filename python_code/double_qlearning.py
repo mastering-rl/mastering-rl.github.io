@@ -1,6 +1,6 @@
 import random
 from model_free_learner import ModelFreeLearner
-    
+
 class DoubleQLearning(ModelFreeLearner):
     def __init__(self, mdp, bandit, qfunction1, qfunction2, alpha=0.01):
         self.mdp = mdp
@@ -16,11 +16,11 @@ class DoubleQLearning(ModelFreeLearner):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction1)
-            
+
             episode_reward = 0.0
 
             while not self.mdp.is_terminal(state):
-        
+
                 (next_state, reward) = self.mdp.execute(state, action)
 
                 actions = self.mdp.get_actions(next_state)

@@ -1,10 +1,9 @@
 ---
 jupytext:
+  formats: md:myst
   text_representation:
     extension: .md
     format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
 kernelspec:
   display_name: Python 3
   language: python
@@ -32,7 +31,7 @@ The learning outcomes of this chapter are:
 
 ## Overview
 
-**Value Iteration** is a method for finding the optimal value function $V^*$ by solving the
+**Value Iteration** is a dynamic-programming method for finding the optimal value function $V^*$ by solving the
 Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
 
 ````{margin}
@@ -46,18 +45,20 @@ Bellman equations iteratively. It uses the concept of dynamic programming to mai
 
 Once we understand the Bellman equation, the value iteration algorithm is straightforward: we just repeatedly calculate $V$ using the Bellman equation until we converge to the solution or we execute a pre-determined number of iterations.
 
+
+
 ```{prf:algorithm} Value iteration
 :label: algorithm:value-iteration
 
-$
-\begin{array}{l}
+$\begin{array}{l}
   \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
   \algoutput:\ \text{Value function}\ V\\[2mm]
   \text{Set}\ V\ \text{to arbitrary value function; e.g., }\ V(s) = 0\ \text{for all}\ s\\[2mm]
   \algrepeat\ \\
   \quad\quad \Delta \leftarrow 0 \\
   \quad\quad \algforeach\ s \in S \\
-  \quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ]}_{\text{Bellman equation}} \\
+  \quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') + 
+ \gamma\ V(s') ]}_{\text{Bellman equation}} \\
   \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'(s) - V(s)|) \\
   \quad\quad V \leftarrow V' \\
   \alguntil\ \Delta \leq \theta 
@@ -112,8 +113,9 @@ Below is a Python implementation for value iteration. In this implementation, th
 ```{code-cell} ipython3
 :load: ../python_code/value_iteration.py
 
-
 ```
+
+
 ### Example: Value iteration for GridWorld
 
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
@@ -127,7 +129,6 @@ from stochastic_value_policy import StochasticValuePolicy
 
 gridworld = GridWorld()
 values = TabularValueFunction()
-
 
 ValueIteration(gridworld, values).value_iteration(max_iterations=100)
 gridworld.visualise_value_function(values, "Value function after iteration 100")
@@ -201,7 +202,7 @@ As we can see, there is quite a bit of noise. This is because of the randomness 
 However, we can smooth out the noise by plotting the exponential moving average (EMA), which averages the rewards received so far, but exponentially discounting rewards that are further in the past (earlier in the list).  This is a standard way of smoothing time series data. Given a **smoothing factor** $\alpha \in [0,1]$, we calculate the smoothed value $s_t$ at step (or time) $t$, the EMA for a sequence $\vec{x}$ is calculated:
 
 $\quad\quad s_0 = \vec{x}_0$\
-$\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \textrm{when} t > 0$
+$\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \textrm{when}\ t > 0$
 
 A higher value of $\alpha$ smooths the data more --- that is, earlier values have more influence on $s_t$. A value of $\alpha=0$ just means that $s_t = \vec{x}_t$ (see the example above where we plot the cumulative rewards with `smoothing_factor=0.0`); while a value of $\alpha=1$ means that $s_t = \vec{x}_0$ for any $t$.
 
@@ -375,7 +376,3 @@ It is clear to see that the value iteration can be easily parallelised by updati
 * For medium-scale problems, it can converge on the optimal policy in a "reasonable" amount of time, but does not scale as well as some other techniques.
 
 ```
-
-
-
-
