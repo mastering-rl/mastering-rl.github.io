@@ -18,6 +18,7 @@ kernelspec:
 :depth: 2
 ```
 
+
 ```{admonition} Learning outcomes
 
 The learning outcomes of this chapter are:
