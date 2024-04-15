@@ -9,8 +9,8 @@ class AdvantageActorCritic(ActorCritic):
                   = r + gamma * V[s_{t+1}] - V[s_t]
     """
 
-    def __init__(self, mdp, actor, critic, alpha=0.1):
-        super().__init__(mdp, actor, critic, alpha)
+    def __init__(self, mdp, actor, critic):
+        super().__init__(mdp, actor, critic)
 
     def update_actor(self, rewards, states, actions, next_states):
         # advantage = r + gamma * V[s_{t+1}] - V[s_t]

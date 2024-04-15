@@ -16,7 +16,7 @@ class GraphVisualisation():
     def single_agent_node_to_graph(self, g, node, level):
         g.node(str(node.id), label=self.node_label(node), **{'width':str(1), 'height':str(1), 'fixedsize':str(True)})
         for action in node.children.keys():
-            g.edge(str(node.id), str(action) + str(node.id), action)
+            g.edge(str(node.id), str(action) + str(node.id), str(action))
 
         if level <= self.max_level:
             for action in node.children.keys():
@@ -56,6 +56,5 @@ class GraphVisualisation():
                     penwidth = '3.0' if child.is_best_action else '1.0'
                     graph.edge(str(node.id), str(child.id), str(key), penwidth = penwidth)
             visited += [node.id]
-            
 
 

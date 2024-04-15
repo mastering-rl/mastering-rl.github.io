@@ -61,9 +61,7 @@ class DeepQFunction(QFunction, DeepAgent):
         state = self.encode_state(state)
         q_values = self.q_network(state)
 
-        # Index q-values by action
-        #q_value = q_values[self.action_to_id[action]]
-        q_value = q_values[action]
+        q_value = q_values[action].item()
 
         return q_value
 
@@ -78,8 +76,7 @@ class DeepQFunction(QFunction, DeepAgent):
         arg_max_q = None
         max_q = float("-inf")
         for action in actions:
-            #q_value = q_values[self.action_to_id[action]].item()
-            q_value = q_values[action]
+            q_value = q_values[action].item()
             if max_q < q_value:
                 arg_max_q = action
                 max_q = q_value

@@ -243,11 +243,12 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 qfunction = QTable()
 potential = GridWorldPotentialFunction(mdp)
-RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute()
+RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute(episodes=200)
 policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
 reward_shaped_rewards = mdp.get_rewards()
+
 ```
 
 Now, we compare this with Q-learning without reward shaping:
@@ -255,7 +256,7 @@ Now, we compare this with Q-learning without reward shaping:
 ```{code-cell} ipython3
 mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(), qfunction).execute()
+QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=200)
 policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
@@ -289,6 +290,7 @@ Imagine if we happened to initialise our Q-values to the optimal Q-value. It wou
 Q-value initialisation is similar to reward shaping: we use heuristics to assign higher values to 'better' states. If we just define $\Phi(s) = V_0(s)$, then they are equivalent. In fact, if our potential function is **static** (the definition does not change during learning), then Q-value initialisation and reward shaping are equivalent[^1].
 
 ### Example -- Q-value Initialisation in GridWorld 
+
 
 Using the idea of  Manhattan distance for a potential function, we can define an initial Q-function as follows for state (1,2) using our potential function:
 

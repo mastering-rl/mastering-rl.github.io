@@ -6,21 +6,12 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
-    '''
-    TERMINATE = 'terminate'
-    TERMINAL = ('terminal', 'terminal')
-    LEFT = '\u25C4'
-    UP = '\u25B2'
-    RIGHT = '\u25BA'
-    DOWN = '\u25BC'
-    '''
-    TERMINATE = -1
+    TERMINATE = 0
     TERMINAL = (-1, -1)
-    LEFT = 0
-    UP = 1
-    RIGHT = 2
-    DOWN = 3
-    #'''
+    LEFT = 1
+    UP = 2
+    RIGHT = 3
+    DOWN = 4
 
     def __init__(
         self,

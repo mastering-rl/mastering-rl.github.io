@@ -16,4 +16,4 @@ class ValuePolicy(DeterministicPolicy):
         for action in actions:
             q_value = self.values.get_q_value(self.mdp, state, action)
             qfunction.update(state, action, q_value)
-        return qfunction.get_max_q(state, actions)[0]
+        return qfunction.get_argmax_q(state, actions)

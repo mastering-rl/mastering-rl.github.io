@@ -11,10 +11,11 @@ class LogisticRegressionPolicy(StochasticPolicy):
 
     """ Create a new policy, with given parameters theta (randomly if theta is None)"""
 
-    def __init__(self, actions, num_params, theta=None):
+    def __init__(self, actions, num_params, alpha=0.1, theta=None):
         assert len(actions) == 2
 
         self.actions = actions
+        self.alpha = alpha
 
         if theta is None:
             theta = [0.0 for _ in range(num_params)]
@@ -41,7 +42,7 @@ class LogisticRegressionPolicy(StochasticPolicy):
             gradient_log_pi = self.gradient_log_pi(states[t], actions[t])
             # Update each parameter
             for i in range(len(self.theta)):
-                self.theta[i] += deltas[t] * gradient_log_pi[i]
+                self.theta[i] += self.alpha * deltas[t] * gradient_log_pi[i]
 
     """ Get the probability of applying an action in a state """
 

@@ -9,4 +9,4 @@ class QPolicy(DeterministicPolicy):
         self.qfunction = qfunction
 
     def select_action(self, state, actions):
-        return self.qfunction.get_max_q(state, actions)[0]
+        return self.qfunction.get_argmax_q(state, actions)

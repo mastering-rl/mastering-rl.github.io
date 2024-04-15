@@ -4,11 +4,12 @@ from qfunction import QFunction
 
 
 class QTable(QFunction):
-    def __init__(self, default=0.0):
-        self.qtable = defaultdict(lambda: default)
+    def __init__(self, alpha=0.1, default_q_value=0.0):
+        self.qtable = defaultdict(lambda: default_q_value)
+        self.alpha = alpha
 
     def update(self, state, action, delta):
-        self.qtable[(state, action)] = self.qtable[(state, action)] + delta
+        self.qtable[(state, action)] = self.qtable[(state, action)] + self.alpha * delta
 
     def get_q_value(self, state, action):
         return self.qtable[(state, action)]

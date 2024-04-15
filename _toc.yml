@@ -5,7 +5,7 @@ parts:
   chapters:
   - file: intro/foreword
   - file: intro/intro
-  - file: intro/a-first-example
+#  - file: intro/a-first-example
 - caption: Single-agent Reinforcement Learning
   chapters:
   - file: single-agent/MDPs

@@ -1,7 +1,6 @@
 class PolicyGradient:
-    def __init__(self, mdp, policy, alpha) -> None:
+    def __init__(self, mdp, policy) -> None:
         super().__init__()
-        self.alpha = alpha  # Learning rate (gradient update step-size)
         self.mdp = mdp
         self.policy = policy
 
@@ -17,7 +16,7 @@ class PolicyGradient:
             episode_reward = 0
             while not self.mdp.is_terminal(state):
                 action = self.policy.select_action(state, self.mdp.get_actions(state))
-                next_state, reward = self.mdp.execute(state, action)
+                (next_state, reward, done) = self.mdp.execute(state, action)
 
                 # Store the information from this step of the trajectory
                 states.append(state)
@@ -47,8 +46,7 @@ class PolicyGradient:
         deltas = []
         for t in range(len(discounted_future_rewards)):
             deltas += [
-                self.alpha
-                * (self.mdp.get_discount_factor() ** t)
+                (self.mdp.get_discount_factor() ** t)
                 * discounted_future_rewards[t]
             ]
         return deltas

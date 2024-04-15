@@ -15,7 +15,6 @@ class DeepValueFunction(ValueFunction, DeepAgent):
     ) -> None:
         self.mdp = mdp
         self.state_space = state_space
-        self.alpha = alpha
 
         # Create a sequential neural network to represent the Q function
         self.value_network = nn.Sequential(
@@ -25,7 +24,7 @@ class DeepValueFunction(ValueFunction, DeepAgent):
             nn.ReLU(),
             nn.Linear(in_features=hidden_dim, out_features=1),
         )
-        self.optimiser = Adam(self.value_network.parameters(), lr=self.alpha)
+        self.optimiser = Adam(self.value_network.parameters(), lr=alpha)
 
     def update(self, state, delta):
         self.optimiser.zero_grad()

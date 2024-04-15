@@ -9,7 +9,6 @@ from qfunction import QFunction
 
 class DQN(nn.Module, QFunction):
 
-    
     def __init__(self, state_space, action_space, hidden_dim=128, alpha=1e-4):
         super(DQN, self).__init__()
         self.layer1 = nn.Linear(state_space, hidden_dim)
@@ -25,38 +24,47 @@ class DQN(nn.Module, QFunction):
         return self.layer3(x)
 
     def get_q_values(self, states, actions):
-        states_tensor = torch.tensor(states, dtype=torch.float32)
-        actions_tensor = torch.tensor(actions, dtype=torch.long)
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
         q_values = self.forward(states_tensor).gather(1, actions_tensor.unsqueeze(1))
         return q_values.squeeze(1).tolist()
 
     def get_q_value(self, state, action):
-        state_tensor = torch.tensor(state, dtype=torch.float32)
-        action_tensor = torch.tensor(action, dtype=torch.long)
-        
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
+        action_tensor = torch.as_tensor(action, dtype=torch.long)
+
         q_values = self.forward(state_tensor)
         q_value = q_values[action]
         return q_value.item()
 
     def get_max_q_values(self, states):
-        states_tensor = torch.tensor(states, dtype=torch.float32)
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
         with torch.no_grad():
             max_q_values = self(states_tensor).max(1).values
             return max_q_values.tolist()
 
-    def get_max_q(self, state, actions):
-        state_tensor = torch.tensor(
-            state, dtype=torch.float32
-        ).unsqueeze(0)
+    def getwww_max_q(self, state, actions):
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
 
         with torch.no_grad():
-            return (self(state_tensor).max(1).indices.view(1, 1).item(), None)
+            q_values = self.forward(state_tensor)
+        arg_max_q = None
+        max_q = float("-inf")
+        for action in actions:
+            q_value = q_values[action].item()
+            if max_q < q_value:
+                arg_max_q = action
+                max_q = q_value
+        return (arg_max_q, max_q)
 
-    def update(self, states, actions, deltas):
+    def update(self, state, action, delta):
+        self.batch_update([state], [action], [delta])
 
-        states_tensor = torch.tensor(states, dtype=torch.float32)
-        actions_tensor = torch.tensor(actions, dtype=torch.long)
-        deltas_tensor = torch.tensor(deltas, dtype=torch.float32, requires_grad=True)
+    def batch_update(self, states, actions, deltas):
+
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
+        deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
 
         # Compute Q-values for current states
         current_q_values = self.forward(states_tensor).gather(
@@ -85,7 +93,7 @@ class DQN(nn.Module, QFunction):
         self.load_state_dict(target_dict)
 
     def save(self, filename):
-        torch.save(self.q_network.state_dict(), filename)
+        torch.save(self.state_dict(), filename)
 
     def load(self, filename):
         self.load_state_dict(torch.load(filename))

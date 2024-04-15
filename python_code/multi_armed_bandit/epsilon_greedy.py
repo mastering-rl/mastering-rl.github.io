@@ -13,5 +13,5 @@ class EpsilonGreedy(MultiArmedBandit):
         # Select a random action with epsilon probability
         if random.random() < self.epsilon:
             return random.choice(actions)
-        (arg_max_q, _) = qfunction.get_max_q(state, actions)
+        arg_max_q = qfunction.get_argmax_q(state, actions)
         return arg_max_q

@@ -71,7 +71,7 @@ class SingleAgentNode(Node):
 
     def get_outcome_child(self, action):
         # Choose one outcome based on transition probabilities
-        (next_state, reward) = self.mdp.execute(self.state, action)
+        (next_state, reward, done) = self.mdp.execute(self.state, action)
 
         # Find the corresponding state and return if this already exists
         for (child, _) in self.children[action]:

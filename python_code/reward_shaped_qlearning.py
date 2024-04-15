@@ -2,8 +2,8 @@ from qlearning import QLearning
 
 
 class RewardShapedQLearning(QLearning):
-    def __init__(self, mdp, bandit, potential, qfunction, alpha=0.1):
-        super().__init__(mdp, bandit, qfunction=qfunction, alpha=alpha)
+    def __init__(self, mdp, bandit, potential, qfunction):
+        super().__init__(mdp, bandit, qfunction=qfunction)
         self.potential = potential
 
     def get_delta(self, reward, state, action, next_state, next_action):

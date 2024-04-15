@@ -6,20 +6,16 @@ Images:
 - actor critic
 
 High priority:
-- Align deep_q_network get_q_value etc with nodes. Add get_argmax_q.
-- move the alpha parameter from get_delta into the qfunctions -- it is a property of the q-function really.
+- align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
 - add introductory chapter solving an atari game using deep rl
 - add experience replay code to notes
 - change title to 'Mastering RL'
 - update policy gradient code to use experience variable instead of having three lists 
     + and use separate 'actions' variable in select_action instead of a direct call.
 - add bad reward shaping from from [Dr Cathy Wu](http://www.wucathy.com/blog/) :  https://github.com/cathywu/rl-notes/blob/master/demos/Reward%20Shaping.ipynb
-- test experience replay code
-- test new DeepQFunction code on gridworld etc.
 - beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
 - PPO
 - reward shaping in Frogger?
-- add videos as sidebar instead of margin
 - restructure book: Introduction (including MDPS), Value-based, Policy-based, Scaling, Multi-agent (including MA games)
 - PDF format
 - replace definitions, remarks, etc., with latex equivalents: https://jupyterbook.org/en/stable/content/proof.html

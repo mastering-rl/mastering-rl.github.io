@@ -624,7 +624,6 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
-
 ```
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,

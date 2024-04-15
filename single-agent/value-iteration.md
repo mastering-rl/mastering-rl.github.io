@@ -185,6 +185,7 @@ for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
     policy = ValuePolicy(gridworld, values)
     rewards += gridworld.execute_policy(policy, episodes=1)
+
 ```
 
 
@@ -343,6 +344,7 @@ policy = ValuePolicy(ccross, values)
 
 ccross.visualise_as_image(policy=policy,title="Policy Plot", mode=0, plot=True)
 ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)
+
 ```
 
 

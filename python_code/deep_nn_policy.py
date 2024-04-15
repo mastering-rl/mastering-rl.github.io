@@ -17,7 +17,6 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         self.mdp = mdp
         self.state_space = state_space
         self.action_space = action_space
-        self.alpha = alpha
 
         # Define the policy structure as a sequential neural network.
         self.policy_network = nn.Sequential(
@@ -29,7 +28,7 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         )
 
         # The optimiser for the policy network, used to update policy weights
-        self.optimiser = Adam(self.policy_network.parameters(), lr=self.alpha)
+        self.optimiser = Adam(self.policy_network.parameters(), lr=alpha)
 
         # A two-way mapping from actions to integer IDs for ordinal encoding
         actions = self.mdp.get_actions()
@@ -82,3 +81,9 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
 
         # Take a gradient descent step
         self.optimiser.step()
+
+    def save(self, filename):
+        torch.save(self.policy_network.state_dict(), filename)
+
+    def load(self, filename):
+        self.policy_network.load_state_dict(torch.load(filename))

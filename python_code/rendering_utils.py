@@ -19,10 +19,10 @@ COLOURS = {
 #UP = '\u25B2'
 #RIGHT = '\u25BA'
 #DOWN = '\u25BC'
-LEFT = 0
-UP = 1
-RIGHT = 2
-DOWN = 3
+LEFT = 1
+UP = 2
+RIGHT = 3
+DOWN = 4
 
 '''Draw the grid lines to differentiate discrete states'''
 def draw_grid_lines(i, j, img):

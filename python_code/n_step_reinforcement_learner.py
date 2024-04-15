@@ -1,8 +1,7 @@
 class NStepReinforcementLearner:
-    def __init__(self, mdp, bandit, qfunction, n, alpha=0.1):
+    def __init__(self, mdp, bandit, qfunction, n):
         self.mdp = mdp
         self.bandit = bandit
-        self.alpha = alpha
         self.qfunction = qfunction
         self.n = n
 
@@ -18,7 +17,7 @@ class NStepReinforcementLearner:
 
             while len(states) > 0:
                 if not self.mdp.is_terminal(state):
-                    (next_state, reward) = self.mdp.execute(state, action)
+                    (next_state, reward, done) = self.mdp.execute(state, action)
                     rewards += [reward]
                     next_actions = self.mdp.get_actions(next_state)
 
@@ -51,7 +50,7 @@ class NStepReinforcementLearner:
                     self.qfunction.update(
                         states[0],
                         actions[0],
-                        self.alpha * (n_step_rewards - q_value),
+                        n_step_rewards - q_value,
                     )
 
                     rewards = rewards[1 : self.n + 1]

@@ -13,7 +13,7 @@ class ValueIteration:
             delta = 0.0
             new_values = TabularValueFunction()
             for state in self.mdp.get_states():
-                qtable = QTable()
+                qtable = QTable(alpha=1.0)
                 for action in self.mdp.get_actions(state):
                     # Calculate the value of Q(s,a)
                     new_value = 0.0
@@ -32,7 +32,7 @@ class ValueIteration:
                     qtable.update(state, action, new_value)
 
                 # V(s) = max_a Q(sa)
-                (_, max_q) = qtable.get_max_q(state, self.mdp.get_actions(state))
+                max_q = qtable.get_max_q(state, self.mdp.get_actions(state))
                 delta = max(delta, abs(self.values.get_value(state) - max_q))
                 new_values.update(state, max_q)
 

@@ -952,7 +952,7 @@ class ContestedCrossing(MDP):
             while endcheck < breaktime and not self.is_terminal(state):
                 endcheck += 1
                 action = policy.select_action(state, self.get_actions(state))
-                (next_state, reward) = self.execute(state, action)
+                (next_state, reward, done) = self.execute(state, action)
                 thispoint = grid_pos(state[:2])
                 if not self.is_terminal(next_state):
                     endpoint = grid_pos(next_state[:2])

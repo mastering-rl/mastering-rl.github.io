@@ -73,7 +73,7 @@ class ExperienceReplayLearner:
                         batch.done,
                     )
 
-                    self.policy_qfunction.update(batch.state, batch.action, deltas)
+                    self.policy_qfunction.batch_update(batch.state, batch.action, deltas)
 
                 # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)

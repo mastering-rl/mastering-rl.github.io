@@ -58,7 +58,7 @@ class MDP:
         for (new_state, probability) in self.get_transitions(state, action):
             if cumulative_probability <= rand <= probability + cumulative_probability:
                 reward = self.get_reward(state, action, new_state)
-                return (new_state, reward)
+                return (new_state, reward, self.is_terminal(new_state))
             cumulative_probability += probability
             if cumulative_probability >= 1.0:
                 raise (
@@ -89,7 +89,7 @@ class MDP:
             while not self.is_terminal(state):
                 actions = self.get_actions(state)
                 action = policy.select_action(state, actions)
-                (next_state, reward) = self.execute(state, action)
+                (next_state, reward, done) = self.execute(state, action)
                 cumulative_reward += reward * (self.discount_factor ** step)
                 state = next_state
                 step += 1

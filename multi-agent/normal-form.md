@@ -54,7 +54,7 @@ Normal form games capture many different applications in the field of multi-agen
 ```
 ````
 
-:::{admonition} Exercise -- Prisoner's dilemma
+```{admonition} Exercise -- Prisoner's dilemma
 The best known example of a normal form game is known as the *Prisoner's dilemma*, which is as follows.
 
 Consider the following (hopefully fictional) scenario. You and your partner in crime have been arrested for armed robbery. The police would like to avoid a lengthy trial because they have little evidence that you committed the crime, however, both of you were caught carrying illegal weapons, so the police can use this against you.
@@ -65,20 +65,31 @@ You and your partner in crime are placed in separate cells, unable to communicat
 - If both of you admit you are guilty, you will each receive 2 years in prison --- the length is reduced from 4 years in exchange for your confession.
 
 What do you do: admit or deny?
-:::
+```
 
 This problem can be represented by the following two-dimensional matrix:
 
+```{code-cell} ipython3
+:tags: [remove-input]
 
+from normal_form_game import NormalFormGame
+
+
+prisoners_dilemma = NormalFormGame(
+    "Prisoner A",
+    "Prisoner B",
+    ["admit", "deny"],
+    ["admit", "deny"],
+    {
+        ("admit", "admit"): (-2, -2),
+        ("admit", "deny"): (0, -4),
+        ("deny", "admit"): (-4, 0),
+        ("deny", "deny"): (-1, -1),
+    },
+)
+fig = prisoners_dilemma.visualise()
 ```
-                          Prisoner B
-                       admit     deny
-                              |
-               admit   -2,-2  |  0,-4
-  Prisoner A         ---------|---------
-               deny    -4, 0  | -1,-1
-                              |
-```
+
 
 *Prisoner A* and *Prisoner B* are the **players**, *admit* and *deny* are the **actions**, and the values in the cells are the **utility** or **payoffs** given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left cell is Prisoner A and the right cell is Prisoner B.
 
@@ -263,24 +274,39 @@ We can verify this by looking at each cell and reasoning as follows:
 ```
 ````
 
-:::{admonition} Example -- Nash equilibria for *Split or steal*
-*Split or steal* is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the stealer receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:
+```{code-cell} ipython3
+:tags: [remove-cell]
+
+from myst_nb import glue
+from normal_form_game import NormalFormGame
+
+split_or_steal = NormalFormGame(
+    "Agent 1",
+    "Agent 2",
+    ["split", "steal"],
+    ["split", "steal"],
+    {
+        ("split", "split"): (1, 1),
+        ("split", "steal"): (0, 2),
+        ("steal", "split"): (2, 0),
+        ("steal", "steal"): (0, 0),
+    },
+)
+glue("split_or_steal_image", split_or_steal.visualise(), display=False)
 
 ```
-                          Agent 2
-                       split    steal
-                             |
-               split   1, 1  | [0, 2]
-      Agent 1       ---------|---------
-               steal  [2, 0] | [0, 0]
-                             |
+
+````{admonition} Example -- Nash equilibria for *Split or steal*
+*Split or steal* is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the stealer receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:
+
+```{glue:} split_or_steal_image
 ```
 
 What are the Nash equilibria. There are in fact three Nash equilibria for this game, highlighted using the square brackets above! Let's reason about them:
 - $(steal, steal)$ is a Nash equilbrium for both agents, because if either agent deviates by playing $split$, their utility remains at  0.
 - $(steal, split)$ and $(split, steal)$ are both equilibria because if either agent deviates from $steal$ their utilitiy decreases from 2 to 1, while if either deviates from $split$ their utility remains at 0
 - $(split,split)$ is not a Nash equilibrium because both agents have incentive to deviate to $steal$, which would increase their utility from 1 to 2.
-:::
+````
 
 ## Mixed strategies
 
@@ -292,23 +318,42 @@ Recall from earlier in this chapter where we defined **mixed strategies**, which
 ```
 ````
 
-:::{admonition} Example -- Matching Pennies
-In the *Matching Pennies* game, two players each have a penny, and simultaneously they need to show either a $head$ or a $tail$ of their penny to their opponent. The $Odd$ player will win if there is just one head, and the $Even$ player will win if there are two heads. We can model this as follows:
+```{code-cell} ipython3
+:tags: [remove-cell]
+
+
+from myst_nb import glue
+from normal_form_game import NormalFormGame
+
+
+matching_pennies = NormalFormGame(
+    "Player Even",
+    "Player Odd",
+    ["heads", "tails"],
+    ["heads", "tails"],
+    {
+        ("heads", "heads"): (1, -1),
+        ("heads", "tails"): (-1, 1),
+        ("tails", "heads"): (-1, 1),
+        ("tails", "tails"): (1, -1),
+    },
+)
+glue("matching_pennies_image", matching_pennies.visualise(), display=False)
 
 ```
-                         Player Odd
-                       heads    tails
-                             |
-               heads   1,-1  | -1, 1
-  Player Even       ---------|---------
-               tails  -1, 1  |  1,-1
-                             |
+
+````{admonition} Example -- Matching Pennies
+In the *Matching Pennies* game, two players each have a penny, and simultaneously they need to show either a $head$ or a $tail$ of their penny to their opponent. The $Odd$ player will win if there is just one head, and the $Even$ player will win if there are two heads. We can model this as follows:
+
+
+```{glue:} matching_pennies_image
+
 ```
 
 It is clear that neither agent has a dominant strategy and there are no pure-strategy equilibria: in every call, there is an incentive for the agent receiving -1 to deviate from their strategy.
 
 So, what strategy should we play? If we were to play this game a number of times, clearly picking either $heads$ or $tails$ every time would be a bad strategy: our opponent would learn this and would start picking their strategy to beat us. Instead, we need to **randomise** by choosing $heads$ sometimes and $tails$ sometimes. Intuitively, we would choose each with probability 0.5; but can we calculate this analytically?
-:::
+````
 
 ````{margin}
 ```{admonition} Video byte: Expected utility
@@ -393,21 +438,39 @@ In this example, the probabilities of the game are reasonably clear without havi
 ```
 ````
 
-:::{admonition} Example -- Mixed strategies for the security game
+```{code-cell} ipython3
+:tags: [remove-cell]
+
+from myst_nb import glue
+from normal_form_game import NormalFormGame
+
+
+security_game = NormalFormGame(
+    "Defender",
+    "Adversary",
+    ["T1", "T2"],
+    ["T1", "T2"],
+    {
+        ("T1", "T2"): (5, -3),
+        ("T1", "T1"): (-1, 1),
+        ("T2", "T1"): (-5, 5),
+        ("T2", "T2"): (2, -1),
+    },
+)
+glue("security_game_image", security_game.visualise(), display=False)
+
+```
+
+````{admonition} Example -- Mixed strategies for the security game
 
 A security game is a model of how to place resources to improve safety and security of key assets. In this examlpe, we look at the issue of where to place resources each hour to defend from an attack at an airport that has two terminals. It is infeasible to always patrol all terminals, but with a randomised strategy, we can make it difficult for an adversary to know which terminal to target.
 
 The difficulty is that the two terminals have different "values" for both the defender and the adversary.  Both value terminal 1 more highly (e.g. it is a  terminal that has more people on a typical day), but both also value the terminals different to each other. This can be modelled with the following normal form game:
 
+```{glue:} security_game_image
+
 ```
-                         Adversary
-                   Terminal 1 Terminal 2
-                             |
-          Terminal 1   5,-3  | -1, 1
-    Defender        ---------|---------
-          Terminal 2  -5, 5  |  2,-1
-                             |
-```
+
 
 It is clear that having a uniform strategy is not the best strategy, but we can use indifference to determine what is.
 
@@ -449,7 +512,7 @@ $$
 $$
 
 So, the defender should choose to defend Terminal 1 with the probability $\frac{3}{5}$ and Terminal 2 with $\frac{2}{5}$.
-:::
+````
 
 
 ````{margin}

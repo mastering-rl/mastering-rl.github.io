@@ -210,7 +210,7 @@ policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-PolicyGradient(gridworld, policy, alpha=0.1).execute(episodes=1000)
+PolicyGradient(gridworld, policy).execute(episodes=100)
 policy_image = gridworld.visualise_stochastic_policy(policy)
 
 ```
@@ -264,7 +264,6 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_nn_policy_gradient.py"
-
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
@@ -380,7 +379,6 @@ Now, we can create a policy and Q-function using any differentiable policy and a
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_q_actor_critic_run.py"
-
 ```
 
 We can see that the actor critic agent has learnt both a policy that is very good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.

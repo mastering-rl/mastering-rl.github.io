@@ -49,7 +49,7 @@ class Node:
     """ Return the value of this node """
 
     def get_value(self):
-        (_, max_q_value) = self.qfunction.get_max_q(
+        max_q_value = self.qfunction.get_max_q(
             self.state, self.mdp.get_actions(self.state)
         )
         return max_q_value
@@ -111,7 +111,7 @@ class MCTS:
             action = self.choose(state)
 
             # Execute the action
-            (next_state, reward) = self.mdp.execute(state, action)
+            (next_state, reward, done) = self.mdp.execute(state, action)
 
             # Discount the reward
             cumulative_reward += pow(self.mdp.get_discount_factor(), depth) * reward

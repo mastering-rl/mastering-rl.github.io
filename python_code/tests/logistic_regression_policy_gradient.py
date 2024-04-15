@@ -10,6 +10,6 @@ policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-policy_gradient = PolicyGradient(gridworld, policy, alpha=0.1)
-policy_gradient.execute(episodes=1000)
+policy_gradient = PolicyGradient(gridworld, policy)
+policy_gradient.execute(episodes=100)
 policy_image = gridworld.visualise_stochastic_policy(policy)

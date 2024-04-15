@@ -43,14 +43,14 @@ class PolicyIteration:
                 actions = self.mdp.get_actions(state)
                 old_action = self.policy.select_action(state, actions)
 
-                q_values = QTable()
+                q_values = QTable(alpha=1.0)
                 for action in self.mdp.get_actions(state):
                     # Calculate the value of Q(s,a)
                     new_value = values.get_q_value(self.mdp, state, action)
                     q_values.update(state, action, new_value)
 
                 # V(s) = argmax_a Q(s,a)
-                (new_action, _) = q_values.get_max_q(state, self.mdp.get_actions(state))
+                new_action = q_values.get_argmax_q(state, self.mdp.get_actions(state))
                 self.policy.update(state, new_action)
 
                 policy_changed = (
