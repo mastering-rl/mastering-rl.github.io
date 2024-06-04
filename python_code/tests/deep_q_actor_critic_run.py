@@ -1,29 +1,22 @@
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from q_actor_critic import QActorCritic
-from deep_qfunction import DeepQFunction
-from deep_q_network import DQN
+from deep_q_network import DeepQFunction
 from gridworld import GridWorld
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from qlearning import QLearning
 
-gridworld = GridWorld()
+mdp = GridWorld()
+action_space = len(mdp.get_actions())
+state_space = len(mdp.get_initial_state())
 
 # Instantiate the critic
-qfunction = DQN(
-    state_space=len(gridworld.get_initial_state()),
-    action_space=5,
-    hidden_dim=16,
-)
-critic = QLearning(gridworld, EpsilonGreedy(), qfunction)
+critic = DeepQFunction(state_space, action_space, hidden_dim=16)
 
 # Instantiate the actor
-actor = DeepNeuralNetworkPolicy(
-    gridworld, state_space=len(gridworld.get_initial_state()), action_space=4
-)
+actor = DeepNeuralNetworkPolicy(state_space, action_space)
 
 #  Instantiate the actor critic agent
-q_actor_critic = QActorCritic(mdp=gridworld, actor=actor, critic=critic).execute(
-    episodes=300
-)
-gridworld.visualise_stochastic_policy(actor)
-gridworld.visualise_q_function(critic.qfunction)
+learner = QActorCritic(mdp, actor, critic)
+episode_rewards = learner.execute(episodes=300)
+mdp.visualise_stochastic_policy(actor)
+mdp.visualise_q_function(critic.qfunction)

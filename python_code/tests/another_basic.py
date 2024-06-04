@@ -8,7 +8,7 @@ import torch
 
 from collections import namedtuple, deque
 
-from deep_q_network import DQN
+from deep_q_network import DeepQFunction
 from ale_wrapper import ALEWrapper
 from experience_replay_learner import ExperienceReplayLearner
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
@@ -55,8 +55,8 @@ def main():
     state_space = len(mdp.get_initial_state())
 
     '''
-    policy_net = DQN(state_space, action_space)
-    target_net = DQN(state_space, action_space)
+    policy_net = DeepQFunction(state_space, action_space)
+    target_net = DeepQFunction(state_space, action_space)
 
     if extend_existing_policy:
         policy_net.load_state_dict(torch.load(policy_name))
@@ -70,20 +70,25 @@ def main():
     from advantage_actor_critic import AdvantageActorCritic
     from deep_nn_policy import DeepNeuralNetworkPolicy
     from deep_value_function import DeepValueFunction
-
+    from policy_gradient import PolicyGradient
+    from deep_nn_policy import DeepNeuralNetworkPolicy
+    
     critic = DeepValueFunction(mdp=mdp, state_space=state_space, hidden_dim=128)
     actor = DeepNeuralNetworkPolicy(mdp, state_space=state_space, action_space=action_space)
     learner = AdvantageActorCritic(mdp=mdp, actor=actor, critic=critic)
 
+    policy = DeepNeuralNetworkPolicy(mdp, state_space=state_space, action_space=action_space)
+
     start = time.time()
-    episode_rewards = learner.execute(episodes=10)
+    #episode_rewards = learner.execute(episodes=30)
+    episode_rewards = PolicyGradient(mdp, policy).execute(episodes=100)
     end = time.time()
     print(
         ("\n{:.2f}, {:.2f}, ").format(np.mean(episode_rewards), end - start)
     )
 
     #torch.save(policy_net.state_dict(), policy_name)
-    actor.save(policy_name)
+    #actor.save(policy_name)
 
 import cProfile
 if __name__ == "__main__":

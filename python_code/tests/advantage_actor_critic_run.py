@@ -6,12 +6,12 @@ from gridworld import GridWorld
 gridworld = GridWorld()
 
 # Instantiate the critic
-critic = DeepValueFunction(mdp=gridworld, state_space=len(gridworld.get_initial_state()), hidden_dim=16)
+critic = DeepValueFunction(state_space=len(gridworld.get_initial_state()), hidden_dim=16)
 
 # Instantiate the actor
-actor = DeepNeuralNetworkPolicy(
-    gridworld, state_space=len(gridworld.get_initial_state()), action_space=4
-)
+state_space = len(gridworld.get_initial_state())
+action_space = len(gridworld.get_actions())
+actor = DeepNeuralNetworkPolicy(state_space, action_space)
 
 advantage_actor_critic = AdvantageActorCritic(mdp=gridworld, actor=actor, critic=critic)
 gridworld.visualise_value_function(critic, grid_size=0.8, title=f"Value Function: {0} iterations")

@@ -6,10 +6,10 @@ from rendering_utils import *
 
 class GridWorld(MDP):
     # labels for terminate action and terminal state
-    TERMINATE = 0
     TERMINAL = (-1, -1)
+    TERMINATE = 0
     LEFT = 1
-    UP = 2
+    UP =2
     RIGHT = 3
     DOWN = 4
 

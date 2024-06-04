@@ -1,5 +1,4 @@
 import random
-import torch
 
 from collections import namedtuple, deque
 from itertools import count
@@ -32,6 +31,7 @@ class ExperienceReplayLearner:
         memory=ReplayMemory(),
         batch_size=128,
         memory_size=10000,
+        update_period=1,
     ):
         self.mdp = mdp
         self.bandit = bandit
@@ -39,12 +39,13 @@ class ExperienceReplayLearner:
         self.target_qfunction = target_qfunction
         self.batch_size = batch_size
         self.memory = memory
+        self.update_period = update_period
         
         self.target_qfunction.soft_update(self.policy_qfunction)
 
     def execute(self, episodes=100):
 
-        rewards = []
+        episode_rewards = []
         for episode in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
@@ -61,7 +62,7 @@ class ExperienceReplayLearner:
                 self.memory.push(state, action, next_state, reward, done)
 
                 # Perform an update on the policy qfunction using a batch
-                if len(self.memory) >= self.batch_size:
+                if len(self.memory) >= self.batch_size and step % self.update_period == 0:
                     transitions = self.memory.sample(self.batch_size)
                     batch = Transition(*zip(*transitions))
 
@@ -86,13 +87,13 @@ class ExperienceReplayLearner:
                 if done:
                     break
 
-            rewards.append(episode_reward)
+            episode_rewards.append(episode_reward)
 
             # plot_rewards(rewards)
             print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
 
         print("\n")
-        return rewards
+        return episode_rewards
 
     """ Calculate the deltas for the update """
 

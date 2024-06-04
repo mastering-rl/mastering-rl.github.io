@@ -1,6 +1,6 @@
 import gymnasium as gym
-from mdp import MDP
 
+from mdp import MDP
 
 """
 A wrapper class around the gymnasium class for the Arcade Learning Environment
@@ -29,11 +29,13 @@ class ALEWrapper(MDP):
 
     def reset(self):
         observation, info = self.env.reset()
-        #**** return tuple(observation)
         return tuple(observation)
 
     def step(self, action):
         return self.env.step(action)
+
+    def render(self):
+        return self.env.render()
 
     """ Return true if and only if state is a terminal state of this MDP """
 
@@ -54,3 +56,5 @@ class ALEWrapper(MDP):
         observation, reward, terminated, truncated, info = self.env.step(action)
         self.terminated = terminated or truncated
         return (tuple(observation), reward, terminated)
+
+

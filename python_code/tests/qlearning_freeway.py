@@ -1,11 +1,25 @@
 from ale_wrapper import ALEWrapper
-from qtable import QTable
 from qlearning import QLearning
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from deep_q_network import DeepQFunction
 from tests.plot import Plot
 
-print("==========\nTabular Q-learning: Freeway\n==========")
+version = "Freeway-ramDeterministic-v4"
+mdp = ALEWrapper(version=version)
 
-qfunction = QTable()
-mdp = ALEWrapper(version="ALE/Freeway-ram-v5", render_mode="human")
-QLearning(mdp, EpsilonGreedy(epsilon=1.0), qfunction).execute(episodes=2000)
+# Get number of actions and state size from gym action space
+action_space = len(mdp.get_actions())
+state_space = len(mdp.get_initial_state())
+
+runs = 5
+all_rewards = []
+for _ in range(runs):
+
+    # Instantiate the critic
+    qfunction = DeepQFunction(state_space, action_space, hidden_dim=16)
+    learner = QLearning(mdp, qfunction)
+    rewards = learner.execute(episodes=30)
+
+    all_rewards.append(rewards)
+
+labels = ["Deep Q learner " + str(i) for i in range(runs)]
+Plot.plot_cumulative_rewards(labels, all_rewards, smoothing_factor=0.0)

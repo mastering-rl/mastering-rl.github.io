@@ -2,19 +2,19 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import hashlib
 
 from qfunction import QFunction
 
 
-class DQN(nn.Module, QFunction):
+class DeepQFunction(nn.Module, QFunction):
 
     def __init__(self, state_space, action_space, hidden_dim=128, alpha=1e-4):
-        super(DQN, self).__init__()
+        super(DeepQFunction, self).__init__()
         self.layer1 = nn.Linear(state_space, hidden_dim)
         self.layer2 = nn.Linear(hidden_dim, hidden_dim)
         self.layer3 = nn.Linear(hidden_dim, action_space)
         self.optimiser = optim.AdamW(self.parameters(), lr=alpha, amsgrad=True)
+
 
     """ A forward pass through the network """
 
@@ -43,7 +43,7 @@ class DQN(nn.Module, QFunction):
             max_q_values = self(states_tensor).max(1).values
             return max_q_values.tolist()
 
-    def getwww_max_q(self, state, actions):
+    def get_max_pair(self, state, actions):
         state_tensor = torch.as_tensor(state, dtype=torch.float32)
 
         with torch.no_grad():

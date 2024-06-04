@@ -182,8 +182,8 @@ Using this result, we can then find $\nabla \textrm{ln} \pi(a, s)$:
 
 $$
 \begin{aligned}
-  \nabla \textrm{ln} \pi_{\theta}(a_0, s) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
-  \nabla \textrm{ln} \pi_{\theta}(a_1, s) &= -s \cdot \pi_{\theta}(s, a_1)
+  \nabla \textrm{ln} \pi_{\theta}(s, a_0) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
+  \nabla \textrm{ln} \pi_{\theta}(s, a_1) &= -s \cdot \pi_{\theta}(s, a_1)
 \end{aligned}
 $$
 
@@ -353,7 +353,7 @@ So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (
 ```
 ````
 
-The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not use the critic Q-function to select actions -- we just use the policy. As such, this will still extend to continuous state spaces and be more efficient for large action space.
+The reason the actor critic methods still work like this is because the actor policy $\pi_{\theta}$ selects actions for us, while the critic $Q_w(s,a)$ is only ever used to calculate the temporal difference estimate for an already selected action. We do not have to iterate over the critic Q-function to select actions, so we do not have to iterate over the set of actions -- we just use the policy. As such, this will still extend to continuous and large state spaces and be more efficient for large action space.
 
 ### Implementation
 

@@ -69,7 +69,7 @@ class MDP:
                 )
 
         raise BaseException(
-            "No outcome state in simulation for action"
+            "No outcome state in simulation for action "
             + str(action)
             + " from "
             + str(state)

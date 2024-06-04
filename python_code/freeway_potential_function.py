@@ -1,14 +1,15 @@
 from potential_function import PotentialFunction
-from freeway_abstraction import FreewayAbstraction
 
 class FreewayPotentialFunction(PotentialFunction):
-    def __init__(self, mdp):
-        self.mdp = mdp
-        self.visited = set()
+    # The highest value for the Y position is 177 (https://arxiv.org/abs/2109.01220)
+    Y_MAX=177
+
+    # Byte 14 contains y position of agent (https://arxiv.org/abs/2109.01220)
+    Y_POSITION_INDEX=14
+
+    def __init__(self):
+        self.max_visited = 0
 
     def get_potential(self, state):
-        y_position = state[FreewayAbstraction.ABSTRACT_Y_POSITION_INDEX]
-        if y_position in self.visited:
-            return 0.0
-        self.visited.add(y_position)
-        return 1 / FreewayAbstraction.ABSTRACT_Y_MAX
+        y_position = state[self.Y_POSITION_INDEX]
+        return (y_position / self.Y_MAX)

@@ -14,3 +14,6 @@ class StochasticQPolicy(StochasticPolicy):
 
     def select_action(self, state, actions):
         return self.bandit.select(state, actions, self.qfunction)
+
+    def update(self, states, actions, deltas):
+        self.qfunction.batch_update(states, actions, deltas)

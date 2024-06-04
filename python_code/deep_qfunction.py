@@ -2,10 +2,9 @@ import torch
 import torch.nn as nn
 from qfunction import QFunction
 from torch.optim import Adam
-from deep_agent import DeepAgent
 
 
-class DeepQFunction(QFunction, DeepAgent):
+class DeepQFunction(QFunction):
     """A neural network to represent the Q-function.
     This class uses PyTorch for the neural network framework (https://pytorch.org/).
     """

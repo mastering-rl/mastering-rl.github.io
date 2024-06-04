@@ -9,7 +9,7 @@ class TemporalDifferenceLearner(ModelFreeLearner):
     def execute(self, episodes=2000):
 
         rewards = []
-        for _ in range(episodes):
+        for episode in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.qfunction)
@@ -31,6 +31,10 @@ class TemporalDifferenceLearner(ModelFreeLearner):
 
             rewards.append(episode_reward)
 
+            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
+
+
+        print("\n")
         return rewards
 
     """ Calculate the delta for the update """
