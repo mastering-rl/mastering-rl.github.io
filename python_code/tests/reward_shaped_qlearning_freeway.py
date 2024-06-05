@@ -10,7 +10,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from multi_armed_bandit.softmax import Softmax
 from stochastic_q_policy import StochasticQPolicy
 from tests.plot import Plot
-from deep_qfunction import DeepQFunction
+from deep_q_function import DeepQFunction
 from ale_wrapper import ALEWrapper
 from freeway_hand_policy import FreewayHandPolicy
 from experience_replay_learner import ExperienceReplayLearner

@@ -1,5 +1,5 @@
 from gridworld import GridWorld
-from deep_qfunction import DeepQFunction
+from deep_q_function import DeepQFunction
 from qlearning import QLearning
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from q_actor_critic import QActorCritic

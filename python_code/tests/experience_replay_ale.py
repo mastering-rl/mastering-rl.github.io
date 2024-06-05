@@ -1,7 +1,7 @@
 import torch
 
 from experience_replay_learner import ExperienceReplayLearner
-from deep_q_network import DeepQFunction
+from deep_q_function import DeepQFunction
 from stochastic_q_policy import StochasticQPolicy
 from ale_wrapper import ALEWrapper
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing

@@ -1,10 +1,10 @@
 from gridworld import GridWorld
 from qlearning import QLearning
-from deep_qfunction import DeepQFunction
+from deep_q_function import DeepQFunction
 from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-from deep_q_network import DeepQFunction
+from deep_q_function import DeepQFunction
 
 gridworld = GridWorld()
 qfunction = DeepQFunction(state_space=len(gridworld.get_initial_state()), action_space=5)

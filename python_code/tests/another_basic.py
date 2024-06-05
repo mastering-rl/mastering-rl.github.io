@@ -8,7 +8,7 @@ import torch
 
 from collections import namedtuple, deque
 
-from deep_q_network import DeepQFunction
+from deep_q_function import DeepQFunction
 from ale_wrapper import ALEWrapper
 from experience_replay_learner import ExperienceReplayLearner
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing

@@ -2,7 +2,7 @@ import torch
 
 from q_actor_critic import QActorCritic
 from deep_nn_policy import DeepNeuralNetworkPolicy
-from deep_q_network import DeepQFunction
+from deep_q_function import DeepQFunction
 from ale_wrapper import ALEWrapper
 from tests.plot import Plot
 

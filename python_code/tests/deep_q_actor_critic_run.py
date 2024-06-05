@@ -1,6 +1,6 @@
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from q_actor_critic import QActorCritic
-from deep_q_network import DeepQFunction
+from deep_q_function import DeepQFunction
 from gridworld import GridWorld
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from qlearning import QLearning
