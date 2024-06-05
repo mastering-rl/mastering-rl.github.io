@@ -456,7 +456,8 @@ where $\nabla_{\theta} Q(s,a; \theta)$ is the **gradient** of the Q-function. In
 
 Deep Q-learning is identical to tabular or linear Q-learning, except that we use a deep neural network to represent the Q-function instead of a Q-table or a linear equation.
 
-In this implementation, we use  the [PyTorch deep learning framework](https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.
+In this implementation, we use  the [PyTorch deep learning framework](https://pytorch.org/). 
+This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.
 
 Using PyTorch, we create a sequential neural network with the following:
 1. The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.

@@ -1,77 +1,54 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
 from qfunction import QFunction
-from torch.optim import Adam
 
 
-class DeepQFunction(QFunction):
-    """A neural network to represent the Q-function.
-    This class uses PyTorch for the neural network framework (https://pytorch.org/).
-    """
+class DeepQFunction(nn.Module, QFunction):
 
-    def __init__(
-        self, mdp, state_space, action_space, hidden_dim=64, alpha=0.001
-    ) -> None:
+    def __init__(self, state_space, action_space, hidden_dim=128, alpha=1e-4):
+        super(DeepQFunction, self).__init__()
+        self.layer1 = nn.Linear(state_space, hidden_dim)
+        self.layer2 = nn.Linear(hidden_dim, hidden_dim)
+        self.layer3 = nn.Linear(hidden_dim, action_space)
+        self.optimiser = optim.AdamW(self.parameters(), lr=alpha, amsgrad=True)
 
-        # Create a sequential neural network to represent the Q function
-        self.q_network = nn.Sequential(
-            nn.Linear(in_features=state_space, out_features=hidden_dim),
-            nn.ReLU(),
-            nn.Linear(in_features=hidden_dim, out_features=hidden_dim),
-            nn.ReLU(),
-            nn.Linear(in_features=hidden_dim, out_features=action_space),
-        )
-        self.optimiser = Adam(self.q_network.parameters(), lr=alpha)
+    """ A forward pass through the network """
 
-        # A two-way mapping from actions to integer IDs for ordinal encoding
-        #actions = mdp.get_actions()
-        #self.action_to_id = {actions[i]: i for i in range(len(actions))}
-        #self.id_to_action = {
-        #    action_id: action for action, action_id in self.action_to_id.items()
-        #}
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        return self.layer3(x)
 
-    def update(self, state, action, delta):
-
-        # Train the network based on the squared error.
-        self.optimiser.zero_grad()  # Reset gradients to zero
-        (delta ** 2).backward()  # Back-propagate the loss through the network
-        self.optimiser.step()  # Do a gradient descent step with the optimiser
-
-        # self.multi_update([(state, action, delta)])
-
-    def multi_update(self, experiences):
-        (states, actions, deltas, dones) = zip(*experiences)
-        states_tensor = torch.tensor(states, dtype=torch.float32)
-        actions_tensor = torch.tensor(actions, dtype=torch.long)
-        deltas_tensor = torch.tensor(deltas, dtype=torch.float32)
-        dones_tensor = torch.tensor(dones, dtype=torch.float32)
-
-        q_values = self.q_network(states_tensor).gather(
-            dim=1, index=actions_tensor.unsqueeze(1)
-        )
-
-        loss = nn.functional.mse_loss(q_values, q_values + deltas_tensor.unsqueeze(1))
-        self.optimiser.zero_grad()
-        loss.backward()
-        self.optimiser.step()
+    def get_q_values(self, states, actions):
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
+        with torch.no_grad():
+            q_values = self.forward(states_tensor).gather(1, actions_tensor.unsqueeze(1))
+        return q_values.squeeze(1).tolist()
 
     def get_q_value(self, state, action):
-        # Convert the state into a tensor
-        state = self.encode_state(state)
-        q_values = self.q_network(state)
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
+        action_tensor = torch.as_tensor(action, dtype=torch.long)
 
-        q_value = q_values[action].item()
-
-        return q_value
-
-    def get_max_q(self, state, actions):
-        # Convert the state into a tensor
-        state = torch.as_tensor(self.encode_state(state), dtype=torch.float32)
-
-        # Since we have a multi-headed q-function, we only need to pass through the network once
-        # call torch.no_grad() to avoid tracking the gradients for this network forward pass
         with torch.no_grad():
-            q_values = self.q_network(state)
+            q_values = self.forward(state_tensor)
+        q_value = q_values[action]
+        return q_value.item()
+
+    def get_max_q_values(self, states):
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        with torch.no_grad():
+            max_q_values = self(states_tensor).max(1).values
+        return max_q_values.tolist()
+
+    def get_max_pair(self, state, actions):
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
+
+        with torch.no_grad():
+            q_values = self.forward(state_tensor)
         arg_max_q = None
         max_q = float("-inf")
         for action in actions:
@@ -81,8 +58,134 @@ class DeepQFunction(QFunction):
                 max_q = q_value
         return (arg_max_q, max_q)
 
+    def update(self, state, action, delta):
+        self.batch_update([state], [action], [delta])
+
+    def optimize_model_old(self, states, actions, next_states, dones, rewards, target_net):
+
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
+        #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+        rewards_tensor = torch.as_tensor(rewards, dtype=torch.float32)
+
+        #next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
+        # Compute a mask of non-final states and concatenate the batch elements
+        # (a final state would've been the one after which simulation ended)
+        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+                                              next_states)), dtype=torch.bool)
+        non_final_next_states = torch.cat([s for s in next_states
+                                                    if s is not None])
+ 
+        
+        # Compute Q-values for current states
+        state_action_values = self.forward(states_tensor).gather(
+            1, actions_tensor.unsqueeze(1)
+        )
+
+        #state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
+
+        # Compute V(s_{t+1}) for all next states.
+        # Expected values of actions for non_final_next_states are computed based
+        # on the "older" target_net; selecting their best reward with max(1).values
+        # This is merged based on the mask, such that we'll have either the expected
+        # state value or 0 in case the state was final.
+        next_state_values = torch.zeros(len(states))
+        with torch.no_grad():
+            next_state_values[non_final_mask] = target_net(non_final_next_states).max(1).values
+        # Compute the expected Q values
+        expected_state_action_values = (next_state_values * 1.0) + rewards_tensor
+
+        # Compute Huber loss
+        criterion = nn.SmoothL1Loss()
+        loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
+
+        # Optimize the model
+        self.optimiser.zero_grad()
+        loss.backward()
+        # In-place gradient clipping
+        torch.nn.utils.clip_grad_value_(self.parameters(), 100)
+        self.optimiser.step()
+
+    def optimize_model(self, states, actions, next_states, dones, rewards, next_state_values):
+
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
+        #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+        rewards_tensor = torch.as_tensor(rewards, dtype=torch.float32)
+
+        #next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
+        # Compute a mask of non-final states and concatenate the batch elements
+        # (a final state would've been the one after which simulation ended)
+        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+                                              next_states)), dtype=torch.bool)
+        non_final_next_states = torch.cat([s for s in next_states
+                                                    if s is not None])
+ 
+        
+        # Compute Q-values for current states
+        state_action_values = self.forward(states_tensor).gather(
+            1, actions_tensor.unsqueeze(1)
+        )
+
+        #state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
+
+        # Compute V(s_{t+1}) for all next states.
+        # Expected values of actions for non_final_next_states are computed based
+        # on the "older" target_net; selecting their best reward with max(1).values
+        # This is merged based on the mask, such that we'll have either the expected
+        # state value or 0 in case the state was final.
+        #next_state_values = torch.zeros(len(states))
+        #with torch.no_grad():
+        #    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1).values
+        # Compute the expected Q values
+        expected_state_action_values = (next_state_values * 1.0) + rewards_tensor
+
+        # Compute Huber loss
+        criterion = nn.SmoothL1Loss()
+        loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
+
+        # Optimize the model
+        self.optimiser.zero_grad()
+        loss.backward()
+        # In-place gradient clipping
+        torch.nn.utils.clip_grad_value_(self.parameters(), 100)
+        self.optimiser.step()
+
+    def batch_update(self, states, actions, deltas):
+
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        actions_tensor = torch.as_tensor(actions, dtype=torch.long)
+        deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+
+        # Compute current Q-values for current state-action pairs
+        q_values = self.forward(states_tensor).gather(
+            1, actions_tensor.unsqueeze(1)
+        )
+
+        # Calculate the loss. Deltas already contains the lost, but connect it
+        # to q_values via the loss function to enable back propagation
+        loss = nn.functional.smooth_l1_loss(
+            q_values,
+            (q_values.clone().detach().squeeze(1) + deltas_tensor).unsqueeze(1),
+        )
+
+        # Optimise the model
+        self.optimiser.zero_grad()
+        loss.backward()
+
+        # In-place gradient clipping
+        torch.nn.utils.clip_grad_value_(self.parameters(), 100)
+        self.optimiser.step()
+
+    def soft_update(self, policy_qfunction, tau=0.005):
+        target_dict = self.state_dict()
+        policy_dict = policy_qfunction.state_dict()
+        for key in policy_dict:
+            target_dict[key] = policy_dict[key] * tau + target_dict[key] * (1 - tau)
+        self.load_state_dict(target_dict)
+
     def save(self, filename):
-        torch.save(self.q_network.state_dict(), filename)
+        torch.save(self.state_dict(), filename)
 
     def load(self, filename):
-        self.q_network.load_state_dict(torch.load(filename))
+        self.load_state_dict(torch.load(filename))

@@ -25,7 +25,7 @@ The learning outcomes of this chapter are:
 
 1.  Gain a basic understanding of reinforcement learning.
     
-2.  Have practical experimence in building a reinforcement learning agent deep Q learning.
+2.  Have practical experimence in building a reinforcement learning agent using deep Q learning.
 
 3.  Be excited about reinforcement learning and its possibilities.
 ```
@@ -61,9 +61,33 @@ A screenshot of the game *Freeway*.
 ```
 ````
 
+This is a simple game as far as video games go; and as far as reinforcement learner goes. However, let's train a reinforcement learning agent to play it.
+
+First, we need to import some stuff for the deep learning package, and get some settings:
+
 
 
 ```{code-cell} ipython3
+import torch
+
+# if GPU is to be used
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.set_default_device(device)
+```
+
+The first line above simply imports `torch`, which is the Python package for the [PyTorch deep learning framework](https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which we use as part of our reinforcement learning solution. The rest set up the device to use. If our machine has a GPU (graphics processing unit), then using `cuda` will use that GPU for doing matrix calculations in our deep learning model. If our machine does NOT have a GPU, we use the CPU instead. A GPU will allow us to train more quickly, but otherwise, we get the same results.
+
+Next, we import a few other things that are part of the reinforcement learning framework written for this book:
+
+```{code-cell} ipython3
+from experience_replay_learner import ExperienceReplayLearner
+from deep_qfunction import DeepQFunction
+from stochastic_q_policy import StochasticQPolicy
+from ale_wrapper import ALEWrapper
+from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
+from tests.plot import Plot
+
+
 
 !pip install gynasium
 from value_iteration import ValueIteration

@@ -20,7 +20,7 @@ mdp = ALEWrapper(version=version)
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 
-runs = 0
+runs = 5
 episodes = 1000
 all_rewards = []
 for _ in range(runs):
@@ -39,35 +39,7 @@ for _ in range(runs):
 labels = ["Advantage actor critic "  + str(i) for i in range(runs)]
 #Plot.plot_cumulative_rewards(labels, all_rewards, smoothing_factor=0.9)
 
-#actor.save(policy_name)
-
-#mdp = ALEWrapper(version=version, render_mode="human")
-#exec_rewards = mdp.execute_policy(actor, episodes=1)
-
-import gymnasium as gym
-# wrap the env in the record video
-#mdp = gym.make(version, render_mode="rgb_array")
-
-
-###
-# Start the recorder
-'''
-env.reset()
-env.start_video_recorder()
-for _ in range(1000):
-    action = env.action_space.sample()  # agent policy that uses the observation and info
-    observation, reward, terminated, truncated, info = env.step(action)
-    env.render()
-
-    if terminated or truncated:
-        observation, info = env.reset()
-
-# Don't forget to close the video recorder before the env!
-env.close_video_recorder()
-
-# Close the environment
-env.close()
-'''
+actor.save(policy_name)
 actor = DeepNeuralNetworkPolicy.load(state_space, action_space, policy_name)
 
 import cv2

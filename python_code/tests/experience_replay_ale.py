@@ -1,7 +1,5 @@
 import torch
 
-from freeway_abstraction import FreewayAbstraction
-from freeway import Freeway
 from experience_replay_learner import ExperienceReplayLearner
 from deep_q_network import DeepQFunction
 from stochastic_q_policy import StochasticQPolicy
@@ -14,24 +12,24 @@ from tests.plot import Plot
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.set_default_device(device)
 
-version = "Freeway-ramDeterministic-v4"
-policy_name = "Freeway.policy"
-#version = 'CartPole-v1'
+#version = "Freeway-ramDeterministic-v4"
+#policy_name = "Freeway.policy"
+version = 'CartPole-v1'
 #policy_name = 'Cartpole.policy'
-version = "ALE/VideoCheckers-ram-v5"
-policy_name = "video_checkers.policy"
-version = "BankHeist-ramNoFrameskip-v4"
-version = "ALE/BankHeist-ram-v5"
-policy_name = "bankheist.policy"
+#version = "ALE/VideoCheckers-ram-v5"
+#policy_name = "video_checkers.policy"
+#version = "BankHeist-ramNoFrameskip-v4"
+#version = "ALE/BankHeist-ram-v5"
+#policy_name = "bankheist.policy"
 
-mdp = ALEWrapper(version=version)
+mdp = ALEWrapper(version)
 
 # Get number of actions and state size from gym action space
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 
-runs = 10
-episodes = 3000
+runs = 5
+episodes = 300
 all_rewards = []
 for _ in range(runs):
     policy_qfunction = DeepQFunction(state_space, action_space)

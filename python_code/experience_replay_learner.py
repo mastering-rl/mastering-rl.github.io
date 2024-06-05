@@ -50,7 +50,6 @@ class ExperienceReplayLearner:
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
             action = self.bandit.select(state, actions, self.policy_qfunction)
-
             episode_reward = 0
             for step in count():
                 (next_state, reward, done) = self.mdp.execute(state, action)
@@ -59,6 +58,17 @@ class ExperienceReplayLearner:
                     next_state, actions, self.policy_qfunction
                 )
 
+                '''
+                if done:
+                    next_state2 = None
+                    #next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
+                    self.memory.push(state, action, next_state2, reward, done)
+                else:
+                    
+                    import torch
+                    next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
+                    self.memory.push(state, action, next_state2, reward, done)
+                '''
                 self.memory.push(state, action, next_state, reward, done)
 
                 # Perform an update on the policy qfunction using a batch
@@ -66,6 +76,7 @@ class ExperienceReplayLearner:
                     transitions = self.memory.sample(self.batch_size)
                     batch = Transition(*zip(*transitions))
 
+                    
                     deltas = self.get_deltas(
                         batch.reward,
                         batch.state,
@@ -73,14 +84,33 @@ class ExperienceReplayLearner:
                         batch.next_state,
                         batch.done,
                     )
+                    
 
+                    '''
+
+                    non_final_mask = torch.tensor(tuple(map(lambda s: s is False,
+                                              batch.done)), dtype=torch.bool)
+                    non_final_next_states = torch.cat([s for s in batch.next_state
+                                                    if s is not None])
+                    #print(len(non_final_next_states))
+                    states_tensor = torch.as_tensor(batch.state, dtype=torch.float32)
+                    actions_tensor = torch.as_tensor(batch.action, dtype=torch.long)
+                    #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+                    rewards_tensor = torch.as_tensor(batch.reward, dtype=torch.float32)
+                    #sys.exit()
+                    next_state_values = torch.zeros(len(states_tensor))
+                    with torch.no_grad():
+                        next_state_values[non_final_mask] = self.target_qfunction(non_final_next_states).max(1).values
+
+                    self.policy_qfunction.optimize_model(batch.state, batch.action, batch.next_state, batch.done, batch.reward, next_state_values)
+                    '''
                     self.policy_qfunction.batch_update(batch.state, batch.action, deltas)
 
                 # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)
 
                 # Move to the next state
-                state = next_state
+                state = next_state 
                 action = next_action
                 episode_reward += reward * (self.mdp.discount_factor ** step)
 
@@ -102,7 +132,7 @@ class ExperienceReplayLearner:
         next_state_q_values = self.state_values(next_states, actions)
         deltas = [
             reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
-            if not done else reward
+            if not done else (reward - q_value)
             for reward, next_state_q_value, q_value, done in zip(
                 rewards, next_state_q_values, q_values, dones
             )

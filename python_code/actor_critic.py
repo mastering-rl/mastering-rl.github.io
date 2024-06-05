@@ -35,7 +35,6 @@ class ActorCritic(ModelFreeLearner):
                 episode_reward += reward * (self.mdp.discount_factor ** step)
 
                 if done or step == max_episode_length:
-                    print(step)
                     break
 
             self.update_actor(rewards, states, actions, next_states, dones)

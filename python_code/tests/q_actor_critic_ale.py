@@ -25,7 +25,7 @@ all_rewards = []
 for _ in range(runs):
 
     # Instantiate the critic
-    critic = DeepQFunction(state_space, action_space, hidden_dim=16)
+    critic = DeepQFunction(state_space, action_space)
 
     # Instantiate the actor
     actor = DeepNeuralNetworkPolicy(state_space, action_space)

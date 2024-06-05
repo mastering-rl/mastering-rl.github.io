@@ -861,7 +861,12 @@ class GridWorld(MDP):
                 if self.height > 1:
                     prob_up = policy.get_probability((x, y), self.UP)
                     prob_down = policy.get_probability((x, y), self.DOWN)
-
+                # Normalise to account for the 'terminate' action that is not visualised
+                total = prob_left + prob_right + prob_down + prob_up
+                prob_left = prob_left / total
+                prob_right = prob_right / total
+                prob_down = prob_down / total
+                prob_up = prob_up / total
                 if (x, y) in self.goal_states:
                     # gif player handles goal state rendering
                     if not gif:

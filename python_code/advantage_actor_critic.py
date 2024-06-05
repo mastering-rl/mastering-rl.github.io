@@ -7,10 +7,10 @@ class AdvantageActorCritic(ActorCritic):
 
     def update_actor(self, rewards, states, actions, next_states, dones):
         values = self.critic.get_values(states)
-        next_state_values = self.state_values(next_states, actions)
+        next_state_values = self.critic.get_values(next_state)
         advantages = [
             reward + (self.mdp.get_discount_factor() * next_state_value) - value
-            if not done else reward
+            if not done else (reward - value)
             for reward, next_state_value, value, done in zip(
                 rewards, next_state_values, values, dones
             )
@@ -23,6 +23,3 @@ class AdvantageActorCritic(ActorCritic):
         next_state_value = self.critic.get_value(next_state)
         delta = reward + self.mdp.get_discount_factor() * next_state_value - state_value
         self.critic.update(state, delta)
-
-    def state_values(self, states, actions):
-        return self.critic.get_values(states)
