@@ -1,0 +1,13 @@
+
+Import via URL
+Search and replace:
+- \( with [latex] 
+- \) with [/latex]
+- \alginput with \textbf{Input}
+- \algoutput with \textbf{Output}
+- \algrepeat with \textbf{repeat}
+- \algforeach with \textbf{for\ each}
+- \alguntil with \textbf{until}
+
+Remove ignoremathjax
+Remove video bytes
