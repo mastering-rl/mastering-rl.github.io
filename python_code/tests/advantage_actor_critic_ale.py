@@ -20,8 +20,8 @@ mdp = ALEWrapper(version=version)
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 
-runs = 5
-episodes = 1000
+runs = 1
+episodes = 5
 all_rewards = []
 for _ in range(runs):
 
@@ -32,7 +32,7 @@ for _ in range(runs):
     actor = DeepNeuralNetworkPolicy(state_space, action_space)
 
     advantage_actor_critic = AdvantageActorCritic(mdp, actor, critic)
-    rewards = advantage_actor_critic.execute(episodes, max_episode_length=2000)
+    rewards = advantage_actor_critic.execute(episodes, max_episode_length=500)
 
     all_rewards.append(rewards)
 

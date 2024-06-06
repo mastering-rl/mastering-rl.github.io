@@ -1,4 +1,9 @@
+import cv2
+from itertools import count
 import gymnasium as gym
+
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from mdp import MDP
 
@@ -10,8 +15,7 @@ to meet the requirements for the MDP class interface.
 
 
 class ALEWrapper(MDP):
-
-    def __init__(self, version, render_mode="rgb_array", discount_factor=1.):
+    def __init__(self, version, render_mode="rgb_array", discount_factor=1.0):
         self.env = gym.make(version, render_mode=render_mode)
         observation, info = self.env.reset()
         self.terminated = False
@@ -33,6 +37,9 @@ class ALEWrapper(MDP):
 
     def step(self, action):
         return self.env.step(action)
+
+    def set_render_mode(self, render_mode):
+        self.env.render_mode = render_mode
 
     def render(self):
         return self.env.render()
@@ -57,4 +64,56 @@ class ALEWrapper(MDP):
         self.terminated = terminated or truncated
         return (tuple(observation), reward, terminated)
 
+    """ Execute a policy on an environment and return frames from it. """
+    def get_frames(self, policy, max_episode_length=float("inf")):
 
+        # Check that the render mode is rgb_array
+        assert (
+            self.env.render_mode == "rgb_array"
+        ), 'The MDP instance must be created with render_mode="rgb_array" in the environment\'s initialisation'
+
+        state = self.reset()
+        frames = []
+        for steps in count():
+            # Step using random actions
+            action = policy.select_action(state, self.get_actions(state))
+            next_state, reward, done = self.execute(state, action)
+            state = next_state
+            frames.append(self.render())
+            if done or steps == max_episode_length:
+                break
+        
+        return frames
+    
+    """ Execute a policy on an environment and create a video from it. """
+
+    def create_video(self, policy, filename, max_episode_length=float("inf")):
+        frames = self.get_frames(policy, max_episode_length=max_episode_length)
+
+        out = cv2.VideoWriter(
+            filename + ".mp4",
+            cv2.VideoWriter_fourcc(*"mp4v"),
+            60,
+            (frames[0].shape[1], frames[0].shape[0]),
+        )
+
+        for i in range(len(frames)):
+            out.write(frames[i])
+        out.release()
+
+    """ Execute a policy on an environment and create a gif from it """
+
+    def create_gif(self, policy, filename, max_episode_length=float("inf")):
+        frames = self.get_frames(policy, max_episode_length=max_episode_length)
+
+        plt.figure(figsize=(frames[0].shape[1]/100.0, frames[0].shape[0]/100.0), dpi=100)
+        patch = plt.imshow(frames[0])
+        plt.axis('off')
+
+        def update(frame):
+            patch.set_data(frame)
+            return patch,
+
+        anim = animation.FuncAnimation(plt.gcf(), update, frames=frames, interval=50)
+        anim.save(filename + ".gif")
+        plt.close()

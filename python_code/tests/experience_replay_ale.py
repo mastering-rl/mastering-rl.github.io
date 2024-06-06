@@ -2,7 +2,7 @@ import torch
 
 from experience_replay_learner import ExperienceReplayLearner
 from deep_q_function import DeepQFunction
-from stochastic_q_policy import StochasticQPolicy
+from q_policy import QPolicy
 from ale_wrapper import ALEWrapper
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
 from tests.plot import Plot
@@ -28,7 +28,7 @@ mdp = ALEWrapper(version)
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 
-runs = 5
+runs = 1
 episodes = 300
 all_rewards = []
 for _ in range(runs):
@@ -39,10 +39,10 @@ for _ in range(runs):
     rewards = learner.execute(episodes)
     all_rewards.append(rewards)
 
-labels = ["Deep Experience Replay Q learner " + str(i) for i in range(runs)]
-Plot.plot_cumulative_rewards(labels, all_rewards, smoothing_factor=0.0)
+#labels = ["Deep Experience Replay Q learner " + str(i) for i in range(runs)]
+#Plot.plot_cumulative_rewards(labels, all_rewards, smoothing_factor=0.0)
 
-policy = StochasticQPolicy(policy_qfunction, EpsilonDecreasing(epsilon=0.04, alpha=1., lower_bound=0.0))
+policy = QPolicy(policy_qfunction)
 
-mdp = ALEWrapper(version=version, render_mode="human")
-exec_rewards = mdp.execute_policy(policy, episodes=1)
+mdp = ALEWrapper(version=version, render_mode="rgb_array")
+mdp.create_gif(policy, "cart_pole_experience_replay")

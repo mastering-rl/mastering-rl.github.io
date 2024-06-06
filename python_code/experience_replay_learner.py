@@ -120,9 +120,9 @@ class ExperienceReplayLearner:
             episode_rewards.append(episode_reward)
 
             # plot_rewards(rewards)
-            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
+            #print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
 
-        print("\n")
+        #print("\n")
         return episode_rewards
 
     """ Calculate the deltas for the update """

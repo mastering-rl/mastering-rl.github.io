@@ -9,7 +9,7 @@ class PolicyGradient:
 
     """ Generate and store an entire episode trajectory to use to update the policy """
 
-    def execute(self, episodes=100):
+    def execute(self, episodes=100, max_episode_length=float('inf')):
         total_steps = 0
         random_steps = 50
         episode_rewards = []
@@ -33,11 +33,11 @@ class PolicyGradient:
                 actions.append(action)
                 rewards.append(reward)
 
-                state = next_state    
+                state = next_state
                 episode_reward += reward * (self.mdp.discount_factor ** step)
                 total_steps += 1
 
-                if done:
+                if done or step == max_episode_length:
                     break
 
             deltas = self.calculate_deltas(rewards)
