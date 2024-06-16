@@ -45,6 +45,8 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 
 3. The [Graphviz Python library](https://graphviz.readthedocs.io/en/stable/) for drawing trees. You can download from the website or use ``pip install graphviz``. To render the generated graphs, you will also need to install [Graphviz the tool](https://www.graphviz.org/download/), which is called by the Python package.
 
+4. The [PyTorch deep learning framework](https://pytorch.org/) is used for all deep reinforcement learning code in the book. You can download from the website or use ``pip install torch''.
+
 ## About the author
 
 These notes are written and maintained by [Tim Miller](https://uqtmiller.github.io/), Professor of Artifical Intelligence at  [The University of Queensland](https://uq.edu.au/), Brisbane/Meaanjin, Australia.
@@ -57,4 +59,4 @@ If you use this as part of your teaching or learning in a course, please [let me
 
 Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients using a logistic regression policy](sec:policy-gradients:logistic-regression); and furthermore, for implementing the source for this and the [deep policy gradient agent](sec:policy-gradient:deep-policy-gradients). Thanks also to Alan for setting up the library for play GIF files, which supports the interactive visualisations that are so useful in this book.
 
-Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples.
+Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.

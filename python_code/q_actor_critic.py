@@ -7,7 +7,7 @@ class QActorCritic(ActorCritic):
 
     def update_actor(self, rewards, states, actions, next_states, dones):
         q_values = self.critic.get_q_values(states, actions)
-        next_state_q_values = self.state_values(next_states, actions)
+        next_state_q_values = self.critic.get_q_values(next_states, actions)
         deltas = [
             reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
             if not done else (reward - q_value)
@@ -18,32 +18,36 @@ class QActorCritic(ActorCritic):
 
         self.actor.update(states, actions, deltas)
 
-    def update_critic(self, reward, state, action, next_state):
-        state_value = self.critic.get_q_value(state, action)
-        actions = self.mdp.get_actions(next_state)
-        next_state_value = self.critic.get_max_q(next_state, actions)
-        delta = reward + self.mdp.get_discount_factor() * next_state_value - state_value
-        self.critic.update(state, delta)
-
-    '''
-    def state_values(self, states, actions):
-        return self.critic.q_get_values(states)
-
-    def update_critic(self, reward, state, action, next_state):
-        actions = self.mdp.get_actions(next_state)
-        next_action = self.actor.select_action(next_state, actions)
-        delta = self.get_delta(reward, state, action, next_state, next_action)
+    def update_critic(self, reward, state, action, next_state, done):
+        q_value = self.critic.get_q_value(state, action)
+        if done:
+            delta = reward - q_value
+        else:
+            actions = self.mdp.get_actions(next_state)
+            next_state_value = self.critic.get_max_q(next_state, actions)
+            delta = reward + self.mdp.get_discount_factor() * next_state_value - q_value
         self.critic.update(state, action, delta)
 
-    def get_delta(self, reward, state, action, next_state, next_action):
-        q_value = self.critic.get_q_value(state, action)
-        next_state_value = self.state_value(next_state, next_action)
-        delta = reward + self.mdp.get_discount_factor() * next_state_value - q_value
-        return delta
-    
-    def state_values(self, states, actions):
-        return self.critic.get_max_q_values(states)
-    
-    def state_value(self, state, action):
-        return self.critic.get_max_q(state, self.mdp.get_actions(state))
-    '''
+    def calculate_deltas(self, rewards):
+        """
+        Generate a list of the discounted future rewards at each step of an episode
+        Note that discounted_reward[T-2] = rewards[T-1] + discounted_reward[T-1] * gamma.
+        We can use that pattern to populate the discounted_rewards array.
+        """
+        T = len(rewards)
+        discounted_future_rewards = [0 for _ in range(T)]
+
+        # The final discounted reward is the reward you get at that step
+        discounted_future_rewards[T - 1] = rewards[T - 1]
+        for t in reversed(range(0, T - 1)):
+            discounted_future_rewards[t] = (
+                rewards[t]
+                + discounted_future_rewards[t + 1] * self.mdp.get_discount_factor()
+            )
+        deltas = []
+        for t in range(len(discounted_future_rewards)):
+            deltas += [
+                (self.mdp.get_discount_factor() ** t)
+                * discounted_future_rewards[t]
+            ]
+        return deltas

@@ -416,7 +416,6 @@ from q_policy import QPolicy
 from stochastic_q_policy import StochasticQPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-
 gridworld = GridWorld()
 qfunction = QTable()
 QLearning(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
@@ -546,7 +545,6 @@ from qtable import QTable
 from sarsa import SARSA
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
-
 gridworld = GridWorld()
 qfunction = QTable()
 SARSA(gridworld, EpsilonGreedy(), qfunction).execute(episodes=100)
@@ -584,6 +582,7 @@ Let's try training this with Q-learning for 2000 episodes, using an epsilon gree
 ```{code-cell} ipython3
 qfunction = QTable()
 rewards = QLearning(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+
 ```
 
 From this, we extract the following policy:
@@ -601,6 +600,7 @@ Now, let's try training the same problem with SARSA:
 cliffworld = CliffWorld()
 qfunction = QTable()
 rewards = SARSA(cliffworld, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=2000)
+
 ```
 
 Extracting the policy, we get:
@@ -714,6 +714,7 @@ In these notes, we use the strategy in item 2 above. Every 20 episodes, we run o
 qfunction = QTable()
 mdp = GridWorld()
 rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
+
 ```
 
 Once we have the rewards of the episodes, we can plot the rewards:
@@ -730,7 +731,6 @@ Next, we do the same for the contested crossing example:
 qfunction = QTable()
 mdp = ContestedCrossing()
 rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
-
 Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
 ```
 

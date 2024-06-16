@@ -1,6 +1,6 @@
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from q_actor_critic import QActorCritic
-from deep_q_function import DeepQFunction
+from old_deep_q_function import DeepQFunction
 from gridworld import GridWorld
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from qlearning import QLearning
@@ -17,6 +17,10 @@ actor = DeepNeuralNetworkPolicy(state_space, action_space)
 
 #  Instantiate the actor critic agent
 learner = QActorCritic(mdp, actor, critic)
+print("a")
 episode_rewards = learner.execute(episodes=300)
+print("b")
 mdp.visualise_stochastic_policy(actor)
-mdp.visualise_q_function(critic.qfunction)
+print("c")
+mdp.visualise_q_function(critic)
+print("d")

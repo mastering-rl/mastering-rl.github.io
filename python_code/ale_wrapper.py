@@ -105,10 +105,10 @@ class ALEWrapper(MDP):
 
     def create_gif(self, policy, filename, max_episode_length=float("inf")):
         frames = self.get_frames(policy, max_episode_length=max_episode_length)
-
-        plt.figure(figsize=(frames[0].shape[1]/100.0, frames[0].shape[0]/100.0), dpi=100)
+        plt.figure(figsize=(frames[0].shape[1]/30.0, frames[0].shape[0]/30.0), dpi=100)
         patch = plt.imshow(frames[0])
         plt.axis('off')
+        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
 
         def update(frame):
             patch.set_data(frame)

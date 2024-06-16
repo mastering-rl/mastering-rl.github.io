@@ -22,8 +22,7 @@ class PolicyGradient:
             episode_reward = 0.0
             for step in count():
                 if total_steps < random_steps:
-                    my_actions = self.mdp.get_actions(state)
-                    action = random.choice(my_actions)
+                    action = random.choice(self.mdp.get_actions(state))
                 else :
                     action = self.policy.select_action(state, self.mdp.get_actions(state))
                 (next_state, reward, done) = self.mdp.execute(state, action)
@@ -44,9 +43,7 @@ class PolicyGradient:
 
             self.policy.update(states, actions, deltas)
             episode_rewards.append(episode_reward)
-            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
 
-        print("\n")
         return episode_rewards
 
     def calculate_deltas(self, rewards):
@@ -57,6 +54,7 @@ class PolicyGradient:
         """
         T = len(rewards)
         discounted_future_rewards = [0 for _ in range(T)]
+
         # The final discounted reward is the reward you get at that step
         discounted_future_rewards[T - 1] = rewards[T - 1]
         for t in reversed(range(0, T - 1)):

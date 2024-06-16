@@ -8,7 +8,6 @@ Images:
 High priority:
 - fix logistic regression policy gradent to just use one log function and calculate pi(s,a_1) using 1-pi(s,a_0)
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
-- add introductory chapter solving an atari game using deep rl
 - add experience replay code to notes
 - change title to 'Mastering RL'
 - update policy gradient code to use experience variable instead of having three lists 

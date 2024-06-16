@@ -22,6 +22,7 @@ parts:
     sections:
     - file: single-agent/policy-iteration
     - file: single-agent/policy-gradients
+    - file: single-agent/actor-critic
   - file: single-agent/modelling-and-abstraction
 - caption: Multi-agent Reinforcement Learning
   chapters:

@@ -40,10 +40,9 @@ class ExperienceReplayLearner:
         self.batch_size = batch_size
         self.memory = memory
         self.update_period = update_period
-        
         self.target_qfunction.soft_update(self.policy_qfunction)
 
-    def execute(self, episodes=100):
+    def execute(self, episodes=100, max_episode_length=float('inf')):
 
         episode_rewards = []
         for episode in range(episodes):
@@ -84,7 +83,8 @@ class ExperienceReplayLearner:
                         batch.next_state,
                         batch.done,
                     )
-                    
+
+                    self.policy_qfunction.batch_update(batch.state, batch.action, deltas)
 
                     '''
 
@@ -101,28 +101,24 @@ class ExperienceReplayLearner:
                     next_state_values = torch.zeros(len(states_tensor))
                     with torch.no_grad():
                         next_state_values[non_final_mask] = self.target_qfunction(non_final_next_states).max(1).values
-
+                    
                     self.policy_qfunction.optimize_model(batch.state, batch.action, batch.next_state, batch.done, batch.reward, next_state_values)
                     '''
-                    self.policy_qfunction.batch_update(batch.state, batch.action, deltas)
+                    
 
                 # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)
 
                 # Move to the next state
-                state = next_state 
+                state = next_state
                 action = next_action
                 episode_reward += reward * (self.mdp.discount_factor ** step)
 
-                if done:
+                if done or step == max_episode_length:
                     break
 
             episode_rewards.append(episode_reward)
 
-            # plot_rewards(rewards)
-            #print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
-
-        #print("\n")
         return episode_rewards
 
     """ Calculate the deltas for the update """

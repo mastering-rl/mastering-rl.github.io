@@ -77,9 +77,9 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         state = torch.as_tensor(state, dtype=torch.float32)
         with torch.no_grad():
             action_logits = self.policy_network(state)
+
         # A softmax layer turns action logits into relative probabilities
         probabilities = F.softmax(input=action_logits, dim=-1).tolist()
-
         # Convert from a tensor encoding back to the action space
         return probabilities[action]
 

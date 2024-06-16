@@ -72,18 +72,18 @@ def main():
     from deep_value_function import DeepValueFunction
     from policy_gradient import PolicyGradient
     from deep_nn_policy import DeepNeuralNetworkPolicy
-    
+
     critic = DeepValueFunction(mdp=mdp, state_space=state_space, hidden_dim=128)
     actor = DeepNeuralNetworkPolicy(mdp, state_space=state_space, action_space=action_space)
     learner = AdvantageActorCritic(mdp=mdp, actor=actor, critic=critic)
 
     policy = DeepNeuralNetworkPolicy(mdp, state_space=state_space, action_space=action_space)
 
-    start = time.time()
+    #start = time.time()
     #episode_rewards = learner.execute(episodes=30)
     episode_rewards = PolicyGradient(mdp, policy).execute(episodes=100)
-    end = time.time()
-    print(
+    #end = time.time()
+    #print(
         ("\n{:.2f}, {:.2f}, ").format(np.mean(episode_rewards), end - start)
     )
 

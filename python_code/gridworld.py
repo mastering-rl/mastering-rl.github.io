@@ -9,7 +9,7 @@ class GridWorld(MDP):
     TERMINAL = (-1, -1)
     TERMINATE = 0
     LEFT = 1
-    UP =2
+    UP = 2
     RIGHT = 3
     DOWN = 4
 
@@ -59,7 +59,7 @@ class GridWorld(MDP):
 
     def get_actions(self, state=None):
 
-        actions = [self.UP, self.DOWN, self.LEFT, self.RIGHT, self.TERMINATE]
+        actions = [self.TERMINATE, self.LEFT, self.UP, self.RIGHT, self.DOWN]
         if state is None:
             return actions
 
@@ -856,6 +856,8 @@ class GridWorld(MDP):
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
+                prob_up = 0.0
+                prob_down = 0.0
                 prob_left = policy.get_probability((x, y), self.LEFT)
                 prob_right = policy.get_probability((x, y), self.RIGHT)
                 if self.height > 1:
@@ -863,10 +865,11 @@ class GridWorld(MDP):
                     prob_down = policy.get_probability((x, y), self.DOWN)
                 # Normalise to account for the 'terminate' action that is not visualised
                 total = prob_left + prob_right + prob_down + prob_up
-                prob_left = prob_left / total
-                prob_right = prob_right / total
-                prob_down = prob_down / total
-                prob_up = prob_up / total
+                if total != 0:
+                    prob_left = prob_left / total
+                    prob_right = prob_right / total
+                    prob_down = prob_down / total
+                    prob_up = prob_up / total
                 if (x, y) in self.goal_states:
                     # gif player handles goal state rendering
                     if not gif:

@@ -31,10 +31,6 @@ class TemporalDifferenceLearner(ModelFreeLearner):
 
             rewards.append(episode_reward)
 
-            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
-
-
-        print("\n")
         return rewards
 
     """ Calculate the delta for the update """

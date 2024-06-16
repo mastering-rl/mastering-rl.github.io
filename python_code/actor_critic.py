@@ -22,7 +22,7 @@ class ActorCritic(ModelFreeLearner):
             for step in count():
                 action = self.actor.select_action(state, self.mdp.get_actions(state))
                 (next_state, reward, done) = self.mdp.execute(state, action)
-                self.update_critic(reward, state, action, next_state)
+                self.update_critic(reward, state, action, next_state, done)
 
                 # Store the information from this step of the trajectory
                 states.append(state)
@@ -38,13 +38,9 @@ class ActorCritic(ModelFreeLearner):
                     break
 
             self.update_actor(rewards, states, actions, next_states, dones)
-            
 
             episode_rewards.append(episode_reward)
-            print("{:d}({:.2f}) ".format(episode, episode_reward), end="", flush=True)
 
-
-        print("\n")
         return episode_rewards
 
     """ Update the actor using a batch of rewards, states, actions, and next states """

@@ -75,8 +75,6 @@ class DeepQFunction(nn.Module, QFunction):
                                               next_states)), dtype=torch.bool)
         non_final_next_states = torch.cat([s for s in next_states
                                                     if s is not None])
- 
-        
         # Compute Q-values for current states
         state_action_values = self.forward(states_tensor).gather(
             1, actions_tensor.unsqueeze(1)
@@ -187,5 +185,8 @@ class DeepQFunction(nn.Module, QFunction):
     def save(self, filename):
         torch.save(self.state_dict(), filename)
 
-    def load(self, filename):
-        self.load_state_dict(torch.load(filename))
+    @classmethod
+    def load(cls, filename, state_space, action_space, hidden_dim=128, alpha=1e-4):
+        qfunction = cls(state_space, action_space, hidden_dim, alpha)
+        qfunction.load_state_dict(torch.load(filename))
+        return qfunction
