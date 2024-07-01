@@ -19,7 +19,7 @@ The **aim** of the book is to provide the reader with sufficient foundation that
 
 This book is written using Markdown, and compiled into HTML using [Jupyter Book](https://jupyterbook.org/) --- an extension of Jupyter notebooks.
 
-Each individual HTML page can be downloaded individuallly as a [Jupyter notebook](https://jupyter.org/), but note that you need to install the code and dependencies below.
+Each individual HTML page can be downloaded as a [Jupyter notebook](https://jupyter.org/), but note that you need to install the code and dependencies below.
 
 ## About the code
 

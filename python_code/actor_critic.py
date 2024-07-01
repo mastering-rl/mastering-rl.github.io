@@ -20,7 +20,10 @@ class ActorCritic(ModelFreeLearner):
             episode_reward = 0
             state = self.mdp.get_initial_state()
             for step in count():
-                action = self.actor.select_action(state, self.mdp.get_actions(state))
+                #action = self.actor.select_action(state, self.mdp.get_actions(state))
+                import random
+                length = len(self.mdp.get_actions(state))
+                action = random.sample(self.mdp.get_actions(state), length)[0]
                 (next_state, reward, done) = self.mdp.execute(state, action)
                 self.update_critic(reward, state, action, next_state, done)
 

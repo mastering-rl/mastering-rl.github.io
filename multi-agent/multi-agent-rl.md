@@ -109,7 +109,7 @@ $
 \quad\quad s \leftarrow \text{the first state in episode}\ e\\
 \quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
 \quad\quad\quad\quad \text{Select action}\ a^j\ \text{to apply in s;}\\
-\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q^j\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q^j\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad\quad\quad \text{Execute action}\ a^j\ \text{in state} s\\
 \quad\quad\quad\quad \text{Observe reward}\ r^j\ \text{and new state}\ s'\\
 \quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha \cdot [r^j + \gamma \cdot \max_{a'} Q^j(s',a') - Q^j(s,a)]\\

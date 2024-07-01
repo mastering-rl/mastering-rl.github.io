@@ -21,38 +21,21 @@ The learning outcomes of this chapter are:
 
 1.  Manually apply n-step reinforcement learning approximation to solve small-scale MDP problems.
 
-2.  Design and implement n-step reinforcement learning to solve
-    medium-scale MDP problems automatically.
+2.  Design and implement n-step reinforcement learning to solve medium-scale MDP problems automatically.
 
 3.  Argue the strengths and weaknesses of n-step reinforcement learning.
 ```
 
 ## Overview
 
-In the previous sections on of this chapter, we looked at two fundamental temporal
-difference (TD) methods for reinforcement learning: Q-learning and
-SARSA.
+In the previous sections on of this chapter, we looked at two fundamental temporal difference (TD) methods for reinforcement learning: Q-learning and SARSA.
 
 These two methods have some weaknesses in this basic format:
 
-1.  Unlike Monte-Carlo methods, which reach a reward and then
-    backpropagate this reward, TD methods use bootstrapping (they
-    estimate the future discounted reward using $Q(s,a)$), which means
-    that for problems with sparse rewards, it can take a long time to
-    for rewards to propagate throughout a Q-function.
-2.  Rewards can be sparse, meaning that there are few state/actions that
-    lead to non-zero rewards. This is problematic because initially,
-    reinforcement learning algorithms behave entirely randomly and will
-    struggle to find good rewards. 
-3.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to
-    model this is via a Q-table. However, this requires us to maintain a
-    table of size $|A| \times |S|$, which is prohibitively large for any
-    non-trivial problem.
-4.  Using a Q-table requires that we visit every reachable state many
-    times and apply every action many times to get a good estimate of
-    $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate
-    of $Q(s,a)$, even if we have visited states that are very similar to
-    $s$.
+1.  Unlike Monte-Carlo methods, which reach a reward and then backpropagate this reward, TD methods use bootstrapping (they estimate the future discounted reward using $Q(s,a)$), which means  that for problems with sparse rewards, it can take a long time to for rewards to propagate throughout a Q-function.
+2.  Rewards can be sparse, meaning that there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. 
+3.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to model this is via a Q-table. However, this requires us to maintain a table of size $|A| \times |S|$, which is prohibitively large for any non-trivial problem.
+4.  Using a Q-table requires that we visit every reachable state many times and apply every action many times to get a good estimate of  $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate  of $Q(s,a)$, even if we have visited states that are very similar to $s$.
 
 To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
@@ -126,11 +109,7 @@ when updating $Q(s,a)$, so we estimate using bootstrapping:
 
  $$ G_t = r_t + \gamma \cdot V(s_{t+1}) $$ 
 
-That is, the reward of the
-entire future from step $t$ is estimated as the reward at $t$ plus the
-estimated (discounted) future reward from $t+1$. $V(s_{t+1})$ is
-estimated using the maximum expected return (Q-learning) or the
-estimated value of the next action (SARSA).
+That is, the reward of the entire future from step $t$ is estimated as the reward at $t$ plus the estimated (discounted) future reward from $t+1$. $V(s_{t+1})$ is estimated using the maximum expected return (Q-learning) or the estimated value of the next action (SARSA).
 
 This is a **one-step return**.
 
@@ -150,28 +129,20 @@ $$ G^n_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \ldots  \gamma^n V(s_{t+n})
 
 In this above expression $G^n_t$ is the full reward, **truncated** at $n$ steps, at time $t$. 
 
-The basic idea of n-step reinforcement learning is that we do not update the Q-value
-immediately after executing an action: we wait $n$ steps and update it
-based on the n-step return.
+The basic idea of n-step reinforcement learning is that we do not update the Q-value immediately after executing an action: we wait $n$ steps and update it based on the n-step return.
 
-If $T$ is the termination step and $t + n \geq T$, then we just use the full
-reward.
+If $T$ is the termination step and $t + n \geq T$, then we just use the full reward.
 
-In Monte-Carlo methods, we go all the way to the end of an episode.
-Monte-Carlo Tree Search is one such Monte-Carlo method, but there are
+In Monte-Carlo methods, we go all the way to the end of an episode. Monte-Carlo Tree Search is one such Monte-Carlo method, but there are
 others that we do not cover.
 
 ### Updating the Q-function
 
-The update rule is then different. First, we need to
-calculate the truncated reward for $n$ steps, in which $\tau$ is the
-time step that we are updating for (that is, $\tau$ is the action taken $n$ steps ago):
+The update rule is then different. First, we need to calculate the truncated reward for $n$ steps, in which $\tau$ is the time step that we are updating for (that is, $\tau$ is the action taken $n$ steps ago):
 
 $$G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i$$
 
-This just sums the discounted rewards from time step $\tau+1$ until either $n$
-steps ($\tau+n$) or termination of the episode ($T$), whichever comes
-first. 
+This just sums the discounted rewards from time step $\tau+1$ until either $n$ steps ($\tau+n$) or termination of the episode ($T$), whichever comes first. 
 
 Then calculate the n-step expected reward:
 
@@ -202,7 +173,8 @@ Repeat (for each episode)\
 $\quad\quad$ $T \leftarrow \infty$\
 $\quad\quad$ $t \leftarrow 0$  ($t$ is the current time step of this episode)\
 $\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and a multi-armed bandit algorithm such as $\epsilon-$greedy\
+$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and\
+$\quad\quad\quad\quad$ a multi-armed bandit algorithm such as $\epsilon-$greedy\
 $\quad\quad$ Repeat (for each step in episode $e)$\
 $\quad\quad\quad\quad$ If $t < T$ then:\
 $\quad\quad\quad\quad\quad\quad$ Execute action $a_t$ in state $s_t$\
@@ -230,7 +202,8 @@ $
 \algoutput:\ \text{Q-function}\ Q\\[2mm]
 \text{Initialise}\ Q\ \text{arbitrarily; e.g., }\ Q(s,a)=0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
 \algrepeat \\
-\quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using Q-values in}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\ \text{greedy}\\
+\quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using Q-values in}\ Q\ \text{and}\\
+\quad\quad\quad\quad \text{a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad ss = \langle s\rangle\\
 \quad\quad as = \langle a\rangle\\
 \quad\quad rs = \langle \rangle\\
@@ -387,6 +360,5 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ## Further Reading
 
--   Chapter 7 of [Introduction to Reinforcement Learning, Sutton and
-    Barto](http://incompleteideas.net/book/the-book-2nd.html)
+-   Chapter 7 of [Introduction to Reinforcement Learning, Sutton and Barto](http://incompleteideas.net/book/the-book-2nd.html)
 

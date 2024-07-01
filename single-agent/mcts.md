@@ -564,5 +564,5 @@ The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](http
 - [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 
 -   [A Survey of Monte Carlo Tree Search Methods](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.297.3086&rep=rep1&type=pdf). Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. *IEEE Transactions on Computational Intelligence and AI in Games*, (4)1: 1-49, 2012
-    
+
 -   [Monte-Carlo Tree Search: A New Framework for Game AI](https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf).  Guillaume Chaslot, Sander Bakkes, Istvan Szita, and Pieter Spronck.  In *AIIDE*, 1-2, 2008.

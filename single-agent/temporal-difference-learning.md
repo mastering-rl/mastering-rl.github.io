@@ -145,7 +145,7 @@ $
 N(s, a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
 \algrepeat \\
 \quad\quad \text{Generate an episode}\ (s_0, a_0, r_1, \ldots, s_{T-1}, a_{T-1}, r_T);\\
-\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad G \leftarrow 0\\
 \quad\quad t \leftarrow T-1\\
 \quad\quad \algwhile\ t \geq 0\ \algdo\\
@@ -312,7 +312,7 @@ $
 \quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
 \quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
 \quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
-\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
 \quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)\\
@@ -461,7 +461,7 @@ SARSA (State-action-reward-state-action) is an on-policy reinforcement learning 
 Instead of estimating $Q(s',a')$ for the best estimated future state during update, **on-policy reinforcement learning** uses the actual next action to update.
 
 On-policy learning estimates $\mathcal{Q^{\pi}}(s,a)$ state action pairs, for the current behaviour policy $\pi$, 
-whereas **off-policy learning **estimates the policy independent of the current behaviour
+whereas **off-policy learning** estimates the policy independent of the current behaviour.
 :::
 
 To illustrate how this differs, let's take a look at the SARSA algorithm.
@@ -478,12 +478,12 @@ $
 \algrepeat \\
 \quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
 \quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
-\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
 \quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
 \quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s';\\
-\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon-\text{greedy}\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
 \quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)\\
 \quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta\\
 \quad\quad\quad\quad s \leftarrow s'\\
@@ -802,6 +802,5 @@ The standard versions that we see in this section have two major limitations:
 
 ## Further Reading
 
--   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and
-    Barto](http://incompleteideas.net/book/the-book-2nd.html)
+-   Chapter 6 of [Introduction to Reinforcement Learning, Sutton and Barto](http://incompleteideas.net/book/the-book-2nd.html)
 

@@ -24,15 +24,29 @@ class DeepValueFunction(ValueFunction):
         self.optimiser = Adam(self.value_network.parameters(), lr=alpha)
 
     def update(self, state, delta):
+        self.update_batch([state], [delta])
+
+    def update_batch(self, states, deltas):
+        states_tensor = torch.as_tensor(states, dtype=torch.float32)
+        deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+        
+        values = self.value_network(states_tensor)
+
+        loss = nn.functional.smooth_l1_loss(
+            values, 
+            (values.clone().detach().squeeze(1) + deltas_tensor).unsqueeze(1))
+
         self.optimiser.zero_grad()
-        (delta ** 2).backward()  # Back-propagate the loss through the network
+        loss.backward()  # Back-propagate the loss through the network
         self.optimiser.step()  # Do a gradient descent step with the optimiser
 
     def get_value(self, state):
-        return self.get_values([state])
+        state_tensor = torch.as_tensor(state, dtype=torch.float32)
+        value = self.value_network(state_tensor)
+        return value.item()
 
     def get_values(self, states):
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
         values = self.value_network(states_tensor)
-        return values
+        return values.squeeze(1).tolist()
 

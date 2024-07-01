@@ -28,7 +28,7 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         )
 
         # Initialize weights using Xavier initialization and biases to zero
-        #self._initialize_weights()
+        self._initialize_weights()
 
         # The optimiser for the policy network, used to update policy weights
         self.optimiser = Adam(self.policy_network.parameters(), lr=alpha)
@@ -41,7 +41,7 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
             if isinstance(layer, nn.Linear):
                 nn.init.xavier_uniform_(layer.weight)
                 nn.init.zeros_(layer.bias)
-        
+
         # Ensure the last layer outputs logits close to zero
         last_layer = self.policy_network[-1]
         if isinstance(last_layer, nn.Linear):

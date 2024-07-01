@@ -1,9 +1,9 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: Introduction to Reinforcement Learning
+title: Mastering Reinforcement Learning
 author: Tim Miller, The University of Queensland
-logo: logo-3D.svg
+logo: assets/RL.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

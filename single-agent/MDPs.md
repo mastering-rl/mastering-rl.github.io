@@ -121,7 +121,7 @@ As noted above, an action can have multiple possible outcomes. Exactly one outco
 ```
 ````
 
-The **discount factor** $\gamma$ (prounced "gamma") determines how much a future reward should be discounted compared to a current reward.
+The **discount factor** $\gamma$ (pronounced "gamma") determines how much a future reward should be discounted compared to a current reward.
 
 For example, would you prefer \$100 today or \$100 in a year's time? We (humans) often *discount* the future and place a higher value on nearer-term rewards.
 

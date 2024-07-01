@@ -72,8 +72,7 @@ An extensive form game forms a tree, due to its sequential nature.
 
 Consider the following simple game called the *Sharing Game*, from *Essentials in Game Theory* by Leyton-Brown and Shoham:
 
-"*Imagine a brother and sister following
-the following protocol for sharing two indivisible and identical presents from their parents. First the brother suggests a split, which can be one of three—he keeps both, she keeps both, or they each keep one. Then the sister chooses whether to accept or reject the split. If she accepts they each get their allocated present(s), and otherwise neither gets any gift.*"
+> "Imagine a brother and sister following the following protocol for sharing two indivisible and identical presents from their parents. First the brother suggests a split, which can be one of three—he keeps both, she keeps both, or they each keep one. Then the sister chooses whether to accept or reject the split. If she accepts they each get their allocated present(s), and otherwise neither gets any gift."
 
 We assume that the brother and sister both value the presents equally, we can represent this as a tree, so the rewards vectors are (2,0), (1,1), and (0,2) where the first element is the brother's reward and the second element is the sisters reward.
 :::

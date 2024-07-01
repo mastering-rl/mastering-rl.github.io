@@ -143,7 +143,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_initial_deep_q_function" src=https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="1">
     <gif-player id="freeway_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -187,7 +187,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_initial_deep_q_function" src=https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="1">
     <gif-player id="freeway_trained_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -244,7 +244,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_initial_deep_q_function" src=https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="1">
     <gif-player id="frogger_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -271,7 +271,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_deep_q_function" src=https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="1">
     <gif-player id="frogger_trained_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -297,7 +297,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_2000_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_2000_deep_q_function" src=https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="1">
     <gif-player id="frogger_trained_2000_deep_q_function" width=500></gif-player>
 </div>
 <p>

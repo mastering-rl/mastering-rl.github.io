@@ -43,7 +43,7 @@ The learning outcomes of this chapter are:
 3. Compare and contrast pure strategies and mixed strategies.
 ```
 
-## Chapter overview
+## Overview
 
 Normal form games capture many different applications in the field of multi-agent systems. We will just look at the foundation of these, focusing on both deterministic and stochastic strategies for playing the games. We will cover how to solve these analytically.
 

@@ -103,11 +103,7 @@ In linear Q-learning, we store features and weights, not states. What we need to
 
 To represent this, we have two vectors:
 
-1.  A **feature vector**, $f(s,a)$, which is a vector of $n \cdot |A|$
-    different functions, where $n$ is the number of state features and
-    $|A|$ the number of actions. Each function extracts the value of a
-    feature for state-action pair $(s,a)$. We say $f_i(s,a)$ extracts
-    the $i$th feature from the state-action pair $(s,a)$:
+1.  A **feature vector**, $f(s,a)$, which is a vector of $n \cdot |A|$ different functions, where $n$ is the number of state features and $|A|$ the number of actions. Each function extracts the value of a feature for state-action pair $(s,a)$. We say $f_i(s,a)$ extracts  the $i$th feature from the state-action pair $(s,a)$:
 
     $$f(s,a) = \begin{pmatrix} 
         f_1(s,a) \\
@@ -116,13 +112,9 @@ To represent this, we have two vectors:
         f_{n \times |A|}(s,a) \\
         \end{pmatrix}$$
 
-    In the Freeway example, we have a vector with six state features
-    times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance chicken 1 is away from the goal. The function $f_{3}(s, Up)$
-     returns the distance to the nearest car in the row above the first chicken. 
+    In the Freeway example, we have a vector with six state features times four actions. The function $f_1(s,Up)$ returns value of the feature that represents the distance chicken 1 is away from the goal. The function $f_{3}(s, Up)$ returns the distance to the nearest car in the row above the first chicken. 
 
-2.  A **weight vector** $w$ of size $n \times |A|$: one weight for each
-    feature-action pair. $w^a_i$ defines the weight of a feature $i$ for
-    action $a$.
+2.  A **weight vector** $w$ of size $n \times |A|$: one weight for each feature-action pair. $w^a_i$ defines the weight of a feature $i$ for action $a$.
 
 ### Defining State-Action Features 
 
@@ -564,14 +556,12 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 ## Further Reading
 
-- Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and
-    Barto](http://incompleteideas.net/book/the-book-2nd.html)
+- Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and Barto](http://incompleteideas.net/book/the-book-2nd.html)
 
 - Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
 
   - [Human-level control through deep reinforcement learning](http://www.davidqiu.com:8888/research/nature14236.pdf). Mnih, V., et al. Nature 529 (2015).
   - [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602v1.pdf). Mnih, V., et al. arXiV: preprint arXiv:1312.5602 (2013).
 
--   Before AlphaGo there was TD-gammon, which was the first paper to
-    combine reinforcement learning and neural networks:
-    [TD-Gammon, A Self-Teaching Backgammon Program, Achieves Master-Level Play](http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf), : AAAI Technical Report FS-93-02 (1993).
+-   Before AlphaGo there was TD-gammon, which was the first paper to combine reinforcement learning and neural networks:
+    [TD-Gammon, A Self-Teaching Backgammon Program, Achieves Master-Level Play](http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf), AAAI Technical Report FS-93-02 (1993).
