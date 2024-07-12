@@ -1,8 +1,9 @@
-from gridworld import GridWorld
 from gif_maker import GifMaker
-from qtable import QTable
-from single_agent_mcts import SingleAgentMCTS
 from multi_armed_bandit.ucb import UpperConfidenceBounds
+
+from python_code.learners.single_agent_mcts import SingleAgentMCTS
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.qfunctions.qtable import QTable
 
 grid_size = 1.5
 gridworld = GridWorld()

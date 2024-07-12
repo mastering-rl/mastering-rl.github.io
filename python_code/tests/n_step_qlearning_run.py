@@ -1,9 +1,10 @@
-from gridworld import GridWorld
-from qtable import QTable
-from n_step_qlearning import NStepQLearning
-from qlearning import QLearning
-from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+from python_code.learners.n_step_qlearning import NStepQLearning
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.q_policy import QPolicy
+from python_code.qfunctions.qtable import QTable
 
 # Illustrate the n-step feedback from the first episode
 mdp = GridWorld(noise=0.0, goals=[((3, 2), 1)])

@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from qtable import QTable
+from python_code.qfunctions.qtable import QTable
 
 
 """ Run a bandit algorithm for a number of episodes, with each episode

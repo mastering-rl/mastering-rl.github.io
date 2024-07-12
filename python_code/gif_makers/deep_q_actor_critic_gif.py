@@ -1,11 +1,12 @@
-from gridworld import GridWorld
-from deep_q_function import DeepQFunction
-from qlearning import QLearning
-from deep_nn_policy import DeepNeuralNetworkPolicy
-from q_actor_critic import QActorCritic
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from gif_maker import GifMaker
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from side_by_side_comparison import join_gif
+
+from python_code.learners.q_actor_critic import QActorCritic
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
+from python_code.qfunctions.deep_q_function import DeepQFunction
 
 episodes = 4
 grid_size = 1.5

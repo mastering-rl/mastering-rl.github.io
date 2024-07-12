@@ -1,9 +1,12 @@
-from gridworld import GridWorld
-from qlearning import QLearning
-from linear_qfunction import LinearQFunction
-from gridworld_feature_extractor import GridWorldFeatureExtractor
-from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+from python_code.feature_extractors.gridworld_feature_extractor import (
+    GridWorldFeatureExtractor,
+)
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.q_policy import QPolicy
+from python_code.qfunctions.linear_qfunction import LinearQFunction
 
 mdp = GridWorld()
 features = GridWorldFeatureExtractor(mdp)
@@ -14,7 +17,9 @@ print(mdp.q_function_to_string(qfunction))
 print(mdp.policy_to_string(policy))
 
 
-from gridworld_better_feature_extractor import GridWorldBetterFeatureExtractor
+from python_code.feature_extractors.gridworld_better_feature_extractor import (
+    GridWorldBetterFeatureExtractor,
+)
 
 mdp = GridWorld()
 features = GridWorldBetterFeatureExtractor(mdp)

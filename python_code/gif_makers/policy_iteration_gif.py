@@ -1,8 +1,8 @@
-from gridworld import GridWorld
 from gif_maker import GifMaker
-from policy_iteration import PolicyIteration
-from tabular_policy import TabularPolicy
 
+from python_code.learners.policy_iteration import PolicyIteration
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.tabular_policy import TabularPolicy
 
 gridworld = GridWorld()
 gif_maker = GifMaker(mdp=gridworld)

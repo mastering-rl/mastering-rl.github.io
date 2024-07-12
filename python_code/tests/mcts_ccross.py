@@ -1,10 +1,11 @@
-from contested_crossing import ContestedCrossing
+from multi_armed_bandit.ucb import UpperConfidenceBounds
+
+from python_code.learners.single_agent_mcts import SingleAgentMCTS
+from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
+from python_code.policies.q_policy import QPolicy
 
 # from graph_visualisation import GraphVisualisation
-from qtable import QTable
-from single_agent_mcts import SingleAgentMCTS
-from q_policy import QPolicy
-from multi_armed_bandit.ucb import UpperConfidenceBounds
+from python_code.qfunctions.qtable import QTable
 
 mdp = ContestedCrossing()
 qfunction = QTable()

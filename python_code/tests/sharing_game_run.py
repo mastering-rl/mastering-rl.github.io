@@ -1,5 +1,5 @@
-from sharing_game import SharingGame
-from backward_induction import BackwardInduction
+from python_code.extensive_form_games.sharing_game import SharingGame
+from python_code.extensive_form_games.backward_induction import BackwardInduction
 from graph_visualisation import GraphVisualisation
 
 

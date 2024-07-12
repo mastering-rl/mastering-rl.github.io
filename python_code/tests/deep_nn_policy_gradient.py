@@ -1,8 +1,8 @@
-from gridworld import GridWorld
-from policy_gradient import PolicyGradient
-from deep_nn_policy import DeepNeuralNetworkPolicy
 from tests.plot import Plot
 
+from python_code.learners.policy_gradient import PolicyGradient
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
 
 gridworld = GridWorld()
 state_space = len(gridworld.get_initial_state())

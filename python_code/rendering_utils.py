@@ -1,6 +1,6 @@
 import math
 import matplotlib.colors as colours
-from mdp import *
+from python_code.markov_decision_processes.mdp import *
 import matplotlib.pyplot as plt
 
 COLOURS = {

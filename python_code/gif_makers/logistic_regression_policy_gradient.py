@@ -1,8 +1,8 @@
-from gridworld import GridWorld
 from gif_maker import GifMaker
-from policy_gradient import PolicyGradient
-from logistic_regression_policy import LogisticRegressionPolicy
 
+from python_code.learners.policy_gradient import PolicyGradient
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.logistic_regression_policy import LogisticRegressionPolicy
 
 gridworld = GridWorld(
     height=1, width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)]

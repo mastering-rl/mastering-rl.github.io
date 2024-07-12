@@ -8,9 +8,9 @@ import torch
 
 from collections import namedtuple, deque
 
-from deep_q_function import DeepQFunction
-from ale_wrapper import ALEWrapper
-from experience_replay_learner import ExperienceReplayLearner
+from python_code.qfunctions.deep_q_function import DeepQFunction
+from python_code.markov_decision_processes.ale_wrapper import ALEWrapper
+from python_code.learners.experience_replay_learner import ExperienceReplayLearner
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
 
     
@@ -67,11 +67,11 @@ def main():
 
     learner = ExperienceReplayLearner(mdp, EpsilonDecreasing(), policy_net, target_net)
     '''
-    from advantage_actor_critic import AdvantageActorCritic
-    from deep_nn_policy import DeepNeuralNetworkPolicy
-    from deep_value_function import DeepValueFunction
-    from policy_gradient import PolicyGradient
-    from deep_nn_policy import DeepNeuralNetworkPolicy
+    from python_code.learners.advantage_actor_critic import AdvantageActorCritic
+    from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
+    from python_code.value_functions.deep_value_function import DeepValueFunction
+    from python_code.learners.policy_gradient import PolicyGradient
+    from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
 
     critic = DeepValueFunction(mdp=mdp, state_space=state_space, hidden_dim=128)
     actor = DeepNeuralNetworkPolicy(mdp, state_space=state_space, action_space=action_space)

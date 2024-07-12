@@ -1,6 +1,6 @@
-from ale_wrapper import ALEWrapper
-from qlearning import QLearning
-from deep_q_function import DeepQFunction
+from python_code.markov_decision_processes.ale_wrapper import ALEWrapper
+from python_code.learners.qlearning import QLearning
+from python_code.qfunctions.deep_q_function import DeepQFunction
 from tests.plot import Plot
 
 version = "Freeway-ramDeterministic-v4"

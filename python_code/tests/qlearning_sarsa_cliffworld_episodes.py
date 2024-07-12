@@ -1,7 +1,7 @@
-from gridworld import CliffWorld
 from tests.compare_convergence_curves import qlearning_vs_sarsa
-from gridworld import CliffWorld
 from tests.plot import Plot
+
+from python_code.markov_decision_processes.gridworld import CliffWorld
 
 mdp_q = CliffWorld()
 mdp_s = CliffWorld()

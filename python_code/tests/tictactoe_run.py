@@ -1,5 +1,5 @@
-from extensive_form_game import ExtensiveFormGame
-from tictactoe import TicTacToe
+from python_code.extensive_form_games.extensive_form_game import ExtensiveFormGame
+from python_code.extensive_form_games.tictactoe import TicTacToe
 
 tictactoe = TicTacToe()
 state = tictactoe.get_initial_state()

@@ -1,8 +1,8 @@
-from qtable import QTable
-from qlearning import QLearning
-from sarsa import SARSA
-from stochastic_q_policy import StochasticQPolicy
-from n_step_qlearning import NStepQLearning
+from python_code.qfunctions.qtable import QTable
+from python_code.learners.qlearning import QLearning
+from python_code.learners.sarsa import SARSA
+from python_code.policies.stochastic_q_policy import StochasticQPolicy
+from python_code.learners.n_step_qlearning import NStepQLearning
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from tests.plot import Plot
 

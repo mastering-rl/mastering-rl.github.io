@@ -1,10 +1,10 @@
-from contested_crossing import ContestedCrossing
-from value_iteration import ValueIteration
-from tabular_value_function import TabularValueFunction
-from value_policy import ValuePolicy
-from stochastic_value_policy import StochasticValuePolicy
 from tests.plot import Plot
 
+from python_code.learners.value_iteration import ValueIteration
+from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
+from python_code.policies.stochastic_value_policy import StochasticValuePolicy
+from python_code.policies.value_policy import ValuePolicy
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 ccross = ContestedCrossing()
 values = TabularValueFunction()
@@ -17,9 +17,7 @@ for x in [1, 2]:
                 "state: {0} - value: {1}".format(
                     (x, y, ship_health, enemy_health, direction),
                     round(
-                        values.get_value(
-                            (x, y, ship_health, enemy_health, direction)
-                        ),
+                        values.get_value((x, y, ship_health, enemy_health, direction)),
                         3,
                     ),
                 )

@@ -1,9 +1,9 @@
 import torch
 
-from experience_replay_learner import ExperienceReplayLearner
+from python_code.learners.experience_replay_learner import ExperienceReplayLearner
 from old_deep_q_function import DeepQFunction
-from q_policy import QPolicy
-from ale_wrapper import ALEWrapper
+from python_code.policies.q_policy import QPolicy
+from python_code.markov_decision_processes.ale_wrapper import ALEWrapper
 from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
 from tests.plot import Plot
 

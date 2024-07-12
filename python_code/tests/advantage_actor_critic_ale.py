@@ -1,9 +1,9 @@
 import torch
 
-from advantage_actor_critic import AdvantageActorCritic
-from deep_nn_policy import DeepNeuralNetworkPolicy
-from deep_value_function import DeepValueFunction
-from ale_wrapper import ALEWrapper
+from python_code.learners.advantage_actor_critic import AdvantageActorCritic
+from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
+from python_code.value_functions.deep_value_function import DeepValueFunction
+from python_code.markov_decision_processes.ale_wrapper import ALEWrapper
 from tests.plot import Plot
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

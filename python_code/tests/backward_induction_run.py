@@ -1,5 +1,5 @@
-from extensive_form_game import GameNode
-from tictactoe import TicTacToe
+from python_code.extensive_form_games.extensive_form_game import GameNode
+from python_code.extensive_form_games.tictactoe import TicTacToe
 from graph_visualisation import GraphVisualisation
 
 

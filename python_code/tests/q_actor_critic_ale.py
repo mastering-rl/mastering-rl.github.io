@@ -1,9 +1,9 @@
 import torch
 
-from q_actor_critic import QActorCritic
-from deep_nn_policy import DeepNeuralNetworkPolicy
+from python_code.learners.q_actor_critic import QActorCritic
+from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
 from old_deep_q_function import DeepQFunction
-from ale_wrapper import ALEWrapper
+from python_code.markov_decision_processes.ale_wrapper import ALEWrapper
 from tests.plot import Plot
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

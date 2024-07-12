@@ -1,6 +1,6 @@
 
-from contested_crossing import ContestedCrossing
-import contested_crossing as cc
+from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
+import python_code.markov_decision_processes.contested_crossing as cc
 
 ccross = ContestedCrossing()
 for cpoint in [(1,2),(1,3),(2,4)]:

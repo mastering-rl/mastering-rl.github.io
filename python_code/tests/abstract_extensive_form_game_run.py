@@ -1,5 +1,5 @@
-from extensive_form_game import ExtensiveFormGame
-from backward_induction import BackwardInduction
+from python_code.extensive_form_games.extensive_form_game import ExtensiveFormGame
+from python_code.extensive_form_games.backward_induction import BackwardInduction
 from graph_visualisation import GraphVisualisation
 
 game = AbstractExtensiveFormGame()
