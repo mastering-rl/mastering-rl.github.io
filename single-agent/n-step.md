@@ -54,7 +54,7 @@ These two methods have some weaknesses in this basic format:
     of $Q(s,a)$, even if we have visited states that are very similar to
     $s$.
 
-To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
+To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future rewards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
 n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire episodes are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
 
@@ -75,7 +75,7 @@ SARSA. The version for Q-learning is similar.
 
 ### Intuition
 
-The details and algorithm for n-step reinforcement learning making it seem more complicated than it really is. 
+The details and algorithm for n-step reinforcement learning make it seem more complicated than it really is. 
 At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received, plus the discounted future rewards from $n$ states ahead.
 
 Consider the following interative gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
@@ -90,17 +90,17 @@ Consider the following interative gif, which shows the update over an episode of
 
 At time $t=0$, no update can be made because there is no action.
 
-At time $t=1$, after action $a_0$, no update is done yet. In standard TD learning, we would update $Q(s_0, s_0)$ here. However, because we have only one reward instead of three ($n=3$), we delay the update.
+At time $t=1$, after action $a_0$, no update is done yet. In standard TD learning, we would update $Q(s_0, a_0)$ here. However, because we have only one reward instead of three ($n=3$), we delay the update.
 
 At time $t=2$, after action $a_1$, again we do not update because we have just two rewards, instead of three.
 
-At time $t=3$, after action $a_2$, we have three rewards, so we do our first update. But note: we update $Q(s_0, a_0)$ -- the first state-action pair in the sequence, rather than the most recent state action pair $(s_2,a_2)$. Notice that we consider the rewards $r_1$, $r_2$, and $r_3$ (appropriately discounted), and use the discounted future reward $V(s_3)$.  Effectively, the update of $Q(s_0, a_0)$ "looks forward" three actions into the future instead one, because $n=3$.
+At time $t=3$, after action $a_2$, we have three rewards, so we do our first update. But note: we update $Q(s_0, a_0)$ -- the first state-action pair in the sequence, rather than the most recent state action pair $(s_2,a_2)$. Notice that we consider the rewards $r_1$, $r_2$, and $r_3$ (appropriately discounted), and use the discounted future reward $V(s_3)$.  Effectively, the update of $Q(s_0, a_0)$ "looks forward" three actions into the future instead of one, because $n=3$.
 
 At time $t=4$, after action $a_3$, the update is similar: we now update $Q(s_1, a_1)$.
 
 At time $t=5$, it is similar again, except that state $s_5$ is a terminal state, so we do not include the discounted future reward -- there is no state $s_6$ such that we can estimate $V(s_6)$, so it is omitted.
 
-At time $t=6$, we can see that the window slides beyond the length of the episode. However, even though we have reached the terminal state, we continue updating --- this time updating $Q(s_3, s_3)$. We need to do this because we have still not updated the Q-values for all state-action pairs that we have executed.
+At time $t=6$, we can see that the window slides beyond the length of the episode. However, even though we have reached the terminal state, we continue updating --- this time updating $Q(s_3, a_3)$. We need to do this because we have still not updated the Q-values for all state-action pairs that we have executed.
 
 At time $t=7$, we do the final update --- this time for $Q(s_4,a_4)$; and the episode is complete.
 
@@ -121,7 +121,7 @@ If $G_t$ is the value received at time-step $t$, then
 
  $$ G_t = r_t + \gamma G_{t+1} $$
 
-In TD(0) methods such as Q-learning and SARSA, we do not know $G_{t+1}$
+In TD(1) methods such as Q-learning and SARSA, we do not know $G_{t+1}$
 when updating $Q(s,a)$, so we estimate using bootstrapping:
 
  $$ G_t = r_t + \gamma \cdot V(s_{t+1}) $$ 
@@ -262,7 +262,7 @@ This is similar to standard SARSA, except that we are storing the last $n$ state
 
 As with SARSA and Q-learning, we iterate over each step in the episode. The first branch simply executes the selected action, selects a new action to apply, and stores the state, action, and reward.
 
-It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $rs$, but remembering that they must be discounted based on their position in $rs$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $ss_0$. The $n-step$ reward in $G$ somes first. Then we do the actualy update, which updates the state-action pair $(ss_0, as_0)$ that is $n$-steps back.
+It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $rs$, but remembering that they must be discounted based on their position in $rs$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $ss_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(ss_0, as_0)$ that is $n$-steps back.
 
 The final part of this branch removes the first element from the list of states, actions, and rewards, and moves on to the next state.
 
