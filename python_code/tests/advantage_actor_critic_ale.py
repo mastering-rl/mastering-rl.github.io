@@ -22,19 +22,19 @@ state_space = len(mdp.get_initial_state())
 
 runs = 5
 episodes = 500
-all_rewards = []
-for _ in range(runs):
+for i in range(runs):
 
     # Instantiate the critic
-    critic = DeepValueFunction(state_space, hidden_dim=32)
+    critic = DeepValueFunction(state_space, hidden_dim=16)
 
     # Instantiate the actor
-    actor = DeepNeuralNetworkPolicy(state_space, action_space, hidden_dim=32)
+    hidden_dim_actor = params[i][1]
+    actor = DeepNeuralNetworkPolicy(state_space, action_space, hidden_dim=16)
 
     advantage_actor_critic = AdvantageActorCritic(mdp, actor, critic)
     rewards = advantage_actor_critic.execute(episodes, max_episode_length=500)
 
     all_rewards.append(rewards)
 
-labels = ["Advantage actor critic "  + str(i) for i in range(runs)]
+labels = ["Advantage actor critic "  + str(params[i]) for i in range(runs)]
 Plot.plot_cumulative_rewards(labels, all_rewards, smoothing_factor=0.9)

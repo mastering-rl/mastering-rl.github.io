@@ -16,7 +16,6 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
     def __init__(self, state_space, action_space, hidden_dim=64, alpha=0.001, stochastic=True):
         self.state_space = state_space
         self.action_space = action_space
-        self.temperature = 6.0
 
         # Define the policy structure as a sequential neural network.
         self.policy_network = nn.Sequential(

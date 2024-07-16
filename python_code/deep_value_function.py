@@ -23,6 +23,22 @@ class DeepValueFunction(ValueFunction):
         )
         self.optimiser = Adam(self.value_network.parameters(), lr=alpha)
 
+        # Initialize weights using Xavier initialization and biases to zero
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for layer in self.value_network:
+            if isinstance(layer, nn.Linear):
+                nn.init.xavier_uniform_(layer.weight)
+                nn.init.zeros_(layer.bias)
+
+        # Ensure the last layer outputs logits close to zero
+        last_layer = self.value_network[-1]
+        if isinstance(last_layer, nn.Linear):
+            with torch.no_grad():
+                last_layer.weight.fill_(0)
+                last_layer.bias.fill_(0)
+
     def update(self, state, delta):
         self.update_batch([state], [delta])
 

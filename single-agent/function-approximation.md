@@ -464,7 +464,8 @@ From this, we implement the `update` method, which uses the PyTorch implementati
 We also need to implement the `get_q_value` method to pass through the network to get our Q-values.
 
 ```{code-cell} ipython3
-:load: "../python_code/deep_q_function.py"
+:load: "../python_code/old_deep_q_function.py"
+
 ```
 
 Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.
@@ -473,7 +474,6 @@ We can now use this implementation by creating a standard Q-learning agent with 
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_qlearning_run.py"
-
 ```
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation. Therefore, we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.

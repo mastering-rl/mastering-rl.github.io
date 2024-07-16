@@ -163,7 +163,7 @@ class Plot:
 
         plt.xlabel("Episode")
         plt.ylabel("Cumulative reward")
-        plt.legend()
+        plt.legend(loc='upper left')
         plt.gca().set_facecolor(Plot.BACKGROUND_COLOUR)
         plt.grid(color="white", linewidth=1.5)
         plt.show()

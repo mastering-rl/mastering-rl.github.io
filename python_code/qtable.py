@@ -13,6 +13,9 @@ class QTable(QFunction):
 
     def get_q_value(self, state, action):
         return self.qtable[(state, action)]
+    
+    def get_q_values(self, states, actions):
+        return [self.get_q_value(state, action) for state, action in zip(states, actions)]
 
     def save(self, filename):
         with open(filename, "w") as file:

@@ -34,7 +34,7 @@ class ValueIteration:
                 # V(s) = max_a Q(sa)
                 max_q = qtable.get_max_q(state, self.mdp.get_actions(state))
                 delta = max(delta, abs(self.values.get_value(state) - max_q))
-                new_values.update(state, max_q)
+                new_values.add(state, max_q)
 
             self.values.merge(new_values)
 

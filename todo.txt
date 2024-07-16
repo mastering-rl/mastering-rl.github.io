@@ -6,6 +6,7 @@ Images:
 - actor critic
 
 High priority:
+- adjust update rules to account for terminal states (1 - done)
 - fix logistic regression policy gradent to just use one log function and calculate pi(s,a_1) using 1-pi(s,a_0)
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
 - add experience replay code to notes
