@@ -1,4 +1,4 @@
-from graph_visualisation import GraphVisualisation
+from python_code.utils.graph_visualisation import GraphVisualisation
 from multi_armed_bandit.ucb import UpperConfidenceBounds
 
 from python_code.learners.single_agent_mcts import SingleAgentMCTS

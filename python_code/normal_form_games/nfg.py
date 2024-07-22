@@ -1,7 +1,7 @@
 import matplotlib.colors as colours
 import matplotlib.pyplot as plt
 import numpy as np
-from rendering_utils import COLOURS
+from python_code.utils.rendering_utils import COLOURS
 
 
 def plot_normal_form_game(

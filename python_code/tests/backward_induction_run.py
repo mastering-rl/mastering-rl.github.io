@@ -1,6 +1,6 @@
 from python_code.extensive_form_games.extensive_form_game import GameNode
 from python_code.extensive_form_games.tictactoe import TicTacToe
-from graph_visualisation import GraphVisualisation
+from python_code.utils.graph_visualisation import GraphVisualisation
 
 
 tictactoe = TicTacToe()

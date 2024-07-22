@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from rendering_utils import *
+from python_code.utils.rendering_utils import *
 
 from python_code.markov_decision_processes.mdp import *
 
