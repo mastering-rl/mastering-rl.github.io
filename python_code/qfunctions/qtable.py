@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+
 from python_code.qfunctions.qfunction import QFunction
 
 

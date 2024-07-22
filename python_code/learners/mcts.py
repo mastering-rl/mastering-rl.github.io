@@ -1,6 +1,6 @@
 import math
-import time
 import random
+import time
 from collections import defaultdict
 
 
@@ -33,18 +33,18 @@ class Node:
 
     """ Select a node that is not fully expanded """
 
-    def select(self): abstract
-
+    def select(self):
+        abstract
 
     """ Expand a node if it is not a terminal node """
 
-    def expand(self): abstract
-
+    def expand(self):
+        abstract
 
     """ Backpropogate the reward back to the parent node """
 
-    def back_propagate(self, reward, child): abstract
-
+    def back_propagate(self, reward, child):
+        abstract
 
     """ Return the value of this node """
 
@@ -92,8 +92,8 @@ class MCTS:
 
     """ Create a root node representing an initial state """
 
-    def create_root_node(self): abstract
-
+    def create_root_node(self):
+        abstract
 
     """ Choose a random action. Heustics can be used here to improve simulations. """
 

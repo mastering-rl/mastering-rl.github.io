@@ -1,5 +1,6 @@
-from python_code.policies.policy import StochasticPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
+from python_code.policies.policy import StochasticPolicy
 
 """ Make a stochastic policy from a qfunction and a mutli-armed bandit.
     This helps to avoid e.g. loops in policies.
@@ -8,7 +9,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
 class StochasticQPolicy(StochasticPolicy):
-    def __init__(self, qfunction, bandit=EpsilonGreedy(epsilon=.05)):
+    def __init__(self, qfunction, bandit=EpsilonGreedy(epsilon=0.05)):
         self.qfunction = qfunction
         self.bandit = bandit
 

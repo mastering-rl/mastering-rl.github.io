@@ -3,13 +3,11 @@ import random
 
 from python_code.policies.policy import StochasticPolicy
 
-
 """ A two-action policy implemented using logistic regression from first principles """
 
 
 class LogisticRegressionPolicy(StochasticPolicy):
-
-    """ Create a new policy, with given parameters theta (randomly if theta is None)"""
+    """Create a new policy, with given parameters theta (randomly if theta is None)"""
 
     def __init__(self, actions, num_params, alpha=0.1, theta=None):
         assert len(actions) == 2
@@ -47,7 +45,7 @@ class LogisticRegressionPolicy(StochasticPolicy):
     """ Get the probability of applying an action in a state """
 
     def get_probability(self, state, action):
-        # Calculate y as the linearly weight product of the 
+        # Calculate y as the linearly weight product of the
         # policy parameters (theta) and the state
         y = self.dot_product(state, self.theta)
 

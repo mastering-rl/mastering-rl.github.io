@@ -22,16 +22,16 @@ class CCrossFeatureExtractor(FeatureExtractor):
             if a == action and state != ContestedCrossing.TERMINAL:
                 feature_values += [(state[x] + e) / (self.mdp.width + e)]
                 feature_values += [(state[y] + e) / (self.mdp.height + e)]
+                feature_values += [self.mdp.get_state_danger(state)]
                 feature_values += [
-                    self.mdp.get_state_danger(state)
+                    (state[x] - self.mdp.battery[x] + state[y] - self.mdp.battery[y])
+                    / (self.mdp.width + self.mdp.height)
                 ]
-                feature_values += [(state[x]-self.mdp.battery[x]+
-                                    state[y]-self.mdp.battery[y])/
-                                   (self.mdp.width+self.mdp.height)]
             else:
                 for _ in range(0, self.num_features()):
                     feature_values += [0.0]
         return feature_values
+
 
 class CCrossSmallFeatureExtractor(FeatureExtractor):
 
@@ -53,9 +53,10 @@ class CCrossSmallFeatureExtractor(FeatureExtractor):
             if a == action and state != ContestedCrossing.TERMINAL:
                 feature_values += [(state[x] + e) / (self.mdp.width + e)]
                 feature_values += [(state[y] + e) / (self.mdp.height + e)]
-                feature_values += [(state[x]-self.mdp.battery[x]+
-                                    state[y]-self.mdp.battery[y])/
-                                   (self.mdp.width+self.mdp.height)]
+                feature_values += [
+                    (state[x] - self.mdp.battery[x] + state[y] - self.mdp.battery[y])
+                    / (self.mdp.width + self.mdp.height)
+                ]
             else:
                 for _ in range(0, self.num_features()):
                     feature_values += [0.0]

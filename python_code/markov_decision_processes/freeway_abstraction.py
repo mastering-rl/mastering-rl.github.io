@@ -39,21 +39,24 @@ class FreewayAbstraction(Freeway):
             adjusted_y_position = y_position - lane_start_offset
             lane_number = y_position // lane_height
 
-
         # the relative position of the cars in the same lane, above lane, and below lane
         car_positions_left_to_right = [
-            FreewayAbstraction.X_POSITION - car_y
-            if 0 <= FreewayAbstraction.X_POSITION - car_y <= THRESHOLD
-            else THRESHOLD
-            for car_y in state[lane_number-1:lane_number+1]
+            (
+                FreewayAbstraction.X_POSITION - car_y
+                if 0 <= FreewayAbstraction.X_POSITION - car_y <= THRESHOLD
+                else THRESHOLD
+            )
+            for car_y in state[lane_number - 1 : lane_number + 1]
         ]
         car_positions_right_to_left = [
-            car_y - FreewayAbstraction.X_POSITION
-            if 0 <= car_y - FreewayAbstraction.X_POSITION <= THRESHOLD
-            else THRESHOLD
-            for car_y in state[lane_number-1:lane_number+1]
+            (
+                car_y - FreewayAbstraction.X_POSITION
+                if 0 <= car_y - FreewayAbstraction.X_POSITION <= THRESHOLD
+                else THRESHOLD
+            )
+            for car_y in state[lane_number - 1 : lane_number + 1]
         ]
-        '''
+        """
         car_positions_left_to_right = [
             True
             if 0 <= FreewayAbstraction.X_POSITION - car_y <= THRESHOLD
@@ -66,7 +69,7 @@ class FreewayAbstraction(Freeway):
             else False
             for car_y in state[lane_number-1:lane_number+1]
         ]    
-        '''
+        """
         return tuple(
             [y_position] + car_positions_left_to_right + car_positions_right_to_left
         )

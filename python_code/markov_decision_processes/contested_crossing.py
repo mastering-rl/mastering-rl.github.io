@@ -1,9 +1,10 @@
+import warnings
 from collections import defaultdict
 
-from python_code.markov_decision_processes.mdp import *
-from rendering_utils import *
 import numpy as np
-import warnings
+from rendering_utils import *
+
+from python_code.markov_decision_processes.mdp import *
 
 SUNK_REWARD = -10
 BERTH_REWARD = 10
@@ -342,9 +343,9 @@ class ContestedCrossing(MDP):
         for act in [W, NW, NE, E, SE, SW]:
             if not self._blocked((x, y), act):
                 valid_actions.append(act)
-        if valid_actions==[]:
+        if valid_actions == []:
             valid_actions = [self.TERMINATE]
-            #print("no valid actions at {0}".format(state))
+            # print("no valid actions at {0}".format(state))
         return valid_actions
 
     def get_initial_state(self):
@@ -371,9 +372,7 @@ class ContestedCrossing(MDP):
         danger = (
             self.high_danger
             if dzone == HI_DGR
-            else self.low_danger
-            if dzone == LO_DGR
-            else 0.0
+            else self.low_danger if dzone == LO_DGR else 0.0
         )
         death_chance = 1 - pow((1 - pow(danger, state[2])), state[3])
         return death_chance
@@ -396,11 +395,11 @@ class ContestedCrossing(MDP):
         damage_prob = (
             0.0
             if bh < 1
-            else self.high_danger
-            if damage_type == HI_DGR
-            else self.low_danger
-            if damage_type == LO_DGR
-            else 0.0
+            else (
+                self.high_danger
+                if damage_type == HI_DGR
+                else self.low_danger if damage_type == LO_DGR else 0.0
+            )
         )
         move_prob = sh / self.ship_full_health
         # if ship is shooting, keep going in the direction we're going
@@ -478,7 +477,7 @@ class ContestedCrossing(MDP):
         transitions = [t for t in transitions if t[1] > 0.0]
         # Merge any duplicate outcomes
         merged = defaultdict(lambda: 0.0)
-        for (state, probability) in transitions:
+        for state, probability in transitions:
             merged[state] = merged[state] + probability
 
         transitions = []
@@ -498,7 +497,7 @@ class ContestedCrossing(MDP):
         else:
             reward = self.action_cost
         step = len(self.episode_rewards)
-        self.episode_rewards += [reward * (self.discount_factor ** step)]
+        self.episode_rewards += [reward * (self.discount_factor**step)]
         return reward
 
     def get_discount_factor(self):

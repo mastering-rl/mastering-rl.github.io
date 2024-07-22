@@ -1,19 +1,21 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.distributions.categorical import Categorical
 from torch.optim import Adam
-import torch.nn.functional as F
 
 from python_code.policies.policy import StochasticPolicy
 
 
 class DeepNeuralNetworkPolicy(StochasticPolicy):
     """
-    An implementation of a policy that uses a PyTorch (https://pytorch.org/) 
+    An implementation of a policy that uses a PyTorch (https://pytorch.org/)
     deep neural network to represent the underlying policy.
     """
 
-    def __init__(self, state_space, action_space, hidden_dim=64, alpha=0.001, stochastic=True):
+    def __init__(
+        self, state_space, action_space, hidden_dim=64, alpha=0.001, stochastic=True
+    ):
         self.state_space = state_space
         self.action_space = action_space
         self.temperature = 6.0
@@ -57,7 +59,7 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         action_logits = self.policy_network(state)
 
         # Mark out the actions that are unavailable
-        mask = torch.full_like(action_logits, float('-inf'))
+        mask = torch.full_like(action_logits, float("-inf"))
         mask[actions] = 0
         masked_logits = action_logits + mask
 

@@ -4,6 +4,7 @@ from python_code.policies.policy import DeterministicPolicy
     This policy cannot be updated -- it is only for execution.
 """
 
+
 class QPolicy(DeterministicPolicy):
     def __init__(self, qfunction):
         self.qfunction = qfunction

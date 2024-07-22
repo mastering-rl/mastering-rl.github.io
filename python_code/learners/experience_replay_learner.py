@@ -1,11 +1,11 @@
 import random
-
-from collections import namedtuple, deque
+from collections import deque, namedtuple
 from itertools import count
 
 Transition = namedtuple(
     "Transition", ("state", "action", "next_state", "reward", "done")
 )
+
 
 class ReplayMemory:
     def __init__(self, memory_size=10000):
@@ -42,7 +42,7 @@ class ExperienceReplayLearner:
         self.update_period = update_period
         self.target_qfunction.soft_update(self.policy_qfunction)
 
-    def execute(self, episodes=100, max_episode_length=float('inf')):
+    def execute(self, episodes=100, max_episode_length=float("inf")):
 
         episode_rewards = []
         for episode in range(episodes):
@@ -57,7 +57,7 @@ class ExperienceReplayLearner:
                     next_state, actions, self.policy_qfunction
                 )
 
-                '''
+                """
                 if done:
                     next_state2 = None
                     #next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
@@ -67,15 +67,17 @@ class ExperienceReplayLearner:
                     import torch
                     next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
                     self.memory.push(state, action, next_state2, reward, done)
-                '''
+                """
                 self.memory.push(state, action, next_state, reward, done)
 
                 # Perform an update on the policy qfunction using a batch
-                if len(self.memory) >= self.batch_size and step % self.update_period == 0:
+                if (
+                    len(self.memory) >= self.batch_size
+                    and step % self.update_period == 0
+                ):
                     transitions = self.memory.sample(self.batch_size)
                     batch = Transition(*zip(*transitions))
 
-                    
                     deltas = self.get_deltas(
                         batch.reward,
                         batch.state,
@@ -84,9 +86,11 @@ class ExperienceReplayLearner:
                         batch.done,
                     )
 
-                    self.policy_qfunction.batch_update(batch.state, batch.action, deltas)
+                    self.policy_qfunction.batch_update(
+                        batch.state, batch.action, deltas
+                    )
 
-                    '''
+                    """
 
                     non_final_mask = torch.tensor(tuple(map(lambda s: s is False,
                                               batch.done)), dtype=torch.bool)
@@ -103,8 +107,7 @@ class ExperienceReplayLearner:
                         next_state_values[non_final_mask] = self.target_qfunction(non_final_next_states).max(1).values
                     
                     self.policy_qfunction.optimize_model(batch.state, batch.action, batch.next_state, batch.done, batch.reward, next_state_values)
-                    '''
-                    
+                    """
 
                 # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)
@@ -112,7 +115,7 @@ class ExperienceReplayLearner:
                 # Move to the next state
                 state = next_state
                 action = next_action
-                episode_reward += reward * (self.mdp.discount_factor ** step)
+                episode_reward += reward * (self.mdp.discount_factor**step)
 
                 if done or step == max_episode_length:
                     break
@@ -127,8 +130,11 @@ class ExperienceReplayLearner:
         q_values = self.policy_qfunction.get_q_values(states, actions)
         next_state_q_values = self.state_values(next_states, actions)
         deltas = [
-            reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
-            if not done else (reward - q_value)
+            (
+                reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
+                if not done
+                else (reward - q_value)
+            )
             for reward, next_state_q_value, q_value, done in zip(
                 rewards, next_state_q_values, q_values, dones
             )

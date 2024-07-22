@@ -1,5 +1,6 @@
 from python_code.learners.model_free_learner import ModelFreeLearner
 
+
 class TemporalDifferenceLearner(ModelFreeLearner):
     def __init__(self, mdp, bandit, qfunction):
         self.mdp = mdp
@@ -26,7 +27,7 @@ class TemporalDifferenceLearner(ModelFreeLearner):
 
                 state = next_state
                 action = next_action
-                episode_reward += reward * (self.mdp.discount_factor ** step)
+                episode_reward += reward * (self.mdp.discount_factor**step)
                 step += 1
 
             rewards.append(episode_reward)

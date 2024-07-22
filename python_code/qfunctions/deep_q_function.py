@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
+import torch.optim as optim
 
 from python_code.qfunctions.qfunction import QFunction
 
@@ -26,7 +26,9 @@ class DeepQFunction(nn.Module, QFunction):
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
         actions_tensor = torch.as_tensor(actions, dtype=torch.long)
         with torch.no_grad():
-            q_values = self.forward(states_tensor).gather(1, actions_tensor.unsqueeze(1))
+            q_values = self.forward(states_tensor).gather(
+                1, actions_tensor.unsqueeze(1)
+            )
         return q_values.squeeze(1).tolist()
 
     def get_q_value(self, state, action):
@@ -61,26 +63,28 @@ class DeepQFunction(nn.Module, QFunction):
     def update(self, state, action, delta):
         self.batch_update([state], [action], [delta])
 
-    def optimize_model_old(self, states, actions, next_states, dones, rewards, target_net):
+    def optimize_model_old(
+        self, states, actions, next_states, dones, rewards, target_net
+    ):
 
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
         actions_tensor = torch.as_tensor(actions, dtype=torch.long)
-        #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+        # deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
         rewards_tensor = torch.as_tensor(rewards, dtype=torch.float32)
 
-        #next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
+        # next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
         # Compute a mask of non-final states and concatenate the batch elements
         # (a final state would've been the one after which simulation ended)
-        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                              next_states)), dtype=torch.bool)
-        non_final_next_states = torch.cat([s for s in next_states
-                                                    if s is not None])
+        non_final_mask = torch.tensor(
+            tuple(map(lambda s: s is not None, next_states)), dtype=torch.bool
+        )
+        non_final_next_states = torch.cat([s for s in next_states if s is not None])
         # Compute Q-values for current states
         state_action_values = self.forward(states_tensor).gather(
             1, actions_tensor.unsqueeze(1)
         )
 
-        #state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
+        # state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
 
         # Compute V(s_{t+1}) for all next states.
         # Expected values of actions for non_final_next_states are computed based
@@ -89,7 +93,9 @@ class DeepQFunction(nn.Module, QFunction):
         # state value or 0 in case the state was final.
         next_state_values = torch.zeros(len(states))
         with torch.no_grad():
-            next_state_values[non_final_mask] = target_net(non_final_next_states).max(1).values
+            next_state_values[non_final_mask] = (
+                target_net(non_final_next_states).max(1).values
+            )
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * 1.0) + rewards_tensor
 
@@ -104,36 +110,37 @@ class DeepQFunction(nn.Module, QFunction):
         torch.nn.utils.clip_grad_value_(self.parameters(), 100)
         self.optimiser.step()
 
-    def optimize_model(self, states, actions, next_states, dones, rewards, next_state_values):
+    def optimize_model(
+        self, states, actions, next_states, dones, rewards, next_state_values
+    ):
 
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
         actions_tensor = torch.as_tensor(actions, dtype=torch.long)
-        #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
+        # deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
         rewards_tensor = torch.as_tensor(rewards, dtype=torch.float32)
 
-        #next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
+        # next_states_tensor = torch.as_tensor(next_states, dtype=torch.float32)
         # Compute a mask of non-final states and concatenate the batch elements
         # (a final state would've been the one after which simulation ended)
-        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                              next_states)), dtype=torch.bool)
-        non_final_next_states = torch.cat([s for s in next_states
-                                                    if s is not None])
- 
-        
+        non_final_mask = torch.tensor(
+            tuple(map(lambda s: s is not None, next_states)), dtype=torch.bool
+        )
+        non_final_next_states = torch.cat([s for s in next_states if s is not None])
+
         # Compute Q-values for current states
         state_action_values = self.forward(states_tensor).gather(
             1, actions_tensor.unsqueeze(1)
         )
 
-        #state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
+        # state_action_values = self.forward(states_tensor) #.gather(1, actions_tensor)
 
         # Compute V(s_{t+1}) for all next states.
         # Expected values of actions for non_final_next_states are computed based
         # on the "older" target_net; selecting their best reward with max(1).values
         # This is merged based on the mask, such that we'll have either the expected
         # state value or 0 in case the state was final.
-        #next_state_values = torch.zeros(len(states))
-        #with torch.no_grad():
+        # next_state_values = torch.zeros(len(states))
+        # with torch.no_grad():
         #    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1).values
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * 1.0) + rewards_tensor
@@ -156,9 +163,7 @@ class DeepQFunction(nn.Module, QFunction):
         deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
 
         # Compute current Q-values for current state-action pairs
-        q_values = self.forward(states_tensor).gather(
-            1, actions_tensor.unsqueeze(1)
-        )
+        q_values = self.forward(states_tensor).gather(1, actions_tensor.unsqueeze(1))
 
         # Calculate the loss. Deltas already contains the lost, but connect it
         # to q_values via the loss function to enable back propagation

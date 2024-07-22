@@ -1,9 +1,9 @@
-import cv2
 from itertools import count
-import gymnasium as gym
 
-import matplotlib.pyplot as plt
+import cv2
+import gymnasium as gym
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 
 from python_code.markov_decision_processes.mdp import MDP
 
@@ -65,6 +65,7 @@ class ALEWrapper(MDP):
         return (tuple(observation), reward, terminated)
 
     """ Execute a policy on an environment and return frames from it. """
+
     def get_frames(self, policy, max_episode_length=float("inf")):
 
         # Check that the render mode is rgb_array
@@ -82,9 +83,9 @@ class ALEWrapper(MDP):
             frames.append(self.render())
             if done or steps == max_episode_length:
                 break
-        
+
         return frames
-    
+
     """ Execute a policy on an environment and create a video from it. """
 
     def create_video(self, policy, filename, max_episode_length=float("inf")):
@@ -105,14 +106,16 @@ class ALEWrapper(MDP):
 
     def create_gif(self, policy, filename, max_episode_length=float("inf")):
         frames = self.get_frames(policy, max_episode_length=max_episode_length)
-        plt.figure(figsize=(frames[0].shape[1]/30.0, frames[0].shape[0]/30.0), dpi=100)
+        plt.figure(
+            figsize=(frames[0].shape[1] / 30.0, frames[0].shape[0] / 30.0), dpi=100
+        )
         patch = plt.imshow(frames[0])
-        plt.axis('off')
+        plt.axis("off")
         plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
 
         def update(frame):
             patch.set_data(frame)
-            return patch,
+            return (patch,)
 
         anim = animation.FuncAnimation(plt.gcf(), update, frames=frames, interval=50)
         anim.save(filename + ".gif")

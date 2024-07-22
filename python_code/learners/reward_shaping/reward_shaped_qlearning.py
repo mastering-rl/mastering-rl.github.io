@@ -12,5 +12,7 @@ class RewardShapedQLearning(QLearning):
         state_potential = self.potential.get_potential(state)
         next_state_potential = self.potential.get_potential(next_state)
         potential = self.mdp.discount_factor * next_state_potential - state_potential
-        delta = reward + potential + self.mdp.discount_factor * next_state_value - q_value
+        delta = (
+            reward + potential + self.mdp.discount_factor * next_state_value - q_value
+        )
         return delta

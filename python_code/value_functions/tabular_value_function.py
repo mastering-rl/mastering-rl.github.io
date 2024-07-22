@@ -1,5 +1,7 @@
 from collections import defaultdict
+
 from python_code.value_functions.value_function import ValueFunction
+
 
 class TabularValueFunction(ValueFunction):
     def __init__(self, default=0.0):
@@ -14,4 +16,3 @@ class TabularValueFunction(ValueFunction):
 
     def get_value(self, state):
         return self.value_table[state]
-

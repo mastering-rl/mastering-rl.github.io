@@ -9,8 +9,11 @@ class QActorCritic(ActorCritic):
         q_values = self.critic.get_q_values(states, actions)
         next_state_q_values = self.critic.get_q_values(next_states, actions)
         deltas = [
-            reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
-            if not done else (reward - q_value)
+            (
+                reward + (self.mdp.get_discount_factor() * next_state_q_value) - q_value
+                if not done
+                else (reward - q_value)
+            )
             for reward, next_state_q_value, q_value, done in zip(
                 rewards, next_state_q_values, q_values, dones
             )
@@ -47,7 +50,6 @@ class QActorCritic(ActorCritic):
         deltas = []
         for t in range(len(discounted_future_rewards)):
             deltas += [
-                (self.mdp.get_discount_factor() ** t)
-                * discounted_future_rewards[t]
+                (self.mdp.get_discount_factor() ** t) * discounted_future_rewards[t]
             ]
         return deltas

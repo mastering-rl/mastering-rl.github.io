@@ -1,6 +1,5 @@
-class MultiArmedBandit():
-
-    """ Select an action for this state given from a list given a Q-function """
+class MultiArmedBandit:
+    """Select an action for this state given from a list given a Q-function"""
 
     def select(self, state, actions, qfunction):
         abstract

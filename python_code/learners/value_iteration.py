@@ -1,5 +1,5 @@
-from python_code.value_functions.tabular_value_function import TabularValueFunction
 from python_code.qfunctions.qtable import QTable
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 
 class ValueIteration:
@@ -17,7 +17,7 @@ class ValueIteration:
                 for action in self.mdp.get_actions(state):
                     # Calculate the value of Q(s,a)
                     new_value = 0.0
-                    for (new_state, probability) in self.mdp.get_transitions(
+                    for new_state, probability in self.mdp.get_transitions(
                         state, action
                     ):
                         reward = self.mdp.get_reward(state, action, new_state)

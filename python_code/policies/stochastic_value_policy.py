@@ -1,6 +1,7 @@
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+
 from python_code.policies.policy import StochasticPolicy
 from python_code.qfunctions.qtable import QTable
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 """ Make a deterministic policy from a value function.
     This policy cannot be updated -- it is only for execution.
@@ -8,7 +9,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
 class StochasticValuePolicy(StochasticPolicy):
-    def __init__(self, mdp, values, bandit=EpsilonGreedy(epsilon=.05)):
+    def __init__(self, mdp, values, bandit=EpsilonGreedy(epsilon=0.05)):
         self.mdp = mdp
         self.values = values
         self.bandit = bandit

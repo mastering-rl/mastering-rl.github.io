@@ -1,6 +1,7 @@
 from python_code.policies.tabular_policy import TabularPolicy
 
-class ValueFunction():
+
+class ValueFunction:
 
     def update(self, state, value):
         abstract
@@ -12,13 +13,13 @@ class ValueFunction():
         abstract
 
     """ Return the Q-value of action in state """
+
     def get_q_value(self, mdp, state, action):
         q_value = 0.0
-        for (new_state, probability) in mdp.get_transitions(state, action):
+        for new_state, probability in mdp.get_transitions(state, action):
             reward = mdp.get_reward(state, action, new_state)
             q_value += probability * (
-                reward
-                + (mdp.get_discount_factor() * self.get_value(new_state))
+                reward + (mdp.get_discount_factor() * self.get_value(new_state))
             )
 
         return q_value

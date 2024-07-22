@@ -1,7 +1,8 @@
 from collections import defaultdict
 
-from python_code.markov_decision_processes.mdp import *
 from rendering_utils import *
+
+from python_code.markov_decision_processes.mdp import *
 
 
 class GridWorld(MDP):
@@ -44,10 +45,9 @@ class GridWorld(MDP):
 
         # A list of cumulative rewards for each episode
         self.cumulative_rewards = []
-    
+
         # The rewards for the current episode
         self.episode_rewards = []
-
 
     def get_states(self):
         states = [self.TERMINAL]
@@ -65,7 +65,7 @@ class GridWorld(MDP):
 
         valid_actions = []
         for action in actions:
-            for (new_state, probability) in self.get_transitions(state, action):
+            for new_state, probability in self.get_transitions(state, action):
                 if probability > 0:
                     valid_actions.append(action)
                     break
@@ -133,7 +133,7 @@ class GridWorld(MDP):
 
         # Merge any duplicate outcomes
         merged = defaultdict(lambda: 0.0)
-        for (state, probability) in transitions:
+        for state, probability in transitions:
             merged[state] = merged[state] + probability
 
         transitions = []
@@ -149,7 +149,7 @@ class GridWorld(MDP):
         else:
             reward = self.action_cost
         step = len(self.episode_rewards)
-        self.episode_rewards += [reward * (self.discount_factor ** step)]
+        self.episode_rewards += [reward * (self.discount_factor**step)]
         return reward
 
     def get_discount_factor(self):
@@ -167,7 +167,6 @@ class GridWorld(MDP):
 
     def get_rewards(self):
         return self.rewards
-    
 
     """
         Returns a list of all cumulative rewards
@@ -234,6 +233,7 @@ class GridWorld(MDP):
         try:
             import matplotlib as mpl
             import matplotlib.pyplot as plt
+
             return True
         except ModuleNotFoundError:
             return False
@@ -242,43 +242,56 @@ class GridWorld(MDP):
 
     def visualise(self, agent_position=None, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_as_image(agent_position=agent_position, title=title, grid_size=grid_size, gif=gif)
+            return self.visualise_as_image(
+                agent_position=agent_position, title=title, grid_size=grid_size, gif=gif
+            )
         else:
             print(self.to_string(title=title))
 
     """ Visualise a Grid World value function """
-    def visualise_value_function(self, value_function, title="", grid_size=1.0, gif=False):
+
+    def visualise_value_function(
+        self, value_function, title="", grid_size=1.0, gif=False
+    ):
         if self.matplotlib_installed():
-            return self.visualise_value_function_as_image(value_function, title=title, grid_size=grid_size, gif=gif)
+            return self.visualise_value_function_as_image(
+                value_function, title=title, grid_size=grid_size, gif=gif
+            )
         else:
             print(self.value_function_to_string(value_function, title=title))
 
     def visualise_q_function(self, qfunction, title="", grid_size=1.5, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_q_function_as_image(qfunction, title=title, grid_size=grid_size, gif=gif)
+            return self.visualise_q_function_as_image(
+                qfunction, title=title, grid_size=grid_size, gif=gif
+            )
         else:
             print(self.q_function_to_string(qfunction, title=title))
 
     def visualise_policy(self, policy, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_policy_as_image(policy, title=title, grid_size=grid_size, gif=gif)
+            return self.visualise_policy_as_image(
+                policy, title=title, grid_size=grid_size, gif=gif
+            )
         else:
             print(self.policy_to_string(policy, title=title))
 
     def visualise_stochastic_policy(self, policy, title="", grid_size=1.0, gif=False):
         if self.matplotlib_installed():
-            return self.visualise_stochastic_policy_as_image(policy, title=title, grid_size=grid_size, gif=gif)
+            return self.visualise_stochastic_policy_as_image(
+                policy, title=title, grid_size=grid_size, gif=gif
+            )
         else:
             # TODO make a stochastic policy to string
             pass
 
     """ Visualise a grid world problem as a formatted string """
+
     def to_string(self, title=""):
         left_arrow = "\u25C4"
         up_arrow = "\u25B2"
         right_arrow = "\u25BA"
         down_arrow = "\u25BC"
-
 
         space = " |              "
         block = " | #############"
@@ -466,12 +479,14 @@ class GridWorld(MDP):
         return result
 
     """ Convert a grid world policy to a formatted string """
+
     def policy_to_string(self, policy, title=""):
-        arrow_map = {self.UP:'\u25B2',
-                     self.DOWN:'\u25BC',
-                     self.LEFT:'\u25C4',
-                     self.RIGHT:'\u25BA',
-                    }
+        arrow_map = {
+            self.UP: "\u25B2",
+            self.DOWN: "\u25BC",
+            self.LEFT: "\u25C4",
+            self.RIGHT: "\u25BA",
+        }
         line = " {:-^{n}}\n".format("", n=len(" |  N ") * self.width + 1)
         result = " " + title + "\n"
         result += line
@@ -479,46 +494,63 @@ class GridWorld(MDP):
             for x in range(self.width):
                 if (x, y) in self.blocked_states:
                     result += " | ###"
-                elif policy.select_action((x, y), self.get_actions((x, y))) == self.TERMINATE:
+                elif (
+                    policy.select_action((x, y), self.get_actions((x, y)))
+                    == self.TERMINATE
+                ):
                     result += " | {:+0d} ".format(self.goal_states[(x, y)])
                 else:
-                    result += " |  " + arrow_map[policy.select_action((x, y), self.get_actions((x, y)))] + " "
+                    result += (
+                        " |  "
+                        + arrow_map[
+                            policy.select_action((x, y), self.get_actions((x, y)))
+                        ]
+                        + " "
+                    )
             result += " |\n"
             result += line
 
         return result
 
-
     """ Initialise a gridworld grid """
+
     def initialise_grid(self, grid_size=1.0):
         fig = plt.figure(figsize=(self.width * grid_size, self.height * grid_size))
 
-        # Trim whitespace 
+        # Trim whitespace
         plt.subplots_adjust(top=0.92, bottom=0.01, right=1, left=0, hspace=0, wspace=0)
         ax = fig.add_subplot(1, 1, 1)
 
         # Initialise the map to all white
-        img = [[COLOURS['white'] for _ in range(self.width)] for _ in range(self.height)]
+        img = [
+            [COLOURS["white"] for _ in range(self.width)] for _ in range(self.height)
+        ]
 
         # Render the grid
         for y in range(0, self.height):
             for x in range(0, self.width):
                 if (x, y) in self.goal_states:
-                    img[y][x] = COLOURS['red'] if self.goal_states[(x, y)] < 0 else COLOURS['green']
+                    img[y][x] = (
+                        COLOURS["red"]
+                        if self.goal_states[(x, y)] < 0
+                        else COLOURS["green"]
+                    )
                 elif (x, y) in self.blocked_states:
-                    img[y][x] = COLOURS['grey']
+                    img[y][x] = COLOURS["grey"]
 
         ax.xaxis.set_ticklabels([])  # clear x tick labels
         ax.axes.yaxis.set_ticklabels([])  # clear y tick labels
-        ax.tick_params(which='both', top=False, left=False, right=False, bottom=False)
+        ax.tick_params(which="both", top=False, left=False, right=False, bottom=False)
         ax.set_xticks([w - 0.5 for w in range(0, self.width, 1)])
         ax.set_yticks([h - 0.5 for h in range(0, self.height, 1)])
-        ax.grid(color='lightgrey')
+        ax.grid(color="lightgrey")
         return fig, ax, img
 
     """ visualise the gridworld problem as a matplotlib image """
 
-    def visualise_as_image(self, agent_position=None, title="", grid_size=1.0, gif=False):
+    def visualise_as_image(
+        self, agent_position=None, title="", grid_size=1.0, gif=False
+    ):
         fig, ax, img = self.initialise_grid(grid_size=grid_size)
         current_position = (
             self.get_initial_state() if agent_position is None else agent_position
@@ -528,7 +560,7 @@ class GridWorld(MDP):
         for y in range(0, self.height):
             for x in range(0, self.width):
                 if (x, y) == current_position:
-                    ax.scatter(x, y, s=2000, marker='o', edgecolors='none')
+                    ax.scatter(x, y, s=2000, marker="o", edgecolors="none")
                 elif (x, y) in self.goal_states:
                     plt.text(
                         x,
@@ -585,7 +617,9 @@ class GridWorld(MDP):
 
     """ Visualise the value function """
 
-    def visualise_value_function_as_image(self, value_function, title="", grid_size=1.0, gif=False):
+    def visualise_value_function_as_image(
+        self, value_function, title="", grid_size=1.0, gif=False
+    ):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
@@ -600,7 +634,7 @@ class GridWorld(MDP):
                         fontsize="medium",
                         horizontalalignment="center",
                         verticalalignment="center",
-                        color='lightgrey' if value == 0.0 else 'black',
+                        color="lightgrey" if value == 0.0 else "black",
                     )
                     texts.append(text)
         if gif:
@@ -642,7 +676,9 @@ class GridWorld(MDP):
 
     """ Visualise the Q-function with matplotlib """
 
-    def visualise_q_function_as_image(self, qfunction, title="", grid_size=1.5, gif=False):
+    def visualise_q_function_as_image(
+        self, qfunction, title="", grid_size=1.5, gif=False
+    ):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
@@ -651,57 +687,79 @@ class GridWorld(MDP):
                 if (x, y) in self.goal_states:
                     # gif player handles goal state rendering
                     if not gif:
-                        texts.append(plt.text(
-                            x,
-                            y,
-                            f"{self.get_goal_states()[(x,y)]:+0.2f}",
-                            fontsize="large",
-                            horizontalalignment="center",
-                            verticalalignment="center",
-                        ))
+                        texts.append(
+                            plt.text(
+                                x,
+                                y,
+                                f"{self.get_goal_states()[(x,y)]:+0.2f}",
+                                fontsize="large",
+                                horizontalalignment="center",
+                                verticalalignment="center",
+                            )
+                        )
                 elif (x, y) not in self.blocked_states:
                     up_value = qfunction.get_q_value((x, y), self.UP)
                     down_value = qfunction.get_q_value((x, y), self.DOWN)
                     left_value = qfunction.get_q_value((x, y), self.LEFT)
                     right_value = qfunction.get_q_value((x, y), self.RIGHT)
-                    texts.append(plt.text(
-                        x,
-                        y + 0.35,
-                        f"{up_value:+0.2f}",
-                        fontsize="medium",
-                        horizontalalignment="center",
-                        verticalalignment="top",
-                        color='lightgrey' if up_value == 0.0 else 'black',
-                    ))
-                    texts.append(plt.text(
-                        x,
-                        y - 0.35,
-                        f"{down_value:+0.2f}",
-                        fontsize="medium",
-                        horizontalalignment="center",
-                        verticalalignment="bottom",
-                        color='lightgrey' if down_value == 0.0 else 'black',
-                    ))
-                    texts.append(plt.text(
-                        x - 0.45,
-                        y,
-                        f"{left_value:+0.2f}",
-                        fontsize="medium",
-                        horizontalalignment="left",
-                        verticalalignment="center",
-                        color='lightgrey' if left_value == 0.0 else 'black'
-                    ))
-                    texts.append(plt.text(
-                        x + 0.45,
-                        y,
-                        f"{right_value:+0.2f}",
-                        fontsize="medium",
-                        horizontalalignment="right",
-                        verticalalignment="center",
-                        color='lightgrey' if right_value == 0.0 else 'black'
-                    ))
-                    plt.plot([x-0.5, x+0.5], [y-0.5, y+0.5], ls='-', lw=1, color='lightgrey')
-                    plt.plot([x + 0.5, x - 0.5], [y - 0.5, y + 0.5], ls='-', lw=1, color='lightgrey')
+                    texts.append(
+                        plt.text(
+                            x,
+                            y + 0.35,
+                            f"{up_value:+0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="center",
+                            verticalalignment="top",
+                            color="lightgrey" if up_value == 0.0 else "black",
+                        )
+                    )
+                    texts.append(
+                        plt.text(
+                            x,
+                            y - 0.35,
+                            f"{down_value:+0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="center",
+                            verticalalignment="bottom",
+                            color="lightgrey" if down_value == 0.0 else "black",
+                        )
+                    )
+                    texts.append(
+                        plt.text(
+                            x - 0.45,
+                            y,
+                            f"{left_value:+0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="left",
+                            verticalalignment="center",
+                            color="lightgrey" if left_value == 0.0 else "black",
+                        )
+                    )
+                    texts.append(
+                        plt.text(
+                            x + 0.45,
+                            y,
+                            f"{right_value:+0.2f}",
+                            fontsize="medium",
+                            horizontalalignment="right",
+                            verticalalignment="center",
+                            color="lightgrey" if right_value == 0.0 else "black",
+                        )
+                    )
+                    plt.plot(
+                        [x - 0.5, x + 0.5],
+                        [y - 0.5, y + 0.5],
+                        ls="-",
+                        lw=1,
+                        color="lightgrey",
+                    )
+                    plt.plot(
+                        [x + 0.5, x - 0.5],
+                        [y - 0.5, y + 0.5],
+                        ls="-",
+                        lw=1,
+                        color="lightgrey",
+                    )
         if gif:
             return texts
         ax.imshow(img, origin="lower")
@@ -710,7 +768,9 @@ class GridWorld(MDP):
 
     """ Visualise the Q-function with a matplotlib visual"""
 
-    def visualise_q_function_rendered(self, q_values, title="", tile_size=32, show_text=False):
+    def visualise_q_function_rendered(
+        self, q_values, title="", tile_size=32, show_text=False
+    ):
         width_px = self.width * tile_size
         height_px = self.height * tile_size
         img = [[[0, 0, 0] for _ in range(width_px)] for _ in range(height_px)]
@@ -802,28 +862,36 @@ class GridWorld(MDP):
 
     def visualise_policy_as_image(self, policy, title="", grid_size=1.0, gif=False):
         # Map from action names to prettier arrows
-        arrow_map = {self.UP:'\u2191',
-                     self.DOWN:'\u2193',
-                     self.LEFT:'\u2190',
-                     self.RIGHT:'\u2192',
-                    }
+        arrow_map = {
+            self.UP: "\u2191",
+            self.DOWN: "\u2193",
+            self.LEFT: "\u2190",
+            self.RIGHT: "\u2192",
+        }
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
         for y in range(self.height):
             for x in range(self.width):
                 if (x, y) not in self.blocked_states and (x, y) not in self.goal_states:
-                    if policy.select_action((x, y), self.get_actions((x, y))) != self.TERMINATE:
-                        action = arrow_map[policy.select_action((x, y), self.get_actions((x, y)))]
+                    if (
+                        policy.select_action((x, y), self.get_actions((x, y)))
+                        != self.TERMINATE
+                    ):
+                        action = arrow_map[
+                            policy.select_action((x, y), self.get_actions((x, y)))
+                        ]
                         fontsize = "xx-large"
-                    texts.append(plt.text(
-                                x,
-                                y,
-                                action,
-                                fontsize=fontsize,
-                                horizontalalignment="center",
-                                verticalalignment="center",
-                            ))
+                    texts.append(
+                        plt.text(
+                            x,
+                            y,
+                            action,
+                            fontsize=fontsize,
+                            horizontalalignment="center",
+                            verticalalignment="center",
+                        )
+                    )
                 elif (x, y) in self.goal_states:
                     # gif player handles goal state rendering
                     if not gif:
@@ -848,7 +916,9 @@ class GridWorld(MDP):
             return MDP.execute(self, state=state, action=self.TERMINATE)
         return super().execute(state, action)
 
-    def visualise_stochastic_policy_as_image(self, policy, title="", grid_size=1.0, gif=False):
+    def visualise_stochastic_policy_as_image(
+        self, policy, title="", grid_size=1.0, gif=False
+    ):
         if not gif:
             fig, ax, img = self.initialise_grid(grid_size=grid_size)
         texts = []
@@ -882,28 +952,32 @@ class GridWorld(MDP):
                             verticalalignment="center",
                         )
                 elif (x, y) not in self.blocked_states:
-                    left_triangle = '\u25C4'
-                    up_triangle = '\u25B2'
-                    right_triangle = '\u25BA'
-                    down_triangle = '\u25BC'
+                    left_triangle = "\u25C4"
+                    up_triangle = "\u25B2"
+                    right_triangle = "\u25BA"
+                    down_triangle = "\u25BC"
                     if self.height > 1:
-                        texts.append(plt.text(
-                            x,
-                            y,
-                            f"{prob_up:0.2f}\n{up_triangle}\n{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}\n{down_triangle}\n{prob_down:0.2f}",
-                            fontsize="medium",
-                            horizontalalignment="center",
-                            verticalalignment="center",
-                        ))
+                        texts.append(
+                            plt.text(
+                                x,
+                                y,
+                                f"{prob_up:0.2f}\n{up_triangle}\n{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}\n{down_triangle}\n{prob_down:0.2f}",
+                                fontsize="medium",
+                                horizontalalignment="center",
+                                verticalalignment="center",
+                            )
+                        )
                     else:
-                        texts.append(plt.text(
-                            x,
-                            y,
-                            f"{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}",
-                            fontsize="medium",
-                            horizontalalignment="center",
-                            verticalalignment="center",
-                        ))
+                        texts.append(
+                            plt.text(
+                                x,
+                                y,
+                                f"{prob_left:0.2f}{left_triangle} {right_triangle}{prob_right:0.2f}",
+                                fontsize="medium",
+                                horizontalalignment="center",
+                                verticalalignment="center",
+                            )
+                        )
         if gif:
             return texts
         ax.imshow(img, origin="lower")
@@ -935,7 +1009,7 @@ class CliffWorld(GridWorld):
 
 
 class OneDimensionalGridWorld(GridWorld):
-    """ A one dimensional GridWorld class to use with the
+    """A one dimensional GridWorld class to use with the
     Logistic regression policy gradient.
     This allows actions [left, right] and terminates when the agent reaches the
     goal state without having to use a terminate action.

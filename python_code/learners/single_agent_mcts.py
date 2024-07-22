@@ -1,7 +1,7 @@
 import random
 
-from python_code.learners.mcts import Node
-from python_code.learners.mcts import MCTS
+from python_code.learners.mcts import MCTS, Node
+
 
 class SingleAgentNode(Node):
     def __init__(
@@ -74,7 +74,7 @@ class SingleAgentNode(Node):
         (next_state, reward, done) = self.mdp.execute(self.state, action)
 
         # Find the corresponding state and return if this already exists
-        for (child, _) in self.children[action]:
+        for child, _ in self.children[action]:
             if next_state == child.state:
                 return child
 
@@ -85,10 +85,11 @@ class SingleAgentNode(Node):
 
         # Find the probability of this outcome (only possible for model-based) for visualising tree
         probability = 0.0
-        for (outcome, probability) in self.mdp.get_transitions(self.state, action):
+        for outcome, probability in self.mdp.get_transitions(self.state, action):
             if outcome == next_state:
                 self.children[action] += [(new_child, probability)]
                 return new_child
+
 
 class SingleAgentMCTS(MCTS):
     def create_root_node(self):

@@ -1,13 +1,12 @@
 import matplotlib.colors as colours
-from python_code.markov_decision_processes.mdp import *
 import matplotlib.pyplot as plt
 import numpy as np
-
 from rendering_utils import COLOURS
+
+from python_code.markov_decision_processes.mdp import *
 
 
 class NormalFormGame:
-
     """Create a two-player normal form game from a list of players, a map of actions for each player, and a matrix of rewards.
     'players' is a list of strings of agent IDs
     'actions' is a list of tuples of actions: one list for each agent

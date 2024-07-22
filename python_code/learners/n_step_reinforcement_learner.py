@@ -31,7 +31,7 @@ class NStepReinforcementLearner:
                 if len(rewards) == self.n or self.mdp.is_terminal(state):
                     n_step_rewards = sum(
                         [
-                            self.mdp.discount_factor ** i * rewards[i]
+                            self.mdp.discount_factor**i * rewards[i]
                             for i in range(len(rewards))
                         ]
                     )
@@ -40,12 +40,10 @@ class NStepReinforcementLearner:
                         next_state_value = self.state_value(next_state, next_action)
                         n_step_rewards = (
                             n_step_rewards
-                            + self.mdp.discount_factor ** self.n * next_state_value
+                            + self.mdp.discount_factor**self.n * next_state_value
                         )
 
-                    q_value = self.qfunction.get_q_value(
-                        states[0], actions[0]
-                    )
+                    q_value = self.qfunction.get_q_value(states[0], actions[0])
 
                     self.qfunction.update(
                         states[0],

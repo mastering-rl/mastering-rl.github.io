@@ -1,7 +1,8 @@
 from python_code.extensive_form_games.extensive_form_game import GameNode
 
+
 class BackwardInduction:
-    def __init__(self, game, do_cache = False):
+    def __init__(self, game, do_cache=False):
         self.game = game
         self.do_cache = do_cache
         self.cache = dict()
@@ -25,7 +26,7 @@ class BackwardInduction:
                 child.is_best_action = True
                 best_child = child
             children[action] = child
-        node = GameNode(state, player, best_child.value, children = children)
+        node = GameNode(state, player, best_child.value, children=children)
         return node
 
     def backward_induction_with_cache(self, state):
@@ -53,7 +54,7 @@ class BackwardInduction:
                 child.is_best_action = True
                 best_child = child
             children[action] = child
-        node = GameNode(state, player, best_child.value, children = children)
+        node = GameNode(state, player, best_child.value, children=children)
         if self.do_cache:
             self.cache[state_key] = node
         return node

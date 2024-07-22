@@ -1,4 +1,5 @@
 import random
+
 from multi_armed_bandit.multi_armed_bandit import MultiArmedBandit
 
 

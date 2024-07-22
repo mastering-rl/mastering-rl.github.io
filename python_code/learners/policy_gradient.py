@@ -1,6 +1,7 @@
 import random
 from itertools import count
 
+
 class PolicyGradient:
     def __init__(self, mdp, policy) -> None:
         super().__init__()
@@ -9,7 +10,7 @@ class PolicyGradient:
 
     """ Generate and store an entire episode trajectory to use to update the policy """
 
-    def execute(self, episodes=100, max_episode_length=float('inf')):
+    def execute(self, episodes=100, max_episode_length=float("inf")):
         total_steps = 0
         random_steps = 50
         episode_rewards = []
@@ -21,9 +22,9 @@ class PolicyGradient:
             state = self.mdp.get_initial_state()
             episode_reward = 0.0
             for step in count():
-                #if total_steps < random_steps:
+                # if total_steps < random_steps:
                 #    action = random.choice(self.mdp.get_actions(state))
-                #else :
+                # else :
                 #    action = self.policy.select_action(state, self.mdp.get_actions(state))
                 action = self.policy.select_action(state, self.mdp.get_actions(state))
                 (next_state, reward, done) = self.mdp.execute(state, action)
@@ -34,7 +35,7 @@ class PolicyGradient:
                 rewards.append(reward)
 
                 state = next_state
-                episode_reward += reward * (self.mdp.discount_factor ** step)
+                episode_reward += reward * (self.mdp.discount_factor**step)
                 total_steps += 1
 
                 if done or step == max_episode_length:
@@ -66,7 +67,6 @@ class PolicyGradient:
         deltas = []
         for t in range(len(discounted_future_rewards)):
             deltas += [
-                (self.mdp.get_discount_factor() ** t)
-                * discounted_future_rewards[t]
+                (self.mdp.get_discount_factor() ** t) * discounted_future_rewards[t]
             ]
         return deltas
