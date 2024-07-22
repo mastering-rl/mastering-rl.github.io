@@ -1,4 +1,4 @@
-from gif_maker import GifMaker
+from python_code.gif_makers.gif_maker import GifMaker
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from side_by_side_comparison import join_gif
 

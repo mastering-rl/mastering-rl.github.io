@@ -1,4 +1,4 @@
-from gif_maker import GifMaker
+from python_code.gif_makers.gif_maker import GifMaker
 
 from python_code.learners.policy_gradient import PolicyGradient
 from python_code.markov_decision_processes.gridworld import GridWorld

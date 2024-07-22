@@ -1,4 +1,4 @@
-from gif_maker import GifMaker
+from python_code.gif_makers.gif_maker import GifMaker
 from multi_armed_bandit.ucb import UpperConfidenceBounds
 
 from python_code.learners.single_agent_mcts import SingleAgentMCTS

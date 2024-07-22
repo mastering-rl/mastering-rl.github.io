@@ -1,4 +1,4 @@
-from gif_maker import GifMaker
+from python_code.gif_makers.gif_maker import GifMaker
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 from python_code.learners.qlearning import QLearning
