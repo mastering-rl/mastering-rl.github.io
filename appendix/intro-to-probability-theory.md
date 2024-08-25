@@ -73,7 +73,7 @@ ax2.set_title('$A \cap B$', fontsize=20)
 ymin, ymax = ax2.get_ylim()
 ax2.set_ylim(ymin - 0.1, ymax)
 
-# Set minux
+# Set minus
 v3 = venn2(subsets=(3, 3, 1), ax=ax3)
 c3 = venn2_circles(subsets=(3, 3, 1), ax=ax3)
 
@@ -160,7 +160,7 @@ Probabilities must satisfy certain *axioms*  to be meaningful measures of likeli
 
 3. $P(A \cup B)  = P(A) + P(B)$ for disjoint events $A$ and $B$ (that is,  $A \cap B = \emptyset$).
 
-That is: (1) the probability of an event occurring is between $0$ and $1$ inclusive; (2) the probability of the event being part of the sample space is 1, so no events outside the sample space are possible; and (3) the probability of the event $A \cup B$ is the sum of the probabilities of $A$ and of $B$, assuming that $A$ and $B$ are disjount.
+That is: (1) the probability of an event occurring is between $0$ and $1$ inclusive; (2) the probability of the event being part of the sample space is 1, so no events outside the sample space are possible; and (3) the probability of the event $A \cup B$ is the sum of the probabilities of $A$ and of $B$, assuming that $A$ and $B$ are disjoint.
 :::
 
 There are some important consequences of these three axioms:
@@ -177,7 +177,7 @@ $$
 P(A \mid B) = \frac{P(A \cap B)}{P(B)}
 $$
 
-This says that the probability of $A$ occuring, given that we have observed $B$, is the probability of observing both $A$ and $B$, divided by the probability of observing event $B$.
+This says that the probability of $A$ occurring, given that we have observed $B$, is the probability of observing both $A$ and $B$, divided by the probability of observing event $B$.
 
 Conditional probability provides us with the tools to reason about partial information, so that we can estimate the probability of an event $A$ that depends on the outcome of event $B$,, event if we do not know the outcome of event $B$ yet.
 
@@ -186,7 +186,7 @@ We say that $P(A)$ is the *prior probability* of $A$ and that $P(A \mid B)$ is t
 
 
 :::{admonition} Definition -- The Product rule
-Given two events $A$ and $B$, if $P(B)$ then the probability of both events $A$ and $B$ occuring is defined by the **product rule**:
+Given two events $A$ and $B$, if $P(B)$ then the probability of both events $A$ and $B$ occurring is defined by the **product rule**:
 
 $$
 P(A \cap B) = P(A)P(B \mid A)
@@ -204,5 +204,5 @@ $$
 
 Bayes' theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event $A$ represents a particular disease in a plant, and event $B$ is the event describing a positive outcome of a test that can diagnose that disease, then $P(B \mid A)$ define the casual relationship:  if the plant has disease $A$, then the probability of observing a positive diagnosis from test $B$ is $P(B \mid A)$. Once we have the test result, we can determine the probability of $A$ (the plant having the disease) provided we can estimate the prior probabilities $P(A)$ and $P(B)$.
 
-Bayes' theorem is named after [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes), the English statistican and philosopher who first defined it.
+Bayes' theorem is named after [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes), the English statistician and philosopher who first defined it.
 :::

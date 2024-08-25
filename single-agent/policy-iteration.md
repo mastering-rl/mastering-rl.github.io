@@ -11,10 +11,6 @@ kernelspec:
 (sec:policy-iteration)=
 # Policy iteration
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy-based approaches and policy iteration

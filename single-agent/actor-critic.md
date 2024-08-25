@@ -12,11 +12,6 @@ kernelspec:
 (sec:policy-based:actor-critic)=
 # Actor-critic methods
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -78,7 +73,7 @@ Let's analyse the key parts in more detail. The line that updates $\delta$ is th
 
 Once the $\delta$ value is calculated, we update both the actor and the critic.  The weights of the critic $Q_w$ are updated by following the gradient $\nabla Q_w(s,a)$ of the critic Q-function at $s,a$, and then the parameters of the actor $\theta$ are updated the same way as in REINFORCE, except that the value of $\delta$ uses the temporal difference estimate based on $Q_w(s,a)$ instead of using $G$.
 
-So, this simulataneously learns the policy (actor) $\pi_{\theta}$ and a critic (Q-function) $Q_w$, but the critic is learnt only to provide the temporal difference update, not to extract the policy.
+So, this simultaneously learns the policy (actor) $\pi_{\theta}$ and a critic (Q-function) $Q_w$, but the critic is learnt only to provide the temporal difference update, not to extract the policy.
 
 **But wait!** Didn't we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven't we now gone backwards by including a Q-function? Why not just use the Q-function directly?
 
@@ -103,7 +98,7 @@ The `ActorCritic` class is an abstract class that looks similar to that of `QLea
 
 Note from the code above that we use the actor (the policy) to choose an action, and then update both the critic and the actor. In this particular implementation, we batch update the actor policy at the end of the episode.
 
-Next, we have to instantite the  `ActorCritic` class as a `QActorCritic` class to implement the `update_actor` and `update_critic` classes:
+Next, we have to instantiate the  `ActorCritic` class as a `QActorCritic` class to implement the `update_actor` and `update_critic` classes:
 
 ```{code-cell} ipython3
 :load: "../python_code/q_actor_critic.py"

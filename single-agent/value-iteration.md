@@ -13,11 +13,6 @@ kernelspec:
 (sec:value-iteration)=
 # Value Iteration
 
-```{contents}
-:local:
-:depth: 2
-```
-
 
 ```{admonition} Learning outcomes
 
@@ -180,15 +175,32 @@ We can see the improvement that value iteration has on each iteration by extract
 ```{code-cell} ipython3
 gridworld = GridWorld()
 values = TabularValueFunction()
-policy = ValuePolicy(gridworld, values)
+policy = StochasticValuePolicy(gridworld, values)
 rewards = gridworld.execute_policy(policy, episodes=1)
 for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    policy = ValuePolicy(gridworld, values)
+    policy = StochasticValuePolicy(gridworld, values)
     rewards += gridworld.execute_policy(policy, episodes=1)
 
 ```
 
+:::{note}
+In this example, we use a `StochasticValuePolicy`, which uses a [multi-armed bandit](sec:multi-armed-bandits) to sometimes (10\% of the time) select a random action instead of the action that leads to the best value. 
+
+Why do this? 
+
+Because a policy can contain loops! That is, in state $s_1$, the policy tells us to execute action $a_1$, taking us to state $s_2$. Then from state $s_2$, the policy tells us to execute action $a_2$, which takes us back to state $s_1$. Again, the policy will tell us to execute action $a_1$, return to state $s_2$:
+
+$$ 
+\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
+$$
+
+When we train GridWorld with 100 iterations, the resulting policy is (close to) optimal, and contains no loops. However, an initial policy is likely to contain some behaviour that makes it impossible to reach an end state. For example, in GridWorld, if the default action is *Left* in every state, the agent will never be able to go *Right*, even if the action is unsuccessful. Therefore, it can never reach the end state.
+
+If a policy contains a loop, it will loop infinitely  when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic). 
+
+This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.
+:::
 
 
 The `rewards` variables contains the cumulative reward for each of the 50 episodes. We can plot this:
@@ -208,7 +220,7 @@ $\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \tex
 
 A higher value of $\alpha$ smooths the data more --- that is, earlier values have more influence on $s_t$. A value of $\alpha=0$ just means that $s_t = \vec{x}_t$ (see the example above where we plot the cumulative rewards with `smoothing_factor=0.0`); while a value of $\alpha=1$ means that $s_t = \vec{x}_0$ for any $t$.
 
-An implemenation of the EMA in Python is shown below:
+An implementation of the EMA in Python is shown below:
 
 ```{code-cell}
 def get_ema(rewards, smoothing_factor=0.9):
@@ -232,7 +244,7 @@ Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.
 
 Even though the value function (and policy) are monotonically converging towards their optimal values, the curve still has some noise because of randomness in the GridWorld problem.
 
-We can show this by creating an instance of a deterministic `GridWorld` class, using the parameter `noise=0.0`. The `noise` parameter controls action failures in `GridWorld`, so that when the agent selects an action, it will fail with probabiliy `noise`. When `noise==0.0`, the action will always be successful:
+We can show this by creating an instance of a deterministic `GridWorld` class, using the parameter `noise=0.0`. The `noise` parameter controls action failures in `GridWorld`, so that when the agent selects an action, it will fail with probability `noise`. When `noise==0.0`, the action will always be successful:
 
 ```{code-cell} ipython3
 
@@ -246,23 +258,6 @@ for _ in range(50):
     rewards += gridworld.execute_policy(policy, episodes=1)
 ```
 
-:::{note}
-Compared to when we evaluated the policy earlier, there is a difference in the code above (other than `noise=0.0`): when use a `StochasticValuePolicy`, which uses a [multi-armed bandit](sec:multi-armed-bandits) to sometimes (5\% of the time) selects a random action instead of the action that leads to the best value. 
-
-Why do this? 
-
-Because a policy can contain loops! That is, in state $s_1$, the policy tells us to execute action $a_1$, taking us to state $s_2$. Then from state $s_2$, the policy tells us to execute action $a_2$, which takes us back to state $s_1$. Again, the policy will tell us to execute action $a_1$, return to state $s_2$:
-
-$$ 
-\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
-$$
-
-This will loop infinitely long when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic).  
-
-When `noise>0.0` in GridWorld, a loop does not matter --- eventually the randomness will break us out of this loop.
-
-However, when `noise=0.0`, we can end up in an infinite loop. This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.
-:::
 
 Plotting this with no smoothing shows that we reach the optimal policy in much fewer iterations than value iteration terminates:
 

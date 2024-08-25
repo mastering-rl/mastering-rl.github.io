@@ -11,11 +11,6 @@ kernelspec:
 (sec:single-agent:reward-shaping)=
 # Reward shaping
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to reward shaping
 <iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=0s" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -240,23 +235,23 @@ from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
-mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+mdp = GridWorld(width = 10, height = 7, goals = [((9,6), 1), ((8,6), -1)])
 qfunction = QTable()
 potential = GridWorldPotentialFunction(mdp)
-RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute(episodes=200)
+RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute(episodes=100)
 policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
-reward_shaped_rewards = mdp.get_rewards()
+shaped_rewards = mdp.get_rewards()
 
 ```
 
 Now, we compare this with Q-learning without reward shaping:
 
 ```{code-cell} ipython3
-mdp = GridWorld(width = 15, height = 12, goals = [((14,11), 1), ((13,11), -1)])
+mdp = GridWorld(width = 10, height = 7, goals = [((9,6), 1), ((8,6), -1)])
 qfunction = QTable()
-QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=200)
+QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=100)
 policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
@@ -270,9 +265,47 @@ from tests.plot import Plot
 
 Plot.plot_episode_length(
     ["Tabular Q-learning", "Reward shaping"],
-    [q_learning_rewards, reward_shaped_rewards],
+    [q_learning_rewards, shaped_rewards],
 )
+
 ```
+
+###  Example -- A Bad Potential Function  for GridWorld 
+
+This example is thanks to [Dr Cathy Wu](http://www.wucathy.com/).
+Now, let's consider a poorly-designed potential function --- one that gives a shaped reward that is the opposite of the earlier potential function for GridWorld:
+
+```{code-cell} ipython3
+:load: "../python_code/gridworld_bad_potential_function.py"
+```
+
+We again compare this to standard Q-learning without reward shaping, but using just the original 4x3 GridWorld (doing this on the larger GridWorld never terminated when I ran this):
+
+```{code-cell} ipython3
+mdp = GridWorld()
+qfunction = QTable()
+potential = GridWorldBadPotentialFunction(mdp)
+RewardShapedQLearning(mdp, EpsilonGreedy(), potential, qfunction).execute(episodes=100)
+policy = QPolicy(qfunction)
+mdp.visualise_q_function(qfunction)
+mdp.visualise_policy(policy)
+bad_shaped_rewards = mdp.get_rewards()
+
+```
+
+Plotting the episode length, we see that it shapres the reward quite poorly:
+
+```{code-cell} ipython3
+Plot.plot_episode_length(
+    ["Tabular Q-learning 10x7", "Reward shaping 10x7", "Bad reward shaping 4x3"],
+    [q_learning_rewards, shaped_rewards, bad_shaped_rewards],
+)
+
+```
+
+Note that this is so poor that the difference between the standard Q-learning and reward-shaped Q-learning is barely visible on this new graph --- and remember that the bad reward shaping example is run on the small 4x3 GridWorld example, not the larger 10x8 version, for which the results would be much worse.
+
+However, notice that  because we use a potential function, it still converges to a (close-to) optimal policy! But in this case, the convergence takes longer because the potential function is misleading.
 
 ## Q-value initialisation
 
@@ -303,7 +336,7 @@ $$
 \end{array}
 $$
 
-Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential funtion! A poor potential function will give an inaccurate initial Q-values, which may take longer to converge.
+Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential function! A poor potential function will give an inaccurate initial Q-values, which may take longer to converge.
 
 
 ````{margin}

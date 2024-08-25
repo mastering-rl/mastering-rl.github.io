@@ -11,10 +11,6 @@ kernelspec:
 (sec:qfunction-approximation)=
 # Q-function approximation
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to Q-function approximation
@@ -25,7 +21,7 @@ kernelspec:
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features.
+1.  Manually apply linear Q-function approximation to solve small-scale MDP problems given some known features.
     
 2.  Select suitable features and design & implement Q-function approximation for model-free reinforcement learning techniques to solve medium-scale MDP problems automatically.
 
@@ -45,7 +41,7 @@ Using a Q-table has two main limitations:
 To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at **linear function approximation** and approximation using **deep learning** (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of $Q(s,a)$ *even if we have not applied action $a$ in state $s$ previously*. 
 
 :::{admonition} Example --- Freeway
-Conside the game *Freeway*, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
+Consider the game *Freeway*, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
 
 ![image](./figs/freeway_screenshot.png)
 
@@ -204,7 +200,7 @@ $$
 ```
 ````
 
-To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
+To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithms: (1) initialisation; and (2) update.
 
 For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be "good" weights.
 
@@ -301,9 +297,9 @@ mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
 ```
 
-We can see that this gives ok Q-values and an ok policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
+We can see that this gives OK Q-values and an OK policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
 
-This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent tranisitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including the state $(2,1)$. As such, we learn that going right at (2,1) is good when it is not.
+This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent transitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including the state $(2,1)$. As such, we learn that going right at (2,1) is good when it is not.
 
 The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward. 
 
@@ -494,9 +490,9 @@ Below we see a comparison between deep Q-functions and linear Q-functions.
 <p>
 ```
 
-We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we intialise linear weights to 0, so Q-values are all 0.
+We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we initialise linear weights to 0, so Q-values are all 0.
 
-There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus underfitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
+There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus under fitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
 
 The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.
 
@@ -558,10 +554,10 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 - Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and Barto](http://incompleteideas.net/book/the-book-2nd.html)
 
-- Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
+- Deep Q-learning for Atari. This uses Convolutional Neural Networks (CNN) to estimate $\mathcal{Q}(s,a)$. The input for the CNN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
 
   - [Human-level control through deep reinforcement learning](http://www.davidqiu.com:8888/research/nature14236.pdf). Mnih, V., et al. Nature 529 (2015).
-  - [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602v1.pdf). Mnih, V., et al. arXiV: preprint arXiv:1312.5602 (2013).
+  - [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602v1.pdf). Mnih, V., et al. arXiv: preprint arXiv:1312.5602 (2013).
 
 -   Before AlphaGo there was TD-gammon, which was the first paper to combine reinforcement learning and neural networks:
     [TD-Gammon, A Self-Teaching Backgammon Program, Achieves Master-Level Play](http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf), AAAI Technical Report FS-93-02 (1993).

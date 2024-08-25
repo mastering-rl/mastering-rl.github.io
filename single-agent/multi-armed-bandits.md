@@ -12,11 +12,6 @@ kernelspec:
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
 <iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?start=0s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -48,7 +43,7 @@ The problem of multi-armed bandits can be illustrated as follows:
 ```
 
 
-> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are morely likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
+> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are more likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
 
 The question is: without knowing the probability distribution beforehand, how should we select the arms to increase our total payoff?  Multi-armed bandit techniques aim to solve this problem. 
 
@@ -109,7 +104,7 @@ Given a policy $\pi$ and $t$ number of arm pulls, **regret** is defined formally
 where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $\text{argmax}_a Q^*(a)$ each round.
 :::
 
-Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the **expected loss** from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
+Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulative reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the **expected loss** from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
 
 The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.
 
@@ -186,7 +181,7 @@ The $\epsilon$-greedy (pronounced "epsilon-greedy") strategy  is a simple and ef
 
 Each time we need to choose an action, we do the following:
 
-- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$ (**exploit**). If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
+- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$ (**exploit**). If there is a tie between multiple actions with the largest Q-value, break the tie randomly.
 - With probability $\epsilon$ we choose a random arm with uniform probability (**explore**).
 
 The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.2 work well as they exploit what they have learnt, while still exploring.
@@ -254,7 +249,7 @@ This indicates that for this particular problem, a value of 0.99 for alpha has a
 ```
 ````
 
-**Softmax** is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzman distribution for that action:
+**Softmax** is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzmann distribution for that action:
 
 $$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}$$ 
 
@@ -288,7 +283,7 @@ If we plot the performance of the softmax algorithm with this, the results are a
 ```{code-cell} ipython3
 plot_softmax(drift=True)
 ```
-As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
+As one can see, the strategies that are less "committed" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
 
 Note that higher values of tau also work when the drift is more gradual, rather than a sudden change as we simulate here.
 

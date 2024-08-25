@@ -11,15 +11,11 @@ kernelspec:
 
 # Backward induction
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1. Manually apply backward indunction to solve small-scale extensive form games.
+1. Manually apply backward induction to solve small-scale extensive form games.
 2. Design and implement a backward induction algorithm to solve medium-scale extensive form games automatically.
 ```
 
@@ -33,7 +29,7 @@ The learning outcomes of this chapter are:
 <iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=471" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
-The intuition is as follows: starting at the terminal nodes of the tree (those were $A(s)$ is empty), for the parent, calculate the best move for the agent whose turn it is. This gives us the sub-game equilibrium for the smallest sub-games in the game. As the solutions are reward tuples themselves, we can solve the parent of the parents by using the parent solution as reward for the sub-game, which gives us the sub-game equilbirum for the game that starts at the parents of the parents of the terminal nodes. We progressively induct these values backward up the tree until we reach the start node.
+The intuition is as follows: starting at the terminal nodes of the tree (those were $A(s)$ is empty), for the parent, calculate the best move for the agent whose turn it is. This gives us the sub-game equilibrium for the smallest sub-games in the game. As the solutions are reward tuples themselves, we can solve the parent of the parents by using the parent solution as reward for the sub-game, which gives us the sub-game equilibrium for the game that starts at the parents of the parents of the terminal nodes. We progressively induct these values backward up the tree until we reach the start node.
 
 In the pure backward induction that we cover here, the assumption is that only terminal nodes have rewards. If we want to model any situations in which non-terminal nodes have rewards, we simply sum all rewards along the path to the terminal node. Therefore, this solution generalises to the definition of extensive form games in the previous section.
 
@@ -47,7 +43,7 @@ In the following algorithm, $best\_child$ is an N-tuple that is used to find the
 $
 \begin{array}{l}
   \alginput:\ \text{Extensive form game}\ G = (N, Agt, S, s_0, A, T, r)\\
-  \algoutput:\ \text{Sub-game equilbrium for each state}\ s \in S\\[2mm]
+  \algoutput:\ \text{Sub-game equilibrium for each state}\ s \in S\\[2mm]
   \algreturn\  BackwardInduction(s_0)\\[2mm]
   \algfunction\ BackwardInduction(s \in S)  \\
   \quad\quad \algif\ A(s) = \emptyset\ \algthen  \\
@@ -122,7 +118,7 @@ tictactoe_subgraph
 
 ```
 
-Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is 'empty'), and the third row is empty, playing in the middle cell will guarantee a winfor 'x' to win regardless what player 'o' does:
+Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is 'empty'), and the third row is empty, playing in the middle cell will guarantee a win for 'x' to win regardless what player 'o' does:
 
 ```{code-cell} ipython3
 from tictactoe import TicTacToe

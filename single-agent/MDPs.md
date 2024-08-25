@@ -14,11 +14,6 @@ kernelspec:
 (sec:mdps)=
 # Markov Decision Processes
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition} Learning outcomes
 
 The learning outcomes of this chapter are:
@@ -100,7 +95,7 @@ Process**. A discount-reward MDP  is a tuple $(S, s_0, A, P, r, \gamma)$ contain
 
 Let's break down the above points in model detail.
 
-**States** are the possible situations in which the agent can be in. Each state captures the information required to make a decision. For example, in robot navigation, the state consists of the position of the robot, the current velocity of the robot, the direction it is heading, and  the position of obstacles, doors, etc. In an application for scheduling maintenance on vehicles for a delivery company, the state would consiste of vehicle IDs, vehicle properties such as make, maximum load, etc., location of vehicles, number of kilometres since their last maintenance check, etc.
+**States** are the possible situations in which the agent can be in. Each state captures the information required to make a decision. For example, in robot navigation, the state consists of the position of the robot, the current velocity of the robot, the direction it is heading, and  the position of obstacles, doors, etc. In an application for scheduling maintenance on vehicles for a delivery company, the state would consist of vehicle IDs, vehicle properties such as make, maximum load, etc., location of vehicles, number of kilometres since their last maintenance check, etc.
 
 The **state space** is simple the set of all possible states. That is, the combination of all vehicle IDs, vehicle properties, maximum loads, etc.
 
@@ -110,7 +105,7 @@ As noted above, an action can have multiple possible outcomes. Exactly one outco
 
 **Transition probabilities** tell us the effect(s) of each action, including the probabilities of each outcome. For example, in the vehicle maintenance task, when our agent schedules a vehicle to be inspected, possible outcomes could be: (a) no further maintenance required (80% chance); (b) minor maintenance required (15% chance); or (c) major maintenance required (5% chance).
 
-**Rewards** specifies the benefit or cost of executing a particular action in a particular state. For example, a robot navigating to its destination receives a positive reward (benefit) for eaching its destination, a small negative reward (cost) for running into objects on the way; and a large negative reward for running into people.
+**Rewards** specifies the benefit or cost of executing a particular action in a particular state. For example, a robot navigating to its destination receives a positive reward (benefit) for reaching its destination, a small negative reward (cost) for running into objects on the way; and a large negative reward for running into people.
 
 
 
@@ -206,7 +201,7 @@ In locations with yellow or red stars, the ship may also shoot at the enemy, but
 
 The ship can observe the the entire state: it's location, the enemy location, it's own health, and the health of the enemy.
 
-In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee acheiving the high reward, and there are other paths which are faster, but more risky.
+In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee achieving the high reward, and there are other paths which are faster, but more risky.
 :::
 
 :::{admonition} Example MDP model
@@ -270,7 +265,7 @@ class MDP:
         abstract
 ```
 
-Then, we need to implement this interface to create an MDP. Below is the implementation for `getTransitions` and `getReward` for GridWorld:
+Then, we need to implement this interface to create an MDP. Below is the implementation for `get_transitions` and `get_reward` for GridWorld:
 
 ```
 class GridWorld(MDP):
@@ -361,7 +356,7 @@ Let's break this down into its parts:
 
 - The actions are *Up*, *Down*, *Left*, and *Right*, as well as the special action *Terminate*, which transitions into the *Terminal* state from a goal state.
 
-- ``getTransitions`` defines the transition probabilities. For example, we can see that if the action is *Left*, then there are three possible transitions: to the left with 0.8 probability, and either up or down with 0.1 probability each. The method ``validAdd`` ensures that if we agent cannot go in that direction due to a wall, it remains in the current state for its outcome.
+- ``get_transitions`` defines the transition probabilities. For example, we can see that if the action is *Left*, then there are three possible transitions: to the left with 0.8 probability, and either up or down with 0.1 probability each. The method ``valid_add`` ensures that if we agent cannot go in that direction due to a wall, it remains in the current state for its outcome.
 
 - The reward is modelled as receiving +1 or -1 for exiting a goal state and transitioning into the terminal state. We will see later that this models our desire that the goal states have the value of 1 and -1 respectively.
 
@@ -422,7 +417,7 @@ policy = ValuePolicy(gridworld, values)
 gridworld.visualise_policy(policy, "")
 ```
 
-So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidently slips right, it should go left again to return to the initial state.
+So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidentally slips right, it should go left again to return to the initial state.
 
 Of course, agents do not work with graphical policies. The output from a planning algorithm would be a dictionary-like object or a function that takes a state and returns an action.
 
@@ -441,7 +436,7 @@ Policies can be represented in several ways, but all have the same basic interfa
 
 ```
 
-The simplist way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
+The simplest way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
 :load: ../python_code/tabular_policy.py
@@ -548,7 +543,7 @@ So, if the value function $V$ is optimal, we can select the action with the high
 
 $$\pi(s) = \text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]$$
 
-This is known as **policy extraction**, because it extracts a policy for a value function (or Q-function). This can be calculated 'on the fly' at runtime, or we can extract a policy beforehand and use this.
+This is known as **policy extraction**, because it extracts a policy for a value function (or Q-function). This can be calculated 'on the fly' at run time, or we can extract a policy beforehand and use this.
 
 Alternatively, given a Q-function instead of a value function, we can use:
 

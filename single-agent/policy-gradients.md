@@ -12,11 +12,6 @@ kernelspec:
 (sec:policy-based:policy-gradients)=
 # Policy gradients
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
 <iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -67,7 +62,7 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by **ascending the gradient** of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the initial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by **ascending the gradient** of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the **policy gradient** of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -190,7 +185,7 @@ $$
 
 This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
 
-Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridword that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
+Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a GridWorld that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld

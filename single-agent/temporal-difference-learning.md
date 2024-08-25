@@ -13,11 +13,6 @@ kernelspec:
 
 # Temporal difference reinforcement learning
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
 <iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=0s" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -79,6 +74,7 @@ The aim of the game is to win the game. You have six actions available, which ca
             game = new MysteryGame(container, classes, player, object, actions);
          });
     </script>
+    [Mystery Game](https://github.com/guiferviz/rl_udacity/tree/master/mystery_game) by Github user guiferviz, used under the [MIT License (MIT)](https://github.com/guiferviz/rl_udacity/blob/master/LICENSE.md)
     </center>
 </div>
 
@@ -131,7 +127,7 @@ There are many different techniques for model-free reinforcement learning, all w
 
 Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a [Q-function](sec:mdps:bellman-equation) that records the value $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
-It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
+It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagant casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
 
 
 ```{prf:algorithm} Monte-Carlo reinforcement learning
@@ -262,7 +258,7 @@ The following is an implementation of a Q-table using a Python dictionary:
 
 Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high **variance**. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
 
-**Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
+**Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward received in the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
 
 In TD methods, our update rules always follow a pattern:
 
@@ -512,7 +508,7 @@ SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next it
 
 For this example, we will use the same Q-table as the earlier Q-learning example.
 
-Assme that in state (2,2), the action 'Up' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'Left'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
+Assume that in state (2,2), the action 'Up' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'Left'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
 
 $$
 \begin{array}{lll}
@@ -558,12 +554,12 @@ policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
 ```
 
-This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
+This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occurring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
 
 ### SARSA vs. Q-learning example: Cliff world
 
 ````{margin}
-```{admonition} Video byte: Cliffworld example
+```{admonition} Video byte: CliffWorld example
 <iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
@@ -673,7 +669,7 @@ There are a few reasons why we have both on-policy and off-policy learning.
 
 ### Learning from prior experience
 
-The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by **demonstration**. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
+The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by **demonstration**. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorithm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
 
 ### Learning on the job
 
@@ -701,7 +697,7 @@ How do we know how many episodes we should train a model-free learning algorithm
 
 With [value iteration](sec:value-iteration), we terminate the algorithm once the improvement in value function reaches some threshold. However, in the model-free environment, we are not aiming to learn a complete policy -- only enough to get us from the initial state to an absorbing state; or, in the case of an infinite MDP, to maximise rewards. Due to the randomness of the exploration and the fact that an episode may visit a state it has rarely visited, it is likely that for each episode, a Q-value of at least one state-action pair changes.
 
-With model-free learning, we can instead evalute the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
+With model-free learning, we can instead evaluate the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
 
 There are a few ways we can measure this:
 1. We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use a [multi-armed bandit](sec:multi-armed-bandits) to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability $\epsilon$. This means that we are not evaluating our real policy --- we are evaluating our really policy plus some random actions. 

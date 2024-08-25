@@ -10,12 +10,8 @@ kernelspec:
 ---
 # Multi-agent reinforcement learning
 
-```{contents}
-:local:
-:depth: 2
-```
 
-The field of **multi-agent reinforcement learning(( has become quite vast, and there are several algorithms for solving them. We are just going to look at how we can extend the lessons leant in the first part of these notes to work for **stochastic games**, which are generalisations of extensive form games.
+The field of **multi-agent reinforcement learning(( has become quite vast, and there are several algorithms for solving them. We are just going to look at how we can extend the lessons learnt in the first part of these notes to work for **stochastic games**, which are generalisations of extensive form games.
 
 ```{admonition}  Learning outcomes
 The learning outcomes for this chapter are:
@@ -159,7 +155,7 @@ In a truly model-free problem, we cannot simulate our opponents, however, our op
 
 However, if we are learning in a simulated environment without real opponents, we will need to simulate their moves ourselves, rather than just "waiting" for their actions. How should we choose actions for opponents' moves? There are a few ways to do this:
 
-1. **Random selection**: Select a random action. This is easy, but it means that we may end up exploring a lot of actions that will never be taken by a good opponent and therefore we will lear*n poor Q-values for our actions.
+1. **Random selection**: Select a random action. This is easy, but it means that we may end up exploring a lot of actions that will never be taken by a good opponent and therefore we will learn poor Q-values for our actions.
 2. **Using a fixed policy**: We can use an existing **stochastic** policy that gives reasonable behaviour of the opponent. This could be hand-coded or learnt from a similar game.
 3. **Self play**: We can simultaneously learn a policy for both ourselves and our opponents, and we choose actions for our opponents based on the learnt policies. If our actions spaces are the same, such as in games like Chess and Tictactoe, we can learn a single policy and have both ourselves and our opponents use it. This is the technique used by AlphaZero.
 

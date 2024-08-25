@@ -10,11 +10,6 @@ kernelspec:
 ---
 # n-step reinforcement learning
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -61,7 +56,7 @@ SARSA. The version for Q-learning is similar.
 The details and algorithm for n-step reinforcement learning make it seem more complicated than it really is. 
 At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received, plus the discounted future rewards from $n$ states ahead.
 
-Consider the following interative gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
+Consider the following interactive gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
@@ -87,7 +82,7 @@ At time $t=6$, we can see that the window slides beyond the length of the episod
 
 At time $t=7$, we do the final update --- this time for $Q(s_4,a_4)$; and the episode is complete.
 
-So, we can see that, intuitively, $n$-step reinforcement learning is quite straightfoward. However, to implement this, we need data structures to keep track of the last $n$ states, actions, and rewards, and modifications to the standard TD learning algorithm to both delay Q-value updates in the first $n$ steps of an episode, and to continue updating beyond the end of the episode for ensure the last $n$ state-action pairs are updated. This "book-keeping" code can be confusing at first, unless we already have an intuitive understanding of what it achieves.
+So, we can see that, intuitively, $n$-step reinforcement learning is quite straightforward. However, to implement this, we need data structures to keep track of the last $n$ states, actions, and rewards, and modifications to the standard TD learning algorithm to both delay Q-value updates in the first $n$ steps of an episode, and to continue updating beyond the end of the episode for ensure the last $n$ state-action pairs are updated. This "book-keeping" code can be confusing at first, unless we already have an intuitive understanding of what it achieves.
 
 ### Discounted Future Rewards (again)
 
@@ -265,7 +260,7 @@ Assuming $Q(s,a)=0$ for all $s$ and $a$, if we traverse the episode the labelled
 
 For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing.
 
-On step 5, we reach the end of our n-step window, and we start to update values becasue $|rs|=n$. We calculate $G$ from $rs$ and update $Q(ss_0, as_0)$, and then similarly for the 6$^{th}$ step:
+On step 5, we reach the end of our n-step window, and we start to update values because $|rs|=n$. We calculate $G$ from $rs$ and update $Q(ss_0, as_0)$, and then similarly for the 6$^{th}$ step:
 
 
 $

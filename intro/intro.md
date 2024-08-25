@@ -1,9 +1,5 @@
 # What is reinforcement learning?
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ## What is reinforcement learning?
 
