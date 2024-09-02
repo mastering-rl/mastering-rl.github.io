@@ -14,7 +14,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ```{admonition}  Learning outcomes
@@ -37,7 +37,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Online vs offline planning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -49,7 +49,7 @@ There are methods to approximate the MDP by reducing the dimensionality of $S$, 
 
 ````{margin}
 ```{admonition} Video byte: Monte-Carlo simulation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -76,7 +76,7 @@ Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based aro
 
 ````{margin}
 ```{admonition} Video byte: ExpectiMax trees
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -111,7 +111,7 @@ Fundamental features:
 
 ````{margin}
 ```{admonition} Video byte: MCTS framework
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -270,7 +270,7 @@ Provided that we can **simulate** the outcomes; e.g. using a code-based simulato
 
 ````{margin}
 ```{admonition} Video byte: MCTS example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -334,7 +334,7 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 ````{margin}
 ```{admonition} Video byte: Upper Confidence Trees (UCT)
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -378,7 +378,7 @@ For simplicity, we implement the select, expand, and backpropagate methods in th
 
 ````{margin}
 ```{admonition} Video byte: MCTS example on Gridworld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -421,7 +421,7 @@ After 0.03 seconds, the rewards are improving but are still quite noisy. This ma
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -461,7 +461,7 @@ It addresses exploitation vs. exploration comprehensively.
 
 ````{margin}
 ```{admonition} Video byte: MCTS demo
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -535,9 +535,10 @@ name: AlphaZero
 The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 ```
 
+
 ````{margin}
 ```{admonition} Video byte: Summary of MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

@@ -15,7 +15,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=0s" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src=" https://www.youtube.com/embed/lNxIB8jGWmI?start=0" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -45,7 +45,7 @@ There is something in between model-based and model-free: simulation-based techn
 
 ````{margin}
 ```{admonition} Video byte: The Mystery game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -94,7 +94,7 @@ I would guess that you experimented by pressing the keys 1 to 6, from the outcom
 
 ````{margin}
 ```{admonition} Video byte: Model-free reinforcement learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -121,7 +121,7 @@ There are many different techniques for model-free reinforcement learning, all w
 
 ````{margin}
 ```{admonition} Video byte: Monte-Carlo simulation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -161,7 +161,7 @@ This algorithm generates an entire episode following some policy, such $\epsilon
 
 ````{margin}
 ```{admonition} Video byte: Q-Tables
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -252,7 +252,7 @@ The following is an implementation of a Q-table using a Python dictionary:
 
 ````{margin}
 ```{admonition} Video byte: Temporal difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -285,7 +285,7 @@ In this chapter, we will look at two TD methods that differ in the way that they
 
 ````{margin}
 ```{admonition} Video byte: Q-learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -340,7 +340,7 @@ Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means i
 
 ````{margin}
 ```{admonition} Video byte: Q-learning update example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -429,7 +429,7 @@ gridworld.visualise_policy(policy)
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -445,8 +445,8 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 ## SARSA: On-policy temporal difference learning
 
 ````{margin}
-```{admonition} Video byte: Introduction to temporal-difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: SARSA -- On-policy temporal difference learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -560,7 +560,7 @@ This is (probably!) not because the SARSA implementation, but is because of the 
 
 ````{margin}
 ```{admonition} Video byte: CliffWorld example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -661,7 +661,7 @@ The resulting final policies, when executed after 20,000 episodes, also show tha
 
 ````{margin}
 ```{admonition} Video byte: On-policy vs. off-policy -- Why do we have both?
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -736,7 +736,7 @@ We can see a convergence at about 1250-1500 episodes.
 
 ````{margin}
 ```{admonition} Video byte: Limitations of Q-learning and SARSA
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -767,9 +767,10 @@ The standard versions that we see in this section have two major limitations:
 
 ````{margin}
 ```{admonition} Video byte: Summary
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
 
 ## Takeaways
 

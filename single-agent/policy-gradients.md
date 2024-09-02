@@ -14,9 +14,10 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
 
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
@@ -29,17 +30,17 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy gradient methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=87" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=87" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
-As noted earlier, policy-based methods search for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
+As noted earlier, policy-based methods searcbashh for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
 
 In policy gradient methods, we approximate the policy from the rewards and actions received in our episodes, similar to the way we do it with Q-learning. We can do this provided that the policy has two properties:
 
 ````{margin}
 ```{admonition} Video byte: Policy gradients 
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=213" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=213" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -52,7 +53,7 @@ The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy gradients
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=363" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=363" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -93,7 +94,7 @@ In these notes, we will not go into details about gradients or algorithms for so
 
 ````{margin}
 ```{admonition} Video byte: REINFORCE
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=551" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=551" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -122,7 +123,7 @@ REINFORCE  generates an entire episode using Monte-Carlo simulation by following
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=903" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=903" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

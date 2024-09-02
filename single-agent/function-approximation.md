@@ -14,7 +14,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -60,7 +60,7 @@ A Q-table would need to store $28\times 10^{149}$ entries. This is a huge Q-tabl
 
 ````{margin}
 ```{admonition} Video byte: Intuition of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -91,7 +91,7 @@ This requires just six features.
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-function representation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -116,7 +116,7 @@ To represent this, we have two vectors:
 
 ````{margin}
 ```{admonition} Video byte: Defining state-action features
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -196,7 +196,7 @@ $$
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-function update
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -221,7 +221,7 @@ In Freeway, for example, if we receive our first reward by crossing the road (go
 
 ````{margin}
 ```{admonition} Video byte: Example --- Linear Q-function update for Freeway
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -387,7 +387,7 @@ mdp.visualise_as_image(
 
 ````{margin}
 ```{admonition} Video byte: Q-tables vs. linear Q-functions
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -416,7 +416,7 @@ The key challenge in linear function approximation for Q-learning is the feature
 
 ````{margin}
 ```{admonition} Video byte: Deep Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -476,7 +476,7 @@ Note the value of the learning rate $\alpha=1.0$. This is because the optimiser 
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-functions vs Deep Q-functions
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -516,7 +516,7 @@ Despite this, deep Q-learning  works remarkably well in some areas, especially f
 
 ````{margin}
 ```{admonition} Video byte: Strengths and limitations of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -537,7 +537,7 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 ````{margin}
 ```{admonition} Video byte: Summary of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

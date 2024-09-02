@@ -28,8 +28,8 @@ The learning outcomes of this chapter are:
 ```
 
 ````{margin}
-```{admonition} [Video byte: Introduction to MDPs](https://youtu.be/UwjvpYrCUZ0?start=0s)
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=0s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: Introduction to MDPs
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=0" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -39,7 +39,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: MDPs -- An intuition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=70s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=70" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -53,13 +53,9 @@ Techniques like heuristic search and classical planning algorithms assume that a
 
 Here are some examples of stochastic actions:
 
--   Flipping a coin has two outcomes: heads ($\frac{1}{2}$) and tails
-    ($\frac{1}{2}$).
--   Rolling two dices together has twelve outcomes: 2 ($\frac{1}{36}$),
-    3 ($\frac{1}{18}$), 4 ($\frac{3}{36}$), ..., 12 ($\frac{1}{36}$).
--   When trying to pick up an object with a robot arm, there could be
-    two outcomes: successful ($\frac{4}{5}$) and unsuccessful
-    ($\frac{1}{5}$).
+-   Flipping a coin has two outcomes: heads ($\frac{1}{2}$) and tails ($\frac{1}{2}$).
+-   Rolling two dices together has twelve outcomes: 2 ($\frac{1}{36}$), 3 ($\frac{1}{18}$), 4 ($\frac{3}{36}$), ..., 12 ($\frac{1}{36}$).
+-   When trying to pick up an object with a robot arm, there could be two outcomes: successful ($\frac{4}{5}$) and unsuccessful  ($\frac{1}{5}$).
 -   When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.
 -   When we send a patient for a test, there is a 20% the test will come back negative, and an 80% chance it will come back positive.
 
@@ -69,7 +65,7 @@ MDPs have been successfully applied to planning in many domains: robot navigatio
 
 ````{margin}
 ```{admonition} Video byte: MDPs -- A definition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=229s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=229" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -112,7 +108,7 @@ As noted above, an action can have multiple possible outcomes. Exactly one outco
 
 ````{margin}
 ```{admonition} Video byte: Discounted rewards
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=430s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=430" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -385,7 +381,7 @@ What is different between an MDP and search-based solutions? There are four main
 
 ````{margin}
 ```{admonition} Video byte: Policies
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=610s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=610" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -449,12 +445,25 @@ As we see later in the section on [policy gradients](sec:policy-based:policy-gra
 ## Optimal Solutions for MDPs
 
 ````{margin}
-```{admonition} Video byte: Expected discounted reward
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1139s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: Quiz -- Expected return
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=962" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+````{margin}
+```{admonition} Video byte: Quiz answer -- Expected return
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1030" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
+
 For discounted-reward MDPs, optimal solutions maximise the **expected discounted accumulated reward** from the initial state $s_0$. But what is the expected discounted accumulated reward?
+
+````{margin}
+```{admonition} Video byte: Expected discounted reward
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1139" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
+
 
 (defn:expected-discounted-reward)=
 :::{admonition} Definition -- Expected discounted reward
@@ -479,7 +488,7 @@ $$
 
 ````{margin}
 ```{admonition} Video byte: Bellman equation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1512s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1512" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -533,7 +542,7 @@ The two definitions are equivalent, and you may seem them defined in both ways. 
 
 ````{margin}
 ```{admonition} Video byte: Policy extraction
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3554s" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3554" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

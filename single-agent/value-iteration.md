@@ -27,12 +27,11 @@ The learning outcomes of this chapter are:
 
 ## Overview
 
-**Value Iteration** is a dynamic-programming method for finding the optimal value function $V^*$ by solving the
-Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
+**Value Iteration** is a dynamic-programming method for finding the optimal value function $V^*$ by solving the Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
 
 ````{margin}
 ```{admonition} Video byte: Introduction to value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1992" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1988" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -65,7 +64,7 @@ $
 
 ````{margin}
 ```{admonition} Video byte: Example -- Value iteration on GridWorld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -73,7 +72,7 @@ As we can see, this is just applying the Bellman equation iteratively until eith
 
 ````{margin}
 ```{admonition} Video byte: Quiz -- Value iteration in GridWorld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -90,13 +89,20 @@ $
 \end{array}
 $
 
+````{margin}
+```{admonition} Video byte: Quiz answer-- Value iteration in GridWorld
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2801" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Value iteration converges to the optimal policy as iterations continue: $V \mapsto V^*$ as $i \mapsto \infty$, where $i$ is the number of iterations. So, given an infinite amount of iterations, it will be optimal.
 
 
 Value iteration **converges** to the optimal value function $V^*$ asymptotically, but in practice, the algorithm terminates when the **residual**  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). 
+
+The loss of the result greedy policy terminating after $k$ iterations is bounded by $\frac{2 \gamma  \delta_{max}}{1-\gamma}$, where $\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|$.
 
 Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
 
@@ -139,7 +145,7 @@ gridworld.visualise_policy(policy, "Policy after iteration 100")
 
 ````{margin}
 ```{admonition} Video byte: Convergence of value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3134" title="Convergence of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3134" title="Convergence of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -348,7 +354,7 @@ ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)
 
 ````{margin}
 ```{admonition} Video byte: Time complexity of value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3354" title="Time complexity of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3354" title="Time complexity of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -358,10 +364,9 @@ It is clear to see that the value iteration can be easily parallelised by updati
 
 ## Takeaways
 
-
 ````{margin}
 ```{admonition} Video byte: Summary: MDPs and value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3794" title="Summary: MDPs and value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3794" title="Summary: MDPs and value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

@@ -26,7 +26,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to extensive form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -44,7 +44,7 @@ In these notes, we will look only at **perfect information** extensive form game
 
 ````{margin}
 ```{admonition} Video byte: Definition -- Extensive form game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=69" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=69" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

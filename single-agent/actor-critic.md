@@ -21,7 +21,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Actor-critic methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1053" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1053" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -35,7 +35,7 @@ The **Q Actor Critic** algorithm uses a Q-function as the critic.
 
 ````{margin}
 ```{admonition} Video byte: Q actor critic
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1313" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1313" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -79,7 +79,7 @@ So, this simultaneously learns the policy (actor) $\pi_{\theta}$ and a critic (Q
 
 ````{margin}
 ```{admonition} Video byte: Summary of policy gradients
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=1610" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1610" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

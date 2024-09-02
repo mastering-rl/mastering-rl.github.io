@@ -14,7 +14,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to policy-based approaches and policy iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ```{admonition}  Learning outcomes
@@ -29,7 +29,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy-based approaches 
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=83" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=83" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -43,7 +43,7 @@ The basic idea here is that policy evaluation is easier to computer than value i
 
 ````{margin}
 ```{admonition} Video byte: Model-based policy evaluation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=169" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=169" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -88,7 +88,7 @@ The **optimal expected reward** $V^*(s)$ is $\max_{\pi} V^\pi(s)$ and the **opti
 
 ````{margin}
 ```{admonition} Video byte: Model-based policy improvement
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=418" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=418" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -106,7 +106,7 @@ If there is an action $a$ such that $Q^{\pi}(s,a) > Q^{\pi}(s,\pi(s))$, then the
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy-based approaches
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=572" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=572" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -114,7 +114,7 @@ Pulling together policy evaluation and policy improvement, we can define **polic
 
 ````{margin}
 ```{admonition} Video byte: Example --- Policy iteration in Gridworld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=816" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=816" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -138,7 +138,7 @@ $
 
 ````{margin}
 ```{admonition} Video byte: Convergence of policy iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=1085" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=1085" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -197,7 +197,7 @@ This terminates in 19 iterations.   We can see that the policy is optimal as it 
 
 ````{margin}
 ```{admonition} Video byte: Summary of policy iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/h_zVV_hfPD8?start=1182" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=1182" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

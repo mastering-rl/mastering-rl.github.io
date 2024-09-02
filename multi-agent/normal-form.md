@@ -24,7 +24,7 @@ Then, we look at **extensive form games**, which are sequential games, meaning t
 
 ````{margin}
 ```{admonition} Video byte: Introduction to normal form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -46,7 +46,7 @@ Normal form games capture many different applications in the field of multi-agen
 
 ````{margin}
 ```{admonition} Video byte: Exercise --- Prisoner's dilemma
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -111,7 +111,7 @@ Now that we have seen an example, let's look at a more formal definition of norm
 
 ````{margin}
 ```{admonition} Video byte: Definition -- Normal form game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -174,7 +174,7 @@ Then, we look at solutions at the concept of **equilibria**, which captures solu
 
 ````{margin}
 ```{admonition} Video byte: Best response and Nash equilibria
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -251,7 +251,7 @@ To search for pure strategy equilibria, we just set $S_i \leftarrow A_i$; that i
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- The advertising game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -266,7 +266,7 @@ We can verify this by looking at each cell and reasoning as follows:
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- Split or steal
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -310,7 +310,7 @@ Recall from earlier in this chapter where we defined **mixed strategies**, which
 
 ````{margin}
 ```{admonition} Video byte: Example -- Matching pennies game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -353,7 +353,7 @@ So, what strategy should we play? If we were to play this game a number of times
 
 ````{margin}
 ```{admonition} Video byte: Expected utility
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -373,7 +373,7 @@ In theory, we can maximise our overall  utility by picking the pure strategy wit
 
 ````{margin}
 ```{admonition} Video byte: Indifference
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -385,7 +385,7 @@ Informally, this states that an agent is indifferent between a set of pure strat
 
 ````{margin}
 ```{admonition} Video byte: Mixed strategies
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -397,7 +397,7 @@ Informally, this states that each agent should choose a mixed strategy such that
 
 ````{margin}
 ```{admonition} Video byte: Example -- Mixed strategies for matching pennies
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 :::{admonition} Example -- Mixed strategies for matching pennies
@@ -422,7 +422,7 @@ In this example, the probabilities of the game are reasonably clear without havi
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- Security game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -430,7 +430,7 @@ In this example, the probabilities of the game are reasonably clear without havi
 
 ````{margin}
 ```{admonition} Video byte: Application -- Security games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -513,7 +513,7 @@ So, the defender should choose to defend Terminal 1 with the probability $\frac{
 
 ````{margin}
 ```{admonition} Video byte: Summary of normal form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

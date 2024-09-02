@@ -13,7 +13,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to reward shaping
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=0s" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=0" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -45,7 +45,7 @@ In this section, we look at two simple approaches that can improve temporal diff
 
 ````{margin}
 ```{admonition} Video byte: Rewarding shaping --- The problem
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -69,7 +69,7 @@ solved.
 
 ````{margin}
 ```{admonition} Video byte: Reward shaping intuition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=180" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -102,7 +102,7 @@ glue("gridworld_image", gridworld_image, display=False)
 
 ````{margin}
 ```{admonition} Video byte: Shaped reward updates
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=253" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=253" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -128,7 +128,7 @@ If we define $F(s,s') > 0$ for states $s$ and $s'$, then this provides a small p
 
 ````{margin}
 ```{admonition} Video byte: Potential-based reward shaping
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=387" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=387" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -162,7 +162,7 @@ where $G$ refers to the shaped reward for the episode, and $s_0$ is the starting
 
 ````{margin}
 ```{admonition} Video byte: Example -- Reward shaping in Q-learning 
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=503" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=503" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -220,7 +220,7 @@ Reward shaping for Q-learning is then a simple extension of the ``QLearning`` cl
 
 ````{margin}
 ```{admonition} Video byte: Reward shaping in Super Gridworld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=838" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=838" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -311,7 +311,7 @@ However, notice that  because we use a potential function, it still converges to
 
 ````{margin}
 ```{admonition} Video byte: Q-value initialisation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=1014" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=1014" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -341,7 +341,7 @@ Once we start learning over episodes, we will select those actions with a higher
 
 ````{margin}
 ```{admonition} Video byte: Summary
-<iframe width="248" height="141" src="https://www.youtube.com/embed/aOcGJL4DRFM?start=1142" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=1142" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

@@ -52,6 +52,6 @@ If you use this as part of your teaching or learning in a course, please [let me
 
 ## Acknowledgements
 
-Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients using a logistic regression policy](sec:policy-gradients:logistic-regression); and furthermore, for implementing the source for this and the [deep policy gradient agent](sec:policy-gradient:deep-policy-gradients). Thanks also to Alan for setting up the library for play GIF files, which supports the interactive visualisations that are so useful in this book.
+Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients using a logistic regression policy](sec:policy-gradients:logistic-regression); and furthermore, for implementing the source for this and the [deep policy gradient agent](sec:policy-gradient:deep-policy-gradients). Thanks also to Alan for setting up the library for playing GIF files, which supports the interactive visualisations that are so useful in this book.
 
 Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.

@@ -40,7 +40,7 @@ Extensive form game tree as a reinforcement learning problem
 
 ````{margin}
 ```{admonition} Video byte: Multi-agent reinforcement learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1270" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1270" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -86,7 +86,7 @@ Note that $a = \pi(s_i)$ is the joint action of all agents. So, each agent's obj
 
 ````{margin}
 ```{admonition} Video byte: Multi-agent Q-learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1470" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1470" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -145,7 +145,7 @@ Of course, it is not just Q-learning that can be extended to the multi-agent cas
 
 ````{margin}
 ```{admonition} Video byte: Opponent moves
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1611" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1611" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -164,7 +164,7 @@ However, if we are learning in a simulated environment without real opponents, w
 
 ````{margin}
 ```{admonition} Video byte: Multi-agent MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=1820" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1820" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -175,7 +175,7 @@ Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic M
 
 ````{margin}
 ```{admonition} Video byte: Application -- Poker
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=2037" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=2037" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -187,7 +187,7 @@ Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic M
 
 ````{margin}
 ```{admonition} Video byte: Summary of extensive form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=2227" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=2227" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

@@ -14,7 +14,7 @@ kernelspec:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?start=0s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=0" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ```{admonition}  Learning outcomes
@@ -29,7 +29,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Intuition of multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=43s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=43" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -51,7 +51,7 @@ The question is: without knowing the probability distribution beforehand, how sh
 
 ````{margin}
 ```{admonition} Video byte: Multi-armed bandits -- Definition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=107s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=107" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -87,7 +87,7 @@ The idea here is that for a multi-armed bandit problem, we explore the options u
 
 ````{margin}
 ```{admonition} Video byte: Exploration vs. exploitation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=169s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=169" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -125,7 +125,7 @@ Each strategy must implement the  `select` method, which takes the list of avail
 
 ````{margin}
 ```{admonition} Video byte: Simulation example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=516s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=516" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -173,7 +173,7 @@ The key difference between the solutions we will look at is how the $\textrm{sel
 
 ````{margin}
 ```{admonition} Video byte: Epsilon greedy
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=594s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=594" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -209,7 +209,7 @@ But we can also see that while epsilon = 0.05 ends up with a higher return after
 
 ````{margin}
 ```{admonition} Video byte: Epsilon decreasing
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=712s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=712" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -245,7 +245,7 @@ This indicates that for this particular problem, a value of 0.99 for alpha has a
 
 ````{margin}
 ```{admonition} Video byte: Softmax
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=820s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=820" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -291,7 +291,7 @@ Note that higher values of tau also work when the drift is more gradual, rather 
 
 ````{margin}
 ```{admonition} Video byte: Upper Confidence Bounds (UCB1)
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1105s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1105" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -355,7 +355,7 @@ While in this particular case, UCB1 has a higher average reward over the entire 
 
 ````{margin}
 ```{admonition} Video byte: Summary of multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1334s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1334" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways
