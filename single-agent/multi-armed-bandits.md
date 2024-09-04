@@ -274,9 +274,10 @@ As before, we plot the average reward at each step of our simulation, this time 
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
 
-The softmax strategy is designed to work well under **drift**; that is, when the underlying probability distributions (in this case, the probability of receiving a reward) change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly.
+The softmax strategy is designed to work well under **drift**; that is, when the underlying rewards or probability distributions change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly. Problems where the underlying rewards or probabilities can change over time are called **restless bandits**.
 
-So, what happens if we change the value of our underlying probabilities? In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]``` to ```probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]```.  This is a sudden change in which the Q-values are almost worthless.
+
+In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]``` to ```probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]```.  This is a sudden change in which the Q-values are almost worthless.
 
 If we plot the performance of the softmax algorithm with this, the results are as follows:
 
@@ -301,13 +302,18 @@ Using the UCB1 strategy, we select the next action  using the following:
 
 $$\text{argmax}_{a}\left(Q(a)   +   \sqrt{\frac{2 \ln t}{N(a)}}\right)$$
 
-where $t$ is the number of rounds so far, and $N(a)$ is the number of times times $a$ has been chosen in all previous rounds. The term inside the square root is undefined if $N(a) = 0$. The avoid this, the typical strategy is to spend the first $N$ rounds to select each of the $N$ bandits once.
+where $t$ is the number of rounds so far, and $N(a)$ is the number of times times $a$ has been chosen in all previous rounds. The term inside the square root is undefined if $N(a) = 0$. The avoid this, the typical strategy is to spend the first $N$ rounds to select each of the $N$ bandits once. This is a simple exploration strategy to ensure all arms are sampled at least once, but this problem could be handled in different ways, such as assigning the value $\infty$ when $N(a)=0$.
 
 The left--hand side encourages exploitation: the Q-value is high for actions that have had a high reward.
 
-The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions.
+The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions. When $t$ is small (not many pull so far), all actions will have a high exploration value. As $t$ increases, if some actions have low $N(a)$, then the expression $\sqrt{\frac{2 \ln t}{N(a)}}\right)$ is large compared to actions with higher $N(a)$. 
 
-Interesting, the UCB formula is not a weighted formula -- that is, there is no parameter giving weight to the $Q(a)$ or the square root expressions to balance exploration vs. exploitation. So how does it work? We will not get into all the details, but instead just give some intuition.
+Together, adding these two expressions helps to balance exploration and exploitation.
+
+Note that the UCB formula is not parameterised -- that is, there is no parameter giving weight to the $Q(a)$ or the square root expression to balance exploration vs. exploitation. 
+
+So how does it work? We will not get into all the details, but instead just give some intuition.
+
 
 We want to learn the Q-function, which gives us the average return on each action $a$, such that it approximates the real (unknown) Q-function, which we will call $Q^*$. At each round, we select the action $a$ that maximises the expression inside the brackets. If arm $a$ is optimal, then we want the following to hold for all actions $b \neq a$:
 
@@ -315,13 +321,33 @@ $$Q(b) + \sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)$$
 
 If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low for some actions, we do not have this confidence. 
 
-If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to minimise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
+So, the expression $\sqrt{\frac{2 \ln t}{N(a)}}$  is the **confidence interval** of our estimates for $Q(a)$, much like a confidence interval around an estimation of a population mean in statistic.
+
+If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to minimise pseudo-regret. This leads us to $2 \ln t$ in the expression: if there has been relatively few pulls overall so far, then the confidence intervals will be similar for all arms. As more pulls are done, this increases, but only at a logarithmic rate so that exploration grows more slowly as $t$ increases. 
+
+We can visualise this using the following example, in which there are three arms. The blue bars represent the Q-values and the black error bars represent the confidence interval:
+
+```{code-cell} ipython3
+:tags: [remove-input]
+:load: "../python_code/tests/plot_ucb_example.py"
+```
+
+The confidence interval around these is an estimate of how confident we are about the Q-value estimate: if an arm has relatively fewer pulls than other arms, the confidence is lower, so the confidence interval is wider.
+
+In this case, Arm 1 has the highest Q-value, but as this arm has been explored more times, the confidence interval is much smaller than the other arms -- we are more confident of our estimate of Arm 1 than of the other arms. Arm 2 has a lower Q-value, but has been explored less, so the confidence interval is larger. As such, adding the Q-value and the confidence interval gives us a higher value, as identified by the red dot at the top of the confidence interval. Arm 3 has a larger confidence interval, but the Q-value is much lower than Arm 2, so the top of the confidence interval is lower than that of Arm 2.
+
+From this, the $\text{argmax}_{a}$ would choose Arm 2: it is the action with the confidence interval that is at the highest point on the graph. Then, we would increment both $t$ and $N(Arm\ 2)$, making its confidence interval slightly narrower, while slighly increasing the confidence interval of all other arms.
+
+So, we can see how this would balance exploration and exploitation: as say, arm $a$ gets chosen many times in succession, its confidence interval narrows while all others widen. Eventually, other arms will start to 'rise to the top' because their confidence interval is so large; but this will take longer if $Q(a)$ is much better than the Q-value of all other actions. So, we would exploit arm $a$ for a long time, but come to sample other arms.
+
 
 #### Implementation
 
-```{code-cell} ipython3 
-:load: "../python_code/multi_armed_bandit/ucb.py"
+
+```{code-cell} python3
+:load:  "../python_code/multi_armed_bandit/ucb.py"
 ```
+
 
 Because UCB does not have parameters, there is no exploration to be done, however, in the next section we compare UCB with the other three strategies.
 

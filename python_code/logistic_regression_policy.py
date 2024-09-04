@@ -65,7 +65,7 @@ class LogisticRegressionPolicy(StochasticPolicy):
         pi(actions[1] | state) = 1 / (1 + e^(theta * state))
     When we apply a logarithmic transformation and take the gradient we end up with:
         grad_log_pi(left | state) = state - state * pi(left | state)
-        grad_log_pi(right | state) = - state * pi(right | state)
+        grad_log_pi(right | state) = -state * pi(left | state)
     """
 
     def gradient_log_pi(self, state, action):

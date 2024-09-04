@@ -34,7 +34,7 @@ The learning outcomes of this chapter are:
 ```
 ````
 
-As noted earlier, policy-based methods searcbashh for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
+As noted earlier, policy-based methods search for a policy directly, rather than searching for a value function and extracting a policy. In this section, we look at a model-free method that optimises a policy directly. It is similar to Q-learning and SARSA, but instead of updating a Q-function, it updates the parameters $\theta$ of a policy directly using gradient ascent.
 
 In policy gradient methods, we approximate the policy from the rewards and actions received in our episodes, similar to the way we do it with Q-learning. We can do this provided that the policy has two properties:
 
@@ -136,7 +136,7 @@ From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-
 :::
 
 (sec:policy-gradients:logistic-regression)=
-### Implementation
+## Implementation: Logistic regression-based REINFORCE
 
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
@@ -144,7 +144,41 @@ The implementation of REINFORCE takes a policy, but this policy must be differen
 :load: "../python_code/policy_gradient.py"
 ```
 
+
 We need a differentiable policy so that we can calculate the gradient and update. To illustrate this from first principles, let's look at an implementation of a policy that uses logistic regression. This basic implementation supports environments with only two actions, but it is sufficient to illustrate the basics of policy gradient methods from first principles.
+
+Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
+
+$$
+\begin{aligned}
+        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\[1mm]
+        \pi_{\theta}(s, a_1) &= 1 - \pi_{\theta}(s, a_0) 
+\end{aligned}
+$$
+
+This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
+
+Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
+
+$$
+\begin{aligned}
+\sigma(x) &= \frac{1}{1 + e^{-\theta \cdot x}}\\[1mm]
+\frac{\partial \sigma(x)}{\partial x} &= \theta \sigma(x)(1 - \sigma(x))
+\end{aligned}
+$$
+
+Using this result, we can then find $\nabla \textrm{ln} \pi(s, a)$:
+
+$$
+\begin{aligned}
+  \nabla \textrm{ln} \pi_{\theta}(s, a_0) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
+  \nabla \textrm{ln} \pi_{\theta}(s, a_1) &= -s \cdot \pi_{\theta}(s, a_0)
+\end{aligned}
+$$
+
+This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
+
+Let's implement this.
 
 The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ that returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
 
@@ -155,36 +189,6 @@ The policy inherits from `StochasticPolicy`, which means that the policy is a [s
 
 The `update` method, as well as the `gradient_log_pi` method that it calls, are where the policy gradient theorem is applied. In `update`, for every state-action transition in the trajectory, we calculate the gradient and then update the parameters $\theta$ using the corresponding partial derivative.
 
-Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
-
-$$
-\begin{aligned}
-        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\
-        \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{\theta \cdot s}}
-\end{aligned}
-$$
-
-This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
-
-Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
-
-$$
-\begin{aligned}
-\sigma(x) &= \frac{1}{1 + e^{\theta \cdot x}}\\[1mm]
-\frac{\partial \sigma(x)}{\partial x} &= \sigma(x)(1 - \sigma(x))
-\end{aligned}
-$$
-
-Using this result, we can then find $\nabla \textrm{ln} \pi(a, s)$:
-
-$$
-\begin{aligned}
-  \nabla \textrm{ln} \pi_{\theta}(s, a_0) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
-  \nabla \textrm{ln} \pi_{\theta}(s, a_1) &= -s \cdot \pi_{\theta}(s, a_1)
-\end{aligned}
-$$
-
-This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
 
 Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a GridWorld that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
@@ -231,7 +235,7 @@ If we step through the policy during training, we can see the gradient updates p
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
 (sec:policy-gradient:deep-policy-gradients)=
-### Deep REINFORCE
+## Implementation: Deep REINFORCE
 
 Just like we can use deep neural networks to approximate Q-functions in [deep Q learning](sec:function-approximation:deep-Q-learning), we can use deep neural networks to approximate policies. Neural networks are differentiable, so these can be used in policy gradient algorithms such as REINFORCE --- the policy parameters $\theta$ are the parameters to the neural network.
 
