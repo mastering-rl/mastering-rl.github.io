@@ -11,7 +11,16 @@ kernelspec:
   name: python3
 ---
 
+
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 # Temporal difference reinforcement learning
+
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
@@ -74,9 +83,10 @@ The aim of the game is to win the game. You have six actions available, which ca
             game = new MysteryGame(container, classes, player, object, actions);
          });
     </script>
-    [Mystery Game](https://github.com/guiferviz/rl_udacity/tree/master/mystery_game) by Github user guiferviz, used under the [MIT License (MIT)](https://github.com/guiferviz/rl_udacity/blob/master/LICENSE.md)
     </center>
 </div>
+
+[Mystery Game](https://github.com/guiferviz/rl_udacity/tree/master/mystery_game) by Github user guiferviz, used under the [MIT License (MIT)](https://github.com/guiferviz/rl_udacity/blob/master/LICENSE.md)
 
 
 
@@ -389,6 +399,12 @@ Next, we implement a second abstract superclass `TemporalDifferenceLearner`, whi
 
 ```
 
+Note a slight difference in the update from {prf:ref}`algorithm:q-learning` and the update in the code:
+
+`delta = reward + (self.mdp.discount_factor * next_state_value * (1 - done)) - q_value`
+
+The expression `1 - done` will equal 0 if the episode has not finished, and 1 otherwise. Therefore, this update calculates that `delta = reward - q_value` at a terminal state -- we do not need to estimate the value of the next state because there is no next state for a terminal state.
+
 We will see later that we inherit from `TemporalDifferenceLearner` for other algorithms that are very similar to Q-learning.
 
 
@@ -429,7 +445,7 @@ gridworld.visualise_policy(policy)
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -620,7 +636,9 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
+
 ```
+
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
 Q-learning learns the optimal policy, meaning that once we extract the policy, its rewards will be higher on average.
@@ -645,16 +663,14 @@ In the case of Contested Crossing, there are seven actions available (compared t
 
 The result of this is to considerably increase the amount of time taken to converge towards a good policy, for either Q-learning or SARSA. For $n=2000$, the policy found by Q-learning is usually -- but not always -- superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
 
-At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature. 
-
-The resulting final policies, when executed after 20,000 episodes, also show that the Q-learning policy receives a higher reward per episode than SARSA.
+At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature, but it is still quite good.
 
 
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
 
-
 ```
+
 
 (sec:model-free:on-policy-vs-off-policy)=
 ## On-policy vs. off-policy: Why do we have both?
@@ -767,7 +783,7 @@ The standard versions that we see in this section have two major limitations:
 
 ````{margin}
 ```{admonition} Video byte: Summary
-<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

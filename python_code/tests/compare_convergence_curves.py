@@ -8,7 +8,7 @@ from tests.plot import Plot
 
 
 def qlearning_vs_sarsa(mdp_q, mdp_s, episodes):
-    
+
     # Train using Q-learning
     qfunction = QTable()
     QLearning(mdp_q, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=episodes)
@@ -17,7 +17,7 @@ def qlearning_vs_sarsa(mdp_q, mdp_s, episodes):
     policy = StochasticQPolicy(qfunction, EpsilonGreedy(epsilon=.01))
     mdp_q.execute_policy(policy, episodes=episodes)
     qlearning_rewards = mdp_q.get_rewards()
-    
+
     # Train using SARSA
     qfunction = QTable()
     SARSA(mdp_s, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=episodes)
@@ -27,11 +27,11 @@ def qlearning_vs_sarsa(mdp_q, mdp_s, episodes):
     mdp_s.execute_policy(policy, episodes=episodes)
     sarsa_rewards = mdp_s.get_rewards()
 
-    Plot.plot_rewards_per_episode(["Q-learning", "SARSA"], [qlearning_rewards, sarsa_rewards])
+    Plot.plot_rewards_per_episode(["Q-learning", "SARSA"], [qlearning_rewards, sarsa_rewards], smoothing_factor=0.9)
 
 
 def qlearning_vs_nstep(mdp_q, mdp_n, episodes, n):
-    
+
     # Train using Q-learning
     qfunction = QTable()
     QLearning(mdp_q, EpsilonGreedy(epsilon=0.2), qfunction).execute(episodes=episodes)

@@ -461,7 +461,7 @@ It addresses exploitation vs. exploration comprehensively.
 
 ````{margin}
 ```{admonition} Video byte: MCTS demo
-<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -538,7 +538,7 @@ The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](http
 
 ````{margin}
 ```{admonition} Video byte: Summary of MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

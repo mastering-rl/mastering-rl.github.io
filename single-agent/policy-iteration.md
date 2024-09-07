@@ -192,7 +192,7 @@ print("Number of iterations until convergence: %d" % (iterations))
 gridworld.visualise_policy(policy)
 ```
 
-This terminates in 19 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.
+This terminates in 5 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.
 
 
 ````{margin}

@@ -9,7 +9,6 @@ High priority:
 - add videos to pressbooks (see format below)
 - PDF format
 - adjust update rules to account for terminal states (1 - done)
-- fix logistic regression policy gradent to just use one log function and calculate pi(s,a_1) using 1-pi(s,a_0) -- see email trail below.
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
 - PPO
 - add experience replay code to notes
@@ -119,14 +118,4 @@ There may be other ways to do this, but this was my starting point!"
     padding: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-
-"
-Logistic regression
-Thank you for your reply.
-What I am unsure about is the sigmoid function in the book, when you introduced its (partial) derivative. The sigmoid function you used to give the example is sigma(x) = 1/(1+e^(theta*x)) and the partial derivative with respect to x written in the book is sigma(x)*(1-sigma(x)) (Please see the screenshot from the book below.)
-
-
-However, in the denominator of the sigmoid function, you wrote (1+e^(theta*x)). With this formulation, if we take the (partial) derivative of sigma(x) with respect to x, the parameter "theta" must appear in the formula of the derivative. Also, the sign inside the bracket should be reversed, and the final result should be theta*sigma(x)*(sigma(x)-1).
-"
 

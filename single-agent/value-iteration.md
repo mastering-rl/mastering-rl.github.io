@@ -90,8 +90,8 @@ $
 $
 
 ````{margin}
-```{admonition} Video byte: Quiz answer-- Value iteration in GridWorld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2801" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: Quiz answer -- Value iteration in GridWorld
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2801" title="Quiz answer: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -292,8 +292,10 @@ from tabular_value_function import TabularValueFunction
 
 maze = GridWorld.open('../python_code/layouts/maze.txt')
 values = TabularValueFunction()
+policy = StochasticValuePolicy(maze, values)
 ValueIteration(maze, values).value_iteration(max_iterations=100)
 maze.visualise_value_function(values, "Maze value function after iteration 100")
+maze.visualise_policy(policy, "Maze policy after iteration 100")
 
 ```
 
@@ -319,7 +321,7 @@ ccross.visualise_value_function(
 )
 ```
 
-In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are average into the figure.
+In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are averaged into the figure.
 
 An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. 
 
@@ -358,7 +360,9 @@ ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)
 ```
 ````
 
-The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterate in an outer loop over all states in $S$, and in each outer loop iteration, we need to iterate over all states ($\sum_{s' \in S}$), meaning $|S|^2$ iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum.
+In this section, we analyse the complexity of value iteration.
+
+The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterate in an outer loop over all states in $S$, and in each outer loop iteration, we need to iterate over all states ($\sum_{s' \in S}$), meaning $|S|^2$ iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum. How many iterations will we cover? That depends on the value of $\theta$, and cannot be pre-determined.
 
 It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step $t + 1$ are dependent only on the value of other states at step $t$.
 

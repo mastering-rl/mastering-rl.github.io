@@ -138,7 +138,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -184,7 +184,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_trained_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -241,7 +241,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -270,7 +270,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_deep_q_function" width=500></gif-player>
 
 </div>
@@ -279,7 +279,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 Hmmm... not much better. What is happening? Why does it not work for Frogger, but it works for Freeway?
 
-The answer is simple: Freeway has just three move: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
+The answer is simple: Freeway has just three moves: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
 
 What if we train it for more episodes? 
 
@@ -297,7 +297,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_2000_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_2000_deep_q_function" width=500></gif-player>
 </div>
 <p>

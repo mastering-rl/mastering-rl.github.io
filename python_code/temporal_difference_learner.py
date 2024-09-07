@@ -21,7 +21,7 @@ class TemporalDifferenceLearner(ModelFreeLearner):
                 (next_state, reward, done) = self.mdp.execute(state, action)
                 actions = self.mdp.get_actions(next_state)
                 next_action = self.bandit.select(next_state, actions, self.qfunction)
-                delta = self.get_delta(reward, state, action, next_state, next_action)
+                delta = self.get_delta(reward, state, action, next_state, next_action, done)
                 self.qfunction.update(state, action, delta)
 
                 state = next_state
@@ -37,10 +37,10 @@ class TemporalDifferenceLearner(ModelFreeLearner):
 
     """ Calculate the delta for the update """
 
-    def get_delta(self, reward, state, action, next_state, next_action):
+    def get_delta(self, reward, state, action, next_state, next_action, done):
         q_value = self.qfunction.get_q_value(state, action)
         next_state_value = self.state_value(next_state, next_action)
-        delta = reward + self.mdp.discount_factor * next_state_value - q_value
+        delta = reward + (self.mdp.discount_factor * next_state_value * (1 - done)) - q_value
         return delta
 
     """ Get the value of a state """

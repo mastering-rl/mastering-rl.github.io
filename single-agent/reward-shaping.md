@@ -69,7 +69,7 @@ solved.
 
 ````{margin}
 ```{admonition} Video byte: Reward shaping intuition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=180" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
