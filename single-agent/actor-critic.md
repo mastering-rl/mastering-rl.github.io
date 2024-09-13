@@ -9,6 +9,7 @@ kernelspec:
   name: python3
 ---
 
+
 (sec:policy-based:actor-critic)=
 # Actor-critic methods
 
@@ -28,6 +29,16 @@ The learning outcomes of this chapter are:
 The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards $G$ over episodes leads to instability.
 
 **Actor critic** methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the **actor** and the  value function is called the **critic**. The primary idea is that the actor produces actions, and as in [temporal difference learning](sec:model-free:td-learning), the  value function (the critic) provides feedback or "criticism" about these actions as a way of bootstrapping.
+
+```{figure} ./figs/actor_critic_loop.png
+---
+name: fig:actor_critic_loop
+alt: "An abstract illustration of an actor critic algorithm. There are four boxes: environment, sample action, update actor, and update critic. From sample action to update actor  is an arrow labelled with the letter a-prime, representing the action that will be executed by the agent in the environment. The update actor uses a-prime to update the policy; that is, the actor. From update actor to update critic is an arrow labelled lower-case delta, representing the amount to update the critic. From the critic to the environment is the action a-prime again. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
+---
+An abstraction illustration of the actor-critic framework.
+```
+
+{numref}`fig:actor_critic_loop` gives an abstract overview of actor-critic frameworks --- in this case, Q actor-critic. As with REINFORCE, actions are samples from the probabilistic policy $\pi_{\theta}$. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.
 
 ## Q Actor-Critic
 
@@ -52,11 +63,11 @@ $
 \text{Initialise actor}\ \pi\ \text{parameters}\ \theta\ \text{and critic parameters}\ w\ \text{arbitrarily}\\[2mm]
 \algrepeat\ \text{(for each episode}\ e\ \text{)}\\
 \quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
-\quad\quad \text{Select action}\ a \sim \pi_\theta(s)\\
+\quad\quad \text{Select action}\ a \sim \pi_\theta(s, a)\\
 \quad\quad \algrepeat\ \text{(for each step in episode e)}\\
 \quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
-\quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s')\\
+\quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s', a')\\
 \quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)\\
 \quad\quad\quad\quad w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)\\
 \quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)\\
@@ -69,7 +80,7 @@ $
 
 Note that we have two different learning rates $\alpha_w$ and $\alpha_{\theta}$ for the Q-function and policy respectively.
 
-Let's analyse the key parts in more detail. The line that updates $\delta$ is the same as the $\delta$ calculation in SARSA:  it is temporal difference value for executing action $a$ in state $s$, with the estimate of the future discount reward being $Q_w(s',a')$.
+Let's analyse the key parts in more detail. The line that updates $\delta$ is the same as the $\delta$ calculation in SARSA:  it is temporal difference value for executing action $a$ in state $s$, with the estimate of the future discount reward being $Q_w(s',a')$. 
 
 Once the $\delta$ value is calculated, we update both the actor and the critic.  The weights of the critic $Q_w$ are updated by following the gradient $\nabla Q_w(s,a)$ of the critic Q-function at $s,a$, and then the parameters of the actor $\theta$ are updated the same way as in REINFORCE, except that the value of $\delta$ uses the temporal difference estimate based on $Q_w(s,a)$ instead of using $G$.
 

@@ -199,26 +199,26 @@ $
 \algrepeat \\
 \quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using Q-values in}\ Q\ \text{and}\\
 \quad\quad\quad\quad \text{a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
-\quad\quad ss = \langle s\rangle\\
-\quad\quad as = \langle a\rangle\\
-\quad\quad rs = \langle \rangle\\
-\quad\quad \algwhile\ ss\ \text{is not empty}\ \algdo\\
+\quad\quad \vec{s} = \langle s\rangle\\
+\quad\quad \vec{a} = \langle a\rangle\\
+\quad\quad \vec{r} = \langle \rangle\\
+\quad\quad \algwhile\ \vec{s}\ \text{is not empty}\ \algdo\\
 \quad\quad\quad\quad\ \algif\ s\ \text{is not a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
-\quad\quad\quad\quad\quad\quad rs \leftarrow rs + \langle r\rangle\\
+\quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r} + \langle r\rangle\\
 \quad\quad\quad\quad\quad\quad \algif\ s'\ \text{is not a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
-\quad\quad\quad\quad\quad\quad\quad\quad ss \leftarrow ss + \langle s' \rangle\\
-\quad\quad\quad\quad\quad\quad\quad\quad as \leftarrow ss + \langle a' \rangle\\
-\quad\quad\quad\quad \algif\ |rs| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
-\quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}rs_i\\
+\quad\quad\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s} + \langle s' \rangle\\
+\quad\quad\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{s} + \langle a' \rangle\\
+\quad\quad\quad\quad \algif\ |\vec{r}| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
+\quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|\vec{r}| - 1}_{i=0}\gamma^{i}\vec{r}_i\\
 \quad\quad\quad\quad\quad\quad \algif\ s\ \text{is not a terminal state}\ \algthen\\
  \quad\quad\quad\quad\quad\quad\quad\quad G \leftarrow G + \gamma^n Q(s', a')\\
-\quad\quad\quad\quad\quad\quad Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]\\
-\quad\quad\quad\quad\quad\quad rs \leftarrow rs_{[1 : n + 1]}\\
-\quad\quad\quad\quad\quad\quad ss \leftarrow ss_{[1 : n + 1]}\\
-\quad\quad\quad\quad\quad\quad as \leftarrow as_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad Q(\vec{s}_0, \vec{a}_0) \leftarrow  Q(\vec{s}_0, \vec{a}_0) + \alpha[G - Q(\vec{s}_0, \vec{a}_0)]\\
+\quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r}_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s}_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{a}_{[1 : n + 1]}\\
 \quad\quad\quad\quad s \leftarrow s'\\
 \quad\quad\quad\quad a \leftarrow a'\\
 \alguntil\ Q\ \text{converges}
@@ -226,11 +226,11 @@ $
 $
 ```
 
-This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $ss$, $as$, and $rs$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $ss_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $ss_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
+This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $\vec{s}$, $\vec{a}$, and $\vec{r}$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $\vec{s}_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $\vec{s}_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
 
 As with SARSA and Q-learning, we iterate over each step in the episode. The first branch simply executes the selected action, selects a new action to apply, and stores the state, action, and reward.
 
-It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $rs$, but remembering that they must be discounted based on their position in $rs$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $ss_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(ss_0, as_0)$ that is $n$-steps back.
+It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $\vec{r}$, but remembering that they must be discounted based on their position in $\vec{r}$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $\vec{s}_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(\vec{s}_0, \vec{a}_0)$ that is $n$-steps back.
 
 The final part of this branch removes the first element from the list of states, actions, and rewards, and moves on to the next state.
 
@@ -260,16 +260,16 @@ Assuming $Q(s,a)=0$ for all $s$ and $a$, if we traverse the episode the labelled
 
 For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing.
 
-On step 5, we reach the end of our n-step window, and we start to update values because $|rs|=n$. We calculate $G$ from $rs$ and update $Q(ss_0, as_0)$, and then similarly for the 6$^{th}$ step:
+On step 5, we reach the end of our n-step window, and we start to update values because $|rs|=n$. We calculate $G$ from $rs$ and update $Q(\vec{s}_0, \vec{a}_0)$, and then similarly for the 6$^{th}$ step:
 
 
 $
 \begin{array}{llll}
-& \text{Step 5} & rs = \langle 0, 0, 0, 0, 0\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,1), Up) = 0\\
+& \text{Step 5} & \vec{r} = \langle 0, 0, 0, 0, 0\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((2,1), Up) = 0\\
 &       & Q((0,0), Up) = 0\\[1mm]
-& \text{Step 6} & rs = \langle 0, 0, 0, 0, 0\rangle\\
-&           & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,2), Right) = 0\\
+& \text{Step 6} & \vec{r} = \langle 0, 0, 0, 0, 0\rangle\\
+&           & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((2,2), Right) = 0\\
 &           & Q((0,1), Up) = 0 + 0.5[0 - 0] = 0
 \end{array}
 $
@@ -280,27 +280,27 @@ When we reach step 7, however,  we receive a reward. We can then update the Q-va
 
 $
 \begin{array}{llll}
-& \text{Step 7} & rs = \langle 0, 0, 0, 0, 1\rangle\\
-&      & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((3,2), Terminate) = 0.9^4 \cdot 1 = 0.6561\\
+& \text{Step 7} & \vec{r} = \langle 0, 0, 0, 0, 1\rangle\\
+&      & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((3,2), Terminate) = 0.9^4 \cdot 1 = 0.6561\\
 &      & Q((0,2), Right) = 0 + 0.5[0.6561 - 0] = 0.32805
 \end{array}
 $
 
-From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(ss_5, as_5)$ because there is no future discount reward beyond the end of the episode:
+From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(\vec{s}_5, \vec{a_5)$ because there is no future discount reward beyond the end of the episode:
 
 $
 \begin{array}{llll}
-& \text{Step 8} & rs = \langle 0, 0, 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_3 = 0.9^3 \cdot 1 = 0.729\\
+& \text{Step 8} & \vec{r} = \langle 0, 0, 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_3 = 0.9^3 \cdot 1 = 0.729\\
 &       & Q((1,2), Right) = 0 + 0.5[0.729 - 0] = 0.3645\\[1mm]
-& \text{Step 9} & rs = \langle 0, 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^3 rs_2 = 0.9^2 \cdot 1 = 0.81\\
+& \text{Step 9} & \vec{r} = \langle 0, 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^3 \vec{r}_2 = 0.9^2 \cdot 1 = 0.81\\
 &       & Q((2,2), Down) = 0 + 0.5[0.81 - 0] = 0.405\\[1mm]
-& \text{Step 10} & rs = \langle 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^2 rs_1 = 0.9^1 \cdot 1 = 0.9 = 0.9\\
+& \text{Step 10} & \vec{r} = \langle 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^2 \vec{r}_1 = 0.9^1 \cdot 1 = 0.9 = 0.9\\
 &       & Q((2,1), Up) = 0 + 0.5[0.9 - 0] = 0.45\\[1mm]
-& \text{Step 11} & rs = \langle 1\rangle\\
-&      & G = \gamma^0 rs_0 = 0.9^0 \cdot 1 = 1\\
+& \text{Step 11} & \vec{r} = \langle 1\rangle\\
+&      & G = \gamma^0 \vec{r}_0 = 0.9^0 \cdot 1 = 1\\
 &      & Q((2,2, Right) = 0 + 0.5[1  \cdot 1 - 0] = 0.5
 \end{array}
 $

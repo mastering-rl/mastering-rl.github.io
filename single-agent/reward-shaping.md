@@ -293,7 +293,7 @@ bad_shaped_rewards = mdp.get_rewards()
 
 ```
 
-Plotting the episode length, we see that it shapres the reward quite poorly:
+Plotting the episode length, we see that it shapes the reward quite poorly:
 
 ```{code-cell} ipython3
 Plot.plot_episode_length(

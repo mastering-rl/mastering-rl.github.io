@@ -101,6 +101,17 @@ In these notes, we will not go into details about gradients or algorithms for so
 The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the sampling process in [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning).
 
 
+```{figure} ./figs/policy_gradient_loop.png
+---
+name: fig:policy_gradient_loop
+alt: "An abstract illustration of the policy gradient algorithm REINFORCE. There are three boxes: environment, update policy, and sample action. From sample action to environment is an arrow labelled with the letter a, representing the action being executed by the agent in the environment. From the environment back to select action is an arrow labelled s-prime. This indicates the REINFORCE iteratively selects and executes actions. From environment, there are two arrows labelled r and s, each with short arrows above them illustrating that these are lists or vectors of rewards and states. The arrow is also labelled terminated episode, indicating that when an episode terminates, the list of rewards and states are given to the agent, which uses them to update the policy."
+---
+An abstraction illustration of the policy gradient algorithm REINFORCE.
+```
+
+{numref}`fig:policy_gradient_loop` gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the rewards and states is used to update the policy, showing that the policy is only updated at the end of each episode.
+
+
 ```{prf:algorithm} REINFORCE
 :label: algorithm:reinforce
 
@@ -119,7 +130,9 @@ $
 $
 ```
 
-REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
+REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy $\pi_{\theta}$. It samples actions because on their probabilities; that is, $a \sim \pi_{\theta}(s,a)$.
+
+It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$. Therefore, it generates better and better policies as $\pi$ is improved. 
 
 ````{margin}
 ```{admonition} Video byte: Convergence

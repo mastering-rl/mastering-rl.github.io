@@ -421,7 +421,19 @@ A **stochastic policy** $\pi : S \times A \rightarrow \mathbb{R}$ specifies the 
 
 To execute a stochastic policy, we could just take the action with the maximum $\pi(s,a)$. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probabilistically such that actions with higher probability are chosen proportionally to their relative probabilities.
 
-We will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss [policy gradient methods](sec:policy-based:policy-gradients).
+```{figure} ./figs/deterministic_vs_stochastic_policy.png
+---
+name: fig:deterministic_vs_stochastic_policy
+alt: "An abstract illustration showing the different between a deterministic and stochastic policy. There are two boxes, one labelled deterministic, and one labelled stochastic. Each has an arrow coming into it, from a circle labelled s, which is the state. The arrow leading from the deterministic policy points to a circle containing the letter a, which is the action that is selected.  The arrow leading from the stochastic policy points to a bar graph with four actions a, b, c, and d, each with a different height bar, illustrating the probability of each action being selected."
+---
+An abstraction illustration of showing the different between a deterministic and stochastic policy.
+```
+
+{numref}`fig:deterministic_vs_stochastic_policy` shows the difference. The output of a deterministic policy is an action. A deterministic policy will always return the same action in the same state. The output of a stochastic policy is a probability distribution over the set of possible actions. Typically, the output is chosen stochastically from that output. In {numref}`fig:deterministic_vs_stochastic_policy`, action $b$ would be the most likely to be chosen -- just a bit more likely than action $c$. 
+
+We can use stochastic policies to implement deterministic policies: always choose the most likely action. However, stochastic policies are typically used stochastically during learning, and then deterministically once learning has finished and we deploy our agents.
+
+In the early chapters, we will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss [policy gradient methods](sec:policy-based:policy-gradients).
 
 ### Representing policies
 

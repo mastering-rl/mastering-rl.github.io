@@ -10,10 +10,10 @@ from tests.plot import Plot
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.set_default_device(device)
 
-#version = "Freeway-ramDeterministic-v4"
+version = "Freeway-ramDeterministic-v4"
 #policy_name = "Freeway.policy"
 # version = "ALE/Frogger-ram-v5"
-version = 'CartPole-v1'
+#version = 'CartPole-v1'
 
 mdp = ALEWrapper(version)
 
@@ -21,13 +21,13 @@ mdp = ALEWrapper(version)
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 
-runs = 1
-episodes = 500
+runs = 5
+episodes = 100
 all_rewards = []
 for _ in range(runs):
     policy = DeepNeuralNetworkPolicy(state_space, action_space)
     learner = PolicyGradient(mdp, policy)
-    rewards = learner.execute(episodes, max_episode_length=500)
+    rewards = learner.execute(episodes) #, max_episode_length=500)
     all_rewards.append(rewards)
 
 labels = ["Policy gradient" + str(i) for i in range(runs)]

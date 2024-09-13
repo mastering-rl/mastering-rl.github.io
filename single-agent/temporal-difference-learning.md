@@ -114,17 +114,27 @@ Imagine how hard it is for a computer that doesn't have any assumptions or intui
 
 ### Intuition of model-free reinforcement learning
 
-There are many different techniques for model-free reinforcement learning, all with the same basis:
+```{figure} ./figs/model_free_rl_loop.png
+---
+name: fig:model_free_rl_loop
+alt: "An abstract illustration of model-free reinforcement learning. There is a box called Agent and a box called environment, connected in a loop. From agent to environment is an arrow labelled with the letter a, representing the action being executed by the agent in the environment. From the environment to agent are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
+---
+An abstraction illustration of model-free reinforcement learning.
+```
 
--   We execute many different **episodes** of the problem we want to solve, and from that we learn a **policy**.
+There are many different techniques for model-free reinforcement learning, all with the same basis. {numref}`fig:model_free_rl_loop` gives an abstract illustration of this process:
+
+- We execute many different **episodes** of the problem we want to solve in order to learn a **policy**.
     
--   During learning, we try to learn the value of applying particular actions in particular states.
+- During each episode, we loop between executing actions and learning our policy.
+
+- When our agent executes an action, we get a reward (which may be 0) and we can see the new state that results from executing the action.
     
--   During each episode, we need to execute some actions. After each action, we get a reward (which may be 0) and we can see the new state.
+- From this, we **reinforce** our estimates of applying the previous action in the previous state.
+
+- Then, we select a new action and execute it in the environment.
     
--   From this, we **reinforce** our estimates of applying the previous action in the previous state.
-    
--   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
+- We repeat this until either: (1) we run out of training time; (2) we think our policy has converged to an optimal policy; or (3) our policy is 'good enough' (for each new episode we see minimal improvement). In practice, it is difficult to know whether we have converged to an optimal policy.
 
 (sec:model-free:monte-carlo-learning)=
 ## Monte-Carlo reinforcement learning
@@ -270,6 +280,15 @@ Monte Carlo reinforcement learning is simple, but it has a number of problems. T
 
 **Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward received in the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
 
+
+```{figure} ./figs/td_learning_loop.png
+---
+name: fig:td_learning_loop
+alt: "An abstract illustration of temporal difference reinforcement learning. There are four boxes:  environment, update Q-function, explore, and exploit, connected in a loop. From both explore and exploit to environment are arrows labelled with the letter a, representing the action being executed by the agent in the environment. This indicates that the action is either chosen as the best action, or a random action is selected. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
+---
+An abstraction illustration of temporal-difference learning.
+```
+
 In TD methods, our update rules always follow a pattern:
 
 $$
@@ -280,7 +299,7 @@ $$
 $V(s')$ is our TD estimate of the average future reward, and is  the bootstrapped value of our future discounted reward. 
 The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the **learning rate(*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
 
-The idea  is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
+The idea is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
 
 Why is there the expression $-Q(s,a)$ inside the square brackets? This is because the old value is weighted $(1 - \alpha) \cdot Q(s,a)$. We can expand this to $Q(s,a) - \alpha \cdot Q(s,a)$, and can then move the latter $-Q(s,a)$ inside the square brackets where the learning rate $\alpha$ is applied.
 

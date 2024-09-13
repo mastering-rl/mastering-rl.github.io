@@ -8,14 +8,14 @@ logo: assets/RL.png
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: "force"
+  execute_notebooks: "cache"
   timeout: 10000
-  exclude_patterns:
-    - "intro/*.md" 
-    - "multi-agent/*.md"
-    - "appendix/*.md"
-    - "single-agent/[a-sA-Z]*.md"  
-    - "single-agent/[u-z]*.md" 
+#  exclude_patterns:
+#    - "intro/*.md"
+#    - "multi-agent/*.md"
+#    - "appendix/*.md"
+#    - "single-agent/[a-tA-Z]*.md"
+#    - "single-agent/[u-z]*.md"
 
 # Define the name of the latex output file for PDF builds
 latex:

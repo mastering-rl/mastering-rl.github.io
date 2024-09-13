@@ -1,9 +1,5 @@
 Images:
 - deterministic vs stochastic policies.
-- monte-carlo learning vs td learning 
-- policy evaluation -> policy improvement loop
-- gradients
-- actor critic
 
 High priority:
 - add videos to pressbooks (see format below)

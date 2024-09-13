@@ -40,6 +40,7 @@ class PolicyGradient:
 
             self.policy.update(states, actions, deltas)
             episode_rewards.append(episode_reward)
+            print(episode)
 
         return episode_rewards
 
