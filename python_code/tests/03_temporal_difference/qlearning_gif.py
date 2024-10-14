@@ -1,8 +1,7 @@
 from python_code.gif_makers.gif_maker import GifMaker
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-
 from python_code.learners.qlearning import QLearning
 from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from python_code.qfunctions.qtable import QTable
 
 grid_size = 1.5
@@ -17,4 +16,4 @@ for episode in range(1, 101):
     )
     gif_maker.add_frame(image_texts, title=title)
 
-gif_maker.save("../../assets/gifs/qlearning.gif")
+gif_maker.save("assets/gifs/qlearning.gif")

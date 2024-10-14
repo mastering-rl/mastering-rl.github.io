@@ -1,5 +1,5 @@
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from multi_armed_bandit.multi_armed_bandit import MultiArmedBandit
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.multi_armed_bandit.multi_armed_bandit import MultiArmedBandit
 
 
 class EpsilonDecreasing(MultiArmedBandit):

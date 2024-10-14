@@ -1,7 +1,7 @@
 import math
 import random
 
-from multi_armed_bandit.multi_armed_bandit import MultiArmedBandit
+from python_code.multi_armed_bandit.multi_armed_bandit import MultiArmedBandit
 
 
 class Softmax(MultiArmedBandit):

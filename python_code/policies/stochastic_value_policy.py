@@ -1,5 +1,4 @@
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from python_code.policies.policy import StochasticPolicy
 from python_code.qfunctions.qtable import QTable
 

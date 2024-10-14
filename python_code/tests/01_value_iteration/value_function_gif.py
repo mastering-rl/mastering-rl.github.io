@@ -16,4 +16,4 @@ for iterations in range(1, 101):
     )
     gif_maker.add_frame(image_texts, title=title)
 
-gif_maker.save("../../assets/gifs/value_iteration.gif")
+gif_maker.save("assets/gifs/value_iteration.gif")

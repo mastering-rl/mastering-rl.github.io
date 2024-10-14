@@ -1,9 +1,8 @@
-from tests.plot import Plot
-
 from python_code.learners.value_iteration import ValueIteration
 from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
 from python_code.policies.stochastic_value_policy import StochasticValuePolicy
 from python_code.policies.value_policy import ValuePolicy
+from python_code.tests.plot import Plot
 from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 ccross = ContestedCrossing()

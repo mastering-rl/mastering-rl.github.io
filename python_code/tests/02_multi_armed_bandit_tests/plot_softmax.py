@@ -1,6 +1,7 @@
-from multi_armed_bandit.softmax import Softmax
-from tests.multi_armed_bandit_tests.run_bandit import run_bandit
-from tests.plot import Plot
+from python_code.multi_armed_bandit.softmax import Softmax
+from python_code.tests.plot import Plot
+
+from .run_bandit import run_bandit
 
 
 def plot_softmax(drift=False):
