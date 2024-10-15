@@ -1,26 +1,20 @@
 Images:
 - deterministic vs stochastic policies.
-- monte-carlo learning vs td learning 
-- policy evaluation -> policy improvement loop
-- gradients
-- actor critic
 
 High priority:
-- fix logistic regression policy gradent to just use one log function and calculate pi(s,a_1) using 1-pi(s,a_0)
+- add videos to pressbooks (see format below)
+- PDF format
+- adjust update rules to account for terminal states (1 - done)
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
+- PPO
 - add experience replay code to notes
-- change title to 'Mastering RL'
-- update policy gradient code to use experience variable instead of having three lists 
-    + and use separate 'actions' variable in select_action instead of a direct call.
 - add bad reward shaping from from [Dr Cathy Wu](http://www.wucathy.com/blog/) :  https://github.com/cathywu/rl-notes/blob/master/demos/Reward%20Shaping.ipynb
 - beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
-- PPO
+- Demonstrate off Policy vs on Policy using a stationary base policy
 - reward shaping in Frogger?
 - restructure book: Introduction (including MDPS), Value-based, Policy-based, Scaling, Multi-agent (including MA games)
-- PDF format
 - replace definitions, remarks, etc., with latex equivalents: https://jupyterbook.org/en/stable/content/proof.html
 - add unit tests 
-- update videos to remove COMP90054 tags.
 - excellent explanation of using a target network: https://stackoverflow.com/questions/54237327/why-is-a-target-network-required
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
@@ -31,7 +25,6 @@ Low priority:
 - curiosity-driven learning
 - add eligibility traces
 - n-step learning videos
-- logo example: https://youtube.com/watch?v=xW75rGCMiRk&si=tPZCugWPGwKuKtpb
 - In 1D gridworld, set 'get_actions' to just have the two actions and then update LogRegression policy
 - titles: 'mastering rl: from theory to practice'
 - use returned rewards in the reward shaping notes, instead of mdp.get_rewards()
@@ -103,3 +96,22 @@ The LaTeX builder hides dropdowns, toggles, margins, and also any cells with a t
 If you wanted to hide only the output (and keep the source), I think you'd need to be more specific in the extension, e.g. look for cell output nodes explicitly.
 
 There may be other ways to do this, but this was my starting point!"
+
+
+
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-value-iteration admonition">
+<p class="admonition-title">Video byte: Introduction to value iteration</p>
+[embed]https://www.youtube.com/watch?v=UwjvpYrCUZ0&amp;t=1992s[/embed]
+</div>
+</aside>
+
+.sidebar {
+    position: absolute;
+    right: -35%; /* Move the sidebar outside the right margin */
+    width: 300px; /* Adjust the width as necessary */
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+

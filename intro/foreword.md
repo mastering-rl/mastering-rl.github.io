@@ -1,11 +1,6 @@
 (sec:intro:foreword)=
 # Foreword
 
-```{contents}
-:local:
-:depth: 2
-```
-
 
 ## Preface
 
@@ -37,7 +32,7 @@ The code in this book is written using as few external libraries as possible, to
 
 Once you have downloaded, unzip the code and add the folder to your PYTHONPATH variable if you want to download the Jupyter notebooks.
 
-Most files in the code have a ``main`` function that can be run using just ``python <filename>py``. For most of these, no external libraries are required. However, if you want to plot the graphs or draw the trees, you will need to install:
+Most files in the code have a ``main`` function that can be run using just ``python <filename>.py``. For most of these, no external libraries are required. However, if you want to plot the graphs or draw the trees, you will need to install:
 
 1. The [Matplotlib library](https://matplotlib.org/) for plotting graphs. You can download from the website or install with ``pip install matplotlib``. 
 
@@ -49,7 +44,7 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 
 ## About the author
 
-These notes are written and maintained by [Tim Miller](https://uqtmiller.github.io/), Professor of Artifical Intelligence at  [The University of Queensland](https://uq.edu.au/), Brisbane/Meaanjin, Australia.
+These notes are written and maintained by [Tim Miller](https://uqtmiller.github.io/), Professor of Artificial Intelligence at  [The University of Queensland](https://uq.edu.au/), Brisbane/Meaanjin, Australia.
 
 If you find any errors or would like to provide other feedback, feel free to [email me](mailto:timothy.miller@uq.edu.au).
 
@@ -57,6 +52,6 @@ If you use this as part of your teaching or learning in a course, please [let me
 
 ## Acknowledgements
 
-Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients using a logistic regression policy](sec:policy-gradients:logistic-regression); and furthermore, for implementing the source for this and the [deep policy gradient agent](sec:policy-gradient:deep-policy-gradients). Thanks also to Alan for setting up the library for play GIF files, which supports the interactive visualisations that are so useful in this book.
+Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients using a logistic regression policy](sec:policy-gradients:logistic-regression); and furthermore, for implementing the source for this and the [deep policy gradient agent](sec:policy-gradient:deep-policy-gradients). Thanks also to Alan for setting up the library for playing GIF files, which supports the interactive visualisations that are so useful in this book.
 
 Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.

@@ -13,11 +13,6 @@ kernelspec:
 (sec:value-iteration)=
 # Value Iteration
 
-```{contents}
-:local:
-:depth: 2
-```
-
 
 ```{admonition} Learning outcomes
 
@@ -32,12 +27,11 @@ The learning outcomes of this chapter are:
 
 ## Overview
 
-**Value Iteration** is a dynamic-programming method for finding the optimal value function $V^*$ by solving the
-Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
+**Value Iteration** is a dynamic-programming method for finding the optimal value function $V^*$ by solving the Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function $V$ that approximates the optimal value function $V^*$, iteratively improving $V$ until it converges to $V^*$ (or close to it). 
 
 ````{margin}
 ```{admonition} Video byte: Introduction to value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=1992" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1988" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -70,7 +64,7 @@ $
 
 ````{margin}
 ```{admonition} Video byte: Example -- Value iteration on GridWorld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -78,7 +72,7 @@ As we can see, this is just applying the Bellman equation iteratively until eith
 
 ````{margin}
 ```{admonition} Video byte: Quiz -- Value iteration in GridWorld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -95,13 +89,20 @@ $
 \end{array}
 $
 
+````{margin}
+```{admonition} Video byte: Quiz answer -- Value iteration in GridWorld
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2801" title="Quiz answer: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+````
 
 Value iteration converges to the optimal policy as iterations continue: $V \mapsto V^*$ as $i \mapsto \infty$, where $i$ is the number of iterations. So, given an infinite amount of iterations, it will be optimal.
 
 
 Value iteration **converges** to the optimal value function $V^*$ asymptotically, but in practice, the algorithm terminates when the **residual**  $\Delta$ reaches some pre-determined threshold $\theta$ -- that is, when the largest change in the values between iterations is "small enough".
 
-A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). The loss of the result greedy policy is bound by $\frac{2 \gamma  \Delta}{1-\gamma}$.
+A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). 
+
+The loss of the result greedy policy terminating after $k$ iterations is bounded by $\frac{2 \gamma  \delta_{max}}{1-\gamma}$, where $\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|$.
 
 Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
 
@@ -144,7 +145,7 @@ gridworld.visualise_policy(policy, "Policy after iteration 100")
 
 ````{margin}
 ```{admonition} Video byte: Convergence of value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3134" title="Convergence of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3134" title="Convergence of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -180,15 +181,32 @@ We can see the improvement that value iteration has on each iteration by extract
 ```{code-cell} ipython3
 gridworld = GridWorld()
 values = TabularValueFunction()
-policy = ValuePolicy(gridworld, values)
+policy = StochasticValuePolicy(gridworld, values)
 rewards = gridworld.execute_policy(policy, episodes=1)
 for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    policy = ValuePolicy(gridworld, values)
+    policy = StochasticValuePolicy(gridworld, values)
     rewards += gridworld.execute_policy(policy, episodes=1)
 
 ```
 
+:::{note}
+In this example, we use a `StochasticValuePolicy`, which uses a [multi-armed bandit](sec:multi-armed-bandits) to sometimes (10\% of the time) select a random action instead of the action that leads to the best value. 
+
+Why do this? 
+
+Because a policy can contain loops! That is, in state $s_1$, the policy tells us to execute action $a_1$, taking us to state $s_2$. Then from state $s_2$, the policy tells us to execute action $a_2$, which takes us back to state $s_1$. Again, the policy will tell us to execute action $a_1$, return to state $s_2$:
+
+$$ 
+\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
+$$
+
+When we train GridWorld with 100 iterations, the resulting policy is (close to) optimal, and contains no loops. However, an initial policy is likely to contain some behaviour that makes it impossible to reach an end state. For example, in GridWorld, if the default action is *Left* in every state, the agent will never be able to go *Right*, even if the action is unsuccessful. Therefore, it can never reach the end state.
+
+If a policy contains a loop, it will loop infinitely  when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic). 
+
+This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.
+:::
 
 
 The `rewards` variables contains the cumulative reward for each of the 50 episodes. We can plot this:
@@ -208,7 +226,7 @@ $\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \tex
 
 A higher value of $\alpha$ smooths the data more --- that is, earlier values have more influence on $s_t$. A value of $\alpha=0$ just means that $s_t = \vec{x}_t$ (see the example above where we plot the cumulative rewards with `smoothing_factor=0.0`); while a value of $\alpha=1$ means that $s_t = \vec{x}_0$ for any $t$.
 
-An implemenation of the EMA in Python is shown below:
+An implementation of the EMA in Python is shown below:
 
 ```{code-cell}
 def get_ema(rewards, smoothing_factor=0.9):
@@ -232,7 +250,7 @@ Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.
 
 Even though the value function (and policy) are monotonically converging towards their optimal values, the curve still has some noise because of randomness in the GridWorld problem.
 
-We can show this by creating an instance of a deterministic `GridWorld` class, using the parameter `noise=0.0`. The `noise` parameter controls action failures in `GridWorld`, so that when the agent selects an action, it will fail with probabiliy `noise`. When `noise==0.0`, the action will always be successful:
+We can show this by creating an instance of a deterministic `GridWorld` class, using the parameter `noise=0.0`. The `noise` parameter controls action failures in `GridWorld`, so that when the agent selects an action, it will fail with probability `noise`. When `noise==0.0`, the action will always be successful:
 
 ```{code-cell} ipython3
 
@@ -246,23 +264,6 @@ for _ in range(50):
     rewards += gridworld.execute_policy(policy, episodes=1)
 ```
 
-:::{note}
-Compared to when we evaluated the policy earlier, there is a difference in the code above (other than `noise=0.0`): when use a `StochasticValuePolicy`, which uses a [multi-armed bandit](sec:multi-armed-bandits) to sometimes (5\% of the time) selects a random action instead of the action that leads to the best value. 
-
-Why do this? 
-
-Because a policy can contain loops! That is, in state $s_1$, the policy tells us to execute action $a_1$, taking us to state $s_2$. Then from state $s_2$, the policy tells us to execute action $a_2$, which takes us back to state $s_1$. Again, the policy will tell us to execute action $a_1$, return to state $s_2$:
-
-$$ 
-\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
-$$
-
-This will loop infinitely long when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic).  
-
-When `noise>0.0` in GridWorld, a loop does not matter --- eventually the randomness will break us out of this loop.
-
-However, when `noise=0.0`, we can end up in an infinite loop. This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.
-:::
 
 Plotting this with no smoothing shows that we reach the optimal policy in much fewer iterations than value iteration terminates:
 
@@ -291,8 +292,10 @@ from tabular_value_function import TabularValueFunction
 
 maze = GridWorld.open('../python_code/layouts/maze.txt')
 values = TabularValueFunction()
+policy = StochasticValuePolicy(maze, values)
 ValueIteration(maze, values).value_iteration(max_iterations=100)
 maze.visualise_value_function(values, "Maze value function after iteration 100")
+maze.visualise_policy(policy, "Maze policy after iteration 100")
 
 ```
 
@@ -318,7 +321,7 @@ ccross.visualise_value_function(
 )
 ```
 
-In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are average into the figure.
+In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are averaged into the figure.
 
 An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end. 
 
@@ -353,20 +356,21 @@ ccross.visualise_as_image(policy=policy,title="Path Plot", mode=1, plot=True)
 
 ````{margin}
 ```{admonition} Video byte: Time complexity of value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3354" title="Time complexity of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3354" title="Time complexity of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
-The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterate in an outer loop over all states in $S$, and in each outer loop iteration, we need to iterate over all states ($\sum_{s' \in S}$), meaning $|S|^2$ iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum.
+In this section, we analyse the complexity of value iteration.
+
+The complexity of each iteration is $O(|S|^2 |A|)$. On each iteration, we iterate in an outer loop over all states in $S$, and in each outer loop iteration, we need to iterate over all states ($\sum_{s' \in S}$), meaning $|S|^2$ iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum. How many iterations will we cover? That depends on the value of $\theta$, and cannot be pre-determined.
 
 It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step $t + 1$ are dependent only on the value of other states at step $t$.
 
 ## Takeaways
 
-
 ````{margin}
 ```{admonition} Video byte: Summary: MDPs and value iteration
-<iframe width="248" height="141" src="https://www.youtube.com/embed/UwjvpYrCUZ0?start=3794" title="Summary: MDPs and value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3794" title="Summary: MDPs and value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

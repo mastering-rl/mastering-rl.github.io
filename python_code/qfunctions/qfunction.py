@@ -1,4 +1,6 @@
-from python_code.policies.tabular_policy import TabularPolicy
+import random
+
+from tabular_policy import TabularPolicy
 
 
 class QFunction:
@@ -39,11 +41,15 @@ class QFunction:
     """
 
     def get_max_pair(self, state, actions):
-        arg_max_q = None
         max_q = float("-inf")
+        max_actions = []
         for action in actions:
             value = self.get_q_value(state, action)
-            if max_q < value:
-                arg_max_q = action
+            if value > max_q:
+                max_actions = [action]
                 max_q = value
+            elif value == max_q:
+                max_actions += [action]
+
+        arg_max_q = random.choice(max_actions)
         return (arg_max_q, max_q)

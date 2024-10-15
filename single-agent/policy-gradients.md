@@ -12,16 +12,12 @@ kernelspec:
 (sec:policy-based:policy-gradients)=
 # Policy gradients
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to policy gradient methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=0s" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
 
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
@@ -34,7 +30,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy gradient methods
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=87" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=87" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -44,7 +40,7 @@ In policy gradient methods, we approximate the policy from the rewards and actio
 
 ````{margin}
 ```{admonition} Video byte: Policy gradients 
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=213" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=213" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -57,7 +53,7 @@ The goal of a policy gradient is to approximate the optimal policy $\pi_{\theta}
 
 ````{margin}
 ```{admonition} Video byte: Intuition of policy gradients
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=363" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=363" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -67,7 +63,7 @@ The [expected value](defn:expected-discounted-reward) of a policy $\pi_{\theta}$
 
 $$J(\theta) = V^{\pi_{\theta}}(s_0)$$
 
-where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the intial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by **ascending the gradient** of the policy with respect to the parameters $\theta$, using episodic samples.
+where $V^{\pi_{\theta}}$ is the policy evaluation  using the policy $\pi_{\theta}$ and $s_0$ is the initial state. This expression is computationally expensive to calculate, because we need to execute every possible episode from $s_0$ to every terminal state, which may be an infinite number of episodes. So, we use policy gradient algorithms to approximate this instead. These search for a local maximum in $J(\theta)$ by **ascending the gradient** of the policy with respect to the parameters $\theta$, using episodic samples.
 
 :::{admonition} Definition -- Policy gradient
 Given a policy objective $J(\theta)$, the **policy gradient** of $J$ with respect to $\theta$, written $\nabla_{\theta}J(\theta)$ is defined as:
@@ -98,11 +94,22 @@ In these notes, we will not go into details about gradients or algorithms for so
 
 ````{margin}
 ```{admonition} Video byte: REINFORCE
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=551" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=551" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 The REINFORCE algorithm is one algorithm for policy gradients.  We cannot calculate the gradient optimally because this is too computationally expensive -- we would need to solve for all possible trajectories in our model. In REINFORCE, we sample trajectories, similar to the sampling process in [Monte-Carlo reinforcement learning](sec:model-free:monte-carlo-learning).
+
+
+```{figure} ./figs/policy_gradient_loop.png
+---
+name: fig:policy_gradient_loop
+alt: "An abstract illustration of the policy gradient algorithm REINFORCE. There are three boxes: environment, update policy, and sample action. From sample action to environment is an arrow labelled with the letter a, representing the action being executed by the agent in the environment. From the environment back to select action is an arrow labelled s-prime. This indicates the REINFORCE iteratively selects and executes actions. From environment, there are two arrows labelled r and s, each with short arrows above them illustrating that these are lists or vectors of rewards and states. The arrow is also labelled terminated episode, indicating that when an episode terminates, the list of rewards and states are given to the agent, which uses them to update the policy."
+---
+An abstraction illustration of the policy gradient algorithm REINFORCE.
+```
+
+{numref}`fig:policy_gradient_loop` gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the rewards and states is used to update the policy, showing that the policy is only updated at the end of each episode.
 
 
 ```{prf:algorithm} REINFORCE
@@ -123,11 +130,13 @@ $
 $
 ```
 
-REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far; therefore, it generates better and better policies as $\pi$ is improved. It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$.
+REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy $\pi_{\theta}$. It samples actions because on their probabilities; that is, $a \sim \pi_{\theta}(s,a)$.
+
+It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$. Therefore, it generates better and better policies as $\pi$ is improved. 
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/51DmzTJrEgk?start=903" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=903" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -140,7 +149,7 @@ From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-
 :::
 
 (sec:policy-gradients:logistic-regression)=
-### Implementation
+## Implementation: Logistic regression-based REINFORCE
 
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
@@ -148,7 +157,41 @@ The implementation of REINFORCE takes a policy, but this policy must be differen
 :load: "../python_code/policy_gradient.py"
 ```
 
+
 We need a differentiable policy so that we can calculate the gradient and update. To illustrate this from first principles, let's look at an implementation of a policy that uses logistic regression. This basic implementation supports environments with only two actions, but it is sufficient to illustrate the basics of policy gradient methods from first principles.
+
+Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
+
+$$
+\begin{aligned}
+        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\[1mm]
+        \pi_{\theta}(s, a_1) &= 1 - \pi_{\theta}(s, a_0) 
+\end{aligned}
+$$
+
+This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
+
+Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
+
+$$
+\begin{aligned}
+\sigma(x) &= \frac{1}{1 + e^{-\theta \cdot x}}\\[1mm]
+\frac{\partial \sigma(x)}{\partial x} &= \theta \sigma(x)(1 - \sigma(x))
+\end{aligned}
+$$
+
+Using this result, we can then find $\nabla \textrm{ln} \pi(s, a)$:
+
+$$
+\begin{aligned}
+  \nabla \textrm{ln} \pi_{\theta}(s, a_0) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
+  \nabla \textrm{ln} \pi_{\theta}(s, a_1) &= -s \cdot \pi_{\theta}(s, a_0)
+\end{aligned}
+$$
+
+This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
+
+Let's implement this.
 
 The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ that returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
 
@@ -159,38 +202,8 @@ The policy inherits from `StochasticPolicy`, which means that the policy is a [s
 
 The `update` method, as well as the `gradient_log_pi` method that it calls, are where the policy gradient theorem is applied. In `update`, for every state-action transition in the trajectory, we calculate the gradient and then update the parameters $\theta$ using the corresponding partial derivative.
 
-Because we use logistic regression to represent the policy in this simplified implementation that allows only two actions, the probability for each action (and therefore the policy) can be calculated as follows:
 
-$$
-\begin{aligned}
-        \pi_{\theta}(s, a_0) &= \frac{1}{1 + e^{-\theta \cdot s}}\\
-        \pi_{\theta}(s, a_1) &= \frac{1}{1 + e^{\theta \cdot s}}
-\end{aligned}
-$$
-
-This gives us the probability of choosing actions $a_0$ and $a_1$ in state $s$, which approximates the expression $\pi_{\theta}(s, a) Q(s,a)$ in the policy gradient theorem.
-
-Since the policy follows a sigmoid function, we can use the following result from calculus to find the derivative. If $\sigma(x)$ is a sigmoid, then the derivative of $\sigma(x)$ with respect to $x$ conforms to the following pattern:
-
-$$
-\begin{aligned}
-\sigma(x) &= \frac{1}{1 + e^{\theta \cdot x}}\\[1mm]
-\frac{\partial \sigma(x)}{\partial x} &= \sigma(x)(1 - \sigma(x))
-\end{aligned}
-$$
-
-Using this result, we can then find $\nabla \textrm{ln} \pi(a, s)$:
-
-$$
-\begin{aligned}
-  \nabla \textrm{ln} \pi_{\theta}(s, a_0) &= s - s\cdot \pi_{\theta}(s, a_0)\\[1mm]
-  \nabla \textrm{ln} \pi_{\theta}(s, a_1) &= -s \cdot \pi_{\theta}(s, a_1)
-\end{aligned}
-$$
-
-This gives us a vector of the partial derivatives, which the `update` method then uses to update the corresponding $\theta_i$ value.
-
-Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a Gridword that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
+Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a GridWorld that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
 ```{code-cell} ipython3
 from gridworld import GridWorld
@@ -235,7 +248,7 @@ If we step through the policy during training, we can see the gradient updates p
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
 (sec:policy-gradient:deep-policy-gradients)=
-### Deep REINFORCE
+## Implementation: Deep REINFORCE
 
 Just like we can use deep neural networks to approximate Q-functions in [deep Q learning](sec:function-approximation:deep-Q-learning), we can use deep neural networks to approximate policies. Neural networks are differentiable, so these can be used in policy gradient algorithms such as REINFORCE --- the policy parameters $\theta$ are the parameters to the neural network.
 

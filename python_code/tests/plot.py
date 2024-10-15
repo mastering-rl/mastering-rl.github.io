@@ -163,7 +163,7 @@ class Plot:
 
         plt.xlabel("Episode")
         plt.ylabel("Cumulative reward")
-        plt.legend()
+        plt.legend(loc='upper left')
         plt.gca().set_facecolor(Plot.BACKGROUND_COLOUR)
         plt.grid(color="white", linewidth=1.5)
         plt.show()
@@ -172,13 +172,13 @@ class Plot:
     Plot the rewards per episode of several methods.
     """
 
-    def plot_rewards_per_episode(labels, reward_list, window_size=DEFAULT_WINDOW_SIZE):
+    def plot_rewards_per_episode(labels, reward_list, smoothing_factor=0., window_size=DEFAULT_WINDOW_SIZE):
         index = 0
         linestyles = ["--", "-", ":", "-."]
         for rewards in reward_list:
             y = Plot.get_mean_rewards_per_episode(rewards, window_size=window_size)
             x = np.linspace(0, len(y), len(y))
-            y_smoothed = y  # Plot.get_ema(y)
+            y_smoothed = y #Plot.get_ema(y) #, smoothing_factor=smoothing_factor)
             plt.plot(
                 x,
                 y_smoothed,

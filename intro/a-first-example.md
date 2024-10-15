@@ -14,18 +14,13 @@ kernelspec:
 (sec:a-first-example)=
 # Getting started with a first example
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition}  Learning outcomes
 
 The learning outcomes of this chapter are:
 
 1.  Gain a basic understanding of reinforcement learning.
     
-2.  Have practical experimence in building a reinforcement learning agent using deep Q learning.
+2.  Have practical experience in building a reinforcement learning agent using deep Q learning.
 
 3.  Be excited about reinforcement learning and its possibilities.
 ```
@@ -38,7 +33,7 @@ The learning outcomes of this chapter are:
 ---
 name: fig:atari
 ---
-The Atari logo (source: [Wikipedia](https://en.wikipedia.org/wiki/Atari))
+The Atari logo. Trademark of [Atari SA](https://atari.com/). (Source: [Wikipedia](https://en.wikipedia.org/wiki/Atari))
 ```
 ````
 
@@ -57,7 +52,7 @@ The [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Le
 ---
 name: fig:freeway-screenshot
 ---
-A screenshot of the game *Freeway*.
+A screenshot of the game *Freeway*. Simulated via the [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Learning-Environment), licensed under a [General Public Licence 2.0](https://github.com/stella-emu/stella/blob/master/License.txt), through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the [MIT License](https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme).
 ```
 ````
 
@@ -96,7 +91,7 @@ Finally `ALEWrapper` is a simple wrapper class for the Arcade Learning Environme
 
 ### Set up the learning environment
 
-Next, we setup the Arcade Learning Anvironment:
+Next, we setup the Arcade Learning Environment:
 
 ```{code-cell} ipython3
 version = "Freeway-ramDeterministic-v4"
@@ -135,7 +130,7 @@ policy = QPolicy(policy_qfunction)
 
 We save the policy to a file so we can use it later without having to re-train the agent.
 
-Let's watch it play Freeway by creating a gif of it playing:
+Let's watch it play Freeway by creating a GIF of it playing:
 
 ```{code-cell} ipython3
 mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
@@ -143,10 +138,12 @@ mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
+
+Freeway is simulated via the [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Learning-Environment), licensed under a [General Public Licence 2.0](https://github.com/stella-emu/stella/blob/master/License.txt), through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the [MIT License](https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme).
 ```
 
 As we can see, it does not do so well, because we have not yet tried to learn any behaviour.
@@ -187,7 +184,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="1">
+    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_trained_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -195,7 +192,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_trained_deep_q_function")
 
 Much better! 
 
-We can also study how well the algorithm was learning during the learning process. The following graph plots the number of rewards (nubmer of times the chicken makes it to the other side of the road in this case) received, against the number of games that it has played:
+We can also study how well the algorithm was learning during the learning process. The following graph plots the number of rewards (number of times the chicken makes it to the other side of the road in this case) received, against the number of games that it has played:
 
 ```{code-cell} ipython3
 from tests.plot import Plot
@@ -244,10 +241,12 @@ mdp.create_gif(policy, "../assets/gifs/frogger_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
+
+Frogger is simulated via the [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Learning-Environment), licensed under a [General Public Licence 2.0](https://github.com/stella-emu/stella/blob/master/License.txt), through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the [MIT License](https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme).
 ```
 
 We can see that it does quite poorly.  But let's train this for 30 episodes:
@@ -271,15 +270,16 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_deep_q_function" width=500></gif-player>
+
 </div>
 <p>
 ```
 
 Hmmm... not much better. What is happening? Why does it not work for Frogger, but it works for Freeway?
 
-The answer is simple: Freeway has just three move: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
+The answer is simple: Freeway has just three moves: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
 
 What if we train it for more episodes? 
 
@@ -297,7 +297,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_2000_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="1">
+    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_2000_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -308,7 +308,7 @@ This is much better! It still does not reach the other side, which would (presum
 
 ## Discussion
 
-We looked at training a couple of simple player agents to play two Atari games. These worked ok.
+We looked at training a couple of simple player agents to play two Atari games. These worked OK.
 
 Depending on the properties of the application, some types of reinforcement learning algorithms work better than others.
 
@@ -320,7 +320,7 @@ In the rest of these notes, we will learn more about this.
 ## Takeaways
 
 ```{admonition} Takeaways
-* Pulling together an agent that can learning is not difficult when we use an existing framework. 
+* Pulling together an agent that can learn is not difficult when we use an existing framework. 
 
 * But the more complex the application, the more computational time it takes to train them.
 ```

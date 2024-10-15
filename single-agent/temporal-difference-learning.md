@@ -11,16 +11,20 @@ kernelspec:
   name: python3
 ---
 
+
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 # Temporal difference reinforcement learning
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to temporal-difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=0s" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src=" https://www.youtube.com/embed/lNxIB8jGWmI?start=0" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -50,7 +54,7 @@ There is something in between model-based and model-free: simulation-based techn
 
 ````{margin}
 ```{admonition} Video byte: The Mystery game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -82,6 +86,8 @@ The aim of the game is to win the game. You have six actions available, which ca
     </center>
 </div>
 
+[Mystery Game](https://github.com/guiferviz/rl_udacity/tree/master/mystery_game) by Github user guiferviz, used under the [MIT License (MIT)](https://github.com/guiferviz/rl_udacity/blob/master/LICENSE.md)
+
 
 
 Once you have played this, ask yourself the following questions:
@@ -98,7 +104,7 @@ I would guess that you experimented by pressing the keys 1 to 6, from the outcom
 
 ````{margin}
 ```{admonition} Video byte: Model-free reinforcement learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -108,30 +114,40 @@ Imagine how hard it is for a computer that doesn't have any assumptions or intui
 
 ### Intuition of model-free reinforcement learning
 
-There are many different techniques for model-free reinforcement learning, all with the same basis:
+```{figure} ./figs/model_free_rl_loop.png
+---
+name: fig:model_free_rl_loop
+alt: "An abstract illustration of model-free reinforcement learning. There is a box called Agent and a box called environment, connected in a loop. From agent to environment is an arrow labelled with the letter a, representing the action being executed by the agent in the environment. From the environment to agent are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
+---
+An abstraction illustration of model-free reinforcement learning.
+```
 
--   We execute many different **episodes** of the problem we want to solve, and from that we learn a **policy**.
+There are many different techniques for model-free reinforcement learning, all with the same basis. {numref}`fig:model_free_rl_loop` gives an abstract illustration of this process:
+
+- We execute many different **episodes** of the problem we want to solve in order to learn a **policy**.
     
--   During learning, we try to learn the value of applying particular actions in particular states.
+- During each episode, we loop between executing actions and learning our policy.
+
+- When our agent executes an action, we get a reward (which may be 0) and we can see the new state that results from executing the action.
     
--   During each episode, we need to execute some actions. After each action, we get a reward (which may be 0) and we can see the new state.
+- From this, we **reinforce** our estimates of applying the previous action in the previous state.
+
+- Then, we select a new action and execute it in the environment.
     
--   From this, we **reinforce** our estimates of applying the previous action in the previous state.
-    
--   We terminate when: (1) we run out of training time; (2) we think our policy has converged to the optimal policy (for each new episode we see no improvement); or (3) our policy is 'good enough' (for each new episode we see minimal improvement).
+- We repeat this until either: (1) we run out of training time; (2) we think our policy has converged to an optimal policy; or (3) our policy is 'good enough' (for each new episode we see minimal improvement). In practice, it is difficult to know whether we have converged to an optimal policy.
 
 (sec:model-free:monte-carlo-learning)=
 ## Monte-Carlo reinforcement learning
 
 ````{margin}
 ```{admonition} Video byte: Monte-Carlo simulation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a [Q-function](sec:mdps:bellman-equation) that records the value $Q(s,a)$ for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update $Q(s,a)$ based on that reward. Repeat over a number of episodes until ...when?
 
-It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagent casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
+It is called **Monte-Carlo reinforcement learning** after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagant casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.
 
 
 ```{prf:algorithm} Monte-Carlo reinforcement learning
@@ -165,7 +181,7 @@ This algorithm generates an entire episode following some policy, such $\epsilon
 
 ````{margin}
 ```{admonition} Video byte: Q-Tables
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -256,13 +272,22 @@ The following is an implementation of a Q-table using a Python dictionary:
 
 ````{margin}
 ```{admonition} Video byte: Temporal difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high **variance**. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term $\gamma G$ is often *not* a good estimate of the average future reward that we would receive. If we execute action $a$ in state $s$ many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.
 
-**Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward receivedin the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
+**Temporal difference** (TD) methods alleviate this problem using **bootstrapping**. Much the same way that value iteration bootstraps by using the last iteration's value function, in TD methods, instead of updating based on $G$ -- the actual future discounted reward received in the episode -- we update based on the actual immediate reward received plus an estimate of our future discounted reward.
+
+
+```{figure} ./figs/td_learning_loop.png
+---
+name: fig:td_learning_loop
+alt: "An abstract illustration of temporal difference reinforcement learning. There are four boxes:  environment, update Q-function, explore, and exploit, connected in a loop. From both explore and exploit to environment are arrows labelled with the letter a, representing the action being executed by the agent in the environment. This indicates that the action is either chosen as the best action, or a random action is selected. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
+---
+An abstraction illustration of temporal-difference learning.
+```
 
 In TD methods, our update rules always follow a pattern:
 
@@ -274,7 +299,7 @@ $$
 $V(s')$ is our TD estimate of the average future reward, and is  the bootstrapped value of our future discounted reward. 
 The new information is weighted by a parameter $\alpha \in [0,1]$ (pronounced "alpha"), which is the **learning rate(*.  A higher learning rate $\alpha$ will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.
 
-The idea  is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
+The idea is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function $V(s')$ defined by the Bellman equation, which leads to $Q(s,a)$ converging more quickly.
 
 Why is there the expression $-Q(s,a)$ inside the square brackets? This is because the old value is weighted $(1 - \alpha) \cdot Q(s,a)$. We can expand this to $Q(s,a) - \alpha \cdot Q(s,a)$, and can then move the latter $-Q(s,a)$ inside the square brackets where the learning rate $\alpha$ is applied.
 
@@ -289,7 +314,7 @@ In this chapter, we will look at two TD methods that differ in the way that they
 
 ````{margin}
 ```{admonition} Video byte: Q-learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -344,7 +369,7 @@ Note that we estimate the future value using $\max_{a'} Q(s',a')$, which means i
 
 ````{margin}
 ```{admonition} Video byte: Q-learning update example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -393,6 +418,12 @@ Next, we implement a second abstract superclass `TemporalDifferenceLearner`, whi
 
 ```
 
+Note a slight difference in the update from {prf:ref}`algorithm:q-learning` and the update in the code:
+
+`delta = reward + (self.mdp.discount_factor * next_state_value * (1 - done)) - q_value`
+
+The expression `1 - done` will equal 0 if the episode has not finished, and 1 otherwise. Therefore, this update calculates that `delta = reward - q_value` at a terminal state -- we do not need to estimate the value of the next state because there is no next state for a terminal state.
+
 We will see later that we inherit from `TemporalDifferenceLearner` for other algorithms that are very similar to Q-learning.
 
 
@@ -433,7 +464,7 @@ gridworld.visualise_policy(policy)
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -449,8 +480,8 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 ## SARSA: On-policy temporal difference learning
 
 ````{margin}
-```{admonition} Video byte: Introduction to temporal-difference learning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: SARSA -- On-policy temporal difference learning
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -512,7 +543,7 @@ SARSA: (1) selects action $a'$ for the *next* loop iteration; (2) in the next it
 
 For this example, we will use the same Q-table as the earlier Q-learning example.
 
-Assme that in state (2,2), the action 'Up' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'Left'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
+Assume that in state (2,2), the action 'Up' is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is 'Left'. Note that this is not the maximum action according to the Q-table -- the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:
 
 $$
 \begin{array}{lll}
@@ -558,13 +589,13 @@ policy = QPolicy(qfunction)
 gridworld.visualise_policy(policy)
 ```
 
-This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occuring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
+This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occurring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.
 
 ### SARSA vs. Q-learning example: Cliff world
 
 ````{margin}
-```{admonition} Video byte: Cliffworld example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: CliffWorld example
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -624,7 +655,9 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
 
+
 ```
+
 
 During training, SARSA receives a higher average reward *per episode* than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
 Q-learning learns the optimal policy, meaning that once we extract the policy, its rewards will be higher on average.
@@ -649,23 +682,21 @@ In the case of Contested Crossing, there are seven actions available (compared t
 
 The result of this is to considerably increase the amount of time taken to converge towards a good policy, for either Q-learning or SARSA. For $n=2000$, the policy found by Q-learning is usually -- but not always -- superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
 
-At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature. 
-
-The resulting final policies, when executed after 20,000 episodes, also show that the Q-learning policy receives a higher reward per episode than SARSA.
+At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature, but it is still quite good.
 
 
 ```{code-cell} ipython3
 :load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
 
-
 ```
+
 
 (sec:model-free:on-policy-vs-off-policy)=
 ## On-policy vs. off-policy: Why do we have both?
 
 ````{margin}
 ```{admonition} Video byte: On-policy vs. off-policy -- Why do we have both?
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -673,7 +704,7 @@ There are a few reasons why we have both on-policy and off-policy learning.
 
 ### Learning from prior experience
 
-The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by **demonstration**. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorihm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
+The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by **demonstration**. In Q-learning, this would mean instead of selecting action $a$ to apply in state $s$ using a multi-armed bandit algorithm on $Q(s,a)$, we can simply take the next action of a trajectory and then update $Q$ as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses $Q(s',a')$, so the policy used to generate the trajectories in episodes is the same as the policy being learnt. 
 
 ### Learning on the job
 
@@ -701,7 +732,7 @@ How do we know how many episodes we should train a model-free learning algorithm
 
 With [value iteration](sec:value-iteration), we terminate the algorithm once the improvement in value function reaches some threshold. However, in the model-free environment, we are not aiming to learn a complete policy -- only enough to get us from the initial state to an absorbing state; or, in the case of an infinite MDP, to maximise rewards. Due to the randomness of the exploration and the fact that an episode may visit a state it has rarely visited, it is likely that for each episode, a Q-value of at least one state-action pair changes.
 
-With model-free learning, we can instead evalute the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
+With model-free learning, we can instead evaluate the policy directly by **executing it and recording the reward we receive**. Then, we terminate when the policy has reached **convergence**. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.
 
 There are a few ways we can measure this:
 1. We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use a [multi-armed bandit](sec:multi-armed-bandits) to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability $\epsilon$. This means that we are not evaluating our real policy --- we are evaluating our really policy plus some random actions. 
@@ -740,7 +771,7 @@ We can see a convergence at about 1250-1500 episodes.
 
 ````{margin}
 ```{admonition} Video byte: Limitations of Q-learning and SARSA
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -771,9 +802,10 @@ The standard versions that we see in this section have two major limitations:
 
 ````{margin}
 ```{admonition} Video byte: Summary
-<iframe width="248" height="141" src="https://www.youtube.com/embed/9ti7L5FFMX0?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
+
 
 ## Takeaways
 

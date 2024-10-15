@@ -1,11 +1,11 @@
-from python_code.learners.value_iteration import ValueIteration
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from python_code.policies.stochastic_value_policy import StochasticValuePolicy
-from python_code.policies.value_policy import ValuePolicy
-from python_code.tests.plot import Plot
-from python_code.value_functions.tabular_value_function import TabularValueFunction
-
+from gridworld import GridWorld
+from value_iteration import ValueIteration
+from value_policy import ValuePolicy
+from stochastic_value_policy import StochasticValuePolicy
+from tabular_value_function import TabularValueFunction
+from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from tests.plot import Plot
+"""
 gridworld = GridWorld()
 for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
     values = TabularValueFunction()
@@ -23,14 +23,15 @@ ValueIteration(maze, values).value_iteration(max_iterations=100)
 maze.visualise_value_function(values, grid_size=0.8, title="100 iterations")
 policy = ValuePolicy(maze, values)
 maze.visualise_policy(policy, "", grid_size=0.8)
+"""
 
 values = TabularValueFunction()
 gridworld = GridWorld()
-policy = ValuePolicy(gridworld, values)
+policy = StochasticValuePolicy(gridworld, values, EpsilonGreedy(epsilon=0.1))
 rewards = gridworld.execute_policy(policy, episodes=1)
 for _ in range(50):
     ValueIteration(gridworld, values).value_iteration(max_iterations=1)
-    policy = ValuePolicy(gridworld, values)
+    policy = StochasticValuePolicy(gridworld, values, EpsilonGreedy(epsilon=0.1))
     rewards += gridworld.execute_policy(policy, episodes=1)
 
 Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)

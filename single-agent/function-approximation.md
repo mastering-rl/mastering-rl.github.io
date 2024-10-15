@@ -11,21 +11,17 @@ kernelspec:
 (sec:qfunction-approximation)=
 # Q-function approximation
 
-```{contents}
-:local:
-:depth: 2
-```
 
 ````{margin}
 ```{admonition} Video byte: Introduction to Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
-1.  Manually apply linear Q-function approximation to solve small-scall MDP problems given some known features.
+1.  Manually apply linear Q-function approximation to solve small-scale MDP problems given some known features.
     
 2.  Select suitable features and design & implement Q-function approximation for model-free reinforcement learning techniques to solve medium-scale MDP problems automatically.
 
@@ -45,7 +41,7 @@ Using a Q-table has two main limitations:
 To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at **linear function approximation** and approximation using **deep learning** (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of $Q(s,a)$ *even if we have not applied action $a$ in state $s$ previously*. 
 
 :::{admonition} Example --- Freeway
-Conside the game *Freeway*, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
+Consider the game *Freeway*, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:
 
 ![image](./figs/freeway_screenshot.png)
 
@@ -64,7 +60,7 @@ A Q-table would need to store $28\times 10^{149}$ entries. This is a huge Q-tabl
 
 ````{margin}
 ```{admonition} Video byte: Intuition of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -95,7 +91,7 @@ This requires just six features.
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-function representation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -120,7 +116,7 @@ To represent this, we have two vectors:
 
 ````{margin}
 ```{admonition} Video byte: Defining state-action features
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -200,11 +196,11 @@ $$
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-function update
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
-To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithsm: (1) initialisation; and (2) update.
+To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithms: (1) initialisation; and (2) update.
 
 For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be "good" weights.
 
@@ -225,7 +221,7 @@ In Freeway, for example, if we receive our first reward by crossing the road (go
 
 ````{margin}
 ```{admonition} Video byte: Example --- Linear Q-function update for Freeway
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -301,9 +297,9 @@ mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
 ```
 
-We can see that this gives ok Q-values and an ok policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
+We can see that this gives OK Q-values and an OK policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward! 
 
-This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent tranisitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including the state $(2,1)$. As such, we learn that going right at (2,1) is good when it is not.
+This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state $(2,2)$ is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent transitions from $(2,2)$ to the goal state $(3,2)$, the weight updates the value of $Q(s, Right)$ for all states $s$, including the state $(2,1)$. As such, we learn that going right at (2,1) is good when it is not.
 
 The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward. 
 
@@ -391,7 +387,7 @@ mdp.visualise_as_image(
 
 ````{margin}
 ```{admonition} Video byte: Q-tables vs. linear Q-functions
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -420,7 +416,7 @@ The key challenge in linear function approximation for Q-learning is the feature
 
 ````{margin}
 ```{admonition} Video byte: Deep Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -464,7 +460,8 @@ From this, we implement the `update` method, which uses the PyTorch implementati
 We also need to implement the `get_q_value` method to pass through the network to get our Q-values.
 
 ```{code-cell} ipython3
-:load: "../python_code/deep_q_function.py"
+:load: "../python_code/old_deep_q_function.py"
+
 ```
 
 Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.
@@ -473,14 +470,13 @@ We can now use this implementation by creating a standard Q-learning agent with 
 
 ```{code-cell} ipython3
 :load: "../python_code/tests/deep_qlearning_run.py"
-
 ```
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation. Therefore, we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
 
 ````{margin}
 ```{admonition} Video byte: Linear Q-functions vs Deep Q-functions
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -494,9 +490,9 @@ Below we see a comparison between deep Q-functions and linear Q-functions.
 <p>
 ```
 
-We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we intialise linear weights to 0, so Q-values are all 0.
+We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we initialise linear weights to 0, so Q-values are all 0.
 
-There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus underfitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
+There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus under fitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
 
 The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.
 
@@ -520,7 +516,7 @@ Despite this, deep Q-learning  works remarkably well in some areas, especially f
 
 ````{margin}
 ```{admonition} Video byte: Strengths and limitations of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -541,7 +537,7 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 ````{margin}
 ```{admonition} Video byte: Summary of Q-function approximation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/OgBe6Ka-KHc?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways
@@ -558,10 +554,10 @@ Approximating Q-functions using machine learning techniques such as linear funct
 
 - Chapter 9 (Approximate Solution Methods) of [Introduction to Reinforcement Learning, Sutton and Barto](http://incompleteideas.net/book/the-book-2nd.html)
 
-- Deep Q-learning for Atari. This uses Convolutional Neural Networks (NN) to estimate $\mathcal{Q}(s,a)$. The input for the NN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
+- Deep Q-learning for Atari. This uses Convolutional Neural Networks (CNN) to estimate $\mathcal{Q}(s,a)$. The input for the CNN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:
 
   - [Human-level control through deep reinforcement learning](http://www.davidqiu.com:8888/research/nature14236.pdf). Mnih, V., et al. Nature 529 (2015).
-  - [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602v1.pdf). Mnih, V., et al. arXiV: preprint arXiv:1312.5602 (2013).
+  - [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602v1.pdf). Mnih, V., et al. arXiv: preprint arXiv:1312.5602 (2013).
 
 -   Before AlphaGo there was TD-gammon, which was the first paper to combine reinforcement learning and neural networks:
     [TD-Gammon, A Self-Teaching Backgammon Program, Achieves Master-Level Play](http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf), AAAI Technical Report FS-93-02 (1993).

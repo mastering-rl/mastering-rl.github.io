@@ -22,10 +22,6 @@ class PolicyGradient:
             state = self.mdp.get_initial_state()
             episode_reward = 0.0
             for step in count():
-                # if total_steps < random_steps:
-                #    action = random.choice(self.mdp.get_actions(state))
-                # else :
-                #    action = self.policy.select_action(state, self.mdp.get_actions(state))
                 action = self.policy.select_action(state, self.mdp.get_actions(state))
                 (next_state, reward, done) = self.mdp.execute(state, action)
 
@@ -45,6 +41,7 @@ class PolicyGradient:
 
             self.policy.update(states, actions, deltas)
             episode_rewards.append(episode_reward)
+            print(episode)
 
         return episode_rewards
 

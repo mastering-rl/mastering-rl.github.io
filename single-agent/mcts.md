@@ -12,14 +12,9 @@ kernelspec:
 (sec:mcts)=
 # Monte-Carlo Tree Search (MCTS)
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ```{admonition}  Learning outcomes
@@ -42,7 +37,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Online vs offline planning
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -54,7 +49,7 @@ There are methods to approximate the MDP by reducing the dimensionality of $S$, 
 
 ````{margin}
 ```{admonition} Video byte: Monte-Carlo simulation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -66,11 +61,11 @@ In **online** planning, planning is undertaken immediately before executing an a
     
 -   The chosen action is $\text{argmax}_{a'} Q(s,a)$
 
-In online planning, we need access to a **simulator** that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulaton that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
+In online planning, we need access to a **simulator** that approximates the transitions function $P_a(s' |s)$ and reward function $r$ of our MDP. A  model can be used, however, often it is easier to write a simulation that can choose outcomes with probability $P_a(s' | s)$ than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.
 
 The simulator allows us to run repeated simulations of possible futures to gain an idea of what moves are likely to be good moves compared to others.
 
-The question is: how to we do the repeated simuations? **Monte Carlo** methods are by far the most widely-used approach.
+The question is: how to we do the repeated simulations? **Monte Carlo** methods are by far the most widely-used approach.
 
 ## Overview
 
@@ -80,8 +75,8 @@ Monte Carlo Tree Search (MTCS) is a name for a *set* of algorithms all based aro
 ### Foundation: MDPs as ExpectiMax Trees
 
 ````{margin}
-```{admonition} Video byte: Expecti-max trees
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```{admonition} Video byte: ExpectiMax trees
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -116,7 +111,7 @@ Fundamental features:
 
 ````{margin}
 ```{admonition} Video byte: MCTS framework
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -192,7 +187,7 @@ $
 \begin{array}{l}
   \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle, \text{base Q-function}\ Q, \text{time limit}\ T  \\
   \algoutput:\ \text{updated Q-function}\ Q  \\[2mm]
-  \algwhile\ currentTime < T\ \algdo  \\
+  \algwhile\ current\_time < T\ \algdo  \\
   \quad\quad selected\_node \leftarrow \text{Select}(s_0)  \\
   \quad\quad child \leftarrow \text{Expand}(selected\_node)\ \text{-- expand and choose a child to simulate}  \\
   \quad\quad G \leftarrow \text{Simulate}(child)\ \text{ -- simulate from}\ child
@@ -271,11 +266,11 @@ Because action outcomes are selected according to $P_a(s' \mid s)$, this will co
 
 **But:** what if we do not know $P_a(s' \mid s)$?
 
-Provided that we can **simulate** the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is **not a model-free** approach: we still need a model in the form of a simulator, but we do not need to have explicit tranisition and reward functions.
+Provided that we can **simulate** the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample $P_a(s' \mid s)$ sufficiently close that $Q(s,a)$ will converge to the average expected reward. Note that this is **not a model-free** approach: we still need a model in the form of a simulator, but we do not need to have explicit transition and reward functions.
 
 ````{margin}
 ```{admonition} Video byte: MCTS example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -339,11 +334,11 @@ However, importantly, we can *keep* the sub-tree from state $s'$, as we already 
 
 ````{margin}
 ```{admonition} Video byte: Upper Confidence Trees (UCT)
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
-When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorith, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
+When we select nodes, we select using some [multi-armed bandit algorithm](sec:multi-armed-bandits). We can use any multi-armed bandit algorithm, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.
 
 The **Upper Confidence Trees** (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:
 
@@ -383,7 +378,7 @@ For simplicity, we implement the select, expand, and backpropagate methods in th
 
 ````{margin}
 ```{admonition} Video byte: MCTS example on Gridworld
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -426,7 +421,7 @@ After 0.03 seconds, the rewards are improving but are still quite noisy. This ma
 
 ````{margin}
 ```{admonition} Video byte: Convergence
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -466,7 +461,7 @@ It addresses exploitation vs. exploration comprehensively.
 
 ````{margin}
 ```{admonition} Video byte: MCTS demo
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -499,7 +494,7 @@ MCTS (and other search methods) methods thus can be used by just taking samples 
 
 This is important: value iteration is then more expensive for many problems, however, for an agent operating in its environment, we only solve exhaustively once, and we can use the resulting policy many times no matter state we are in latter.
 
-For MCTS, we need to solve **online** each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heurist for rollouts), this can be improved.
+For MCTS, we need to solve **online** each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heuristic for rollouts), this can be improved.
 
 (sec:mcts:alpha-zero)=
 ## Combining MCTS and TD learning: Alpha Zero
@@ -540,9 +535,10 @@ name: AlphaZero
 The AlphaZero framework. [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). D. Silver, et al. Nature volume 550, pages 354–359 (2017)
 ```
 
+
 ````{margin}
 ```{admonition} Video byte: Summary of MCTS
-<iframe width="248" height="141" src="https://www.youtube.com/embed/kTNZekEiJ9g?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 

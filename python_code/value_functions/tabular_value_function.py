@@ -4,15 +4,23 @@ from python_code.value_functions.value_function import ValueFunction
 
 
 class TabularValueFunction(ValueFunction):
-    def __init__(self, default=0.0):
+    def __init__(self, alpha=0.1, default=0.0):
         self.value_table = defaultdict(lambda: default)
+        self.alpha = alpha
 
-    def update(self, state, value):
+    def add(self, state, value):
         self.value_table[state] = value
+
+    def update(self, state, delta):
+        self.value_table[state] += self.alpha * delta
 
     def merge(self, value_table):
         for state in value_table.value_table.keys():
-            self.update(state, value_table.get_value(state))
+            self.add(state, value_table.get_value(state))
 
     def get_value(self, state):
         return self.value_table[state]
+    
+    def get_values(self, states):
+        return [self.get_value(state) for state in states]
+

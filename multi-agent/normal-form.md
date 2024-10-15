@@ -11,10 +11,6 @@ kernelspec:
 
 # Normal form games
 
-```{contents}
-:local:
-:depth: 2
-```
 
 In the following chapters, we will look at **games**. By  "games", we do not only mean games like Chess or digital games -- the term "game" is a more general term to describe a problem that involves **multiple agents or players**.
 
@@ -28,7 +24,7 @@ Then, we look at **extensive form games**, which are sequential games, meaning t
 
 ````{margin}
 ```{admonition} Video byte: Introduction to normal form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -50,7 +46,7 @@ Normal form games capture many different applications in the field of multi-agen
 
 ````{margin}
 ```{admonition} Video byte: Exercise --- Prisoner's dilemma
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -93,7 +89,7 @@ fig = prisoners_dilemma.visualise()
 
 *Prisoner A* and *Prisoner B* are the **players**, *admit* and *deny* are the **actions**, and the values in the cells are the **utility** or **payoffs** given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left cell is Prisoner A and the right cell is Prisoner B.
 
-So, what should each prisoner do? Let's first list some assumptions about the game, which are genreal assumptions that we are going to hold throughout this chapter:
+So, what should each prisoner do? Let's first list some assumptions about the game, which are general assumptions that we are going to hold throughout this chapter:
 1. We assume that all agents are **rational**, which means that they aim to maximise their total utility.
 2. We assume that all agents are **self-interested**, which means that they do not care about the other agents' utility.
 3. We assume that the game is a **perfect information** game, which means that rules of the game are **common knowledge** for all agents; that is, all agents know the rules, including the actions and utilities for all other agents, and all agents know that all agents know the rules, and all agents know that all agents know that all agents know the rules, and all agents know that.... *ad infinitum*. In short, there is no way to "trick" another agent by taking advantage of something that they don't know.
@@ -115,7 +111,7 @@ Now that we have seen an example, let's look at a more formal definition of norm
 
 ````{margin}
 ```{admonition} Video byte: Definition -- Normal form game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -151,7 +147,7 @@ We use the notation $S_{-i}$ to denote the set of mixed-strategy profiles for al
 It is not immediately obvious why an agent would want to use randomisation when select an action, but we will see examples where this is important.
 
 :::{admonition} Definition -- Dominant strategy
-Strategy $s_i$ for player $i$  **weakly dominates** strategy $s'_i$ if the utility received by the agent for playing strategy $s_i$  is greater than or equal to  the utility received by that agent for playing $s'_i$. Formally, $s_i$ weakly dominates $s'_i$ iff and only if:
+Strategy $s_i$ for player $i$  **weakly dominates** strategy $s'_i$ if the utility received by the agent for playing strategy $s_i$  is greater than or equal to  the utility received by that agent for playing $s'_i$. Formally, $s_i$ weakly dominates $s'_i$ if and only if:
 
 $$
 \textrm{for all}\ s_{-i} \in S_{-i}, \textrm{we have that } u_i(s_i, s_{-i}) \geq u_i(s'_i, s_{-i})
@@ -178,7 +174,7 @@ Then, we look at solutions at the concept of **equilibria**, which captures solu
 
 ````{margin}
 ```{admonition} Video byte: Best response and Nash equilibria
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -194,7 +190,7 @@ Note that for many problems, there can be multiple best responses.
 Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who in his PhD thesis provide that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a **stable** strategy profile for all agents in $N$ such that no agent has an incentive to change strategy if all other agents kept their strategy the same.
 
 :::{admonition} Definition -- Nash equilibrium
-A strategy profile $s = (s_1,\ldots, s_n)$ is a **Nash equilbrium** if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
+A strategy profile $s = (s_1,\ldots, s_n)$ is a **Nash equilibrium** if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
 :::
 
 If the strategies in a Nash equilibrium are all pure strategies, then we call this a **pure-strategy Nash equilibrium**. Otherwise, if is a **mixed-strategy Nash equilibrium**.
@@ -255,7 +251,7 @@ To search for pure strategy equilibria, we just set $S_i \leftarrow A_i$; that i
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- The advertising game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -270,7 +266,7 @@ We can verify this by looking at each cell and reasoning as follows:
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- Split or steal
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -297,14 +293,14 @@ glue("split_or_steal_image", split_or_steal.visualise(), display=False)
 ```
 
 ````{admonition} Example -- Nash equilibria for *Split or steal*
-*Split or steal* is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the stealer receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:
+*Split or steal* is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the player who steals receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:
 
 ```{glue:} split_or_steal_image
 ```
 
 What are the Nash equilibria. There are in fact three Nash equilibria for this game, highlighted using the square brackets above! Let's reason about them:
-- $(steal, steal)$ is a Nash equilbrium for both agents, because if either agent deviates by playing $split$, their utility remains at  0.
-- $(steal, split)$ and $(split, steal)$ are both equilibria because if either agent deviates from $steal$ their utilitiy decreases from 2 to 1, while if either deviates from $split$ their utility remains at 0
+- $(steal, steal)$ is a Nash equilibrium for both agents, because if either agent deviates by playing $split$, their utility remains at  0.
+- $(steal, split)$ and $(split, steal)$ are both equilibria because if either agent deviates from $steal$ their utility decreases from 2 to 1, while if either deviates from $split$ their utility remains at 0
 - $(split,split)$ is not a Nash equilibrium because both agents have incentive to deviate to $steal$, which would increase their utility from 1 to 2.
 ````
 
@@ -314,7 +310,7 @@ Recall from earlier in this chapter where we defined **mixed strategies**, which
 
 ````{margin}
 ```{admonition} Video byte: Example -- Matching pennies game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -357,7 +353,7 @@ So, what strategy should we play? If we were to play this game a number of times
 
 ````{margin}
 ```{admonition} Video byte: Expected utility
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -377,7 +373,7 @@ In theory, we can maximise our overall  utility by picking the pure strategy wit
 
 ````{margin}
 ```{admonition} Video byte: Indifference
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -389,7 +385,7 @@ Informally, this states that an agent is indifferent between a set of pure strat
 
 ````{margin}
 ```{admonition} Video byte: Mixed strategies
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -401,7 +397,7 @@ Informally, this states that each agent should choose a mixed strategy such that
 
 ````{margin}
 ```{admonition} Video byte: Example -- Mixed strategies for matching pennies
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 :::{admonition} Example -- Mixed strategies for matching pennies
@@ -426,7 +422,7 @@ In this example, the probabilities of the game are reasonably clear without havi
 
 ````{margin}
 ```{admonition} Video byte: Exercise -- Security game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -434,7 +430,7 @@ In this example, the probabilities of the game are reasonably clear without havi
 
 ````{margin}
 ```{admonition} Video byte: Application -- Security games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -463,7 +459,7 @@ glue("security_game_image", security_game.visualise(), display=False)
 
 ````{admonition} Example -- Mixed strategies for the security game
 
-A security game is a model of how to place resources to improve safety and security of key assets. In this examlpe, we look at the issue of where to place resources each hour to defend from an attack at an airport that has two terminals. It is infeasible to always patrol all terminals, but with a randomised strategy, we can make it difficult for an adversary to know which terminal to target.
+A security game is a model of how to place resources to improve safety and security of key assets. In this example, we look at the issue of where to place resources each hour to defend from an attack at an airport that has two terminals. It is infeasible to always patrol all terminals, but with a randomised strategy, we can make it difficult for an adversary to know which terminal to target.
 
 The difficulty is that the two terminals have different "values" for both the defender and the adversary.  Both value terminal 1 more highly (e.g. it is a  terminal that has more people on a typical day), but both also value the terminals different to each other. This can be modelled with the following normal form game:
 
@@ -517,7 +513,7 @@ So, the defender should choose to defend Terminal 1 with the probability $\frac{
 
 ````{margin}
 ```{admonition} Video byte: Summary of normal form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Y-DVe2Ae9lM?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

@@ -16,44 +16,44 @@ class ActorCritic(ModelFreeLearner):
             states = []
             rewards = []
             next_states = []
+            next_actions = []
             dones = []
 
-            episode_reward = 0
             state = self.mdp.get_initial_state()
+            action = self.actor.select_action(state, self.mdp.get_actions(state))
+            episode_reward = 0.0
             for step in count():
-                # action = self.actor.select_action(state, self.mdp.get_actions(state))
-                import random
-
-                length = len(self.mdp.get_actions(state))
-                action = random.sample(self.mdp.get_actions(state), length)[0]
                 (next_state, reward, done) = self.mdp.execute(state, action)
-                self.update_critic(reward, state, action, next_state, done)
+                next_action = self.actor.select_action(next_state, self.mdp.get_actions(next_state))
+                self.update_critic(reward, state, action, next_state, next_action, done)
 
                 # Store the information from this step of the trajectory
                 states.append(state)
                 actions.append(action)
                 rewards.append(reward)
                 next_states.append(next_state)
+                next_actions.append(next_action)
                 dones.append(done)
 
                 state = next_state
-                episode_reward += reward * (self.mdp.discount_factor**step)
+                action = next_action
+                episode_reward += reward * (self.mdp.discount_factor ** step)
 
                 if done or step == max_episode_length:
                     break
 
-            self.update_actor(rewards, states, actions, next_states, dones)
+            self.update_actor(rewards, states, actions, next_states, next_actions, dones)
 
             episode_rewards.append(episode_reward)
 
         return episode_rewards
 
-    """ Update the actor using a batch of rewards, states, actions, and next states """
+    """ Update the actor using a batch of transitions """
 
-    def update_actor(self, rewards, states, actions, next_states, dones):
+    def update_actor(self, rewards, states, actions, next_states, next_actions, dones):
         abstract
 
-    """ Update the critc using a reward, state, action, and next state """
+    """ Update the critic """
 
-    def update_critic(self, reward, state, action, next_state):
+    def update_critic(self, reward, state, action, next_state, next_action, done):
         abstract

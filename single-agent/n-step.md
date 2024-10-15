@@ -10,11 +10,6 @@ kernelspec:
 ---
 # n-step reinforcement learning
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -37,7 +32,7 @@ These two methods have some weaknesses in this basic format:
 3.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to model this is via a Q-table. However, this requires us to maintain a table of size $|A| \times |S|$, which is prohibitively large for any non-trivial problem.
 4.  Using a Q-table requires that we visit every reachable state many times and apply every action many times to get a good estimate of  $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate  of $Q(s,a)$, even if we have visited states that are very similar to $s$.
 
-To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future wards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
+To get around limitations 1 and 2, we are going to look at **n-step temporal difference learning**: 'Monte Carlo' techniques execute entire episodes and then backpropagate the reward, while basic TD methods only look at the reward in the next step, estimating the future rewards. n-step methods instead look $n$ steps ahead for the reward before updating the reward, and then estimate the remainder. In future parts of these notes, we'll look at techniques for mitigating limitations 3 and 4.
 
 n-step TD learning comes from the idea used in the image below, from Sutton and Barto (2020). Monte Carlo methods uses 'deep backups', where entire episodes are executed and the reward backpropagated. Methods such as Q-learning and SARSA use 'shallow backups', only using the reward from the 1-step ahead. n-step learning finds the middle ground: only update the Q-function after having explored ahead $n$ steps.
 
@@ -58,10 +53,10 @@ SARSA. The version for Q-learning is similar.
 
 ### Intuition
 
-The details and algorithm for n-step reinforcement learning making it seem more complicated than it really is. 
+The details and algorithm for n-step reinforcement learning make it seem more complicated than it really is. 
 At an intuitive level, it is quite straightforward: at each step, instead of updating our Q-function or policy based on the reward received from the previous action, plus the discounted future rewards, we update it based on the last $n$ rewards received, plus the discounted future rewards from $n$ states ahead.
 
-Consider the following interative gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
+Consider the following interactive gif, which shows the update over an episode of five actions. The bracket represents a window size of $n=3$:
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
@@ -73,21 +68,21 @@ Consider the following interative gif, which shows the update over an episode of
 
 At time $t=0$, no update can be made because there is no action.
 
-At time $t=1$, after action $a_0$, no update is done yet. In standard TD learning, we would update $Q(s_0, s_0)$ here. However, because we have only one reward instead of three ($n=3$), we delay the update.
+At time $t=1$, after action $a_0$, no update is done yet. In standard TD learning, we would update $Q(s_0, a_0)$ here. However, because we have only one reward instead of three ($n=3$), we delay the update.
 
 At time $t=2$, after action $a_1$, again we do not update because we have just two rewards, instead of three.
 
-At time $t=3$, after action $a_2$, we have three rewards, so we do our first update. But note: we update $Q(s_0, a_0)$ -- the first state-action pair in the sequence, rather than the most recent state action pair $(s_2,a_2)$. Notice that we consider the rewards $r_1$, $r_2$, and $r_3$ (appropriately discounted), and use the discounted future reward $V(s_3)$.  Effectively, the update of $Q(s_0, a_0)$ "looks forward" three actions into the future instead one, because $n=3$.
+At time $t=3$, after action $a_2$, we have three rewards, so we do our first update. But note: we update $Q(s_0, a_0)$ -- the first state-action pair in the sequence, rather than the most recent state action pair $(s_2,a_2)$. Notice that we consider the rewards $r_1$, $r_2$, and $r_3$ (appropriately discounted), and use the discounted future reward $V(s_3)$.  Effectively, the update of $Q(s_0, a_0)$ "looks forward" three actions into the future instead of one, because $n=3$.
 
 At time $t=4$, after action $a_3$, the update is similar: we now update $Q(s_1, a_1)$.
 
 At time $t=5$, it is similar again, except that state $s_5$ is a terminal state, so we do not include the discounted future reward -- there is no state $s_6$ such that we can estimate $V(s_6)$, so it is omitted.
 
-At time $t=6$, we can see that the window slides beyond the length of the episode. However, even though we have reached the terminal state, we continue updating --- this time updating $Q(s_3, s_3)$. We need to do this because we have still not updated the Q-values for all state-action pairs that we have executed.
+At time $t=6$, we can see that the window slides beyond the length of the episode. However, even though we have reached the terminal state, we continue updating --- this time updating $Q(s_3, a_3)$. We need to do this because we have still not updated the Q-values for all state-action pairs that we have executed.
 
 At time $t=7$, we do the final update --- this time for $Q(s_4,a_4)$; and the episode is complete.
 
-So, we can see that, intuitively, $n$-step reinforcement learning is quite straightfoward. However, to implement this, we need data structures to keep track of the last $n$ states, actions, and rewards, and modifications to the standard TD learning algorithm to both delay Q-value updates in the first $n$ steps of an episode, and to continue updating beyond the end of the episode for ensure the last $n$ state-action pairs are updated. This "book-keeping" code can be confusing at first, unless we already have an intuitive understanding of what it achieves.
+So, we can see that, intuitively, $n$-step reinforcement learning is quite straightforward. However, to implement this, we need data structures to keep track of the last $n$ states, actions, and rewards, and modifications to the standard TD learning algorithm to both delay Q-value updates in the first $n$ steps of an episode, and to continue updating beyond the end of the episode for ensure the last $n$ state-action pairs are updated. This "book-keeping" code can be confusing at first, unless we already have an intuitive understanding of what it achieves.
 
 ### Discounted Future Rewards (again)
 
@@ -104,7 +99,7 @@ If $G_t$ is the value received at time-step $t$, then
 
  $$ G_t = r_t + \gamma G_{t+1} $$
 
-In TD(0) methods such as Q-learning and SARSA, we do not know $G_{t+1}$
+In TD(1) methods such as Q-learning and SARSA, we do not know $G_{t+1}$
 when updating $Q(s,a)$, so we estimate using bootstrapping:
 
  $$ G_t = r_t + \gamma \cdot V(s_{t+1}) $$ 
@@ -204,26 +199,26 @@ $
 \algrepeat \\
 \quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using Q-values in}\ Q\ \text{and}\\
 \quad\quad\quad\quad \text{a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
-\quad\quad ss = \langle s\rangle\\
-\quad\quad as = \langle a\rangle\\
-\quad\quad rs = \langle \rangle\\
-\quad\quad \algwhile\ ss\ \text{is not empty}\ \algdo\\
+\quad\quad \vec{s} = \langle s\rangle\\
+\quad\quad \vec{a} = \langle a\rangle\\
+\quad\quad \vec{r} = \langle \rangle\\
+\quad\quad \algwhile\ \vec{s}\ \text{is not empty}\ \algdo\\
 \quad\quad\quad\quad\ \algif\ s\ \text{is not a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
-\quad\quad\quad\quad\quad\quad rs \leftarrow rs + \langle r\rangle\\
+\quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r} + \langle r\rangle\\
 \quad\quad\quad\quad\quad\quad \algif\ s'\ \text{is not a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
-\quad\quad\quad\quad\quad\quad\quad\quad ss \leftarrow ss + \langle s' \rangle\\
-\quad\quad\quad\quad\quad\quad\quad\quad as \leftarrow ss + \langle a' \rangle\\
-\quad\quad\quad\quad \algif\ |rs| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
-\quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|rs| - 1}_{i=0}\gamma^{i}rs_i\\
+\quad\quad\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s} + \langle s' \rangle\\
+\quad\quad\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{s} + \langle a' \rangle\\
+\quad\quad\quad\quad \algif\ |\vec{r}| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
+\quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|\vec{r}| - 1}_{i=0}\gamma^{i}\vec{r}_i\\
 \quad\quad\quad\quad\quad\quad \algif\ s\ \text{is not a terminal state}\ \algthen\\
  \quad\quad\quad\quad\quad\quad\quad\quad G \leftarrow G + \gamma^n Q(s', a')\\
-\quad\quad\quad\quad\quad\quad Q(ss_0, as_0) \leftarrow  Q(ss_0, as_0) + \alpha[G - Q(ss_0, as_0)]\\
-\quad\quad\quad\quad\quad\quad rs \leftarrow rs_{[1 : n + 1]}\\
-\quad\quad\quad\quad\quad\quad ss \leftarrow ss_{[1 : n + 1]}\\
-\quad\quad\quad\quad\quad\quad as \leftarrow as_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad Q(\vec{s}_0, \vec{a}_0) \leftarrow  Q(\vec{s}_0, \vec{a}_0) + \alpha[G - Q(\vec{s}_0, \vec{a}_0)]\\
+\quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r}_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s}_{[1 : n + 1]}\\
+\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{a}_{[1 : n + 1]}\\
 \quad\quad\quad\quad s \leftarrow s'\\
 \quad\quad\quad\quad a \leftarrow a'\\
 \alguntil\ Q\ \text{converges}
@@ -231,11 +226,11 @@ $
 $
 ```
 
-This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $ss$, $as$, and $rs$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $ss_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $ss_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
+This is similar to standard SARSA, except that we are storing the last $n$ states, actions, and rewards; and also calculating the rewards on the last five rewards rather than just one. The variables $\vec{s}$, $\vec{a}$, and $\vec{r}$ as the list of the last $n$ states, actions, and rewards respectively. We use the syntax $\vec{s}_i$ to get the $i^{th}$ element of the list, and the Python-like syntax $\vec{s}_{[1:n+1]}$ to get the elements between indices 1 and $n+1$ (remove the first element).
 
 As with SARSA and Q-learning, we iterate over each step in the episode. The first branch simply executes the selected action, selects a new action to apply, and stores the state, action, and reward.
 
-It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $rs$, but remembering that they must be discounted based on their position in $rs$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $ss_0$. The $n-step$ reward in $G$ somes first. Then we do the actualy update, which updates the state-action pair $(ss_0, as_0)$ that is $n$-steps back.
+It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $\vec{r}$, but remembering that they must be discounted based on their position in $\vec{r}$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $\vec{s}_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(\vec{s}_0, \vec{a}_0)$ that is $n$-steps back.
 
 The final part of this branch removes the first element from the list of states, actions, and rewards, and moves on to the next state.
 
@@ -265,16 +260,16 @@ Assuming $Q(s,a)=0$ for all $s$ and $a$, if we traverse the episode the labelled
 
 For the first $n-1$ steps of the episode, no update is made to the Q-values, but rewards and states are stored for future processing.
 
-On step 5, we reach the end of our n-step window, and we start to update values becasue $|rs|=n$. We calculate $G$ from $rs$ and update $Q(ss_0, as_0)$, and then similarly for the 6$^{th}$ step:
+On step 5, we reach the end of our n-step window, and we start to update values because $|rs|=n$. We calculate $G$ from $rs$ and update $Q(\vec{s}_0, \vec{a}_0)$, and then similarly for the 6$^{th}$ step:
 
 
 $
 \begin{array}{llll}
-& \text{Step 5} & rs = \langle 0, 0, 0, 0, 0\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,1), Up) = 0\\
+& \text{Step 5} & \vec{r} = \langle 0, 0, 0, 0, 0\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((2,1), Up) = 0\\
 &       & Q((0,0), Up) = 0\\[1mm]
-& \text{Step 6} & rs = \langle 0, 0, 0, 0, 0\rangle\\
-&           & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((2,2), Right) = 0\\
+& \text{Step 6} & \vec{r} = \langle 0, 0, 0, 0, 0\rangle\\
+&           & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((2,2), Right) = 0\\
 &           & Q((0,1), Up) = 0 + 0.5[0 - 0] = 0
 \end{array}
 $
@@ -285,27 +280,27 @@ When we reach step 7, however,  we receive a reward. We can then update the Q-va
 
 $
 \begin{array}{llll}
-& \text{Step 7} & rs = \langle 0, 0, 0, 0, 1\rangle\\
-&      & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_4 + \gamma^5 Q((3,2), Terminate) = 0.9^4 \cdot 1 = 0.6561\\
+& \text{Step 7} & \vec{r} = \langle 0, 0, 0, 0, 1\rangle\\
+&      & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_4 + \gamma^5 Q((3,2), Terminate) = 0.9^4 \cdot 1 = 0.6561\\
 &      & Q((0,2), Right) = 0 + 0.5[0.6561 - 0] = 0.32805
 \end{array}
 $
 
-From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(ss_5, as_5)$ because there is no future discount reward beyond the end of the episode:
+From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(\vec{s}_5, \vec{a_5)$ because there is no future discount reward beyond the end of the episode:
 
 $
 \begin{array}{llll}
-& \text{Step 8} & rs = \langle 0, 0, 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^4 rs_3 = 0.9^3 \cdot 1 = 0.729\\
+& \text{Step 8} & \vec{r} = \langle 0, 0, 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^4 \vec{r}_3 = 0.9^3 \cdot 1 = 0.729\\
 &       & Q((1,2), Right) = 0 + 0.5[0.729 - 0] = 0.3645\\[1mm]
-& \text{Step 9} & rs = \langle 0, 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^3 rs_2 = 0.9^2 \cdot 1 = 0.81\\
+& \text{Step 9} & \vec{r} = \langle 0, 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^3 \vec{r}_2 = 0.9^2 \cdot 1 = 0.81\\
 &       & Q((2,2), Down) = 0 + 0.5[0.81 - 0] = 0.405\\[1mm]
-& \text{Step 10} & rs = \langle 0, 1\rangle\\
-&       & G = \gamma^0 rs_0 + \ldots + \gamma^2 rs_1 = 0.9^1 \cdot 1 = 0.9 = 0.9\\
+& \text{Step 10} & \vec{r} = \langle 0, 1\rangle\\
+&       & G = \gamma^0 \vec{r}_0 + \ldots + \gamma^2 \vec{r}_1 = 0.9^1 \cdot 1 = 0.9 = 0.9\\
 &       & Q((2,1), Up) = 0 + 0.5[0.9 - 0] = 0.45\\[1mm]
-& \text{Step 11} & rs = \langle 1\rangle\\
-&      & G = \gamma^0 rs_0 = 0.9^0 \cdot 1 = 1\\
+& \text{Step 11} & \vec{r} = \langle 1\rangle\\
+&      & G = \gamma^0 \vec{r}_0 = 0.9^0 \cdot 1 = 1\\
 &      & Q((2,2, Right) = 0 + 0.5[1  \cdot 1 - 0] = 0.5
 \end{array}
 $

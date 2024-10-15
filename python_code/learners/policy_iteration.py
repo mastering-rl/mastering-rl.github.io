@@ -20,7 +20,7 @@ class PolicyIteration:
                 new_value = values.get_q_value(
                     self.mdp, state, policy.select_action(state, actions)
                 )
-                values.update(state, new_value)
+                values.add(state, new_value)
                 delta = max(delta, abs(old_value - new_value))
 
             # terminate if the value function has converged
@@ -40,6 +40,7 @@ class PolicyIteration:
             policy_changed = False
             values = self.policy_evaluation(self.policy, values, theta)
             for state in self.mdp.get_states():
+                
                 actions = self.mdp.get_actions(state)
                 old_action = self.policy.select_action(state, actions)
 
@@ -48,11 +49,9 @@ class PolicyIteration:
                     # Calculate the value of Q(s,a)
                     new_value = values.get_q_value(self.mdp, state, action)
                     q_values.update(state, action, new_value)
-
                 # V(s) = argmax_a Q(s,a)
                 new_action = q_values.get_argmax_q(state, self.mdp.get_actions(state))
                 self.policy.update(state, new_action)
-
                 policy_changed = (
                     True if new_action is not old_action else policy_changed
                 )

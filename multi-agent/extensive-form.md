@@ -11,11 +11,6 @@ kernelspec:
 
 # Extensive form games
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ```{admonition}  Learning outcomes
 The learning outcomes of this chapter are:
 
@@ -31,15 +26,15 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Introduction to extensive form games
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
 In this section, we look at **extensive form games**. An extensive form game is a sequential game, which includes a set of players, rules around which players can move when, and what they observe and the rewards they receive when they move. In an extensive form game, there are multiple players who can take moves in the game, but not simultaneously. At the end of the game, each player receives a reward, known as a **payoff**, which can be positive or negative.
 
 We look at three main ways to solve extensive form games:
-1. In a model-based game, we can use **backward induction**, which is where we calculate an equilbrium for every subgame of the game, and these to decide our moves.
-2. In a model-free game, we can use **model-free reinforcement learning**. These are very similar to teachniques such as Q-learning or policy gradient methods, except that there are other players that can effect our rewards, rather than just ourselves and the environment.
+1. In a model-based game, we can use **backward induction**, which is where we calculate an equilibrium for every subgame of the game, and these to decide our moves.
+2. In a model-free game, we can use **model-free reinforcement learning**. These are very similar to techniques such as Q-learning or policy gradient methods, except that there are other players that can effect our rewards, rather than just ourselves and the environment.
 3. If we have a simulation, we can use model-free techniques or **multi-agent Monte-Carlo tree search** (MCTS), which is similar to single-agent MCTS, except again there are other players that can effect our rewards, rather than just ourselves and the environment. 
 
 In these notes, we will look only at **perfect information** extensive form games, which means that the game state is **fully observable to all players**.
@@ -49,7 +44,7 @@ In these notes, we will look only at **perfect information** extensive form game
 
 ````{margin}
 ```{admonition} Video byte: Definition -- Extensive form game
-<iframe width="248" height="141" src="https://www.youtube.com/embed/ltVUfwm4suM?start=69" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=69" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -113,13 +108,13 @@ A **pure strategy** for an extensive form game $G$, the pure strategies for a pl
 
 Therefore, a pure strategy for player $i$ tells them what move to take in each state where it is their turn.
 
-An optimal solution for an extensive form game is called the **subgame-perfect equilbrium** for that game.  Before we define what subgame-perfect equilibria are, we first need to define what sub-games are..
+An optimal solution for an extensive form game is called the **subgame-perfect equilibrium** for that game.  Before we define what subgame-perfect equilibria are, we first need to define what sub-games are..
 
 :::{admonition} Definition -- Sub-game
-Given an extensive form game $G$, the **sub-game** of $G$ rooted at the node $s_g \in S$ is the game $G_{s_g}=  (N, S, s_{g}, A, T, r)$; that is, the part of the game tree in which $s_g$ is the root node and its descendents are the same as its descendants in $G$.
+Given an extensive form game $G$, the **sub-game** of $G$ rooted at the node $s_g \in S$ is the game $G_{s_g}=  (N, S, s_{g}, A, T, r)$; that is, the part of the game tree in which $s_g$ is the root node and its descendants are the same as its descendants in $G$.
 :::
 
-For any state $s_g \in S$ that occurs in the game tree, we can define a sub-game by taking the descendents of that tree. Therefore, we can define a game as simply the root node $s_0$, with the actions in $A(s_0)$ lead to nodes that are the root nodes of its sub-game.
+For any state $s_g \in S$ that occurs in the game tree, we can define a sub-game by taking the descendants of that tree. Therefore, we can define a game as simply the root node $s_0$, with the actions in $A(s_0)$ lead to nodes that are the root nodes of its sub-game.
 
 :::{admonition} Definition -- Subgame-perfect equilibria
 The **subgame-perfect equilibria** (SPE) of a game $G$ consists of all strategy profiles for the N agents such that for any subgame $G_{s_g}$ of $G$, the strategy for player $P(s_g)$ is the best response for that player at $s_g$.

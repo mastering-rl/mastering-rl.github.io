@@ -12,14 +12,9 @@ kernelspec:
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 
-```{contents}
-:local:
-:depth: 2
-```
-
 ````{margin}
 ```{admonition} Video byte: Introduction to multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?start=0s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=0" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ```{admonition}  Learning outcomes
@@ -34,7 +29,7 @@ The learning outcomes of this chapter are:
 
 ````{margin}
 ```{admonition} Video byte: Intuition of multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=43s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=43" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -48,7 +43,7 @@ The problem of multi-armed bandits can be illustrated as follows:
 ```
 
 
-> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are morely likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
+> Imagine that you have $N$ number of slot machines (or poker machines in Australia), which are sometimes called **one-armed bandits**, due to the "arm" on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are more likely to get a winning payoff than others -- we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.
 
 The question is: without knowing the probability distribution beforehand, how should we select the arms to increase our total payoff?  Multi-armed bandit techniques aim to solve this problem. 
 
@@ -56,7 +51,7 @@ The question is: without knowing the probability distribution beforehand, how sh
 
 ````{margin}
 ```{admonition} Video byte: Multi-armed bandits -- Definition
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=107s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=107" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -92,7 +87,7 @@ The idea here is that for a multi-armed bandit problem, we explore the options u
 
 ````{margin}
 ```{admonition} Video byte: Exploration vs. exploitation
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=169s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=169" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -109,7 +104,7 @@ Given a policy $\pi$ and $t$ number of arm pulls, **regret** is defined formally
 where $Q^*(a)$ is actual average return of playing arm $a$. We do not know $Q^*(a)$ of course -- otherwise we could simply play $\text{argmax}_a Q^*(a)$ each round.
 :::
 
-Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulated reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the **expected loss** from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
+Informally: If we follow policy $\pi$ by playing arm $\pi(k)$ in round each round $k$, our regret over the $t$ pulls  is the *best possible cumulative reward* minus the *expected reward of playing using policy $\pi$*. So, regret is the **expected loss** from not taking the best action. If I take always action $\text{argmax}_a Q^*(a)$ (the best action), my regret is 0. 
 
 The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.
 
@@ -130,7 +125,7 @@ Each strategy must implement the  `select` method, which takes the list of avail
 
 ````{margin}
 ```{admonition} Video byte: Simulation example
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=516s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=516" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -178,7 +173,7 @@ The key difference between the solutions we will look at is how the $\textrm{sel
 
 ````{margin}
 ```{admonition} Video byte: Epsilon greedy
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=594s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=594" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -186,7 +181,7 @@ The $\epsilon$-greedy (pronounced "epsilon-greedy") strategy  is a simple and ef
 
 Each time we need to choose an action, we do the following:
 
-- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$ (**exploit**). If there is a tie between multiple actions with the larget Q-value, break the tie randomly.
+- With probability $1-\epsilon$ we choose the arm with the maximum Q value: $\text{argmax}_a Q(a)$ (**exploit**). If there is a tie between multiple actions with the largest Q-value, break the tie randomly.
 - With probability $\epsilon$ we choose a random arm with uniform probability (**explore**).
 
 The best value for $\epsilon$ depends on the particular problem, but typically, values around 0.05-0.2 work well as they exploit what they have learnt, while still exploring.
@@ -214,7 +209,7 @@ But we can also see that while epsilon = 0.05 ends up with a higher return after
 
 ````{margin}
 ```{admonition} Video byte: Epsilon decreasing
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=712s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=712" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -250,11 +245,11 @@ This indicates that for this particular problem, a value of 0.99 for alpha has a
 
 ````{margin}
 ```{admonition} Video byte: Softmax
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=820s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=820" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
-**Softmax** is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzman distribution for that action:
+**Softmax** is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzmann distribution for that action:
 
 $$\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}$$ 
 
@@ -279,16 +274,17 @@ As before, we plot the average reward at each step of our simulation, this time 
 
 In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  $e^{Q(a)}$. So, why should we use tau at all? 
 
-The softmax strategy is designed to work well under **drift**; that is, when the underlying probability distributions (in this case, the probability of receiving a reward) change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly.
+The softmax strategy is designed to work well under **drift**; that is, when the underlying rewards or probability distributions change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly. Problems where the underlying rewards or probabilities can change over time are called **restless bandits**.
 
-So, what happens if we change the value of our underlying probabilities? In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]``` to ```probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]```.  This is a sudden change in which the Q-values are almost worthless.
+
+In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from ```probabilities = [0.1, 0.3, 0.7, 0.2, 0.1]``` to ```probabilities = [0.5, 0.2, 0.0, 0.3, 0.3]```.  This is a sudden change in which the Q-values are almost worthless.
 
 If we plot the performance of the softmax algorithm with this, the results are as follows:
 
 ```{code-cell} ipython3
 plot_softmax(drift=True)
 ```
-As one can see, the strategies that are less "commited" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
+As one can see, the strategies that are less "committed" to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.
 
 Note that higher values of tau also work when the drift is more gradual, rather than a sudden change as we simulate here.
 
@@ -296,7 +292,7 @@ Note that higher values of tau also work when the drift is more gradual, rather 
 
 ````{margin}
 ```{admonition} Video byte: Upper Confidence Bounds (UCB1)
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1105s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1105" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 
@@ -306,13 +302,18 @@ Using the UCB1 strategy, we select the next action  using the following:
 
 $$\text{argmax}_{a}\left(Q(a)   +   \sqrt{\frac{2 \ln t}{N(a)}}\right)$$
 
-where $t$ is the number of rounds so far, and $N(a)$ is the number of times times $a$ has been chosen in all previous rounds. The term inside the square root is undefined if $N(a) = 0$. The avoid this, the typical strategy is to spend the first $N$ rounds to select each of the $N$ bandits once.
+where $t$ is the number of rounds so far, and $N(a)$ is the number of times times $a$ has been chosen in all previous rounds. The term inside the square root is undefined if $N(a) = 0$. The avoid this, the typical strategy is to spend the first $N$ rounds to select each of the $N$ bandits once. This is a simple exploration strategy to ensure all arms are sampled at least once, but this problem could be handled in different ways, such as assigning the value $\infty$ when $N(a)=0$.
 
 The left--hand side encourages exploitation: the Q-value is high for actions that have had a high reward.
 
-The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions.
+The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions. When $t$ is small (not many pull so far), all actions will have a high exploration value. As $t$ increases, if some actions have low $N(a)$, then the expression $\sqrt{\frac{2 \ln t}{N(a)}}$ is large compared to actions with higher $N(a)$. 
 
-Interesting, the UCB formula is not a weighted formula -- that is, there is no parameter giving weight to the $Q(a)$ or the square root expressions to balance exploration vs. exploitation. So how does it work? We will not get into all the details, but instead just give some intuition.
+Together, adding these two expressions helps to balance exploration and exploitation.
+
+Note that the UCB formula is not parameterised -- that is, there is no parameter giving weight to the $Q(a)$ or the square root expression to balance exploration vs. exploitation. 
+
+So how does it work? We will not get into all the details, but instead just give some intuition.
+
 
 We want to learn the Q-function, which gives us the average return on each action $a$, such that it approximates the real (unknown) Q-function, which we will call $Q^*$. At each round, we select the action $a$ that maximises the expression inside the brackets. If arm $a$ is optimal, then we want the following to hold for all actions $b \neq a$:
 
@@ -320,13 +321,33 @@ $$Q(b) + \sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)$$
 
 If this holds, we have some confidence that $Q(a)$ is optimal. If $N(b)$ is low for some actions, we do not have this confidence. 
 
-If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to minimise pseudo-regret. This leads us to $\ln t$ in the expression. We will not go into the technicalities of why $\ln t$ in these notes.
+So, the expression $\sqrt{\frac{2 \ln t}{N(a)}}$  is the **confidence interval** of our estimates for $Q(a)$, much like a confidence interval around an estimation of a population mean in statistic.
+
+If by chance the above expression does NOT hold for the optimal action $a$, then $a$ is not chosen, but it should be. We want this to occur only with probability $\frac{1}{N}$ to minimise pseudo-regret. This leads us to $2 \ln t$ in the expression: if there has been relatively few pulls overall so far, then the confidence intervals will be similar for all arms. As more pulls are done, this increases, but only at a logarithmic rate so that exploration grows more slowly as $t$ increases. 
+
+We can visualise this using the following example, in which there are three arms. The blue bars represent the Q-values and the black error bars represent the confidence interval:
+
+```{code-cell} ipython3
+:tags: [remove-input]
+:load: "../python_code/tests/plot_ucb_example.py"
+```
+
+The confidence interval around these is an estimate of how confident we are about the Q-value estimate: if an arm has relatively fewer pulls than other arms, the confidence is lower, so the confidence interval is wider.
+
+In this case, Arm 1 has the highest Q-value, but as this arm has been explored more times, the confidence interval is much smaller than the other arms -- we are more confident of our estimate of Arm 1 than of the other arms. Arm 2 has a lower Q-value, but has been explored less, so the confidence interval is larger. As such, adding the Q-value and the confidence interval gives us a higher value, as identified by the red dot at the top of the confidence interval. Arm 3 has a larger confidence interval, but the Q-value is much lower than Arm 2, so the top of the confidence interval is lower than that of Arm 2.
+
+From this, the $\text{argmax}_{a}$ would choose Arm 2: it is the action with the confidence interval that is at the highest point on the graph. Then, we would increment both $t$ and $N(Arm\ 2)$, making its confidence interval slightly narrower, while slightly increasing the confidence interval of all other arms.
+
+So, we can see how this would balance exploration and exploitation: as say, arm $a$ gets chosen many times in succession, its confidence interval narrows while all others widen. Eventually, other arms will start to 'rise to the top' because their confidence interval is so large; but this will take longer if $Q(a)$ is much better than the Q-value of all other actions. So, we would exploit arm $a$ for a long time, but come to sample other arms.
+
 
 #### Implementation
 
-```{code-cell} ipython3 
-:load: "../python_code/multi_armed_bandit/ucb.py"
+
+```{code-cell} python3
+:load:  "../python_code/multi_armed_bandit/ucb.py"
 ```
+
 
 Because UCB does not have parameters, there is no exploration to be done, however, in the next section we compare UCB with the other three strategies.
 
@@ -360,7 +381,7 @@ While in this particular case, UCB1 has a higher average reward over the entire 
 
 ````{margin}
 ```{admonition} Video byte: Summary of multi-armed bandits
-<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1334s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1334" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 ````
 ## Takeaways

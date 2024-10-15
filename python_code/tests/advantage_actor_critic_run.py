@@ -1,14 +1,13 @@
-from python_code.learners.advantage_actor_critic import AdvantageActorCritic
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
-from python_code.value_functions.deep_value_function import DeepValueFunction
+from advantage_actor_critic import AdvantageActorCritic
+from deep_nn_policy import DeepNeuralNetworkPolicy
+from deep_value_function import DeepValueFunction
+from gridworld import GridWorld
 
-gridworld = GridWorld()
+gridworld = GridWorld(noise=0.01)
 
 # Instantiate the critic
-critic = DeepValueFunction(
-    state_space=len(gridworld.get_initial_state()), hidden_dim=16
-)
+critic = DeepValueFunction(state_space=len(gridworld.get_initial_state()), hidden_dim=16)
+#critic = TabularValueFunction()
 
 # Instantiate the actor
 state_space = len(gridworld.get_initial_state())
@@ -25,9 +24,12 @@ advantage_actor_critic = AdvantageActorCritic(mdp=gridworld, actor=actor, critic
 # gridworld.visualise_stochastic_policy(actor)
 # gridworld.visualise_policy_as_image(actor)
 
-advantage_actor_critic.execute(500)
-gridworld.visualise_value_function(
-    critic, grid_size=0.8, title=f"Value Function: {1000} iterations"
-)
-gridworld.visualise_stochastic_policy(actor)
-gridworld.visualise_policy_as_image(actor)
+rewards = advantage_actor_critic.execute(200)
+#gridworld.visualise_value_function(critic, grid_size=0.8, title=f"Value Function: {1000} iterations")
+#gridworld.visualise_stochastic_policy(actor)
+#gridworld.visualise_policy_as_image(actor)
+
+print(gridworld.value_function_to_string(critic))
+print(gridworld.stochastic_policy_to_string(actor))
+
+Plot.plot_cumulative_rewards(["AAC"], [rewards], smoothing_factor=0.8)
