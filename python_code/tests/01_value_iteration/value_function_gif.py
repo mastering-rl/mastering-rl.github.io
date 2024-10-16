@@ -1,5 +1,4 @@
 from python_code.gif_makers.gif_maker import GifMaker
-
 from python_code.learners.value_iteration import ValueIteration
 from python_code.markov_decision_processes.gridworld import GridWorld
 from python_code.value_functions.tabular_value_function import TabularValueFunction

@@ -113,7 +113,7 @@ Note that we do not need an optimal value function $V$ to obtain an optimal poli
 Below is a Python implementation for value iteration. In this implementation, the parameter `iterations` is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter `theta` is $\theta$ in the value iteration algorithm above. Once the difference ($\Delta$) is less than `theta` , the loop will terminate.
 
 ```{code-cell} ipython3
-:load: ../python_code/value_iteration.py
+:load: ../python_code/learners/value_iteration.py
 
 ```
 
@@ -123,11 +123,10 @@ Below is a Python implementation for value iteration. In this implementation, th
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from value_iteration import ValueIteration
-from tabular_value_function import TabularValueFunction
-from value_policy import ValuePolicy
-from stochastic_value_policy import StochasticValuePolicy
+from learners.value_iteration import ValueIteration
+from markov_decision_processes.gridworld import GridWorld
+from policies.value_policy import ValuePolicy
+from value_functions.tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
 values = TabularValueFunction()
@@ -153,7 +152,7 @@ Stepping through the 100 iterations, we can see that using value iteration, the 
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
+    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/assets/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="gridworld_value_function" width=500></gif-player>
 </div>
 <p>

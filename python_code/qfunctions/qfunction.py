@@ -1,7 +1,5 @@
 import random
 
-from tabular_policy import TabularPolicy
-
 
 class QFunction:
     """Update the Q-value of (state, action) by delta"""
