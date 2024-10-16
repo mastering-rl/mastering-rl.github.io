@@ -440,14 +440,14 @@ In the early chapters, we will focus mostly on  deterministic policies, but stoc
 Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
 
 ```{code-cell} ipython3
-:load: ../python_code/policy.py
+:load: ../python_code/policies/policy.py
 
 ```
 
 The simplest way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
-:load: ../python_code/tabular_policy.py
+:load: ../python_code/policies/tabular_policy.py
 
 ```
 
@@ -578,7 +578,7 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
 
 ```{code-cell} ipython3
-:load: ../python_code/value_function.py
+:load: ../python_code/value_functions/value_function.py
 
 ```
 
