@@ -1,10 +1,9 @@
-from python_code.utils.graph_visualisation import GraphVisualisation
-from multi_armed_bandit.ucb import UpperConfidenceBounds
-
 from python_code.learners.single_agent_mcts import SingleAgentMCTS
 from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.ucb import UpperConfidenceBounds
 from python_code.policies.q_policy import QPolicy
 from python_code.qfunctions.qtable import QTable
+from python_code.utils.graph_visualisation import GraphVisualisation
 
 mdp = GridWorld()
 qfunction = QTable()

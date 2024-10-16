@@ -1,8 +1,7 @@
 from python_code.gif_makers.gif_maker import GifMaker
-from multi_armed_bandit.ucb import UpperConfidenceBounds
-
 from python_code.learners.single_agent_mcts import SingleAgentMCTS
 from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.ucb import UpperConfidenceBounds
 from python_code.qfunctions.qtable import QTable
 
 grid_size = 1.5

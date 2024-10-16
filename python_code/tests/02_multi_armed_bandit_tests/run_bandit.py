@@ -1,11 +1,12 @@
-from collections import defaultdict
 import random
-from python_code.qfunctions.qtable import QTable
+from collections import defaultdict
 
+from python_code.qfunctions.qtable import QTable
 
 """ Run a bandit algorithm for a number of episodes, with each episode
 being a set length.
 """
+
 
 def run_bandit(bandit, episodes=200, episode_length=500, drift=True):
 

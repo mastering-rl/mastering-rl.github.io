@@ -1,11 +1,10 @@
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from side_by_side_comparison import join_gif, run_learner
-
 from python_code.feature_extractors.gridworld_better_feature_extractor import (
     GridWorldBetterFeatureExtractor,
 )
+from python_code.gif_makers.side_by_side_comparison import join_gif, run_learner
 from python_code.learners.qlearning import QLearning
 from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from python_code.qfunctions.deep_q_function import DeepQFunction
 from python_code.qfunctions.linear_qfunction import LinearQFunction
 
