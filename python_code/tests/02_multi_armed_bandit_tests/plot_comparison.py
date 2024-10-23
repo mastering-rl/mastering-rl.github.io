@@ -25,3 +25,5 @@ def plot_comparison(drift=False):
 
 
 plot_comparison(drift=False)
+
+plot_comparison(drift=True)

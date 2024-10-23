@@ -17,3 +17,5 @@ def plot_softmax(drift=False):
 
 
 plot_softmax(drift=False)
+
+plot_softmax(drift=True)
