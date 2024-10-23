@@ -5,6 +5,8 @@ from python_code.policies.value_policy import ValuePolicy
 from python_code.tests.plot import Plot
 from python_code.value_functions.tabular_value_function import TabularValueFunction
 
+## Not in the book
+
 ccross = ContestedCrossing()
 values = TabularValueFunction()
 ValueIteration(ccross, values).value_iteration(max_iterations=10)
