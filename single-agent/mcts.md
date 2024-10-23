@@ -368,13 +368,13 @@ First, we create a class `Node`, which forms the basis for the tree:
 
 In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points' for the environment (that is, the filled nodes that correspond to an action outcome). 
 
-Our implementation mirrors this, with two different classes for nodes: `StateNode` and `EnvironmentNode`. The children of a `StateNode` are all `EnvironmentNode` instances, and vice versa.
-
-For simplicity, we implement the select, expand, and backpropagate methods in these two node classes:
+In our implementation, we represent this with just one class called `Node`. When we expand a new action, we choose a child node of that action:
 
 ```{code-cell} ipython3
 :load: "../python_code/single_agent_mcts.py"
 ```
+
+The advantage of using this single node is that our `MCTS` class forms the basis of a [multi-agent MCTS](sec:multi-agent-rl:mcts) algorithm, where we design a new class that implements the selection, expansion and backpropagation steps, while the base MCTS algorithm remains the same.
 
 ````{margin}
 ```{admonition} Video byte: MCTS example on Gridworld

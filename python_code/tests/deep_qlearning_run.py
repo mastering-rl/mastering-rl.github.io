@@ -1,6 +1,6 @@
 from gridworld import GridWorld
 from qlearning import QLearning
-from old_deep_q_function import DeepQFunction
+from deep_q_function import DeepQFunction
 from q_policy import QPolicy
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 

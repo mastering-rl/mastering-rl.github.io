@@ -11,6 +11,13 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:a-first-example)=
 # Getting started with a first example
 
@@ -94,6 +101,8 @@ Finally `ALEWrapper` is a simple wrapper class for the Arcade Learning Environme
 Next, we setup the Arcade Learning Environment:
 
 ```{code-cell} ipython3
+:tags: [remove-input]
+
 version = "Freeway-ramDeterministic-v4"
 policy_name = "../policies/Freeway.policy"
 
@@ -102,7 +111,7 @@ mdp = ALEWrapper(version)
 
 The `version` is the game that we are going to play -- in this case, Freeway version 4, which uses the RAM to represent the problem. We could also learn directly from pixels, but for now, we keep it simple. `policy_name` is where we are going to store a policy for our agent, so we can use it later. A policy just tells the player which moves to make at each step of the game.
 
-Finally, we create our environment, which is called `mdp` because it is [Markov Decision Process](sec:mdps) (MDP), which is the model that describes reinforcement learning problems. More on that later!
+Finally, we create our environment, which is called `mdp` because it is a [Markov Decision Process](sec:mdps) (MDP), which is the model that describes reinforcement learning problems. More on that later!
 
 ### Set up the learner
 
@@ -133,6 +142,8 @@ We save the policy to a file so we can use it later without having to re-train t
 Let's watch it play Freeway by creating a GIF of it playing:
 
 ```{code-cell} ipython3
+:tags: [remove-input]
+
 mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
 ```
 

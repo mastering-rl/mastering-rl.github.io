@@ -11,9 +11,13 @@ class QTable(QFunction):
     def update(self, state, action, delta):
         self.qtable[(state, action)] = self.qtable[(state, action)] + self.alpha * delta
 
+    def batch_update(self, states, actions, deltas):
+        for state, action, delta in zip(states, actions, deltas):
+            self.update(state, action, delta)
+
     def get_q_value(self, state, action):
         return self.qtable[(state, action)]
-    
+
     def get_q_values(self, states, actions):
         return [self.get_q_value(state, action) for state, action in zip(states, actions)]
 

@@ -193,7 +193,10 @@ Using this, we can define the Nash equilibrium of a game, which is named after t
 A strategy profile $s = (s_1,\ldots, s_n)$ is a **Nash equilibrium** if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
 :::
 
+
 If the strategies in a Nash equilibrium are all pure strategies, then we call this a **pure-strategy Nash equilibrium**. Otherwise, if is a **mixed-strategy Nash equilibrium**.
+
+This is called an "equilibrium" because it is **stable**. Effectively, what it means is that each player in the game has no incentive to deviate from this. In fact, if player $A$ tells player $B$ what strategy they are going to play, player $B$ can't even do anything with that information -- the strategy of the equilibrium is still the best strategy. Player $A$ is happy with their strategy given player $B$'s strategy, and player $B$ is happy with their strategy given player $A$'s strategy.
 
 ## Calculating best response and Nash equilibria
 

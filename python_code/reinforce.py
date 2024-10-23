@@ -1,7 +1,9 @@
 import random
 from itertools import count
 
-class PolicyGradient:
+from model_free_learner import ModelFreeLearner
+
+class REINFORCE(ModelFreeLearner):
     def __init__(self, mdp, policy) -> None:
         super().__init__()
         self.mdp = mdp
@@ -37,33 +39,18 @@ class PolicyGradient:
                     break
 
             deltas = self.calculate_deltas(rewards)
-
             self.policy.update(states, actions, deltas)
+
             episode_rewards.append(episode_reward)
-            print(episode)
 
         return episode_rewards
 
     def calculate_deltas(self, rewards):
-        """
-        Generate a list of the discounted future rewards at each step of an episode
-        Note that discounted_reward[T-2] = rewards[T-1] + discounted_reward[T-1] * gamma.
-        We can use that pattern to populate the discounted_rewards array.
-        """
-        T = len(rewards)
-        discounted_future_rewards = [0 for _ in range(T)]
+        G = []
+        G_t = 0
 
-        # The final discounted reward is the reward you get at that step
-        discounted_future_rewards[T - 1] = rewards[T - 1]
-        for t in reversed(range(0, T - 1)):
-            discounted_future_rewards[t] = (
-                rewards[t]
-                + discounted_future_rewards[t + 1] * self.mdp.get_discount_factor()
-            )
-        deltas = []
-        for t in range(len(discounted_future_rewards)):
-            deltas += [
-                (self.mdp.get_discount_factor() ** t)
-                * discounted_future_rewards[t]
-            ]
-        return deltas
+        for r in reversed(rewards):
+            G_t = r + self.mdp.get_discount_factor() * G_t
+            G.insert(0, G_t)
+
+        return G

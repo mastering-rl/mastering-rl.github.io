@@ -1,5 +1,5 @@
 import random
-
+from itertools import count
 
 class MDP:
     """Return all states of this MDP"""
@@ -79,19 +79,21 @@ class MDP:
     Execute a policy on this mdp for a number of episodes.
     """
 
-    def execute_policy(self, policy, episodes=100):
+    def execute_policy(self, policy, episodes=100, max_episode_length=float('inf')):
         cumulative_rewards = []
         states = set()
         for _ in range(episodes):
             cumulative_reward = 0.0
             state = self.get_initial_state()
-            step = 0
-            while not self.is_terminal(state):
+            for step in count():
                 actions = self.get_actions(state)
                 action = policy.select_action(state, actions)
                 (next_state, reward, done) = self.execute(state, action)
                 cumulative_reward += reward * (self.discount_factor ** step)
                 state = next_state
-                step += 1
+
+                if done or step == max_episode_length:
+                    break
+
             cumulative_rewards += [cumulative_reward]
         return cumulative_rewards

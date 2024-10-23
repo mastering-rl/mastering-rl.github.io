@@ -12,13 +12,17 @@ class TabularValueFunction(ValueFunction):
     def update(self, state, delta):
         self.value_table[state] += self.alpha * delta
 
+    def batch_update(self, states, deltas):
+        for state, delta in zip(states, deltas):
+            self.update(state, delta)
+
     def merge(self, value_table):
         for state in value_table.value_table.keys():
             self.add(state, value_table.get_value(state))
 
     def get_value(self, state):
         return self.value_table[state]
-    
+
     def get_values(self, states):
         return [self.get_value(state) for state in states]
 

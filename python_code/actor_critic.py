@@ -1,6 +1,8 @@
+import statistics
 from itertools import count
 
 from model_free_learner import ModelFreeLearner
+
 
 class ActorCritic(ModelFreeLearner):
     def __init__(self, mdp, actor, critic):
@@ -8,51 +10,80 @@ class ActorCritic(ModelFreeLearner):
         self.actor = actor  # Actor (policy based) to select actions
         self.critic = critic  # Critic (value based) to evaluate actions
 
-    def execute(self, episodes=100, max_episode_length=float('inf')):
+    def execute(self, episodes=100, max_episode_length=float("inf")):
         episode_rewards = []
         for episode in range(episodes):
             actions = []
             states = []
             rewards = []
-            next_states = []
-            next_actions = []
-            dones = []
+            deltas = []
 
             state = self.mdp.get_initial_state()
             action = self.actor.select_action(state, self.mdp.get_actions(state))
             episode_reward = 0.0
             for step in count():
                 (next_state, reward, done) = self.mdp.execute(state, action)
-                next_action = self.actor.select_action(next_state, self.mdp.get_actions(next_state))
-                self.update_critic(reward, state, action, next_state, next_action, done)
+                next_action = self.actor.select_action(
+                    next_state, self.mdp.get_actions(next_state)
+                )
+
+                delta = self.get_delta(
+                    reward, state, action, next_state, next_action, done
+                )
 
                 # Store the information from this step of the trajectory
                 states.append(state)
                 actions.append(action)
                 rewards.append(reward)
-                next_states.append(next_state)
-                next_actions.append(next_action)
-                dones.append(done)
+                deltas.append(delta)
 
                 state = next_state
                 action = next_action
-                episode_reward += reward * (self.mdp.discount_factor ** step)
+                episode_reward += reward * (self.mdp.get_discount_factor() ** step)
+
+                import random
+                if step == 0 or random.random() < 0.005:
+                    print(f" probs: {[self.actor.get_probability(state, action) for action in self.mdp.get_actions()]}")
+                    print(f" prob: {self.actor.get_probability(state, action)}")
+                    print(f" V(s): {self.critic.get_value(state)}")
 
                 if done or step == max_episode_length:
                     break
 
-            self.update_actor(rewards, states, actions, next_states, next_actions, dones)
-
+            self.update_critic(states, actions, deltas)
+            self.update_actor(states, actions, deltas)
             episode_rewards.append(episode_reward)
 
         return episode_rewards
 
-    """ Update the actor using a batch of transitions """
+    def calculate_deltas(self, states, actions, rewards):
+        G = []
+        G_t = 0
 
-    def update_actor(self, rewards, states, actions, next_states, next_actions, dones):
+        for r in reversed(rewards):
+            G_t = r + self.mdp.get_discount_factor() * G_t
+            G.insert(0, G_t)
+
+        values = [self.state_value(state, action) for state, action in zip(states, actions)]
+        deltas = [reward - value for reward, value in zip(G, values)]
+        return deltas
+
+
+    def get_delta(self, reward, state, action, next_state, next_action, done):
+        q_value = self.state_value(state, action)
+        next_state_value = self.state_value(next_state, next_action)
+        delta = (
+            reward
+            + (self.mdp.get_discount_factor() * next_state_value * (1 - done))
+            - q_value
+        )
+        if (delta > 1.0 or delta < -1.0):
+            print(f"{reward} + (gamma * V({next_state}) = {next_state_value} * (1 - {done}) - Q({state}, {action}) = {q_value} = {delta}")
+            print(f"{self.mdp.get_discount_factor() * next_state_value * (1 - done)}")
+        return delta
+
+    def update_actor(self, states, actions, deltas):
         abstract
 
-    """ Update the critic """
-
-    def update_critic(self, reward, state, action, next_state, next_action, done):
+    def update_critic(self, states, actions, deltas):
         abstract

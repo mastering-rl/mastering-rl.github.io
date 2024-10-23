@@ -6,7 +6,7 @@ from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 qfunction = QTable()
-SARSA(mdp, EpsilonGreedy(), qfunction).execute()
+SARSA(mdp, EpsilonGreedy(), qfunction).execute(episodes=10000)
 print(mdp.q_function_to_string(qfunction))
 
 policy = QPolicy(qfunction)

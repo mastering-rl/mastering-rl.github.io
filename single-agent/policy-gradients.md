@@ -154,7 +154,7 @@ From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
 ```{code-cell} ipython3
-:load: "../python_code/policy_gradient.py"
+:load: "../python_code/reinforce.py"
 ```
 
 
@@ -208,7 +208,7 @@ Let's try this implementation on an example using the REINFORCE algorithm and ou
 ```{code-cell} ipython3
 from gridworld import GridWorld
 from gridworld import OneDimensionalGridWorld
-from policy_gradient import PolicyGradient
+from reinforce import REINFORCE
 from logistic_regression_policy import LogisticRegressionPolicy
 
 gridworld = GridWorld(
@@ -217,14 +217,14 @@ gridworld = GridWorld(
 gridworld_image = gridworld.visualise()
 ```
 
-Next,  we create a `LogisticRegressionPolicy` with just two actions, `left` and `right`, and with two parameters corresponding to the $x$ and $y$ coordinates. This is used in a `PolicyGradient` instance to produce the following policy:
+Next,  we create a `LogisticRegressionPolicy` with just two actions, `left` and `right`, and with two parameters corresponding to the $x$ and $y$ coordinates. This is used in a `REINFORCE` instance to produce the following policy:
 
 ```{code-cell} ipython3
 policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-PolicyGradient(gridworld, policy).execute(episodes=100)
+REINFORCE(gridworld, policy).execute(episodes=100)
 policy_image = gridworld.visualise_stochastic_policy(policy)
 
 ```
@@ -277,7 +277,7 @@ As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implem
 We can now use this implementation by creating a REINFORCE agent with a `DeepNeuralNetworkPolicy` instance as the policy, and use it to learn a policy for the GridWorld example:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/deep_nn_policy_gradient.py"
+:load: "../python_code/tests/deep_reinforce_run.py"
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 

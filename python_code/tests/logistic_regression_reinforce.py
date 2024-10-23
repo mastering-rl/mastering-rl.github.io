@@ -1,6 +1,6 @@
 from gridworld import GridWorld
 from gridworld import OneDimensionalGridWorld
-from policy_gradient import PolicyGradient
+from reinforce import REINFORCE
 from logistic_regression_policy import LogisticRegressionPolicy
 
 gridworld = GridWorld(
@@ -10,6 +10,6 @@ policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-policy_gradient = PolicyGradient(gridworld, policy)
+policy_gradient = REINFORCE(gridworld, policy)
 policy_gradient.execute(episodes=100)
 policy_image = gridworld.visualise_stochastic_policy(policy)

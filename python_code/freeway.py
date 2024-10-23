@@ -10,7 +10,7 @@ from https://arxiv.org/abs/2109.01220
 
 
 class Freeway(ALEWrapper):
-    
+
     # The actions available
     ACTIONS = [0, 1, 2]
 
@@ -42,8 +42,8 @@ class Freeway(ALEWrapper):
         observation, reward, terminated, truncated, info = self.env.step(action)
         self.terminated = terminated or truncated
         abstract_state = self.observation_to_abstract_state(observation)
-        return (abstract_state, reward)
-    
+        return (abstract_state, reward, self.terminated)
+
     """ Convert an observation into an abstract state """
 
     def observation_to_abstract_state(self, observation):

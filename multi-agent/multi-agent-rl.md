@@ -159,6 +159,7 @@ However, if we are learning in a simulated environment without real opponents, w
 2. **Using a fixed policy**: We can use an existing **stochastic** policy that gives reasonable behaviour of the opponent. This could be hand-coded or learnt from a similar game.
 3. **Self play**: We can simultaneously learn a policy for both ourselves and our opponents, and we choose actions for our opponents based on the learnt policies. If our actions spaces are the same, such as in games like Chess and Tictactoe, we can learn a single policy and have both ourselves and our opponents use it. This is the technique used by AlphaZero.
 
+(sec:multi-agent-rl:mcts)=
 ## Multi-agent Monte-Carlo tree search
 
 
