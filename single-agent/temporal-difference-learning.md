@@ -263,7 +263,7 @@ plot_qtable(headers, data)
 The following is an implementation of a Q-table using a Python dictionary:
 
 ```{code-cell} ipython3
-:load: ../python_code/qtable.py
+:load: ../python_code/qfunctions/qtable.py
 
 ```
 
@@ -405,7 +405,7 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 To implement Q-learning, we first implement an abstract superclass `ModelFreeLearner` that defines the interface for any model-free learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/model_free_learner.py
+:load: ../python_code/learners/model_free_learner.py
 
 
 ```
@@ -413,7 +413,7 @@ To implement Q-learning, we first implement an abstract superclass `ModelFreeLea
 Next, we implement a second abstract superclass `TemporalDifferenceLearner`, which contains most of the code we need:
 
 ```{code-cell} ipython3
-:load: ../python_code/temporal_difference_learner.py
+:load: ../python_code/learners/temporal_difference_learner.py
 
 
 ```
@@ -430,7 +430,7 @@ We will see later that we inherit from `TemporalDifferenceLearner` for other alg
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/qlearning.py
+:load: ../python_code/learners/qlearning.py
 
 ```
 
@@ -471,7 +471,7 @@ gridworld.visualise_policy(policy)
 Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
+    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/assets/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="qlearning"></gif-player>
 </div>
 <p>
@@ -560,7 +560,7 @@ $$
 As with the Q-learning agent, we inherit from the `TemporalDifferenceLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
-:load: ../python_code/sarsa.py
+:load: ../python_code/learners/sarsa.py
 
 
 
@@ -653,7 +653,7 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
+:load: ../python_code/tests/03_temporal_difference/qlearning_sarsa_cliffworld_episodes.py
 
 
 ```
@@ -686,7 +686,7 @@ At $n=20,000$, the optimal policy for Q-learning appears to have been found. The
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
+:load: ../python_code/tests/03_temporal_difference/qlearning_sarsa_ccross_episodes.py
 
 ```
 

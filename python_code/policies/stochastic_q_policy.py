@@ -1,5 +1,4 @@
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from python_code.policies.policy import StochasticPolicy
 
 """ Make a stochastic policy from a qfunction and a mutli-armed bandit.
