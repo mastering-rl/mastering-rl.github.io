@@ -1,5 +1,4 @@
 from python_code.gif_makers.gif_maker import GifMaker
-
 from python_code.learners.policy_gradient import PolicyGradient
 from python_code.markov_decision_processes.gridworld import GridWorld
 from python_code.policies.logistic_regression_policy import LogisticRegressionPolicy
@@ -16,6 +15,6 @@ for iterations in range(0, 20):
     title = "Iterations %d" % (iterations)
     image_texts = gridworld.visualise_stochastic_policy(policy, title=title, gif=True)
     gif_maker.add_frame(image_texts, title=title)
-    PolicyGradient(gridworld, policy, alpha=0.1).execute(episodes=1)
+    REINFORCE(gridworld, policy, alpha=0.1).execute(episodes=1)
 
 gif_maker.save("../../assets/gifs/logistic_regression_policy_gradient.gif")

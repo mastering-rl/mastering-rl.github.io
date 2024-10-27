@@ -22,7 +22,6 @@ class TicTacToe(ExtensiveFormGame):
 
         # use a nicer variable name for this implementation
         board = state
-
         actions = []
         for x in range(len(board)):
             for y in range(len(board[x])):
@@ -147,8 +146,7 @@ class TicTacToe(ExtensiveFormGame):
         """
         Formats a board as a string replacing cell values with enum names.
         Args:
-            board (numpy.ndarray): two dimensional array representing the board
-                after the move
+            board: two dimensional array representing the board after the move
         Returns:
             str: the board represented as a string
         """

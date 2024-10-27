@@ -39,28 +39,36 @@ class DeepValueFunction(ValueFunction):
                 last_layer.bias.fill_(0)
 
     def update(self, state, delta):
-        self.update_batch([state], [delta])
+        self.batch_update([state], [delta])
 
-    def update_batch(self, states, deltas):
+    def batch_update(self, states, deltas):
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
-        deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
-
         values = self.value_network(states_tensor)
-
+        
+        # Construct the target values
+        targets = [
+            value + delta for value, delta in zip(values.squeeze(1).tolist(), deltas)
+        ]
+        targets_tensor = torch.as_tensor(targets, dtype=torch.float32)
         loss = nn.functional.smooth_l1_loss(
-            values, (values.clone().detach().squeeze(1) + deltas_tensor).unsqueeze(1)
+            values, 
+            targets_tensor.unsqueeze(1)
         )
 
         self.optimiser.zero_grad()
-        loss.backward()  # Back-propagate the loss through the network
-        self.optimiser.step()  # Do a gradient descent step with the optimiser
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.value_network.parameters(), max_norm=1.0)
+        self.optimiser.step()
+        return loss
 
     def get_value(self, state):
         state_tensor = torch.as_tensor(state, dtype=torch.float32)
-        value = self.value_network(state_tensor)
+        with torch.no_grad():
+            value = self.value_network(state_tensor)
         return value.item()
 
     def get_values(self, states):
         states_tensor = torch.as_tensor(states, dtype=torch.float32)
-        values = self.value_network(states_tensor)
+        with torch.no_grad():
+            values = self.value_network(states_tensor)
         return values.squeeze(1).tolist()

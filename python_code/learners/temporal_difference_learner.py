@@ -11,7 +11,7 @@ class TemporalDifferenceLearner(ModelFreeLearner):
 
     def execute(self, episodes=2000, max_episode_length=float("inf")):
 
-        rewards = []
+        episode_rewards = []
         for episode in range(episodes):
             state = self.mdp.get_initial_state()
             actions = self.mdp.get_actions(state)
@@ -25,18 +25,21 @@ class TemporalDifferenceLearner(ModelFreeLearner):
                 delta = self.get_delta(
                     reward, state, action, next_state, next_action, done
                 )
+                delta = self.get_delta(
+                    reward, state, action, next_state, next_action, done
+                )
                 self.qfunction.update(state, action, delta)
 
                 state = next_state
                 action = next_action
-                episode_reward += reward * (self.mdp.discount_factor**step)
+                episode_reward += reward * (self.mdp.get_discount_factor() ** step)
 
                 if done or step == max_episode_length:
                     break
 
-            rewards.append(episode_reward)
+            episode_rewards.append(episode_reward)
 
-        return rewards
+        return episode_rewards
 
     """ Calculate the delta for the update """
 
@@ -45,7 +48,7 @@ class TemporalDifferenceLearner(ModelFreeLearner):
         next_state_value = self.state_value(next_state, next_action)
         delta = (
             reward
-            + (self.mdp.discount_factor * next_state_value * (1 - done))
+            + (self.mdp.get_discount_factor() * next_state_value * (1 - done))
             - q_value
         )
         return delta

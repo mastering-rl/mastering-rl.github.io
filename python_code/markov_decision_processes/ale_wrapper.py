@@ -29,11 +29,11 @@ class ALEWrapper(MDP):
 
     def get_initial_state(self):
         observation, info = self.env.reset()
-        return tuple(observation)
+        return self._to_tuple(observation)
 
     def reset(self):
         observation, info = self.env.reset()
-        return tuple(observation)
+        return self._to_tuple(observation)
 
     def step(self, action):
         return self.env.step(action)
@@ -62,11 +62,15 @@ class ALEWrapper(MDP):
     def execute(self, state, action):
         observation, reward, terminated, truncated, info = self.env.step(action)
         self.terminated = terminated or truncated
-        return (tuple(observation), reward, terminated)
+        return (self._to_tuple(observation), reward, terminated)
+
+    def _to_tuple(self, observation):
+        #if not isinstance(observation, list) and not isinstance(observation, tuple):
+        #    observation = [observation]
+        return observation
 
     """ Execute a policy on an environment and return frames from it. """
-
-    def get_frames(self, policy, max_episode_length=float("inf")):
+    def get_frames(self, policy, max_episode_length=float("inf"), start_frame=0):
 
         # Check that the render mode is rgb_array
         assert (
@@ -75,13 +79,14 @@ class ALEWrapper(MDP):
 
         state = self.reset()
         frames = []
-        for steps in count():
+        for step in count():
             # Step using random actions
             action = policy.select_action(state, self.get_actions(state))
             next_state, reward, done = self.execute(state, action)
             state = next_state
-            frames.append(self.render())
-            if done or steps == max_episode_length:
+            if step >= start_frame:
+                frames.append(self.render())
+            if done or step == max_episode_length:
                 break
 
         return frames

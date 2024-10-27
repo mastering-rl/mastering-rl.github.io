@@ -8,6 +8,15 @@ kernelspec:
   language: python
   name: python3
 ---
+
+
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:single-agent:reward-shaping)=
 # Reward shaping
 
@@ -210,12 +219,14 @@ To implement potential-based reward shaping, we need to first implement a potent
 
 ```{code-cell} ipython3
 :load: "../python_code/gridworld_potential_function.py"
+
 ```
 
 Reward shaping for Q-learning is then a simple extension of the ``QLearning`` class, overriding the ``get_delta`` method:
 
 ```{code-cell} ipython3
 :load: "../python_code/reward_shaped_qlearning.py"
+
 ```
 
 ````{margin}

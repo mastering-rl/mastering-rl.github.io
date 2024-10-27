@@ -6,24 +6,11 @@ class AdvantageActorCritic(ActorCritic):
     def __init__(self, mdp, actor, critic):
         super().__init__(mdp, actor, critic)
 
-    def update_actor(self, rewards, states, actions, next_states, next_actions, dones):
+    def update_actor(self, states, actions, deltas):
+        self.actor.update(states, actions, deltas)
 
-        state_values = self.critic.get_values(states)
-        next_state_values = self.critic.get_values(next_states)
+    def update_critic(self, states, actions, deltas):
+        self.critic.batch_update(states, deltas)
 
-        advantages = [
-            reward + (self.mdp.get_discount_factor() * next_state_value * (1 - done)) - state_value
-            for reward, state_value, next_state_value, done in zip(
-                rewards, state_values, next_state_values, dones
-            )
-        ]
-
-        self.actor.update(states, actions, advantages)
-
-    def update_critic(self, reward, state, action, next_state, next_action, done):
-        state_value = self.critic.get_value(state)
-        next_state_value = self.critic.get_value(next_state)
-        delta = (
-            reward + self.mdp.get_discount_factor() * next_state_value * (1 - done) - state_value
-        )
-        self.critic.update(state, delta)
+    def state_value(self, state, action):
+        return self.critic.get_value(state)

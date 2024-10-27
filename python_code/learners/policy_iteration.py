@@ -40,7 +40,7 @@ class PolicyIteration:
             policy_changed = False
             values = self.policy_evaluation(self.policy, values, theta)
             for state in self.mdp.get_states():
-                
+
                 actions = self.mdp.get_actions(state)
                 old_action = self.policy.select_action(state, actions)
 

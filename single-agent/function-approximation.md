@@ -460,8 +460,7 @@ From this, we implement the `update` method, which uses the PyTorch implementati
 We also need to implement the `get_q_value` method to pass through the network to get our Q-values.
 
 ```{code-cell} ipython3
-:load: "../python_code/old_deep_q_function.py"
-
+:load: "../python_code/deep_q_function.py"
 ```
 
 Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.

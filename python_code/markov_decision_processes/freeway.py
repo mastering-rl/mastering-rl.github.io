@@ -49,7 +49,7 @@ class Freeway(ALEWrapper):
         observation, reward, terminated, truncated, info = self.env.step(action)
         self.terminated = terminated or truncated
         abstract_state = self.observation_to_abstract_state(observation)
-        return (abstract_state, reward)
+        return (abstract_state, reward, self.terminated)
 
     """ Convert an observation into an abstract state """
 

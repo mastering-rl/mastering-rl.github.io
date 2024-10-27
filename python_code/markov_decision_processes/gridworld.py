@@ -12,7 +12,7 @@ class GridWorld(MDP):
     UP = 1
     RIGHT = 2
     DOWN = 3
-    TERMINATE = 4 
+    TERMINATE = 4
 
     def __init__(
         self,
@@ -59,7 +59,8 @@ class GridWorld(MDP):
 
     def get_actions(self, state=None):
 
-        actions = [self.TERMINATE, self.LEFT, self.UP, self.RIGHT, self.DOWN]
+        #actions = [self.TERMINATE, self.LEFT, self.UP, self.RIGHT, self.DOWN]
+        actions = [self.LEFT, self.UP, self.RIGHT, self.DOWN, self.TERMINATE]
         if state is None:
             return actions
 
@@ -295,8 +296,8 @@ class GridWorld(MDP):
                 policy, title=title, grid_size=grid_size, gif=gif
             )
         else:
-            # TODO make a stochastic policy to string
-            pass
+            print(self.stochastic_policy_to_string(policy, title=title))
+
 
     """ Visualise a grid world problem as a formatted string """
 
@@ -773,7 +774,7 @@ class GridWorld(MDP):
             result += " |\n"
             result += line
 
-        result += "T, L, U, R, D\n"
+        result += "L, U, R, D, T\n"
         for y in range(self.height - 1, -1, -1):
             for x in range(self.width):
                 result += str((x,y)) + " --> ["
@@ -1233,6 +1234,7 @@ class GridWorld(MDP):
                     prob_right = prob_right / total
                     prob_down = prob_down / total
                     prob_up = prob_up / total
+
                 if (x, y) in self.goal_states:
                     # gif player handles goal state rendering
                     if not gif:
@@ -1276,7 +1278,6 @@ class GridWorld(MDP):
         ax.imshow(img, origin="lower")
         plt.title(title)
         plt.show()
-        return fig
 
 
 class CliffWorld(GridWorld):

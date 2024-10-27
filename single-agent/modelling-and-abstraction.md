@@ -51,7 +51,7 @@ In reality, most of the techniques in this section are abstraction techniques of
 
 In some cases, the size of the state space can be abstracted by combining some states that are different, but are either equivalent from a semantic view, or are similar enough that they will lead to the same action most of the time.
 
-AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state is game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then *which* corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information
+AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then *which* corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information
 
 Other abstraction techniques may lose information, but still be useful. For example, the state abstraction in GridWorld from precise coordinates into a simple grid. 
 

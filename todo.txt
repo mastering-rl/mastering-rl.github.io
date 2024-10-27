@@ -2,12 +2,15 @@ Images:
 - deterministic vs stochastic policies.
 
 High priority:
+- Add thanks to Antoine
+- indendent Q learning in the MARL stuff.
 - add videos to pressbooks (see format below)
 - PDF format
 - adjust update rules to account for terminal states (1 - done)
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
 - PPO
 - add experience replay code to notes
+- modelling and abstraction: symmetries
 - add bad reward shaping from from [Dr Cathy Wu](http://www.wucathy.com/blog/) :  https://github.com/cathywu/rl-notes/blob/master/demos/Reward%20Shaping.ipynb
 - beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
 - Demonstrate off Policy vs on Policy using a stationary base policy

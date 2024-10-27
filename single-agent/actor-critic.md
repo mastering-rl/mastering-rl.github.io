@@ -9,6 +9,12 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
 
 (sec:policy-based:actor-critic)=
 # Actor-critic methods
@@ -38,7 +44,7 @@ alt: "An abstract illustration of an actor critic algorithm. There are four boxe
 An abstraction illustration of the actor-critic framework.
 ```
 
-{numref}`fig:actor_critic_loop` gives an abstract overview of actor-critic frameworks --- in this case, Q actor-critic. As with REINFORCE, actions are samples from the probabilistic policy $\pi_{\theta}$. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.
+{numref}`fig:actor_critic_loop` gives an abstract overview of actor-critic frameworks --- in this case, Q actor-critic. As with REINFORCE, actions are samples from the stochastic policy $\pi_{\theta}$. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.
 
 ## Q Actor-Critic
 
@@ -119,10 +125,11 @@ Next, we have to instantiate the  `ActorCritic` class as a `QActorCritic` class 
 Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose `DeepNeuralNetworkPolicy` and `DeepQFunction` with `QLearning` updates. 
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/deep_q_actor_critic_run.py"
+:load: "../python_code/tests/q_actor_critic_run.py"
 ```
 
-We can see that the actor critic agent has learnt both a policy that is very good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
+
+We can see that the actor critic agent has learnt both a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
 
 
 ## Takeaways

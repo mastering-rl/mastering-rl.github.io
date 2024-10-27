@@ -1,8 +1,8 @@
-from python_code.gif_makers.gif_maker import GifMaker
+from gridworld import GridWorld
+from gif_maker import GifMaker
+from policy_gradient import PolicyGradient
+from deep_nn_policy import DeepNeuralNetworkPolicy
 
-from python_code.learners.policy_gradient import PolicyGradient
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.policies.deep_nn_policy import DeepNeuralNetworkPolicy
 
 gridworld = GridWorld()
 gif_maker = GifMaker(mdp=gridworld)

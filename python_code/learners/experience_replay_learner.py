@@ -29,7 +29,7 @@ class ExperienceReplayLearner:
         policy_qfunction,
         target_qfunction,
         memory=ReplayMemory(),
-        batch_size=128,
+        batch_size=1,
         memory_size=10000,
         update_period=1,
     ):
@@ -57,17 +57,6 @@ class ExperienceReplayLearner:
                     next_state, actions, self.policy_qfunction
                 )
 
-                """
-                if done:
-                    next_state2 = None
-                    #next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
-                    self.memory.push(state, action, next_state2, reward, done)
-                else:
-                    
-                    import torch
-                    next_state2 = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0)
-                    self.memory.push(state, action, next_state2, reward, done)
-                """
                 self.memory.push(state, action, next_state, reward, done)
 
                 # Perform an update on the policy qfunction using a batch
@@ -89,25 +78,6 @@ class ExperienceReplayLearner:
                     self.policy_qfunction.batch_update(
                         batch.state, batch.action, deltas
                     )
-
-                    """
-
-                    non_final_mask = torch.tensor(tuple(map(lambda s: s is False,
-                                              batch.done)), dtype=torch.bool)
-                    non_final_next_states = torch.cat([s for s in batch.next_state
-                                                    if s is not None])
-                    #print(len(non_final_next_states))
-                    states_tensor = torch.as_tensor(batch.state, dtype=torch.float32)
-                    actions_tensor = torch.as_tensor(batch.action, dtype=torch.long)
-                    #deltas_tensor = torch.as_tensor(deltas, dtype=torch.float32)
-                    rewards_tensor = torch.as_tensor(batch.reward, dtype=torch.float32)
-                    #sys.exit()
-                    next_state_values = torch.zeros(len(states_tensor))
-                    with torch.no_grad():
-                        next_state_values[non_final_mask] = self.target_qfunction(non_final_next_states).max(1).values
-                    
-                    self.policy_qfunction.optimize_model(batch.state, batch.action, batch.next_state, batch.done, batch.reward, next_state_values)
-                    """
 
                 # Soft update of the target network's weights
                 self.target_qfunction.soft_update(self.policy_qfunction)
@@ -142,4 +112,4 @@ class ExperienceReplayLearner:
         return deltas
 
     def state_values(self, states, actions):
-        return self.target_qfunction.get_max_q_values(states)
+        return self.target_qfunction.get_q_values(states, actions)
