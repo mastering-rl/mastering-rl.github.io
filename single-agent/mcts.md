@@ -363,7 +363,7 @@ Below is an implementation of MCTS in Python. This is a simulation-based impleme
 First, we create a class `Node`, which forms the basis for the tree:
 
 ```{code-cell} ipython3 
-:load: "../python_code/mcts.py"
+:load: "../python_code/learners/mcts.py"
 ```
 
 In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points' for the environment (that is, the filled nodes that correspond to an action outcome). 
@@ -371,7 +371,7 @@ In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes
 In our implementation, we represent this with just one class called `Node`. When we expand a new action, we choose a child node of that action:
 
 ```{code-cell} ipython3
-:load: "../python_code/single_agent_mcts.py"
+:load: "../python_code/learners/single_agent_mcts.py"
 ```
 
 The advantage of using this single node is that our `MCTS` class forms the basis of a [multi-agent MCTS](sec:multi-agent-rl:mcts) algorithm, where we design a new class that implements the selection, expansion and backpropagation steps, while the base MCTS algorithm remains the same.
@@ -397,7 +397,7 @@ qfunction = QTable()
 root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(timeout=0.03)
 gv = GraphVisualisation(max_level=6)
 graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
-graph
+graph.view()
 
 ```
 
@@ -428,7 +428,7 @@ After 0.03 seconds, the rewards are improving but are still quite noisy. This ma
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="mcts" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <img id="mcts" src=https://gibberblot.github.io/rl-notes/assets/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="mcts"></gif-player>
 </div>
 <p>

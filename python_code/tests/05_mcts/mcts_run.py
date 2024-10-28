@@ -5,14 +5,16 @@ from python_code.policies.q_policy import QPolicy
 from python_code.qfunctions.qtable import QTable
 from python_code.utils.graph_visualisation import GraphVisualisation
 
-mdp = GridWorld()
+gridworld = GridWorld()
 qfunction = QTable()
-root_node = SingleAgentMCTS(mdp, qfunction, UpperConfidenceBounds()).mcts(timeout=0.1)
-mdp.visualise_q_function(qfunction)
-
-policy = QPolicy(qfunction)
-mdp.visualise_policy(policy)
-
+root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(
+    timeout=0.03
+)
 gv = GraphVisualisation(max_level=6)
 graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
 graph.view()
+
+gridworld.visualise_q_function(qfunction)
+
+policy = QPolicy(qfunction)
+gridworld.visualise_policy(policy)

@@ -19,4 +19,4 @@ for time in range(0, 101):
         timeout=0.01, root_node=root_node
     )
 
-gif_maker.save("../../assets/gifs/mcts.gif")
+gif_maker.save("assets/gifs/mcts.gif")
