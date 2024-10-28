@@ -1,17 +1,23 @@
-from python_code.extensive_form_games.extensive_form_game import GameNode
+from python_code.extensive_form_games.backward_induction import BackwardInduction
 from python_code.extensive_form_games.tictactoe import TicTacToe
 from python_code.utils.graph_visualisation import GraphVisualisation
 
+tictactoe = TicTacToe()
+backward_induction = BackwardInduction(tictactoe)
+solution = backward_induction.backward_induction(tictactoe.get_initial_state())
+gv = GraphVisualisation(max_level=1)
+tictactoe_subgraph = gv.node_to_graph(
+    tictactoe, solution, print_state=True, print_value=True
+)
+tictactoe_subgraph.view()
 
 tictactoe = TicTacToe()
-initial_state = tictactoe.get_initial_state()
-initial_state = [['x', 'o', 'o'],
-                [' ', ' ', 'x'],
-                [' ', ' ', ' ']]
-next_state = tictactoe.get_transition(initial_state, (1, 1))
-backward_induction = BackwardInduction(tictactoe, do_cache = False)
+backward_induction = BackwardInduction(tictactoe)
+state = [["x", "o", "o"], [" ", " ", "x"], [" ", " ", " "]]
+next_state = tictactoe.get_transition(state, (1, 1))
 solution = backward_induction.backward_induction(next_state)
-
-gv = GraphVisualisation()
-graph = gv.node_to_graph(tictactoe, solution, print_state = True, print_value = True)
-graph
+gv = GraphVisualisation(max_level=100)
+tictactoe_subgraph = gv.node_to_graph(
+    tictactoe, solution, print_state=True, print_value=True
+)
+tictactoe_subgraph.view()

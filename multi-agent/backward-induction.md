@@ -75,7 +75,7 @@ The algorithm can be modified in a straightforward manner to return the paths an
 The implementation for this is straightforward from the algorithm above:
 
 ```{code-cell} ipython3
-:load: "../python_code/backward_induction.py"
+:load: "../python_code/extensive_form_games/backward_induction.py"
 ```
 
 Instead of simply returning the best value from the game, we construct an entire strategy profile for all players using the ``GameNode`` objects. The result is a game tree with nodes annotated by their value that is induced up the tree.
@@ -83,13 +83,13 @@ Instead of simply returning the best value from the game, we construct an entire
 Consider the following example, which is just an abstract game with two players:
 
 ```{code-cell} ipython3
-:load: "../python_code/abstract_extensive_form_game.py"
+:load: "../python_code/extensive_form_games/abstract_extensive_form_game.py"
 ```
 
 We can solve this with the following code:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/abstract_extensive_form_game_run.py"
+:load: "../python_code/tests/11_backward_induction/abstract_extensive_form_game_run.py"
 ```
 
 We can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.
