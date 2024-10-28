@@ -1,5 +1,4 @@
 from python_code.gif_makers.gif_maker import GifMaker
-
 from python_code.learners.policy_iteration import PolicyIteration
 from python_code.markov_decision_processes.gridworld import GridWorld
 from python_code.policies.tabular_policy import TabularPolicy
@@ -13,4 +12,4 @@ for iterations in range(0, 10):
     gif_maker.add_frame(image_texts, title=title)
     PolicyIteration(gridworld, policy).policy_iteration(max_iterations=1)
 
-gif_maker.save("../../assets/gifs/policy_iteration.gif")
+gif_maker.save("assets/gifs/policy_iteration.gif")
