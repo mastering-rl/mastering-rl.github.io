@@ -1,5 +1,6 @@
-from gridworld_potential_function import GridWorldPotentialFunction
-from gridworld import GridWorld
+from python_code.learners.reward_shaping.gridworld_potential_function import (
+    GridWorldPotentialFunction,
+)
 
 
 class GridWorldBadPotentialFunction(GridWorldPotentialFunction):
