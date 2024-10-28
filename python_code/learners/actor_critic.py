@@ -1,8 +1,6 @@
-import statistics
 from itertools import count
 
 from python_code.learners.model_free_learner import ModelFreeLearner
-
 
 
 class ActorCritic(ModelFreeLearner):
@@ -43,10 +41,13 @@ class ActorCritic(ModelFreeLearner):
                 episode_reward += reward * (self.mdp.get_discount_factor() ** step)
 
                 import random
+
                 if step == 0 or random.random() < 0.005:
-                    print(f" probs: {[self.actor.get_probability(state, action) for action in self.mdp.get_actions()]}")
+                    print(
+                        f" probs: {[self.actor.get_probability(state, action) for action in self.mdp.get_actions()]}"
+                    )
                     print(f" prob: {self.actor.get_probability(state, action)}")
-                    print(f" V(s): {self.critic.get_value(state)}")
+                    # print(f" V(s): {self.critic.get_value(state)}")
 
                 if done or step == max_episode_length:
                     break
@@ -65,10 +66,11 @@ class ActorCritic(ModelFreeLearner):
             G_t = r + self.mdp.get_discount_factor() * G_t
             G.insert(0, G_t)
 
-        values = [self.state_value(state, action) for state, action in zip(states, actions)]
+        values = [
+            self.state_value(state, action) for state, action in zip(states, actions)
+        ]
         deltas = [reward - value for reward, value in zip(G, values)]
         return deltas
-
 
     def get_delta(self, reward, state, action, next_state, next_action, done):
         q_value = self.state_value(state, action)
@@ -78,8 +80,10 @@ class ActorCritic(ModelFreeLearner):
             + (self.mdp.get_discount_factor() * next_state_value * (1 - done))
             - q_value
         )
-        if (delta > 1.0 or delta < -1.0):
-            print(f"{reward} + (gamma * V({next_state}) = {next_state_value} * (1 - {done}) - Q({state}, {action}) = {q_value} = {delta}")
+        if delta > 1.0 or delta < -1.0:
+            print(
+                f"{reward} + (gamma * V({next_state}) = {next_state_value} * (1 - {done}) - Q({state}, {action}) = {q_value} = {delta}"
+            )
             print(f"{self.mdp.get_discount_factor() * next_state_value * (1 - done)}")
         return delta
 
