@@ -1,11 +1,13 @@
-from gridworld import GridWorld
-from gridworld import OneDimensionalGridWorld
-from reinforce import REINFORCE
-from logistic_regression_policy import LogisticRegressionPolicy
+from python_code.learners.reinforce import REINFORCE
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.logistic_regression_policy import LogisticRegressionPolicy
 
 gridworld = GridWorld(
     height=1, width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)]
 )
+gridworld_image = gridworld.visualise()
+
+
 policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),

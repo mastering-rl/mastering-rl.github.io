@@ -154,7 +154,7 @@ From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-
 The implementation of REINFORCE takes a policy, but this policy must be differentiable. As such, we cannot use the tabular policy used in policy iteration. As we can see, unlike Q-learning and SARSA, the update happens only at the end of each episode.
 
 ```{code-cell} ipython3
-:load: "../python_code/reinforce.py"
+:load: "../python_code/learners/reinforce.py"
 ```
 
 
@@ -196,7 +196,7 @@ Let's implement this.
 The policy inherits from `StochasticPolicy`, which means that the policy is a [stochastic policy](sec:mdp:deterministic-vs-stochastic-policies) $\pi_{\theta}(s,a)$ that returns the probability of action $a$ being executed in state $s$. The `select_action` is stochastic, as can be seen below -- it selects between the two actions using the policies probability distribution.
 
 ```{code-cell} ipython3
-:load: "../python_code/logistic_regression_policy.py"
+:load: "../python_code/policies/logistic_regression_policy.py"
 
 ```
 
@@ -206,10 +206,9 @@ The `update` method, as well as the `gradient_log_pi` method that it calls, are 
 Let's try this implementation on an example using the REINFORCE algorithm and our logistic regression policy. Because our logistic regression policy supports only two actions, we cannot use the 4x3 GridWorld example, so we instead use an even simpler example (who thought that would be possible!) of a GridWorld that is 11x1 and has a -1 reward at one end and a +1 reward at the other:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from gridworld import OneDimensionalGridWorld
-from reinforce import REINFORCE
-from logistic_regression_policy import LogisticRegressionPolicy
+from python_code.learners.reinforce import REINFORCE
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.logistic_regression_policy import LogisticRegressionPolicy
 
 gridworld = GridWorld(
     height=1, width=11, initial_state=(5, 0), goals=[((0, 0), -1), ((10, 0), 1)]
@@ -224,7 +223,8 @@ policy = LogisticRegressionPolicy(
     actions=[GridWorld.LEFT, GridWorld.RIGHT],
     num_params=len(gridworld.get_initial_state()),
 )
-REINFORCE(gridworld, policy).execute(episodes=100)
+policy_gradient = REINFORCE(gridworld, policy)
+policy_gradient.execute(episodes=100)
 policy_image = gridworld.visualise_stochastic_policy(policy)
 
 ```
@@ -239,7 +239,7 @@ If we step through the policy during training, we can see the gradient updates p
 
 ```{div} full-width
 <div id="container-logistic-regression-policy-gradient" markdown="1" style="text-align: center;">
-    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
+    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/assets/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
     <gif-player id="logistic_regression_policy_gradient" width="900"></gif-player>
 </div>
 <p>
@@ -269,7 +269,7 @@ Recall from the section on [deep Q learning](sec:function-approximation:deep-Q-l
 It inherits from the `StochasticPolicy` and then implement the `update`, `select_action`, and `get_probability` methods. These take advantage of optimisations with the PyTorch framework, so the calculation of the gradient is 'hidden' by the PyTorch library. The line `self.optimiser.zero_grad()` then 'zeros' out the existing gradient so that the new gradient can be calculated. The gradient is calculated using `loss.backwards()`. Then `self.optimiser.step()` adjusts the parameters $\theta$ in the direction of the gradient:
 
 ```{code-cell} ipython3
-:load: "../python_code/deep_nn_policy.py"
+:load: "../python_code/policies/deep_nn_policy.py"
 ```
 
 As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implementation, PyTorch does not support strings as values, so we need to encode action names and states as integers.
@@ -277,7 +277,7 @@ As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implem
 We can now use this implementation by creating a REINFORCE agent with a `DeepNeuralNetworkPolicy` instance as the policy, and use it to learn a policy for the GridWorld example:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/deep_reinforce_run.py"
+:load: "../python_code/tests/09_policy_gradients/deep_reinforce_run.py"
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
@@ -285,7 +285,7 @@ Again, we can see that this policy is stochastic: each action has a probability 
 Simulating the process of training the policy, we can see that initially, all four actions have (approximately) the same probability of being executed, but deep REINFORCE learns a good Q-function and therefore policy:
 
 <div id="container-deep-nn" markdown="1" style="text-align: center;">
-    <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
+    <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/assets/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
     <gif-player id="deep_policy_gradient"></gif-player>
 </div>
 <p>
