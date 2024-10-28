@@ -5,10 +5,22 @@ from python_code.gif_makers.side_by_side_comparison import join_gif, run_learner
 from python_code.learners.qlearning import QLearning
 from python_code.markov_decision_processes.gridworld import GridWorld
 from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-from python_code.qfunctions.deep_q_function import DeepQFunction
 from python_code.qfunctions.linear_qfunction import LinearQFunction
+from python_code.qfunctions.qtable import QTable
 
-episodes = 50
+episodes = 20
+gridworld = GridWorld()
+qfunction = QTable()
+learner = QLearning(gridworld, EpsilonGreedy(), qfunction)
+run_learner(
+    mdp=gridworld,
+    learner=learner,
+    qfunction=qfunction,
+    learner_name="Q-learning with Q-table",
+    out_filename="assets/gifs/qlearning_with_qtable.gif",
+    episodes=episodes,
+)
+
 gridworld = GridWorld()
 features = GridWorldBetterFeatureExtractor(gridworld)
 qfunction = LinearQFunction(features)
@@ -18,30 +30,12 @@ run_learner(
     learner=learner,
     qfunction=qfunction,
     learner_name="Linear Q-learning",
-    out_filename="../../assets/gifs/linear_qlearning.gif",
+    out_filename="assets/gifs/linear_qlearning.gif",
     episodes=episodes,
 )
-
-gridworld = GridWorld()
-qfunction = DeepQFunction(
-    gridworld,
-    state_space=len(gridworld.get_initial_state()),
-    action_space=5,
-    hidden_dim=16,
-)
-learner = QLearning(gridworld, EpsilonGreedy(), qfunction, alpha=1.0)
-run_learner(
-    mdp=gridworld,
-    learner=learner,
-    qfunction=qfunction,
-    learner_name="Deep Q-learning",
-    out_filename="../../assets/gifs/deep_qlearning.gif",
-    episodes=episodes,
-)
-
 
 join_gif(
-    filename1="../../assets/gifs/linear_qlearning.gif",
-    filename2="../../assets/gifs/deep_qlearning.gif",
-    out_filename="../../assets/gifs/linear_qlearning_vs_deep_qlearning.gif",
+    filename1="assets/gifs/qlearning_with_qtable.gif",
+    filename2="assets/gifs/linear_qlearning.gif",
+    out_filename="assets/gifs/qtable_vs_linear_qlearning.gif",
 )

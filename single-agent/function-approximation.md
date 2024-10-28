@@ -245,7 +245,7 @@ From this, we now can get an estimate of $Q(s,Up)$ from any state because we hav
 To implement linear function approximation, we implement a new class that inherits from `QFunction` called `LinearQFunction`:
 
 ```{code-cell} ipython3
-:load: '../python_code/linear_qfunction.py'
+:load: '../python_code/qfunctions/linear_qfunction.py'
 ```
 
 A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
@@ -271,22 +271,22 @@ Then, to extract state-action features, we need to define these as $f(s,a)$ is d
 We can implement these in a feature extractor class:
 
 ```{code-cell} ipython3
-:load: '../python_code/feature_extractor.py'
+:load: '../python_code/feature_extractors/feature_extractor.py'
 ```
 
 ```{code-cell} ipython3
-:load: '../python_code/gridworld_feature_extractor.py'
+:load: '../python_code/feature_extractors/gridworld_feature_extractor.py'
 ```
 
 Now, we just simply pass this as a feature extractor to our implementation of `LinearQFunction`, and use this as the Q-function instead of a Q-table:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from qlearning import QLearning
-from linear_qfunction import LinearQFunction
-from gridworld_feature_extractor import GridWorldFeatureExtractor
-from q_policy import QPolicy
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.learners.qlearning import QLearning
+from python_code.qfunctions.linear_qfunction import LinearQFunction
+from python_code.feature_extractors.gridworld_feature_extractor import (GridWorldFeatureExtractor)
+from python_code.policies.q_policy import QPolicy
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 mdp = GridWorld()
 features = GridWorldFeatureExtractor(mdp)
@@ -310,18 +310,18 @@ However, more of these features we engineer, the more domain knowledge we are en
 A more general to engineering features about specific states is to add two new features that are true (1) if and only if we are in the same column (or row respectively) as the goal:
 
 ```{code-cell} ipython3
-:load: '../python_code/gridworld_better_feature_extractor.py'
+:load: '../python_code/feature_extractors/gridworld_better_feature_extractor.py'
 ```
 
 If we now run this on the GridWorld, we get better results:
 
 ```{code-cell} ipython3
-from gridworld_better_feature_extractor import GridWorldBetterFeatureExtractor
+from python_code.feature_extractors.gridworld_better_feature_extractor import (GridWorldBetterFeatureExtractor)
 
 mdp = GridWorld()
 features = GridWorldBetterFeatureExtractor(mdp)
 qfunction = LinearQFunction(features)
-linear_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
+linear_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 policy = QPolicy(qfunction)
 mdp.visualise_q_function(qfunction)
 mdp.visualise_policy(policy)
@@ -334,14 +334,14 @@ We could work around the above problem by adding two more features to avoid the 
 Is there much value using function approximation? Comparing the reward curves of tabular Q-learning and linear Q-function approximation, we see that the linear version converges to the optimal policy earlier, at about 350 episodes instead of about 600 for tabular Q-learning:
 
 ```{code-cell} ipython3
-from qtable import QTable
+from python_code.qfunctions.qtable import QTable
 mdp = GridWorld()
 qfunction = QTable()
-tabular_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
+tabular_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 ```
 
 ```{code-cell} ipython3
-from plot import Plot
+from python_code.tests.plot import Plot
 
 Plot.plot_cumulative_rewards(
     ["Tabular Q-learning", "Linear Q-learning"],
@@ -362,12 +362,14 @@ This results in the following policy visualisation:
 
 
 ```{code-cell} ipython3
-from qlearning import QLearning
-from linear_qfunction import LinearQFunction
-from ccross_feature_extractor import CCrossFeatureExtractor
-from stochastic_q_policy import StochasticQPolicy
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
-import contested_crossing
+from python_code.feature_extractors.ccross_feature_extractor import (
+    CCrossFeatureExtractor,
+)
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes import contested_crossing
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.policies.stochastic_q_policy import StochasticQPolicy
+from python_code.qfunctions.linear_qfunction import LinearQFunction
 
 
 mdp = contested_crossing.ContestedCrossing()
@@ -395,7 +397,7 @@ Below we see a comparison of how linear Q-functions update over time in Gridworl
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/assets/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
 </div>
 <p>
@@ -460,7 +462,7 @@ From this, we implement the `update` method, which uses the PyTorch implementati
 We also need to implement the `get_q_value` method to pass through the network to get our Q-values.
 
 ```{code-cell} ipython3
-:load: "../python_code/deep_q_function.py"
+:load: "../python_code/qfunctions/deep_q_function.py"
 ```
 
 Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.
@@ -468,7 +470,7 @@ Note in this implementation that PyTorch does not support strings as values, so 
 We can now use this implementation by creating a standard Q-learning agent with a deep Q network as the Q function:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/deep_qlearning_run.py"
+:load: "../python_code/tests/06_q_function_approximation/deep_qlearning_run.py"
 ```
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation. Therefore, we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.
@@ -483,7 +485,7 @@ Below we see a comparison between deep Q-functions and linear Q-functions.
 
 ```{div} full-width
 <div id="container2" markdown="1" style="text-align: center;">
-    <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/assets/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="linear_qlearning_vs_deep_qlearning" width="900"></gif-player>
 </div>
 <p>
