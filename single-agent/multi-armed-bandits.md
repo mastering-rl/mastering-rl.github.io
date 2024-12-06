@@ -9,6 +9,13 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 

@@ -10,6 +10,13 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:value-iteration)=
 # Value Iteration
 

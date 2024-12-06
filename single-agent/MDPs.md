@@ -11,6 +11,13 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:mdps)=
 # Markov Decision Processes
 

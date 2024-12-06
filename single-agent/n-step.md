@@ -8,6 +8,14 @@ kernelspec:
   language: python
   name: python3
 ---
+
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 # n-step reinforcement learning
 
 ```{admonition}  Learning outcomes
