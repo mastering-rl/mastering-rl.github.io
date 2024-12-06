@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 # n-step reinforcement learning
@@ -257,8 +261,8 @@ Imagine the first episode consisting of the following (very lucky!) episode:
 ---
 tags: [remove-input]
 ---
-from gridworld import GridWorld
-from tests.print_gridworld_sequence import draw_action_sequence
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.utils.print_gridworld_sequence import draw_action_sequence
 
 
 draw_action_sequence((0,0), [GridWorld.UP, GridWorld.UP, GridWorld.RIGHT, GridWorld.RIGHT, GridWorld.DOWN, GridWorld.UP, GridWorld.RIGHT])

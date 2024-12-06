@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:single-agent:reward-shaping)=
@@ -91,7 +95,7 @@ solved.
 tags: [remove-cell]
 ---
 from myst_nb import glue
-from gridworld import GridWorld
+from python_code.markov_decision_processes.gridworld import GridWorld
 
 mdp = GridWorld()
 gridworld_image = mdp.visualise()

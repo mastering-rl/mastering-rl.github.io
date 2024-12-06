@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:policy-based:policy-gradients)=
@@ -284,7 +288,7 @@ As with the [deep Q learning](sec:function-approximation:deep-Q-learning) implem
 We can now use this implementation by creating a REINFORCE agent with a `DeepNeuralNetworkPolicy` instance as the policy, and use it to learn a policy for the GridWorld example:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/09_policy_gradients/deep_reinforce_run.py"
+:load: "../python_code/tests/_09_policy_gradients/deep_reinforce_run.py"
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 

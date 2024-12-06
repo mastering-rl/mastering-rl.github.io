@@ -10,4 +10,4 @@ solution = backward_induction.backward_induction(game.get_initial_state())
 
 gv = GraphVisualisation(max_level=5)
 graph = gv.node_to_graph(game, game.game_tree(), print_value=False)
-graph.view()
+graph

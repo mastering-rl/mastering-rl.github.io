@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:qfunction-approximation)=
@@ -478,7 +482,7 @@ Note in this implementation that PyTorch does not support strings as values, so 
 We can now use this implementation by creating a standard Q-learning agent with a deep Q network as the Q function:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/06_q_function_approximation/deep_qlearning_run.py"
+:load: "../python_code/tests/_06_q_function_approximation/deep_qlearning_run.py"
 ```
 
 Note the value of the learning rate $\alpha=1.0$. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the `update` method of the `DeepQFunction` implementation. Therefore, we do not need to multiply the TD value by the learning rate $\alpha$ as the ADAM optimiser already does this. By setting $\alpha=1.0$, this means that the learning rate is not used in the `update` method, except implicitly by the call to the optimiser.

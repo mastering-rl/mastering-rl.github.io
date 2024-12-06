@@ -15,6 +15,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:value-iteration)=
@@ -130,10 +134,10 @@ Below is a Python implementation for value iteration. In this implementation, th
 Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:
 
 ```{code-cell} ipython3
-from learners.value_iteration import ValueIteration
-from markov_decision_processes.gridworld import GridWorld
-from policies.value_policy import ValuePolicy
-from value_functions.tabular_value_function import TabularValueFunction
+from python_code.learners.value_iteration import ValueIteration
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.value_policy import ValuePolicy
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
 values = TabularValueFunction()
@@ -185,6 +189,8 @@ for iterations in [0, 1, 2, 3, 4, 5, 10, 100]:
 We can see the improvement that value iteration has on each iteration by extracting the policy after each iteration, running the policy on the GridWorld, and plotting the cumulative reward that is received. We run value iteration on GridWorld for 1 iteration, but 50 times, using the same value function each time, meaning the the value iteration algorithm will update the value function. After each iteration, we extract the policy and execute the policy for 1 episode, recording the cumulative reward that was received:
 
 ```{code-cell} ipython3
+from python_code.policies.stochastic_value_policy import StochasticValuePolicy
+
 gridworld = GridWorld()
 values = TabularValueFunction()
 policy = StochasticValuePolicy(gridworld, values)
@@ -218,7 +224,7 @@ This is particularly the case in early iterations, when we have minimal informat
 The `rewards` variables contains the cumulative reward for each of the 50 episodes. We can plot this:
 
 ```{code-cell} ipython3
-from tests.plot import Plot
+from python_code.tests.plot import Plot
 
 Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.0)
 ```
@@ -292,9 +298,10 @@ Plot.plot_cumulative_rewards(["Value iteration"], [rewards], smoothing_factor=0.
 We can use the same technique to solve a maze. Below is the value function, obtained using value iteration, of a small maze with two rewards: +1 for existing the maze, and +5 for picking up an object along the way. It is not possible to visualise the value function in a single static image like this, because one part of the MDP state is a Boolean indicating whether the +5 reward has been collected already. However, we can see here the value function would produce a policy that ensure the +5 reward was collected before going to the exit:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from value_iteration import ValueIteration
-from tabular_value_function import TabularValueFunction
+from python_code.learners.value_iteration import ValueIteration
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.stochastic_value_policy import StochasticValuePolicy
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 maze = GridWorld.open('../python_code/layouts/maze.txt')
 values = TabularValueFunction()
@@ -314,9 +321,9 @@ This can be difficult to visualise graphically. We can no longer simply assign o
 
 
 ```{code-cell} ipython3
-from contested_crossing import ContestedCrossing
-from value_iteration import ValueIteration
-from tabular_value_function import TabularValueFunction
+from python_code.learners.value_iteration import ValueIteration
+from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 
 ccross = ContestedCrossing()

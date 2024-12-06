@@ -16,6 +16,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 # Temporal difference reinforcement learning
@@ -439,12 +443,11 @@ Using this implementation, we execute 100 episodes on the GridWorld example, res
 
 ```{code-cell} ipython3
 
-from gridworld import GridWorld
-from qtable import QTable
-from qlearning import QLearning
-from q_policy import QPolicy
-from stochastic_q_policy import StochasticQPolicy
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.policies.q_policy import QPolicy
+from python_code.qfunctions.qtable import QTable
 
 gridworld = GridWorld()
 qfunction = QTable()
@@ -570,10 +573,10 @@ So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a 
 As with Q-learning, we execute SARSA for 100 episodes:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from qtable import QTable
-from sarsa import SARSA
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.qfunctions.qtable import QTable
+from python_code.learners.sarsa import SARSA
 
 gridworld = GridWorld()
 qfunction = QTable()
@@ -601,7 +604,7 @@ This is (probably!) not because the SARSA implementation, but is because of the 
 Consider the example below called "Cliff World", which is taken from Chapter 6 of Sutton and Barto's *Introduction to Reinforcement Learning* book (see further reading below). The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
 
 ```{code-cell} ipython3
-from gridworld import CliffWorld
+from python_code.markov_decision_processes.gridworld import CliffWorld
 
 cliffworld = CliffWorld()
 cliffworld_image = cliffworld.visualise()
@@ -652,7 +655,7 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/03_temporal_difference/qlearning_sarsa_cliffworld_episodes.py
+:load: ../python_code/tests/_03_temporal_difference/qlearning_sarsa_cliffworld_episodes.py
 
 
 ```
@@ -685,7 +688,7 @@ At $n=20,000$, the optimal policy for Q-learning appears to have been found. The
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/03_temporal_difference/qlearning_sarsa_ccross_episodes.py
+:load: ../python_code/tests/_03_temporal_difference/qlearning_sarsa_ccross_episodes.py
 
 ```
 
@@ -750,6 +753,8 @@ rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
 Once we have the rewards of the episodes, we can plot the rewards:
 
 ```{code-cell} ipython3
+from python_code.tests.plot import Plot
+
 Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
 ```
 

@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 # Normal form games
@@ -75,7 +79,7 @@ This problem can be represented by the following two-dimensional matrix:
 ```{code-cell} ipython3
 :tags: [remove-input]
 
-from normal_form_game import NormalFormGame
+from python_code.normal_form_games.normal_form_game import NormalFormGame
 
 
 prisoners_dilemma = NormalFormGame(
@@ -284,7 +288,7 @@ We can verify this by looking at each cell and reasoning as follows:
 :tags: [remove-cell]
 
 from myst_nb import glue
-from normal_form_game import NormalFormGame
+from python_code.normal_form_games.normal_form_game import NormalFormGame
 
 split_or_steal = NormalFormGame(
     "Agent 1",
@@ -329,7 +333,7 @@ Recall from earlier in this chapter where we defined **mixed strategies**, which
 
 
 from myst_nb import glue
-from normal_form_game import NormalFormGame
+from python_code.normal_form_games.normal_form_game import NormalFormGame
 
 
 matching_pennies = NormalFormGame(
@@ -448,7 +452,7 @@ In this example, the probabilities of the game are reasonably clear without havi
 :tags: [remove-cell]
 
 from myst_nb import glue
-from normal_form_game import NormalFormGame
+from python_code.normal_form_games.normal_form_game import NormalFormGame
 
 
 security_game = NormalFormGame(

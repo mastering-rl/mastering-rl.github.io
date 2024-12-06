@@ -20,4 +20,4 @@ gv = GraphVisualisation(max_level=100)
 tictactoe_subgraph = gv.node_to_graph(
     tictactoe, solution, print_state=True, print_value=True
 )
-tictactoe_subgraph.view()
+tictactoe_subgraph

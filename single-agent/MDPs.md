@@ -16,6 +16,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:mdps)=
@@ -140,7 +144,7 @@ In an MDP, a discount reward must be strictly less than 1. Later, we will see wh
 :tags: [remove-cell]
 
 from myst_nb import glue
-from gridworld import GridWorld
+from python_code.markov_decision_processes.gridworld import GridWorld
 
 gridworld = GridWorld()
 gridworld_image = gridworld.visualise()
@@ -153,7 +157,6 @@ glue("gridworld_image", gridworld_image, display=False)
 An agent is in the bottom left cell of a grid. The grey cell is a wall. The two coloured cells give a **reward**. There is a reward of 1 of being in the top-right (green) cell, but a negative value of -1 for the cell immediately below (red).
 
 ```{glue:} gridworld_image
-
 ```
 
 But! Things can go wrong --- sometimes the effects of the actions are not what we want:
@@ -173,7 +176,7 @@ The task is to navigate from the start cell in the bottom left to maximise the e
 :tags: [remove-cell]
 
 from myst_nb import glue
-from contested_crossing import ContestedCrossing
+from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
 
 ccross = ContestedCrossing()
 
@@ -408,10 +411,10 @@ A graphical representation of the policy for Grid World is:
 ```{code-cell} ipython3
 :tags: [remove-input]
 
-from gridworld import GridWorld
-from value_iteration import ValueIteration
-from tabular_value_function import TabularValueFunction
-from value_policy import ValuePolicy
+from python_code.learners.value_iteration import ValueIteration
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.policies.value_policy import ValuePolicy
+from python_code.value_functions.tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
 values = TabularValueFunction()

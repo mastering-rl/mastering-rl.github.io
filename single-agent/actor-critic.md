@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:policy-based:actor-critic)=
@@ -125,7 +129,7 @@ Next, we have to instantiate the  `ActorCritic` class as a `QActorCritic` class 
 Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose `DeepNeuralNetworkPolicy` and `DeepQFunction` with `QLearning` updates. 
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/10_actor_critic_methods/q_actor_critic_run.py"
+:load: "../python_code/tests/_10_actor_critic_methods/q_actor_critic_run.py"
 ```
 
 

@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 (sec:mcts)=
@@ -392,20 +396,19 @@ The advantage of using this single node is that our `MCTS` class forms the basis
 We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.03 seconds (to avoid a tree that is too large to visualise), we show the tree, and we only visualise up to the 6th level (including both state and environment nodes). At each node, $V(s)$ is the value of that node (the child with the highest Q-value). Right-click and open the image in a new tab to see a larger version:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from graph_visualisation import GraphVisualisation
-from qtable import QTable
-from single_agent_mcts import SingleAgentMCTS
-from q_policy import QPolicy
-from multi_armed_bandit.ucb import UpperConfidenceBounds
+from python_code.learners.single_agent_mcts import SingleAgentMCTS
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.ucb import UpperConfidenceBounds
+from python_code.policies.q_policy import QPolicy
+from python_code.qfunctions.qtable import QTable
+from python_code.utils.graph_visualisation import GraphVisualisation
 
 gridworld = GridWorld()
 qfunction = QTable()
 root_node = SingleAgentMCTS(gridworld, qfunction, UpperConfidenceBounds()).mcts(timeout=0.03)
 gv = GraphVisualisation(max_level=6)
 graph = gv.single_agent_mcts_to_graph(root_node, filename="mcts")
-graph.view()
-
+graph
 ```
 
 The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning $V(s)$ as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.

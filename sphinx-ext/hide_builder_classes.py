@@ -1,5 +1,5 @@
-from sphinx.transforms.post_transforms import SphinxPostTransform
 from docutils import nodes
+from sphinx.transforms.post_transforms import SphinxPostTransform
 
 
 class HiddenNode(nodes.Element):
@@ -31,33 +31,34 @@ class HideNodesTransform(SphinxPostTransform):
     default_priority = 400
 
     def apply(self, **kwargs):
-        builder_ignore_classes = self.app.config['builder_ignore_classes']
-        ignore_classes = builder_ignore_classes.get(
-            self.app.builder.name, set()
-        )
+        builder_ignore_classes = self.app.config["builder_ignore_classes"]
+        ignore_classes = builder_ignore_classes.get(self.app.builder.name, set())
         for node in self.document.traverse(nodes.Element):
-            node_classes = set(node['classes'])
+            node_classes = set(node["classes"])
             if node_classes & ignore_classes:
                 node.replace_self([HiddenNode()])
 
 
 DEFAULT_BUILDER_IGNORE_CLASSES = {
     "latex": [
-        "dropdown", "toggle", "margin",
+        "dropdown",
+        "toggle",
+        "margin",
     ]
 }
 
 
 def setup(app):
     app.connect("builder-inited", setup_transforms)
-    app.connect('config-inited', setup_ignore_classes)
-    app.add_config_value("builder_ignore_classes", DEFAULT_BUILDER_IGNORE_CLASSES, "env", [dict])
-
+    app.connect("config-inited", setup_ignore_classes)
+    app.add_config_value(
+        "builder_ignore_classes", DEFAULT_BUILDER_IGNORE_CLASSES, "env", [dict]
+    )
 
 
 def setup_ignore_classes(app, config):
-    config['builder_ignore_classes'] = {
-        k: set(v) for k, v in config['builder_ignore_classes'].items()
+    config["builder_ignore_classes"] = {
+        k: set(v) for k, v in config["builder_ignore_classes"].items()
     }
 
 

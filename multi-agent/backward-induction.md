@@ -14,6 +14,10 @@ kernelspec:
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 # Backward induction
@@ -96,7 +100,7 @@ Consider the following example, which is just an abstract game with two players:
 We can solve this with the following code:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/11_backward_induction/abstract_extensive_form_game_run.py"
+:load: "../python_code/tests/_11_backward_induction/abstract_extensive_form_game_run.py"
 ```
 
 We can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.
@@ -114,7 +118,7 @@ For a slightly larger game (which is still small by standards of games), let's l
 
 
 ```{code-cell} ipython3
-from tictactoe import TicTacToe
+from python_code.extensive_form_games.tictactoe import TicTacToe
 
 tictactoe = TicTacToe()
 backward_induction = BackwardInduction(tictactoe)
@@ -128,7 +132,7 @@ tictactoe_subgraph
 Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is 'empty'), and the third row is empty, playing in the middle cell will guarantee a win for 'x' to win regardless what player 'o' does:
 
 ```{code-cell} ipython3
-from tictactoe import TicTacToe
+from python_code.extensive_form_games.tictactoe import TicTacToe
 
 tictactoe = TicTacToe()
 backward_induction = BackwardInduction(tictactoe)
