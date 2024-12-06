@@ -82,14 +82,14 @@ We assume that the brother and sister both value the presents equally, we can re
 We can implement such a game in Python. First, we have an interface that defined what an extensive form game is:
 
 ```{code-cell} ipython3
-:load: "../python_code/extensive_form_game.py"
+:load: "../python_code/extensive_form_games/extensive_form_game.py"
 
 ```
 
 Then, we need to implement this interface to create an extensive form game:
 
 ```{code-cell} ipython3
-:load: "../python_code/sharing_game.py"
+:load: "../python_code/extensive_form_games/sharing_game.py"
 ```
 
 
