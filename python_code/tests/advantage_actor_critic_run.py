@@ -16,7 +16,7 @@ critic = TabularValueFunction()
 from deep_value_function import DeepValueFunction
 critic = DeepValueFunction(state_space, hidden_dim=64, alpha=0.003)
 
-rewards = AdvantageActorCritic(gridworld, actor, critic).execute(1000)
+rewards = AdvantageActorCritic(gridworld, actor, critic).execute(200)
 gridworld.visualise_value_function(critic, grid_size=0.8, title=f"Value Function: {1000} iterations")
 gridworld.visualise_stochastic_policy(actor)
 

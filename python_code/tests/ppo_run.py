@@ -1,14 +1,16 @@
 from ppo import PPO
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from deep_value_function import DeepValueFunction
-from tabular_value_function import TabularValueFunction
 from gridworld import GridWorld
 from plot import Plot
 
 gridworld = GridWorld()
 
 # Instantiate the critic
-critic = DeepValueFunction(state_space=len(gridworld.get_initial_state()), hidden_dim=16)
+critic = DeepValueFunction(state_space=len(gridworld.get_initial_state()), hidden_dim=64)
+
+from tabular_value_function import TabularValueFunction
+critic = TabularValueFunction()
 
 # Instantiate the actor
 state_space = len(gridworld.get_initial_state())

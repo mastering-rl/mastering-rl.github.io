@@ -5,7 +5,7 @@ from gridworld import GridWorld
 from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 from qlearning import QLearning
 
-mdp = GridWorld(discount_factor=0.99)
+mdp = GridWorld()
 action_space = len(mdp.get_actions())
 state_space = len(mdp.get_initial_state())
 

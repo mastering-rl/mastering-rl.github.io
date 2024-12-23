@@ -23,6 +23,7 @@ class PPO:
 
             for step in count():
                 action = self.actor.select_action(state, self.mdp.get_actions(state))
+                print((state,action))
                 next_state, reward, done = self.mdp.execute(state, action)
                 log_prob = self.actor.get_probability(state, action)
                 value = self.critic.get_value(state)
@@ -42,8 +43,8 @@ class PPO:
             episode_rewards.append(episode_reward)
             advantages, returns = self.calculate_advantages_and_returns(rewards, values)
             
-            self.update_actor(states, actions, log_probs, returns)
-            self.critic.batch_update(states, advantages)
+            self.update_actor(states, actions, log_probs, advantages)
+            self.critic.batch_update(states, returns)
 
         return episode_rewards
 
@@ -55,7 +56,16 @@ class PPO:
             delta = rewards[t] + self.mdp.get_discount_factor() * values[t + 1] - values[t]
             gae = delta + self.mdp.get_discount_factor() * self.lam * gae
             advantages.insert(0, gae)
+        
+        G = []
+        G_t = 0
+        for r in reversed(rewards):
+            G_t = r + self.mdp.get_discount_factor() * G_t
+            G.insert(0, G_t)
+
+        
         returns = [adv + val for adv, val in zip(advantages, values[:-1])]
+        #returns = G
         return advantages, returns
 
     def update_actor(self, states, actions, log_probs, advantages):
@@ -66,7 +76,7 @@ class PPO:
             ratio = np.exp(new_log_probs - log_probs)
             surr1 = ratio * advantages
             surr2 = np.clip(ratio, 1.0 - self.clip_epsilon, 1.0 + self.clip_epsilon) * advantages
-            deltas = -np.minimum(surr1, surr2)
+            deltas = np.minimum(surr1, surr2)
 
             self.actor.update(states, actions, deltas)
 

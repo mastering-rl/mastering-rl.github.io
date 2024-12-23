@@ -41,12 +41,6 @@ class ActorCritic(ModelFreeLearner):
                 action = next_action
                 episode_reward += reward * (self.mdp.get_discount_factor() ** step)
 
-                import random
-                if step == 0 or random.random() < 0.005:
-                    print(f" probs: {[self.actor.get_probability(state, action) for action in self.mdp.get_actions()]}")
-                    print(f" prob: {self.actor.get_probability(state, action)}")
-                    print(f" V(s): {self.critic.get_value(state)}")
-
                 if done or step == max_episode_length:
                     break
 
@@ -77,9 +71,6 @@ class ActorCritic(ModelFreeLearner):
             + (self.mdp.get_discount_factor() * next_state_value * (1 - done))
             - q_value
         )
-        if (delta > 1.0 or delta < -1.0):
-            print(f"{reward} + (gamma * V({next_state}) = {next_state_value} * (1 - {done}) - Q({state}, {action}) = {q_value} = {delta}")
-            print(f"{self.mdp.get_discount_factor() * next_state_value * (1 - done)}")
         return delta
 
     def update_actor(self, states, actions, deltas):

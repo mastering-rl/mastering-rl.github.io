@@ -6,9 +6,8 @@ High priority:
 - indendent Q learning in the MARL stuff.
 - add videos to pressbooks (see format below)
 - PDF format
-- adjust update rules to account for terminal states (1 - done)
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
-- PPO
+- add PPO code to notes
 - add experience replay code to notes
 - modelling and abstraction: symmetries
 - add bad reward shaping from from [Dr Cathy Wu](http://www.wucathy.com/blog/) :  https://github.com/cathywu/rl-notes/blob/master/demos/Reward%20Shaping.ipynb
@@ -26,7 +25,6 @@ High priority:
 Low priority:
 - RLHF
 - curiosity-driven learning
-- add eligibility traces
 - n-step learning videos
 - In 1D gridworld, set 'get_actions' to just have the two actions and then update LogRegression policy
 - titles: 'mastering rl: from theory to practice'

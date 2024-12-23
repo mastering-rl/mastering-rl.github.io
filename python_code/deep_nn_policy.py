@@ -96,8 +96,6 @@ class DeepNeuralNetworkPolicy(StochasticPolicy):
         actions_tensor = torch.as_tensor(actions)
 
         action_log_probs = self.evaluate_actions(states_tensor, actions_tensor)
-        print(f"policy deltas: {deltas}")
-
 
         # Construct a loss function, using negative because we want to descend,
         # not ascend the gradient
