@@ -9,6 +9,13 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+```
+
 (sec:multi-armed-bandits)=
 # Multi-armed bandits
 
@@ -133,8 +140,16 @@ To demonstrate the effect of different multi-armed bandit strategies and their p
 
 The simulation returns a list of lists, representing the reward received at each step of each episode. The aim for the bandit is to maximise the expected rewards over each episode.
 
+
 ```{code-cell} ipython3
-:load: "../python_code/tests/multi_armed_bandit_tests/run_bandit.py"
+:tags: [remove-input]
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+```
+
+```{code-cell} ipython3
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/run_bandit.py"
 ```
 
 ## Solutions for minimising regret
@@ -197,7 +212,7 @@ The implementation for epsilon greedy uses `random()` to select a random number 
 The following plot shows the reward for each step, averaged over 2000 episodes, over the simulation described in the [](sec:multi-agent-bandit:simulation) section. Each episode is 1000 steps long. We evaluate different values of epsilon:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_greedy.py"
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_epsilon_greedy.py"
 
 ```
 
@@ -236,7 +251,7 @@ In this implementation, we have a minimum value, `lower_bound`, such that $\epsi
 The following plot shows the average reward over our simulation, varying the value of $\alpha$:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/multi_armed_bandit_tests/plot_epsilon_decreasing.py"
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_epsilon_decreasing.py"
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
@@ -268,7 +283,7 @@ The following implementation of the softmax strategy uses ```random()``` to gene
 As before, we plot the average reward at each step of our simulation, this time varying values of tau:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/multi_armed_bandit_tests/plot_softmax.py"
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_softmax.py"
 
 ```
 
@@ -329,7 +344,7 @@ We can visualise this using the following example, in which there are three arms
 
 ```{code-cell} ipython3
 :tags: [remove-input]
-:load: "../python_code/tests/plot_ucb_example.py"
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_ucb_example.py"
 ```
 
 The confidence interval around these is an estimate of how confident we are about the Q-value estimate: if an arm has relatively fewer pulls than other arms, the confidence is lower, so the confidence interval is wider.
@@ -360,7 +375,7 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 ````
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/multi_armed_bandit_tests/plot_comparison.py"
+:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_comparison.py"
 ```
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.

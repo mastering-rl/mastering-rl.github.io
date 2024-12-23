@@ -5,3 +5,4 @@ code.zip
 RLbook2020.pdf
 __pycache__/
 *.pyc
+.vscode

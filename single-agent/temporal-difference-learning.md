@@ -11,12 +11,15 @@ kernelspec:
   name: python3
 ---
 
-
 ```{code-cell}
 :tags: [remove-input]
 
 import random
 random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 # Temporal difference reinforcement learning
@@ -263,7 +266,7 @@ plot_qtable(headers, data)
 The following is an implementation of a Q-table using a Python dictionary:
 
 ```{code-cell} ipython3
-:load: ../python_code/qtable.py
+:load: ../python_code/qfunctions/qtable.py
 
 ```
 
@@ -405,7 +408,7 @@ This selects the action with the maximum Q-value. Given an optimal Q-function (f
 To implement Q-learning, we first implement an abstract superclass `ModelFreeLearner` that defines the interface for any model-free learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/model_free_learner.py
+:load: ../python_code/learners/model_free_learner.py
 
 
 ```
@@ -413,7 +416,7 @@ To implement Q-learning, we first implement an abstract superclass `ModelFreeLea
 Next, we implement a second abstract superclass `TemporalDifferenceLearner`, which contains most of the code we need:
 
 ```{code-cell} ipython3
-:load: ../python_code/temporal_difference_learner.py
+:load: ../python_code/learners/temporal_difference_learner.py
 
 
 ```
@@ -430,7 +433,7 @@ We will see later that we inherit from `TemporalDifferenceLearner` for other alg
 We inherit from this class to implement the Q-learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/qlearning.py
+:load: ../python_code/learners/qlearning.py
 
 ```
 
@@ -440,12 +443,11 @@ Using this implementation, we execute 100 episodes on the GridWorld example, res
 
 ```{code-cell} ipython3
 
-from gridworld import GridWorld
-from qtable import QTable
-from qlearning import QLearning
-from q_policy import QPolicy
-from stochastic_q_policy import StochasticQPolicy
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.learners.qlearning import QLearning
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.policies.q_policy import QPolicy
+from python_code.qfunctions.qtable import QTable
 
 gridworld = GridWorld()
 qfunction = QTable()
@@ -471,7 +473,7 @@ gridworld.visualise_policy(policy)
 Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
+    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/assets/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="qlearning"></gif-player>
 </div>
 <p>
@@ -560,7 +562,7 @@ $$
 As with the Q-learning agent, we inherit from the `TemporalDifferenceLearner` class to implement SARSA. But the value of the next state $V(s')$ is calculated differently in the `SARSA` class:
 
 ```{code-cell} ipython3
-:load: ../python_code/sarsa.py
+:load: ../python_code/learners/sarsa.py
 
 
 
@@ -571,10 +573,10 @@ So, as we can see, the value of state is instead $Q(s',a')$ instead of $\max_{a 
 As with Q-learning, we execute SARSA for 100 episodes:
 
 ```{code-cell} ipython3
-from gridworld import GridWorld
-from qtable import QTable
-from sarsa import SARSA
-from multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from python_code.qfunctions.qtable import QTable
+from python_code.learners.sarsa import SARSA
 
 gridworld = GridWorld()
 qfunction = QTable()
@@ -602,7 +604,7 @@ This is (probably!) not because the SARSA implementation, but is because of the 
 Consider the example below called "Cliff World", which is taken from Chapter 6 of Sutton and Barto's *Introduction to Reinforcement Learning* book (see further reading below). The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, $P_a(s' \mid s)$ is unknown to the learning agent.
 
 ```{code-cell} ipython3
-from gridworld import CliffWorld
+from python_code.markov_decision_processes.gridworld import CliffWorld
 
 cliffworld = CliffWorld()
 cliffworld_image = cliffworld.visualise()
@@ -653,7 +655,7 @@ Consider the following in which we run both Q-learning and SARSA for 2000 episod
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_cliffworld_episodes.py
+:load: ../python_code/tests/_03_temporal_difference/qlearning_sarsa_cliffworld_episodes.py
 
 
 ```
@@ -686,7 +688,7 @@ At $n=20,000$, the optimal policy for Q-learning appears to have been found. The
 
 
 ```{code-cell} ipython3
-:load: ../python_code/tests/qlearning_sarsa_ccross_episodes.py
+:load: ../python_code/tests/_03_temporal_difference/qlearning_sarsa_ccross_episodes.py
 
 ```
 
@@ -751,6 +753,8 @@ rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
 Once we have the rewards of the episodes, we can plot the rewards:
 
 ```{code-cell} ipython3
+from python_code.tests.plot import Plot
+
 Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
 ```
 

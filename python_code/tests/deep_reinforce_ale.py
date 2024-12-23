@@ -1,6 +1,6 @@
 import torch
 from ale_wrapper import ALEWrapper
-from reinforce import REINFORCE
+from python_code.learners.reinforce import REINFORCE
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from stochastic_q_policy import StochasticQPolicy
 from deep_q_function import DeepQFunction

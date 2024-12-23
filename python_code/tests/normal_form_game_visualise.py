@@ -1,4 +1,4 @@
-from normal_form_game import NormalFormGame
+from python_code.normal_form_games.normal_form_game import NormalFormGame
 
 
 prisoners_dilemma = NormalFormGame(

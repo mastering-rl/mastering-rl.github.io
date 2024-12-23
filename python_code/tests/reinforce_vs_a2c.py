@@ -1,5 +1,5 @@
 from advantage_actor_critic import AdvantageActorCritic
-from reinforce import REINFORCE
+from python_code.learners.reinforce import REINFORCE
 from deep_nn_policy import DeepNeuralNetworkPolicy
 from deep_value_function import DeepValueFunction
 from tabular_value_function import TabularValueFunction

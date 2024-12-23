@@ -13,10 +13,10 @@ execute:
   timeout: 10000
   exclude_patterns:
     - "intro/*.md"
-    - "multi-agent/*.md"
-    - "appendix/*.md"
-    - "single-agent/[a-lA-Z]*.md"
-    - "single-agent/[n-z]*.md"
+  #   - "multi-agent/*.md"
+  #   - "appendix/*.md"
+  #   - "single-agent/[a-lA-Z]*.md"
+  #   - "single-agent/[n-z]*.md"
 
 # Define the name of the latex output file for PDF builds
 latex:

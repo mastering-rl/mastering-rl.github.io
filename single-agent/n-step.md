@@ -8,6 +8,18 @@ kernelspec:
   language: python
   name: python3
 ---
+
+```{code-cell}
+:tags: [remove-input]
+
+import random
+random.seed(1028)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+```
+
 # n-step reinforcement learning
 
 ```{admonition}  Learning outcomes
@@ -60,7 +72,7 @@ Consider the following interactive gif, which shows the update over an episode o
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="n_step_window" src="https://gibberblot.github.io/rl-notes/gifs/n-step-window.gif" width="900" height="400" rel:auto_play="0">
+    <img id="n_step_window" src="https://gibberblot.github.io/rl-notes/assets/gifs/n-step-window.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="n_step_window" width="900"></gif-player>
 </div>
 <p>
@@ -249,8 +261,8 @@ Imagine the first episode consisting of the following (very lucky!) episode:
 ---
 tags: [remove-input]
 ---
-from gridworld import GridWorld
-from tests.print_gridworld_sequence import draw_action_sequence
+from python_code.markov_decision_processes.gridworld import GridWorld
+from python_code.utils.print_gridworld_sequence import draw_action_sequence
 
 
 draw_action_sequence((0,0), [GridWorld.UP, GridWorld.UP, GridWorld.RIGHT, GridWorld.RIGHT, GridWorld.DOWN, GridWorld.UP, GridWorld.RIGHT])
@@ -312,13 +324,13 @@ At this point, there are no further states left to update, so the inner loop ter
 Below is a Python implementation of n-step temporal difference learning. We first implement an abstract superclass ```NStepReinforcementLearner```, which contains most of the code we need, except the part that determines the value of state $s'$ in the Q-function update, which is left to the subclass so we can support both n-step Q-learning and n-step SARSA:
 
 ```{code-cell} ipython3
-:load: ../python_code/n_step_reinforcement_learner.py
+:load: ../python_code/learners/n_step_reinforcement_learner.py
 ```
 
 We inherit from this class to implement the n-step Q-learning algorithm:
 
 ```{code-cell} ipython3
-:load: ../python_code/n_step_qlearning.py
+:load: ../python_code/learners/n_step_qlearning.py
 ```
 
 
@@ -329,7 +341,7 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="1_step_vs_5_step_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/1_step_vs_5_step_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="1_step_vs_5_step_qlearning" src="https://gibberblot.github.io/rl-notes/assets/gifs/1_step_vs_5_step_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="1_step_vs_5_step_qlearning" width="900"></gif-player>
 </div>
 <p>
