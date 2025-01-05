@@ -86,23 +86,23 @@ We assume that the brother and sister both value the presents equally, we can re
 We can implement such a game in Python. First, we have an interface that defined what an extensive form game is:
 
 ```{code-cell} ipython3
-:load: "../python_code/extensive_form_games/extensive_form_game.py"
+:load: "../mastering_rl/extensive_form_games/extensive_form_game.py"
 
 ```
 
 Then, we need to implement this interface to create an extensive form game:
 
 ```{code-cell} ipython3
-:load: "../python_code/extensive_form_games/sharing_game.py"
+:load: "../mastering_rl/extensive_form_games/sharing_game.py"
 ```
 
 
 We can visualise extensive form games as **game trees**, where the edges are actions, and the nodes are states.  The root node is the initial state. Consider the following extensive form game tree for the sharing game. The labels next to nodes indicate whose turn it is ("B" for brother and "S" for sister), and the tuples in nodes are the payoffs at that node (blank if there are no payoffs):
 
 ```{code-cell} ipython3
-from python_code.extensive_form_games.sharing_game import SharingGame
+from mastering_rl.extensive_form_games.sharing_game import SharingGame
 sharing = SharingGame()
-from python_code.utils.graph_visualisation import GraphVisualisation
+from mastering_rl.utils.graph_visualisation import GraphVisualisation
 
 gv = GraphVisualisation(max_level = 5)
 graph = gv.node_to_graph(sharing, sharing.game_tree())
@@ -136,13 +136,13 @@ Therefore, a sub-game perfect equilibria is the best response for every agent in
 As an example, consider the sharing game. In this case, the same game on the left and middle have two equilibria because the payoffs for each of the moves are zero for the sister. In such a case, ties can be broken randomly or we can take all best responses. We can represent the subgame-perfect equilibria for the sharing game as follows, where the thicker arcs specify the move that the player should make (where the ties are broken randomly):
 
 ```{code-cell} ipython3
-from python_code.extensive_form_games.sharing_game import SharingGame
-from python_code.extensive_form_games.backward_induction import BackwardInduction
+from mastering_rl.extensive_form_games.sharing_game import SharingGame
+from mastering_rl.extensive_form_games.backward_induction import BackwardInduction
 sharing = SharingGame()
 backward_induction = BackwardInduction(sharing)
 solution = backward_induction.backward_induction(sharing.get_initial_state())
     
-from python_code.utils.graph_visualisation import GraphVisualisation
+from mastering_rl.utils.graph_visualisation import GraphVisualisation
 gv = GraphVisualisation()
 graph = gv.node_to_graph(sharing, solution)
 graph

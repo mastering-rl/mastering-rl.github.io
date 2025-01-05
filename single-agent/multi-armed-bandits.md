@@ -122,7 +122,7 @@ A **zero-regret** strategy is a strategy whose average regret each round approac
 The implementation for each strategy we discuss inherits from the class `MultiArmedBandit`:
 
 ```{code-cell} ipython3
-:load: "../python_code/multi_armed_bandit/multi_armed_bandit.py"
+:load: "../mastering_rl/multi_armed_bandit/multi_armed_bandit.py"
 ```
 
 Each strategy must implement the  `select` method, which takes the list of available actions and their Q-values. The `reset`  method resets to the bandit to its initial configuration, and is used for demonstration purposes later.
@@ -149,7 +149,7 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 ```
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/run_bandit.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/run_bandit.py"
 ```
 
 ## Solutions for minimising regret
@@ -206,13 +206,13 @@ The best value for $\epsilon$ depends on the particular problem, but typically, 
 The implementation for epsilon greedy uses `random()` to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If the number is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:
 
 ```{code-cell} ipython3
-:load: "../python_code/multi_armed_bandit/epsilon_greedy.py"
+:load: "../mastering_rl/multi_armed_bandit/epsilon_greedy.py"
 ```
 
 The following plot shows the reward for each step, averaged over 2000 episodes, over the simulation described in the [](sec:multi-agent-bandit:simulation) section. Each episode is 1000 steps long. We evaluate different values of epsilon:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_epsilon_greedy.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_epsilon_greedy.py"
 
 ```
 
@@ -241,7 +241,7 @@ However, after each selection, we decay $\epsilon$ using $\epsilon := \epsilon \
 The following implementation for the $\epsilon$-decreasing strategy uses the $\epsilon$-greedy strategy, just decreasing the epsilon value each step:
 
 ```{code-cell} ipython3
-:load: "../python_code/multi_armed_bandit/epsilon_decreasing.py"
+:load: "../mastering_rl/multi_armed_bandit/epsilon_decreasing.py"
 
 
 ```
@@ -251,7 +251,7 @@ In this implementation, we have a minimum value, `lower_bound`, such that $\epsi
 The following plot shows the average reward over our simulation, varying the value of $\alpha$:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_epsilon_decreasing.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_epsilon_decreasing.py"
 ```
 
 This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
@@ -277,13 +277,13 @@ As with the $\epsilon$-decreasing strategy, we can add a decay parameter $\alpha
 The following implementation of the softmax strategy uses ```random()``` to generate a random number between 0 and 1, and divides this space 0-1 among the set of actions based on the value of $e^{Q(a)/\tau}$:
 
 ```{code-cell} ipython3
-:load: "../python_code/multi_armed_bandit/softmax.py"
+:load: "../mastering_rl/multi_armed_bandit/softmax.py"
 ```
 
 As before, we plot the average reward at each step of our simulation, this time varying values of tau:
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_softmax.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_softmax.py"
 
 ```
 
@@ -344,7 +344,7 @@ We can visualise this using the following example, in which there are three arms
 
 ```{code-cell} ipython3
 :tags: [remove-input]
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_ucb_example.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_ucb_example.py"
 ```
 
 The confidence interval around these is an estimate of how confident we are about the Q-value estimate: if an arm has relatively fewer pulls than other arms, the confidence is lower, so the confidence interval is wider.
@@ -360,7 +360,7 @@ So, we can see how this would balance exploration and exploitation: as say, arm 
 
 
 ```{code-cell} python3
-:load:  "../python_code/multi_armed_bandit/ucb.py"
+:load:  "../mastering_rl/multi_armed_bandit/ucb.py"
 ```
 
 
@@ -375,7 +375,7 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 ````
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_02_multi_armed_bandit_tests/plot_comparison.py"
+:load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_comparison.py"
 ```
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.

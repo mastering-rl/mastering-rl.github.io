@@ -13,7 +13,7 @@ conda env update --file environment.yml --prune
 ```
 - Include all python codes to execute code cells
 ```
-export PYTHONPATH="$PWD/python_code"
+export PYTHONPATH="$PWD/mastering_rl"
 ```
 
 # 2. Building the project

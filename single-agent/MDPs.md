@@ -144,7 +144,7 @@ In an MDP, a discount reward must be strictly less than 1. Later, we will see wh
 :tags: [remove-cell]
 
 from myst_nb import glue
-from python_code.markov_decision_processes.gridworld import GridWorld
+from mastering_rl.markov_decision_processes.gridworld import GridWorld
 
 gridworld = GridWorld()
 gridworld_image = gridworld.visualise()
@@ -176,7 +176,7 @@ The task is to navigate from the start cell in the bottom left to maximise the e
 :tags: [remove-cell]
 
 from myst_nb import glue
-from python_code.markov_decision_processes.contested_crossing import ContestedCrossing
+from mastering_rl.markov_decision_processes.contested_crossing import ContestedCrossing
 
 ccross = ContestedCrossing()
 
@@ -411,10 +411,10 @@ A graphical representation of the policy for Grid World is:
 ```{code-cell} ipython3
 :tags: [remove-input]
 
-from python_code.learners.value_iteration import ValueIteration
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.policies.value_policy import ValuePolicy
-from python_code.value_functions.tabular_value_function import TabularValueFunction
+from mastering_rl.learners.value_iteration import ValueIteration
+from mastering_rl.markov_decision_processes.gridworld import GridWorld
+from mastering_rl.policies.value_policy import ValuePolicy
+from mastering_rl.value_functions.tabular_value_function import TabularValueFunction
 
 gridworld = GridWorld()
 values = TabularValueFunction()
@@ -450,14 +450,14 @@ In the early chapters, we will focus mostly on  deterministic policies, but stoc
 Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):
 
 ```{code-cell} ipython3
-:load: ../python_code/policies/policy.py
+:load: ../mastering_rl/policies/policy.py
 
 ```
 
 The simplest way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:
 
 ```{code-cell} ipython3
-:load: ../python_code/policies/tabular_policy.py
+:load: ../mastering_rl/policies/tabular_policy.py
 
 ```
 
@@ -588,7 +588,7 @@ possible output states, but we need to store $|A| \times |S|$ values in a Q-func
 Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:
 
 ```{code-cell} ipython3
-:load: ../python_code/value_functions/value_function.py
+:load: ../mastering_rl/value_functions/value_function.py
 
 ```
 

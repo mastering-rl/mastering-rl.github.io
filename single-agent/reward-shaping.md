@@ -95,7 +95,7 @@ solved.
 tags: [remove-cell]
 ---
 from myst_nb import glue
-from python_code.markov_decision_processes.gridworld import GridWorld
+from mastering_rl.markov_decision_processes.gridworld import GridWorld
 
 mdp = GridWorld()
 gridworld_image = mdp.visualise()
@@ -221,14 +221,14 @@ In practice, it is non-trivial to derive a perfect reward function -- it is the 
 To implement potential-based reward shaping, we need to first implement a potential function. We implement potential functions as subclasses of ``PotentialFunction``. For the GridWorld example, the potential function is 1 minus the normalised distance from the goal:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/reward_shaping/gridworld_potential_function.py"
+:load: "../mastering_rl/learners/reward_shaping/gridworld_potential_function.py"
 
 ```
 
 Reward shaping for Q-learning is then a simple extension of the ``QLearning`` class, overriding the ``get_delta`` method:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/reward_shaping/reward_shaped_qlearning.py"
+:load: "../mastering_rl/learners/reward_shaping/reward_shaped_qlearning.py"
 
 ```
 
@@ -241,12 +241,12 @@ Reward shaping for Q-learning is then a simple extension of the ``QLearning`` cl
 We can run this on a GridWorld example with more states, to make the problem harder:
 
 ```{code-cell} ipython3
-from python_code.qfunctions.qtable import QTable
-from python_code.learners.qlearning import QLearning
-from python_code.learners.reward_shaping.reward_shaped_qlearning import (RewardShapedQLearning)
-from python_code.learners.reward_shaping.gridworld_potential_function import (GridWorldPotentialFunction)
-from python_code.policies.q_policy import QPolicy
-from python_code.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
+from mastering_rl.qfunctions.qtable import QTable
+from mastering_rl.learners.qlearning import QLearning
+from mastering_rl.learners.reward_shaping.reward_shaped_qlearning import (RewardShapedQLearning)
+from mastering_rl.learners.reward_shaping.gridworld_potential_function import (GridWorldPotentialFunction)
+from mastering_rl.policies.q_policy import QPolicy
+from mastering_rl.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
 
 mdp = GridWorld(width = 10, height = 7, goals = [((9,6), 1), ((8,6), -1)])
@@ -275,7 +275,7 @@ q_learning_rewards = mdp.get_rewards()
 If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal:
 
 ```{code-cell} ipython3
-from python_code.tests.plot import Plot
+from mastering_rl.tests.plot import Plot
 
 Plot.plot_episode_length(
     ["Tabular Q-learning", "Reward shaping"],
@@ -290,7 +290,7 @@ This example is thanks to [Dr Cathy Wu](http://www.wucathy.com/).
 Now, let's consider a poorly-designed potential function --- one that gives a shaped reward that is the opposite of the earlier potential function for GridWorld:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/reward_shaping/gridworld_bad_potential_function.py"
+:load: "../mastering_rl/learners/reward_shaping/gridworld_bad_potential_function.py"
 ```
 
 We again compare this to standard Q-learning without reward shaping, but using just the original 4x3 GridWorld (doing this on the larger GridWorld never terminated when I ran this):

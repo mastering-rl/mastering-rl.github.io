@@ -163,7 +163,7 @@ However, each iteration costs $O(|S|^2 |A| + |S|^3)$. Empirical evidence suggest
 Below is a Python implementation for policy iteration. In this implementation, the parameter `max_iterations` is the maximum number of iterations of the policy iteration, and the parameter `theta` the largest amount the value function corresponding to the current policy can change before the policy evaluation look terminates.
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/policy_iteration.py"
+:load: "../mastering_rl/learners/policy_iteration.py"
 
 ```
 
@@ -172,9 +172,9 @@ From this, we can see that policy evaluation  looks very similar to value iterat
 We can execute this to get the policy:
 
 ```{code-cell} ipython3
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.learners.policy_iteration import PolicyIteration
-from python_code.policies.tabular_policy import TabularPolicy
+from mastering_rl.markov_decision_processes.gridworld import GridWorld
+from mastering_rl.learners.policy_iteration import PolicyIteration
+from mastering_rl.policies.tabular_policy import TabularPolicy
 
 gridworld = GridWorld()
 policy = TabularPolicy(default_action=gridworld.LEFT)
@@ -188,7 +188,7 @@ Let's look at the policies that are generated after each iteration, noting that 
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="policy_iteration" src=https://gibberblot.github.io/rl-notes/assets/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
+    <img id="policy_iteration" src=https://gibberblot.github.io/rl-notes/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="policy_iteration"></gif-player>
 </div>
 <p>

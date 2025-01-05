@@ -113,8 +113,7 @@ To implement the Q Actor Critic framework, we first create a new base class call
 The `ActorCritic` class is an abstract class that looks similar to that of `QLearning`, except that we update both the actor and the critic:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/actor_critic.py"
-
+:load: "../mastering_rl/learners/actor_critic.py"
 ```
 
 Note from the code above that we use the actor (the policy) to choose an action, and then update both the critic and the actor. In this particular implementation, we batch update the actor policy at the end of the episode.
@@ -122,14 +121,13 @@ Note from the code above that we use the actor (the policy) to choose an action,
 Next, we have to instantiate the  `ActorCritic` class as a `QActorCritic` class to implement the `update_actor` and `update_critic` classes:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/q_actor_critic.py"
-
+:load: "../mastering_rl/learners/q_actor_critic.py"
 ```
 
 Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose `DeepNeuralNetworkPolicy` and `DeepQFunction` with `QLearning` updates. 
 
 ```{code-cell} ipython3
-:load: "../python_code/tests/_10_actor_critic_methods/q_actor_critic_run.py"
+:load: "../mastering_rl/tests/_10_actor_critic_methods/q_actor_critic_run.py"
 ```
 
 

@@ -374,7 +374,7 @@ Below is an implementation of MCTS in Python. This is a simulation-based impleme
 First, we create a class `Node`, which forms the basis for the tree:
 
 ```{code-cell} ipython3 
-:load: "../python_code/learners/mcts.py"
+:load: "../mastering_rl/learners/mcts.py"
 ```
 
 In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points' for the environment (that is, the filled nodes that correspond to an action outcome). 
@@ -382,7 +382,7 @@ In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes
 In our implementation, we represent this with just one class called `Node`. When we expand a new action, we choose a child node of that action:
 
 ```{code-cell} ipython3
-:load: "../python_code/learners/single_agent_mcts.py"
+:load: "../mastering_rl/learners/single_agent_mcts.py"
 ```
 
 The advantage of using this single node is that our `MCTS` class forms the basis of a [multi-agent MCTS](sec:multi-agent-rl:mcts) algorithm, where we design a new class that implements the selection, expansion and backpropagation steps, while the base MCTS algorithm remains the same.
@@ -396,12 +396,12 @@ The advantage of using this single node is that our `MCTS` class forms the basis
 We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.03 seconds (to avoid a tree that is too large to visualise), we show the tree, and we only visualise up to the 6th level (including both state and environment nodes). At each node, $V(s)$ is the value of that node (the child with the highest Q-value). Right-click and open the image in a new tab to see a larger version:
 
 ```{code-cell} ipython3
-from python_code.learners.single_agent_mcts import SingleAgentMCTS
-from python_code.markov_decision_processes.gridworld import GridWorld
-from python_code.multi_armed_bandit.ucb import UpperConfidenceBounds
-from python_code.policies.q_policy import QPolicy
-from python_code.qfunctions.qtable import QTable
-from python_code.utils.graph_visualisation import GraphVisualisation
+from mastering_rl.learners.single_agent_mcts import SingleAgentMCTS
+from mastering_rl.markov_decision_processes.gridworld import GridWorld
+from mastering_rl.multi_armed_bandit.ucb import UpperConfidenceBounds
+from mastering_rl.policies.q_policy import QPolicy
+from mastering_rl.qfunctions.qtable import QTable
+from mastering_rl.utils.graph_visualisation import GraphVisualisation
 
 gridworld = GridWorld()
 qfunction = QTable()
@@ -438,7 +438,7 @@ After 0.03 seconds, the rewards are improving but are still quite noisy. This ma
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="mcts" src=https://gibberblot.github.io/rl-notes/assets/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <img id="mcts" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="mcts"></gif-player>
 </div>
 <p>
