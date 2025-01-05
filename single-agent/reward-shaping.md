@@ -284,6 +284,7 @@ Plot.plot_episode_length(
 
 ```
 
+(sec:reward_shaping:bad_potential_function)=
 ###  Example -- A Bad Potential Function  for GridWorld 
 
 This example is thanks to [Dr Cathy Wu](http://www.wucathy.com/).

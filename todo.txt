@@ -2,7 +2,6 @@ Images:
 - deterministic vs stochastic policies.
 
 High priority:
-- Add thanks to Antoine
 - indendent Q learning in the MARL stuff.
 - add videos to pressbooks (see format below)
 - PDF format
