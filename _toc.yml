@@ -6,24 +6,24 @@ parts:
   - file: intro/foreword
   - file: intro/intro
   - file: intro/a-first-example
-- caption: Single-agent Reinforcement Learning
+- caption: Value-based methods
   chapters:
-  - file: single-agent/MDPs
   - file: single-agent/value-based
-    sections:
-    - file: single-agent/value-iteration
-    - file: single-agent/multi-armed-bandits
-    - file: single-agent/temporal-difference-learning
-    - file: single-agent/n-step
-    - file: single-agent/mcts
-    - file: single-agent/function-approximation
-    - file: single-agent/reward-shaping
-  - file: single-agent/policy-based
-    sections:
-    - file: single-agent/policy-iteration
-    - file: single-agent/policy-gradients
-    - file: single-agent/actor-critic
+  - file: single-agent/MDPs
+  - file: single-agent/value-iteration
+  - file: single-agent/multi-armed-bandits
+  - file: single-agent/temporal-difference-learning
+  - file: single-agent/n-step
+  - file: single-agent/mcts
+  - file: single-agent/function-approximation
+  - file: single-agent/reward-shaping
   - file: single-agent/modelling-and-abstraction
+- caption: Policy-based methods
+  chapters:
+  - file: single-agent/policy-based
+  - file: single-agent/policy-iteration
+  - file: single-agent/policy-gradients
+  - file: single-agent/actor-critic
 - caption: Multi-agent Reinforcement Learning
   chapters:
   - file: multi-agent/normal-form
