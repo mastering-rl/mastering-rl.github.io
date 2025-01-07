@@ -1,38 +1,39 @@
 format: jb-book
 root: index
 parts:
-- caption: Introduction
+- caption: "I: INTRODUCTION"
   chapters:
   - file: intro/foreword
   - file: intro/intro
   - file: intro/a-first-example
-- caption: Value-based methods
+- caption: "II: VALUE-BASED METHODS"
   chapters:
   - file: single-agent/value-based
   - file: single-agent/MDPs
   - file: single-agent/value-iteration
   - file: single-agent/multi-armed-bandits
   - file: single-agent/temporal-difference-learning
-  - file: single-agent/n-step
   - file: single-agent/mcts
-  - file: single-agent/function-approximation
-  - file: single-agent/reward-shaping
-  - file: single-agent/modelling-and-abstraction
-- caption: Policy-based methods
+- caption: "III: POLICY-BASED METHODS"
   chapters:
   - file: single-agent/policy-based
   - file: single-agent/policy-iteration
   - file: single-agent/policy-gradients
   - file: single-agent/actor-critic
-- caption: Multi-agent Reinforcement Learning
+- caption: "IV: SCALING"
+  chapters:
+  - file: single-agent/function-approximation
+  - file: single-agent/reward-shaping
+  - file: single-agent/n-step
+  - file: single-agent/modelling-and-abstraction
+- caption: "V: MULTI-AGENT REINFORCEMENT LEARNING"
   chapters:
   - file: multi-agent/normal-form
   - file: multi-agent/extensive-form
-    sections:
-    - file: multi-agent/backward-induction
-    - file: multi-agent/multi-agent-rl
+  - file: multi-agent/backward-induction
+  - file: multi-agent/multi-agent-rl
   - file: multi-agent/modelling-and-abstraction
 
-- caption: Appendix
+- caption: "VI: APPENDIX"
   chapters:
   - file: appendix/intro-to-probability-theory

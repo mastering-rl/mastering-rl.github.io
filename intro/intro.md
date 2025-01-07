@@ -1,8 +1,6 @@
 # What is reinforcement learning?
 
 
-## What is reinforcement learning?
-
 Reinforcement learning is **learning from experience**.
 
 Reinforcement learning is a branch of machine learning in which **agents** learn to make **sequential decisions** in an environment, guided by a set of rewards and penalties.
@@ -14,13 +12,17 @@ It differs from traditional supervised machine learning in a few ways, primarily
 2. **Decisions are sequential**: Reinforcement learning is **sequential decision making**. This means that our agent needs to make a series of decisions over time, which each decision affecting future outcomes. Feedback, in the form of positive/negative rewards, is received at each step (although the reward may be zero at most steps), but in most situations, simply maximising feedback at each step is not optimal --- our agent needs to consider how each action affects the future.
 
 
-## Part II: Single-agent reinforcement learning
+## Part II: Value-based methods
 
-In Part II of these notes, we introduce  *Markov Decision Processes* (MDPs). MDPs allow us to model reinforcement learning problems. 
+In Part II of these notes, we introduce  *Markov Decision Processes* (MDPs). MDPs provide a flexible framework that allows us to model many different reinforcement learning problems. 
 
-We look at *model-based* techniques, where the entire MDP model is known to us, and *model-free* techniques, which are flexible enough that when some information is not provide explicitly, but can be sampled enough times, we can still learn good behaviour. We will look at foundational techniques, some more advanced techniques, and will pay particular attention to how to scale reinforcement learning so we can use it solve real problems.
+We look at *value-based* techniques for solving MDPs, which solve MDPs by estimating the value of different states of the environment, and then moving towards high-value states. There are two broad types of value-based method: 1. *model-based* techniques, where the entire MDP model is known to us; and 2. *model-free* techniques, which are flexible enough that when some information is not provide explicitly, but can be sampled enough times, we can still learn good behaviour. We will look at foundational techniques, some more advanced techniques, and will pay particular attention to how to scale reinforcement learning so we can use it solve real problems.
 
-## Part III: Multi-agent reinforcement learning
+## Part III: Policy-based methods
 
-In Part III of these notes, we look at *multi-agent MDPs* (sometimes called *games*), in which there are multiple (possibly adversarial) agents in a problem, and we need to plan our decisions while also considering what the other actors in the environment will do. Again, we look at both model-based and model-free techniques.
+In Part III of these notes, we introduce *policy-based methods*, which are techniques that learn a policy directly without trying to calcuate the value of states. Such techniques are important for e.g. applications with an infinite state space.
+
+## Part IV: Multi-agent reinforcement learning
+
+In Part IV of these notes, we look at *multi-agent MDPs* (sometimes called *games*), in which there are multiple (possibly adversarial) agents in a problem, and we need to plan our decisions while also considering what the other actors in the environment will do. Again, we look at both model-based and model-free techniques.
 

@@ -2,31 +2,28 @@ Images:
 - deterministic vs stochastic policies.
 
 High priority:
-- indendent Q learning in the MARL stuff.
 - add videos to pressbooks (see format below)
 - PDF format
 - align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
 - add PPO code to notes
 - add experience replay code to notes
 - modelling and abstraction: symmetries
-- add bad reward shaping from from [Dr Cathy Wu](http://www.wucathy.com/blog/) :  https://github.com/cathywu/rl-notes/blob/master/demos/Reward%20Shaping.ipynb
 - beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
-- Demonstrate off Policy vs on Policy using a stationary base policy
-- reward shaping in Frogger?
 - restructure book: Introduction (including MDPS), Value-based, Policy-based, Scaling, Multi-agent (including MA games)
 - replace definitions, remarks, etc., with latex equivalents: https://jupyterbook.org/en/stable/content/proof.html
 - add unit tests 
 - excellent explanation of using a target network: https://stackoverflow.com/questions/54237327/why-is-a-target-network-required
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
+- License: https://github.com/uds-se/fuzzingbook/blob/master/LICENSE.md
 
 
 Low priority:
 - RLHF
 - curiosity-driven learning
 - n-step learning videos
+- Demonstrate off Policy vs on Policy using a stationary base policy
 - In 1D gridworld, set 'get_actions' to just have the two actions and then update LogRegression policy
-- titles: 'mastering rl: from theory to practice'
 - use returned rewards in the reward shaping notes, instead of mdp.get_rewards()
 - reward shaping with frogger (require finding the frogger state structure)
 - Multi-agent drone coverage example -- excellent: https://hal.science/hal-04011857/document
@@ -35,8 +32,6 @@ Low priority:
 - add requirements.txt installation e.g. https://github.com/matteoacrossi/oqs-jupyterbook/
 - add multi-objective RL to Chapter 1. Don't spend much time on solutions, but an example may be good.
 - Consistent learning outcomes
-- If it doesn't take up much space, use a task list at the end of each subsection to 'tick off' learning outcomes: https://www.markdownguide.org/extended-syntax#task-lists
-- License: https://github.com/uds-se/fuzzingbook/blob/master/LICENSE.md
 - Policy gradient slide: https://twitter.com/hbouammar/status/1489215674014703618
 - Good policy gradient overview: https://core-robotics.gatech.edu/2020/12/16/bootcamp-summer-2020-week-4-policy-iteration-and-policy-gradient/
 - Multi-objective problems: https://github.com/LucasAlegre/mo-gym

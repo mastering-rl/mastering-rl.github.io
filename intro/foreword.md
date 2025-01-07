@@ -56,6 +56,19 @@ Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients u
 
 Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.
 
-Thanks for [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
+Thanks for [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the example of hte [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
 
 Thanks for Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.
+
+## Licenses
+
+```{image} ../assets/by-nc-sa.png
+:width: 200px
+``` 
+This book is licensed under [The Creative Commons 4.0 BY-NC-SA 4.0 license](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+This means that you are free to **share** and **adapt** this material in any medium or format, and must give appropriate credit and **share alike** the new material under the same license. The material **cannot be used for commercial purposes**. The material can be used for **educational purposes**.
+
+The **source code** for this book is under an [MIT License](https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide). 
+
+This means that you are free to **use**, **share**, **sell**, and **adapt** this source code, including for commercial purposes, under the condition that the [copyright notice](../mastering_rl/LICENSE) must be included in all copies or substantial portions of the software.
