@@ -1,12 +1,11 @@
-Images:
-- deterministic vs stochastic policies.
-
 High priority:
+- add "Scaling" overview.
+- align MDPP interface with Gym interface: 'done' from execute, use 'step', 'reset', 'action_space' etc to be consistent with OpenAI Gym
+- add PPO code to notes
+- add a basic figure in the intro 'RL is learning from experience' -- the standard RL loop
+- add experience replay code to notes
 - add videos to pressbooks (see format below)
 - PDF format
-- align 'done' from execute; maybe use 'step' and 'reset' to be consistent with OpenAI Gym
-- add PPO code to notes
-- add experience replay code to notes
 - modelling and abstraction: symmetries
 - beautiful book outline: https://faircookbook.elixir-europe.org/content/recipes/introduction/FAIR-cookbook-audience.html
 - restructure book: Introduction (including MDPS), Value-based, Policy-based, Scaling, Multi-agent (including MA games)
@@ -15,7 +14,6 @@ High priority:
 - excellent explanation of using a target network: https://stackoverflow.com/questions/54237327/why-is-a-target-network-required
 - theory behind n-step learning; guarantees: https://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdfhttps://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_7.pdf
 - Using full-width tag for images/gifs simulation such as described here: https://jupyterbook.org/en/stable/content/layout.html#full-width-markdown-content
-- License: https://github.com/uds-se/fuzzingbook/blob/master/LICENSE.md
 
 
 Low priority:

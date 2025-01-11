@@ -20,7 +20,7 @@ We look at *value-based* techniques for solving MDPs, which solve MDPs by estima
 
 ## Part III: Policy-based methods
 
-In Part III of these notes, we introduce *policy-based methods*, which are techniques that learn a policy directly without trying to calcuate the value of states. Such techniques are important for e.g. applications with an infinite state space.
+In Part III of these notes, we introduce *policy-based methods*, which are techniques that learn a policy directly without trying to calculate the value of states. Such techniques are important for e.g. applications with an infinite state space.
 
 ## Part IV: Multi-agent reinforcement learning
 

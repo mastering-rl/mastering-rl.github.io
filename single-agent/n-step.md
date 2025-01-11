@@ -298,7 +298,7 @@ $
 \end{array}
 $
 
-From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(\vec{s}_5, \vec{a_5)$ because there is no future discount reward beyond the end of the episode:
+From this point, $s$ is a terminal state,, so we no longer select and execute actions, nor store the rewards, actions, and states. However, we continue to update the steps in the episode, leaving off $Q(\vec{s}_5, \vec{a_5})$ because there is no future discount reward beyond the end of the episode:
 
 $
 \begin{array}{llll}

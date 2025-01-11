@@ -2,9 +2,11 @@
 :name: logo
 ```
 
+```{only} html
 # Contents
 
 ```{tableofcontents}
+```
 ```
 
 <!--

@@ -39,6 +39,7 @@ The learning outcomes of this chapter are:
 ```{figure} ./figs/Atari_Official_2012_Logo.png
 ---
 name: fig:atari
+width: 200px
 ---
 The Atari logo. Trademark of [Atari SA](https://atari.com/). (Source: [Wikipedia](https://en.wikipedia.org/wiki/Atari))
 ```
@@ -101,7 +102,6 @@ Finally `ALEWrapper` is a simple wrapper class for the Arcade Learning Environme
 Next, we setup the Arcade Learning Environment:
 
 ```{code-cell} ipython3
-:tags: [remove-input]
 
 version = "Freeway-ramDeterministic-v4"
 policy_name = "../policies/Freeway.policy"

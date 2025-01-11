@@ -18,14 +18,14 @@ Each individual HTML page can be downloaded as a [Jupyter notebook](https://jupy
 
 ## About the code
 
-All code in this book is executable. You can download the code from [here](https://gibberblot.github.io/rl-notes/_static/code.zip).
+All code in this book is executable. You can download the code from [here](https://gibberblot.github.io/rl-notes/_static/code.zip). It is licensed under the MIT license; see details in the [Licenses section](sec:forward:licenses) at the end of this chapter.
 
 ```{note}
-The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the [Keras RL](https://github.com/keras-rl/keras-rl) reinforcement learning package.
+The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the [Keras RL](https://github.com/keras-rl/keras-rl) or the [Stable-Baselines3](https://stable-baselines3.readthedocs.io/) reinforcement learning packages.
 
-If you understand the code in these notes, you will have little problem using production-level packages such as Keras RL.
+If you understand the code in these notes, you will have little problem using production-level packages such as Keras RL and Stable-Baselines3.
 
-The code in this book is written with the attempt to use very little Python-specific syntax, to enable those less familiar with Python to understand code snippets.
+The code in this book is written with the attempt to use basic Python with very little Python-specific specific to enable those less familiar with Python to understand code snippets.
 
 The code in this book is written using as few external libraries as possible, to make this easy to download and run yourself.
 ```
@@ -56,10 +56,11 @@ Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients u
 
 Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.
 
-Thanks for [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the example of hte [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
+Thanks for [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the example of the [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
 
 Thanks for Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.
 
+(sec:forward:licenses)=
 ## Licenses
 
 ```{image} ../assets/by-nc-sa.png
