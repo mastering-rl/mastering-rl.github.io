@@ -220,7 +220,7 @@ Given this, there are four main parts to the algorithm above:
 $
 \begin{array}{l}
   \alginput:\ \text{state}\ s  \\
-  \algoutput:\ \text{unexpanded state} s  \\[2mm]
+  \algoutput:\ \text{unexpanded state}\ s  \\[2mm]
   \algwhile\ s\ \text{is fully expanded}\ \algdo  \\
   \quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using a multi-armed bandit algorithm}  \\
   \quad\quad \text{Choose one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)  \\
@@ -238,7 +238,7 @@ $
 $
 \begin{array}{l}
   \alginput:\ \text{state}\ s  \\
-  \algoutput:\ \text{expanded state} s'  \\[2mm]
+  \algoutput:\ \text{expanded state}\ s'  \\[2mm]
   \algif\ s\ \text{is fully expanded}\ \algthen \\
   \quad\quad \text{Randomly select action}\ a\ \text{to apply in}\ s\   \\
   \quad\quad \text{Expand one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)\ \textrm{and observe reward}\ r  \\
@@ -287,13 +287,13 @@ Provided that we can **simulate** the outcomes; e.g. using a code-based simulato
 
 :::{admonition} Example: Backpropagation
 
-Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.8$, $r=X$ represents reward $X$ received at a state, $V$ represents the value of the state (the value $\max_{a'\in children} Q(s,a')$) and the length of the simulation is 14. After the simulation step, but before backpropagation, our tree would look like this:
+Consider the following ExpectiMax tree that has been expanded several times. Assume $\gamma=0.8$, $r=X$ represents reward $X$ received at a state, and the length of the simulation is 3. After the simulation step, but before backpropagation, our tree would look like this:
 
 ```{figure} ./latex/mcts_example.png
 :name: mcts_example
 ```
 
-In the next iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from $y$, which terminates after 3 steps. A reward of 31.25 is received in the terminal state. This would mean that the discounted reward returned at node $y$ would be $\gamma^{} \times 31.25$, which is 20.
+In the current iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from $y$, which terminates after 3 steps. A reward of 31.25 is received in the terminal state. This would mean that the discounted reward returned at node $y$ would be $\gamma^{2} \times 31.25$, which is 20.
 
 Before backpropagation, we  have the following:
 
@@ -519,7 +519,7 @@ A simple overview:
 
 3.  At each move, AlphaZero:
 
-    1.  Executes an MCTS search using UCB-like selection: $Q(s,a) + P(s,a)/1+N(s,a)$,
+    1.  Executes an MCTS search using UCB-like selection: $Q(s,a) + P(s,a)/(1+N(s,a))$,
         which returns the probabilities of playing each move.
 
     2.  The neural network is used to guide the MCTS by influencing

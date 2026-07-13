@@ -126,7 +126,7 @@ target_qfunction = DeepQFunction(state_space, action_space)
 learner = ExperienceReplayLearner(mdp, EpsilonDecreasing(), policy_qfunction, target_qfunction)
 ```
 
-We create two `DeepQFunction` instances. The reasons for this are describes in [Experience Replay](sec:experience-replay), but for now, what is important is that we have one called `policy_qfunction`, which is the machine learning model that will be choosing moves during learning, and will also form the basis of our policy when we have finished learning and create a player to just play the game. The `target_qfunction` helps the learning, but is then not used again. Both of these deep Q function
+We create two `DeepQFunction` instances. The reasons for this are described in [Experience Replay](sec:experience-replay), but for now, what is important is that we have one called `policy_qfunction`, which is the machine learning model that will be choosing moves during learning, and will also form the basis of our policy when we have finished learning and create a player to just play the game. The `target_qfunction` helps the learning, but is then not used again. 
 
 We create the `ExperienceReplayLearner` by passing it the environment that it will learn from, `mdp`, a multi-armed bandit algorithm `EpsilonDecreasing`, and the two deep Q functions. 
 

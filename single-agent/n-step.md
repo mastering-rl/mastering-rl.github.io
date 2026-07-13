@@ -171,7 +171,7 @@ While conceptually this is not so difficult, an algorithm for doing n-step learn
 <!--
 :::{admonition} Algorithm -- n-step SARSA
 
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$\, number of steps $n$\
+**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, number of steps $n$\
 **Output:** Q-function $Q$
 
 Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
@@ -205,7 +205,7 @@ $\quad\quad$ Until $\tau = T - 1$
 :label: algorithm:n-step-SARSA
 $
 \begin{array}{l}
-\alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\, \text{number of steps n}\\
+\alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle, \text{number of steps}\ n\\
 \algoutput:\ \text{Q-function}\ Q\\[2mm]
 \text{Initialise}\ Q\ \text{arbitrarily; e.g., }\ Q(s,a)=0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
 \algrepeat \\

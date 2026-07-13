@@ -98,7 +98,7 @@ fig = prisoners_dilemma.visualise()
 ```
 
 
-*Prisoner A* and *Prisoner B* are the **players**, *admit* and *deny* are the **actions**, and the values in the cells are the **utility** or **payoffs** given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left cell is Prisoner A and the right cell is Prisoner B.
+*Prisoner A* and *Prisoner B* are the **players**, *admit* and *deny* are the **actions**, and the values in the cells are the **utility** or **payoffs** given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left number in each cell is Prisoner A's utility and the right number in each cell is Prisoner B's utility.
 
 So, what should each prisoner do? Let's first list some assumptions about the game, which are general assumptions that we are going to hold throughout this chapter:
 1. We assume that all agents are **rational**, which means that they aim to maximise their total utility.
@@ -198,7 +198,7 @@ The **best response** for an agent $i$ if its opponents play strategy profile $s
 
 Note that for many problems, there can be multiple best responses.
 
-Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who in his PhD thesis provide that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a **stable** strategy profile for all agents in $N$ such that no agent has an incentive to change strategy if all other agents kept their strategy the same.
+Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who proved in his PhD thesis that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a **stable** strategy profile for all agents in $N$ such that no agent has an incentive to change strategy if all other agents kept their strategy the same.
 
 :::{admonition} Definition -- Nash equilibrium
 A strategy profile $s = (s_1,\ldots, s_n)$ is a **Nash equilibrium** if for all agents $i$ and for all strategies $s_i$ is a best response to the strategy $s_{-i}$.
@@ -461,8 +461,8 @@ security_game = NormalFormGame(
     ["T1", "T2"],
     ["T1", "T2"],
     {
-        ("T1", "T2"): (5, -3),
-        ("T1", "T1"): (-1, 1),
+        ("T1", "T2"): (-5, 3),
+        ("T1", "T1"): (1, -1),
         ("T2", "T1"): (-5, 5),
         ("T2", "T2"): (2, -1),
     },

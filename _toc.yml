@@ -25,6 +25,7 @@ parts:
   - file: single-agent/function-approximation
   - file: single-agent/reward-shaping
   - file: single-agent/n-step
+  - file: single-agent/experience-replay
   - file: single-agent/modelling-and-abstraction
 - caption: "V: MULTI-AGENT REINFORCEMENT LEARNING"
   chapters:

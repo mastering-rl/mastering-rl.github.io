@@ -755,21 +755,21 @@ Once we have the rewards of the episodes, we can plot the rewards:
 ```{code-cell} ipython3
 from mastering_rl.tests.plot import Plot
 
-Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
+Plot.plot_cumulative_rewards(["Q-learning"], [rewards], smoothing_factor=0.99)
 ```
 
-We can see that the policy converges at around 1000 episodes. However, recalling that this is smoothed using the exponential moving average, it probably converges in fewer episodes, but the early episodes weight on the average still.
+We can see that the policy converges quickly, however, there is still quite a bit of volatility as some episodes get a poor reward due to the randomness in the action selection during exploration.
 
 Next, we do the same for the contested crossing example:
 
 ```{code-cell} ipython3
+
 qfunction = QTable()
 mdp = ContestedCrossing()
 rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute(episodes=2000)
-Plot.plot_cumulative_rewards(["Q-learning"], [rewards])
+Plot.plot_cumulative_rewards(["Q-learning"], [rewards], smoothing_factor=0.99)
 ```
 
-We can see a convergence at about 1250-1500 episodes.
 
 ## Limitations of Q-learning and SARSA
 

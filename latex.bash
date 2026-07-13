@@ -1,4 +1,4 @@
-jb build . --builder latex
+jb build . --builder pdflatex
 cd _build/latex/
 #xelatex book
 #xelatex book

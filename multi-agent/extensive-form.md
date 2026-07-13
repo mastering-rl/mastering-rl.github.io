@@ -60,7 +60,7 @@ In these notes, we will look only at **perfect information** extensive form game
 ````
 
 :::{admonition} Definition -- Perfect information extensive form game
-A perfect information extensive form game is a tuple $G = (N, S, s_0, A, T, r)$
+A perfect information extensive form game is a tuple $G = (N, S, s_0, A, P, T, r)$
 
 - $N$ is a set of $n$ **number of players**
 - $S$ is a set of **states** (or **node**)
@@ -114,7 +114,7 @@ graph
 Like normal form games, extensive form games have strategies, however, the strategies must tell each agent what to do every time it is their turn to choose the action.
 
 :::{admonition} Definition -- Pure strategy
-A **pure strategy** for an extensive form game $G$, the pure strategies for a player $i$ is the Cartesian product $\Pi_{s\in S,P(s)=i}A(s)$.
+For an extensive form game $G$, the set of **pure strategies** for a player $i$ is the Cartesian product $\Pi_{s\in S,P(s)=i}A(s)$.
 :::
 
 Therefore, a pure strategy for player $i$ tells them what move to take in each state where it is their turn.

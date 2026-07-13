@@ -161,11 +161,11 @@ An agent is in the bottom left cell of a grid. The grey cell is a wall. The two 
 
 But! Things can go wrong --- sometimes the effects of the actions are not what we want:
 
--   If the agent tries to move north, 80$\%$ of the time, this works as planned (provided the wall is not in the way)
+-   If the agent tries to move in a particular direction, 80$\%$ of the time, this works as planned (provided the wall is not in the way)
 
--   10$\%$ of the time, trying to move north takes the agent west (provided the wall is not in the way);
+-   10$\%$ of the time, trying to move in a direction takes the agent left instead of straight  (provided the wall is not in the way);
 
--   10$\%$ of the time, trying to move north takes the agent east (provided the wall is not in the way)
+-   10$\%$ of the time, trying to move in a direction takes the agent right instead of straight (provided the wall is not in the way)
 
 -   If the wall is in the way of the cell that would have been taken, the agent stays in the current cell.
 

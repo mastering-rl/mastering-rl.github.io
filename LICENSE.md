@@ -1,3 +1,5 @@
+#License
+
 This book is licensed under [The Creative Commons 4.0 BY-NC-SA 4.0 license](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 The **source code** for this book is licensed under the [MIT License](https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide). 
@@ -6,7 +8,7 @@ This means that you are free to **use**, **share**, **sell**, and **adapt** this
 
 Both of these licenses are reproduced below.
 
-## Creative Commons License
+# Creative Commons License
 ## Attribution-NonCommercial-ShareAlike 4.0 International
 
 Creative Commons Corporation (“Creative Commons”) is not a law firm and does not provide legal services or legal advice. Distribution of Creative Commons public licenses does not create a lawyer-client or other relationship. Creative Commons makes its licenses and related information available on an “as-is” basis. Creative Commons gives no warranties regarding its licenses, any material licensed under their terms and conditions, or any related information. Creative Commons disclaims all liability for damages resulting from their use to the fullest extent possible.

@@ -1,9 +1,12 @@
 High priority:
+- fix experience replay algorithm to do a batch update
 - add "Scaling" overview.
-- align MDPP interface with Gym interface: 'done' from execute, use 'step', 'reset', 'action_space' etc to be consistent with OpenAI Gym
-- add PPO code to notes
-- add a basic figure in the intro 'RL is learning from experience' -- the standard RL loop
+- align MDP interface with Gym interface: 'done' from execute, use 'step', 'reset', 'action_space' etc to be consistent with OpenAI Gym
 - add experience replay code to notes
+- add PPO code to notes
+- add the 'done' part to algorithm notes.
+- add CNN policy examples.
+- add a basic figure in the intro 'RL is learning from experience' -- the standard RL loop
 - add videos to pressbooks (see format below)
 - PDF format
 - modelling and abstraction: symmetries

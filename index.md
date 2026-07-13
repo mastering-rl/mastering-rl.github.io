@@ -1,4 +1,4 @@
-```{figure} ./logo-3D.svg
+```{figure} ./assets/logo_3D.svg
 :name: logo
 ```
 

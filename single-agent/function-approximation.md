@@ -296,7 +296,7 @@ Now, we just simply pass this as a feature extractor to our implementation of `L
 from mastering_rl.markov_decision_processes.gridworld import GridWorld
 from mastering_rl.learners.qlearning import QLearning
 from mastering_rl.qfunctions.linear_qfunction import LinearQFunction
-from mastering_rl.feature_extractors.gridworld_feature_extractor import (GridWorldFeatureExtractor)
+from mastering_rl.feature_extractors.gridworld_feature_extractor import GridWorldFeatureExtractor
 from mastering_rl.policies.q_policy import QPolicy
 from mastering_rl.multi_armed_bandit.epsilon_greedy import EpsilonGreedy
 
@@ -343,11 +343,12 @@ However, this is still not perfect. As we see, the policy recommends going up in
 
 We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.
 
-Is there much value using function approximation? Comparing the reward curves of tabular Q-learning and linear Q-function approximation, we see that the linear version converges to the optimal policy earlier, at about 350 episodes instead of about 600 for tabular Q-learning:
+Is there much value using function approximation? Comparing the reward curves of tabular Q-learning and linear Q-function approximation, we see that the linear version converges quickly, while the Q-table version is still learning. We have to extend the size of the grid to 7x6 see this effect as the smaller problem is so easy:
 
 ```{code-cell} ipython3
 from mastering_rl.qfunctions.qtable import QTable
 mdp = GridWorld()
+mdp = GridWorld(width = 7, height = 6, goals = [((5,5), 1), ((5,4), -1)])
 qfunction = QTable()
 tabular_qlearning_rewards = QLearning(mdp, EpsilonGreedy(), qfunction).execute()
 ```
@@ -357,9 +358,12 @@ from mastering_rl.tests.plot import Plot
 
 Plot.plot_cumulative_rewards(
     ["Tabular Q-learning", "Linear Q-learning"],
-    [tabular_qlearning_rewards, linear_qlearning_rewards]
+    [tabular_qlearning_rewards, linear_qlearning_rewards],
+    smoothing_factor=0.99
 )
 ```
+
+If we ran this for much longer, we would see the Q-table version 'catching' the linear function approximation.
 
 ### Example: Linear Q-function approximation on Contested Crossing
 
@@ -396,6 +400,7 @@ mdp.visualise_as_image(
     plot=True
 )
 ```
+
 
 ### Example -- Linear function approximation vs Q-tables
 

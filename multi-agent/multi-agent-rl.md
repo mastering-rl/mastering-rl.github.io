@@ -18,7 +18,6 @@ random.seed(1028)
 
 # Multi-agent reinforcement learning
 
-
 The field of **multi-agent reinforcement learning** has become quite vast, and there are several algorithms for solving them. We are just going to look at how we can extend the lessons learnt in the first part of these notes to work for **stochastic games**, which are generalisations of extensive form games.
 
 ```{admonition}  Learning outcomes

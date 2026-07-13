@@ -218,7 +218,7 @@ The following plot shows the reward for each step, averaged over 2000 episodes, 
 
 As we can see, higher  values of epsilon tend to have a lower reward over time, except that we need some non-zero value of epsilon. Higher values mean more exploration, so the bandit spends more time exploring less valuable actions, even after it has a good estimate of the value of actions. The actual choice of the epsilon parameter is entirely dependent on the particular application: there is no magic number. However, as in this particular case, an epsilon between 0.05-0.1 is usually a reasonable choice.
 
-But we can also see that while epsilon = 0.05 ends up with a higher return after about 350 steps, initially it does not do as well as epsilon = 0.1, because it does not explore enough. Can we do better? Yes, we can! 
+But we can also see that exploring early is a good strategy. Can we do better? Yes, we can! 
 
 ### $\epsilon$-decreasing strategy
 
@@ -384,14 +384,11 @@ From this, we may answer the question why softmax is considered a good strategy 
 
 ```{code-cell} ipython3
 plot_comparison(drift=True)
-
 ```
 
-From this comparison, we can see that softmax, even with tau = 1.0, adapts more quickly than other strategies. UCB1 recovers quite quickly too, soon out-performing softmax. For UCB1, the Q-values for the actions that were previously good are no longer good. This encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration. 
+From this comparison, we can see that all of the bandit algorithms adapt quickly to changes in the environment, especially for UCB1. For UCB1, the Q-values for the actions that were previously good are no longer good, so this encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration further, so it recovers quickly.
 
-Epsilon decreasing never recovers because by the time the probabilities change, epsilon is low and it is committed to those values. For that reason, the $\epsilon$-decreasing strategy is good only for static problems.
-
-While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case if the underlying probability distributions change or drift regularly. In those cases, softmax may be a better choice.
+While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case---it depends on the specific context.
 
 
 ````{margin}
