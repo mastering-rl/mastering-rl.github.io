@@ -1,0 +1,837 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Policy iteration &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/policy-iteration';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Policy gradients" href="policy-gradients.html" />
+    <link rel="prev" title="Introduction to policy-based methods" href="policy-based.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/policy-iteration.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/policy-iteration.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Policy iteration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-evaluation">Policy evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-improvement">Policy improvement</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Policy iteration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="policy-iteration">
+<span id="sec-policy-iteration"></span><h1>Policy iteration<a class="headerlink" href="#policy-iteration" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-policy-based-approaches-and-policy-iteration admonition">
+<p class="admonition-title">Video byte: Introduction to policy-based approaches and policy iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=0s" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Apply policy iteration to solve small-scale MDP problems manually and program policy iteration algorithms to solve medium-scale MDP problems automatically.</p></li>
+<li><p>Discuss the strengths and weaknesses of policy iteration.</p></li>
+<li><p>Compare and contrast policy iteration to value iteration.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-intuition-of-policy-based-approaches admonition">
+<p class="admonition-title">Video byte: Intuition of policy-based approaches</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=83" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The other common way that MDPs are solved is using <strong>policy iteration</strong> – an approach that is similar to value iteration. While value iteration iterates over value functions, policy iteration iterates over policies themselves, creating a strictly improved policy in each iteration (except if the iterated policy is already optimal).</p>
+<p>Policy iteration first starts with some (non-optimal) policy, such as a random policy, and then calculates the value of each state of the MDP given that policy — this step is called  <strong>policy evaluation</strong>. It then updates the policy itself for every state by calculating the expected reward of each action applicable from that state.</p>
+<p>The basic idea here is that policy evaluation is easier to computer than value iteration because the set of actions to consider is fixed by the policy that we have so far.</p>
+</section>
+<section id="policy-evaluation">
+<h2>Policy evaluation<a class="headerlink" href="#policy-evaluation" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-model-based-policy-evaluation admonition">
+<p class="admonition-title">Video byte: Model-based policy evaluation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=169" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>An important concept in policy iteration is <strong>policy evaluation</strong>, which is an evaluation of the expected reward of a policy.</p>
+<p>The <strong>expected reward</strong> of policy <span class="math notranslate nohighlight">\(\pi\)</span> from <span class="math notranslate nohighlight">\(s\)</span>, <span class="math notranslate nohighlight">\(V^\pi(s)\)</span>, is the weighted average of reward of the possible state sequences defined by that policy times their probability given <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+<div class="admonition-definition-policy-evaluation admonition">
+<p class="admonition-title">Definition – Policy evaluation</p>
+<p><em>Policy evaluation</em> can be characterised as <span class="math notranslate nohighlight">\(V^{\pi}(s)\)</span> as defined by  the following equation:</p>
+<div class="math notranslate nohighlight">
+\[V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]\]</div>
+<p>where <span class="math notranslate nohighlight">\(V^\pi(s)=0\)</span> for terminal states.</p>
+</div>
+<p>Note that this is very similar to the <a class="reference internal" href="MDPs.html#sec-mdps-bellman-equation"><span class="std std-ref">Bellman equation</span></a>, except <span class="math notranslate nohighlight">\(V^\pi(s)\)</span> is not the value of the best action, but instead just as the value for <span class="math notranslate nohighlight">\(\pi(s)\)</span>, the action that would be chosen in <span class="math notranslate nohighlight">\(s\)</span> by the policy <span class="math notranslate nohighlight">\(\pi\)</span>. Note the expression <span class="math notranslate nohighlight">\(P_{\pi(s)}(s' \mid s)\)</span> instead of <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>, which means we only evaluate the action that the policy defines.</p>
+<p>Once we understand the definition of policy evaluation, the implementation is straightforward. It is the same as value iteration except that we use the policy evaluation equation instead of the Bellman equation.</p>
+<div class="proof algorithm admonition" id="algorithm:policy-evaluation">
+<p class="admonition-title"><span class="caption-number">Algorithm 10 </span> (Policy evaluation)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \pi\ \text{the policy for evaluation}, V^\pi\ \text{value function, and}\\
+\quad\quad\quad\quad \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Value function}\ V^\pi\\[2mm]
+\algrepeat\\
+\quad\quad \Delta \leftarrow 0\\
+\quad\quad \algforeach\ s \in S\\
+\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
+\quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'^\pi(s) - V^\pi(s)|)\\
+\quad\quad V^\pi \leftarrow V'^\pi\\
+\alguntil\ \Delta \leq \theta
+\end{array}
+\)</span></p>
+</section>
+</div><p>The <strong>optimal expected reward</strong> <span class="math notranslate nohighlight">\(V^*(s)\)</span> is <span class="math notranslate nohighlight">\(\max_{\pi} V^\pi(s)\)</span> and the <strong>optimal policy</strong> is <span class="math notranslate nohighlight">\(\textrm{argmax}_{\pi} V^\pi(s)\)</span>.</p>
+</section>
+<section id="policy-improvement">
+<h2>Policy improvement<a class="headerlink" href="#policy-improvement" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-model-based-policy-improvement admonition">
+<p class="admonition-title">Video byte: Model-based policy improvement</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=418" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>If we have a policy and we want to improve it, we can use <strong>policy improvement</strong> to change the policy (that is, change the actions recommended for states) by updating the actions it recommends based on <span class="math notranslate nohighlight">\(V(s)\)</span> that we receive from the policy evaluation.</p>
+<p>Let <span class="math notranslate nohighlight">\(Q^{\pi}(s,a)\)</span> be the expected reward from <span class="math notranslate nohighlight">\(s\)</span> when doing <span class="math notranslate nohighlight">\(a\)</span> first and then following the policy <span class="math notranslate nohighlight">\(\pi\)</span>. Recall from the chapter on <a class="reference internal" href="MDPs.html#sec-mdps"><span class="std std-ref">Markov Decision Processes</span></a> that we define define this as:</p>
+<div class="math notranslate nohighlight">
+\[Q^{\pi}(s,a)  =  \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') \, + \,  \gamma\ V^{\pi}(s')]\]</div>
+<p>In this case,  <span class="math notranslate nohighlight">\(V^{\pi}(s')\)</span> is the value function from the policy evaluation.</p>
+<p>If there is an action <span class="math notranslate nohighlight">\(a\)</span> such that <span class="math notranslate nohighlight">\(Q^{\pi}(s,a) &gt; Q^{\pi}(s,\pi(s))\)</span>, then the policy <span class="math notranslate nohighlight">\(\pi\)</span> can be <strong>strictly improved</strong> by setting <span class="math notranslate nohighlight">\(\pi(s) \leftarrow a\)</span>. This will improve the overall policy.</p>
+</section>
+<section id="id1">
+<h2>Policy iteration<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-intuition-of-policy-based-approaches admonition">
+<p class="admonition-title">Video byte: Intuition of policy-based approaches</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=572" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Pulling together policy evaluation and policy improvement, we can define <strong>policy iteration</strong>, which computes an optimal <span class="math notranslate nohighlight">\(\pi\)</span> by performing a sequence of interleaved policy evaluations and improvements:</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-policy-iteration-in-gridworld admonition">
+<p class="admonition-title">Video byte: Example — Policy iteration in Gridworld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=816" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="proof algorithm admonition" id="algorithm:policy-iteration">
+<p class="admonition-title"><span class="caption-number">Algorithm 11 </span> (Policy iteration)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\  Policy\ \pi\\[2mm]
+\text{Set}\ V^\pi\ \text{to arbitrary value function; e.g.,}\ V^\pi(s)=0\ \text{for all}\ s\\
+\text{Set}\ \pi\ \text{to arbitrary policy; e.g.}\ \pi(s) = a\  \text{for all}\ s,\ \text{where}\ a \in A\ \text{is an arbitrary action}\\[2mm]
+\algrepeat\\
+\quad\quad \text{Compute}\ V^\pi(s)\ \text{for all}\ s\ \text{using policy evaluation}\\
+\quad\quad \algforeach\ s \in S\\
+\quad\quad\quad\quad \pi(s) \leftarrow \textrm{argmax}_{a \in A(s)}Q^{\pi}(s,a)\\
+\alguntil\  \pi\ \text{does not change}
+\end{array}
+\)</span></p>
+</section>
+</div><aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-convergence-of-policy-iteration admonition">
+<p class="admonition-title">Video byte: Convergence of policy iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=1085" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The policy iteration  algorithm finishes with an optimal <span class="math notranslate nohighlight">\(\pi\)</span> after a finite number of iterations, because the number of policies is finite, bounded by <span class="math notranslate nohighlight">\(O(|A|^{|S|})\)</span>, unlike value iteration, which can theoretically require infinite iterations.</p>
+<p>However, each iteration costs <span class="math notranslate nohighlight">\(O(|S|^2 |A| + |S|^3)\)</span>. Empirical evidence suggests that the most efficient is dependent on the particular MDP model being solved, but that surprisingly few iterations are often required for policy iteration.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<p>Below is a Python implementation for policy iteration. In this implementation, the parameter <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code> is the maximum number of iterations of the policy iteration, and the parameter <code class="docutils literal notranslate"><span class="pre">theta</span></code> the largest amount the value function corresponding to the current policy can change before the policy evaluation look terminates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.policies.tabular_policy</span> <span class="kn">import</span> <span class="n">TabularPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.value_functions.tabular_value_function</span> <span class="kn">import</span> <span class="n">TabularValueFunction</span>
+
+
+<span class="k">class</span> <span class="nc">PolicyIteration</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">policy</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">policy</span>
+
+    <span class="k">def</span> <span class="nf">policy_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">new_values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+                <span class="c1"># Calculate the value of V(s)</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="n">old_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="n">new_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">policy</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">old_value</span> <span class="o">-</span> <span class="n">new_value</span><span class="p">))</span>
+
+            <span class="c1"># terminate if the value function has converged</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;</span> <span class="n">theta</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">values</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Implmentation of policy iteration iteration. Returns the number of iterations executed &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">policy_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+
+        <span class="c1"># create a value function to hold details</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iterations</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">policy_changed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="n">old_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+
+                <span class="n">q_values</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+                    <span class="c1"># Calculate the value of Q(s,a)</span>
+                    <span class="n">new_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                    <span class="n">q_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+                <span class="c1"># V(s) = argmax_a Q(s,a)</span>
+                <span class="n">new_action</span> <span class="o">=</span> <span class="n">q_values</span><span class="o">.</span><span class="n">get_argmax_q</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">new_action</span><span class="p">)</span>
+                <span class="n">policy_changed</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">True</span> <span class="k">if</span> <span class="n">new_action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">old_action</span> <span class="k">else</span> <span class="n">policy_changed</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">policy_changed</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span>
+
+        <span class="k">return</span> <span class="n">max_iterations</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>From this, we can see that policy evaluation  looks very similar to value iteration. The main differences is in the inner loop: instead of finding the action with the maximum Q-value, we simply find the value of the action that is given the policy: <code class="docutils literal notranslate"><span class="pre">policy.select_action(state)</span></code>.</p>
+<p>We can execute this to get the policy:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.policy_iteration</span> <span class="kn">import</span> <span class="n">PolicyIteration</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.tabular_policy</span> <span class="kn">import</span> <span class="n">TabularPolicy</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">TabularPolicy</span><span class="p">(</span><span class="n">default_action</span><span class="o">=</span><span class="n">gridworld</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+<span class="n">PolicyIteration</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">policy_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/80a555a2a782df34f68a32aeeedc05d379f2d311e61a2bdc1183d9cf78c09db4.png" src="../_images/80a555a2a782df34f68a32aeeedc05d379f2d311e61a2bdc1183d9cf78c09db4.png" />
+</div>
+</div>
+<p>We can see that this matches the optimal policy according to <a class="reference internal" href="value-iteration.html#sec-value-iteration"><span class="std std-ref">value iteration</span></a>.</p>
+<p>Let’s look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action (left) and using that for every state:</p>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="policy_iteration" src=https://mastering-rl.github.io/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="policy_iteration" width=500></gif-player>
+</div>
+<p>
+<p>We can see that this converges in just four iterations. Let’s try on a larger state space of a 20 x 15 grid:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">TabularPolicy</span><span class="p">(</span><span class="n">default_action</span><span class="o">=</span><span class="n">gridworld</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="n">PolicyIteration</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">policy_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of iterations until convergence: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">iterations</span><span class="p">))</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of iterations until convergence: 18
+</pre></div>
+</div>
+<img alt="../_images/0b05d81e1dbbd83adeb5f0d7b7203d71ed63cfd9461b1fc1b08105d91b648d1f.png" src="../_images/0b05d81e1dbbd83adeb5f0d7b7203d71ed63cfd9461b1fc1b08105d91b648d1f.png" />
+</div>
+</div>
+<p>This terminates in 5 iterations.   We can see that the policy is optimal as it always directs the agent to terminating state at (3,2) with the positive reward. However, the number of iterations can change depending on the initial policy and the order in which actions are evaluated.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-policy-iteration admonition">
+<p class="admonition-title">Video byte: Summary of policy iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/_nb8I7jUtME?start=1182" title="Policy iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p><strong>Policy iteration</strong> is a dynamic programming technique for calculating a policy directly, rather than calculating an optimal <span class="math notranslate nohighlight">\(V(s)\)</span> and extracting a policy; but one that uses the concept of values.</p></li>
+<li><p>It produces an optimal policy in a finite number of steps.</p></li>
+<li><p>Similar to value iteration, for medium-scale problems, it works well, but as the state-space grows, it does not scale well.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="policy-based.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to policy-based methods</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="policy-gradients.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Policy gradients</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-evaluation">Policy evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-improvement">Policy improvement</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Policy iteration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

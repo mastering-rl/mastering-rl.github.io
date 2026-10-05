@@ -1,0 +1,856 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Backward induction &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'multi-agent/backward-induction';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multi-agent reinforcement learning" href="multi-agent-rl.html" />
+    <link rel="prev" title="Extensive form games" href="extensive-form.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fmulti-agent/backward-induction.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/multi-agent/backward-induction.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Backward induction</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tictactoe">Tictactoe</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="backward-induction">
+<h1>Backward induction<a class="headerlink" href="#backward-induction" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Manually apply backward induction to solve small-scale extensive form games.</p></li>
+<li><p>Design and implement a backward induction algorithm to solve medium-scale extensive form games automatically.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p><strong>Backward induction</strong> is a model-based technique for solving extensive form games. It solves this by recursively calculating the sub-game equilibrium for each sub-game and then using this to solve the parent node of each subgame. Because it solves subgames first, it is effectively solving the game backwards.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-backward-induction admonition">
+<p class="admonition-title">Video byte: Backward induction</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=471" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The intuition is as follows: starting at the terminal nodes of the tree (those were <span class="math notranslate nohighlight">\(A(s)\)</span> is empty), for the parent, calculate the best move for the agent whose turn it is. This gives us the sub-game equilibrium for the smallest sub-games in the game. As the solutions are reward tuples themselves, we can solve the parent of the parents by using the parent solution as reward for the sub-game, which gives us the sub-game equilibrium for the game that starts at the parents of the parents of the terminal nodes. We progressively induct these values backward up the tree until we reach the start node.</p>
+<p>In the pure backward induction that we cover here, the assumption is that only terminal nodes have rewards. If we want to model any situations in which non-terminal nodes have rewards, we simply sum all rewards along the path to the terminal node. Therefore, this solution generalises to the definition of extensive form games in the previous section.</p>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">#</a></h2>
+<p>In the following algorithm, <span class="math notranslate nohighlight">\(best\_child\)</span> is an N-tuple that is used to find the best child value for whose turn it is; while <span class="math notranslate nohighlight">\(best\_child(P(s))\)</span> and <span class="math notranslate nohighlight">\(child\_reward(P(s))\)</span> return the value from the <span class="math notranslate nohighlight">\(best\_child\)</span> and <span class="math notranslate nohighlight">\(child\_reward\)</span> tuple for the player who is choosing the action from state <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<div class="proof algorithm admonition" id="algorithm:backward-induction">
+<p class="admonition-title"><span class="caption-number">Algorithm 18 </span> (Backward induction)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \alginput:\ \text{Extensive form game}\ G = (N, Agt, S, s_0, A, T, r)\\
+  \algoutput:\ \text{Sub-game equilibrium for each state}\ s \in S\\[2mm]
+  \algreturn\  BackwardInduction(s_0)\\[2mm]
+  \algfunction\ BackwardInduction(s \in S)  \\
+  \quad\quad \algif\ A(s) = \emptyset\ \algthen  \\
+  \quad\quad\quad\quad \algreturn\ r(s)  \\
+  \quad\quad best\_child \leftarrow (-\infty, \ldots, -\infty)  \\
+  \quad\quad \algforeach\ a \in A(s)  \\
+  \quad\quad\quad\quad s' \leftarrow T(s,a)  \\
+  \quad\quad\quad\quad child\_reward \leftarrow BackwardInduction(s')  \\
+  \quad\quad\quad\quad \algif\ child\_reward(P(s)) &gt; best\_child(P(s))\ \algthen  \\
+  \quad\quad\quad\quad\quad\quad best\_child \leftarrow child\_reward  \\
+  \quad\quad \algreturn\ best\_child
+ \end{array}
+ \)</span></p>
+</section>
+</div><aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exercise-the-advertising-game admonition">
+<p class="admonition-title">Video byte: Exercise – The advertising game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=817" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>So, the solution above is a recursive algorithm that returns the reward tuple for a terminal node, and otherwise finds the best reward tuple for the children of the node. However, “best” is relative to the player whose turn it is. A rational player will choose the outcome that is best for them when it is their turn. The final output of the algorithm is the reward at the terminal state for whose turn it is, which is the sub-game perfect equilibrium for the entire game.</p>
+<p>The algorithm can be modified in a straightforward manner to return the paths and strategies for each player by collecting this information at each point.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<p>The implementation for this is straightforward from the algorithm above:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.extensive_form_game</span> <span class="kn">import</span> <span class="n">GameNode</span>
+
+
+<span class="k">class</span> <span class="nc">BackwardInduction</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">do_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_cache</span> <span class="o">=</span> <span class="n">do_cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">backward_induction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">GameNode</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">node</span>
+
+        <span class="n">best_child</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_player_turn</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_induction</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">best_child</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">player</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best_child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">player</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">best_child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">best_child</span><span class="o">.</span><span class="n">is_best_action</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">is_best_action</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">best_child</span> <span class="o">=</span> <span class="n">child</span>
+            <span class="n">children</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">GameNode</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">best_child</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">backward_induction_with_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+
+        <span class="n">state_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_cache</span> <span class="ow">and</span> <span class="n">state_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">state_key</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">GameNode</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_cache</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">state_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="k">return</span> <span class="n">node</span>
+
+        <span class="n">best_child</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_player_turn</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_induction</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">best_child</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">player</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best_child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">player</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">best_child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">best_child</span><span class="o">.</span><span class="n">is_best_action</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">is_best_action</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">best_child</span> <span class="o">=</span> <span class="n">child</span>
+            <span class="n">children</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">GameNode</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">best_child</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">state_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="n">node</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Instead of simply returning the best value from the game, we construct an entire strategy profile for all players using the <code class="docutils literal notranslate"><span class="pre">GameNode</span></code> objects. The result is a game tree with nodes annotated by their value that is induced up the tree.</p>
+<p>Consider the following example, which is just an abstract game with two players:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.extensive_form_game</span> <span class="kn">import</span> <span class="n">ExtensiveFormGame</span>
+
+<span class="n">ONE</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+<span class="n">TWO</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">AbstractExtensiveFormGame</span><span class="p">(</span><span class="n">ExtensiveFormGame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of players for this game as a list [1, ..., N]&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_players</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ONE</span><span class="p">,</span> <span class="n">TWO</span><span class="p">]</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the valid actions at a state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">]</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">]</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">actions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">actions</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the state resulting from playing an action in a state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;E&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span>
+        <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">transitions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">transitions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the reward for a state, return as a dictionary mapping players to rewards &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">rewards</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]:</span>
+            <span class="n">rewards</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+            <span class="n">rewards</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+            <span class="n">rewards</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+            <span class="n">rewards</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+            <span class="n">rewards</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">rewards</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">ONE</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TWO</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return true if and only if state is a terminal state of this game &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the player who selects the action at this state (whose turn it is) &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_player_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TWO</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the initial state of this game &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can solve this with the following code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.abstract_extensive_form_game</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AbstractExtensiveFormGame</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.backward_induction</span> <span class="kn">import</span> <span class="n">BackwardInduction</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.utils.graph_visualisation</span> <span class="kn">import</span> <span class="n">GraphVisualisation</span>
+
+<span class="n">game</span> <span class="o">=</span> <span class="n">AbstractExtensiveFormGame</span><span class="p">()</span>
+<span class="n">backward_induction</span> <span class="o">=</span> <span class="n">BackwardInduction</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">backward_induction</span><span class="o">.</span><span class="n">backward_induction</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+
+<span class="n">gv</span> <span class="o">=</span> <span class="n">GraphVisualisation</span><span class="p">(</span><span class="n">max_level</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">node_to_graph</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="n">game</span><span class="o">.</span><span class="n">game_tree</span><span class="p">(),</span> <span class="n">print_value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">graph</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/71bc2c4aa4d42ccba411ebd45f840e901a4788a409d6e0bb1e25a5f0f6f78d6f.svg" src="../_images/71bc2c4aa4d42ccba411ebd45f840e901a4788a409d6e0bb1e25a5f0f6f78d6f.svg" /></div>
+</div>
+<p>We can see the subgame perfect-equilibria in the bottom-left subgame is  (3,8) because player 2 will choose C rather than D, preferring a payoff of 8 more than 3. This value is propagated to the parent node. Subsequently, this becomes the value of the entire game as player 1 will choose A over B, preferring a payoff of 3 rather than 2 in the other sub-game.</p>
+</section>
+<section id="tictactoe">
+<h2>Tictactoe<a class="headerlink" href="#tictactoe" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-tic-tac-toe admonition">
+<p class="admonition-title">Video byte: Example – Tic Tac Toe</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=959" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>For a slightly larger game (which is still small by standards of games), let’s look at Tictactoe. The game itself is too large to display as a game tree, but let’s just look at two parts. First, we show just the root node and its children.  The equilibria of the sub-games show that even going first, there is no way to ensure you win:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.tictactoe</span> <span class="kn">import</span> <span class="n">TicTacToe</span>
+
+<span class="n">tictactoe</span> <span class="o">=</span> <span class="n">TicTacToe</span><span class="p">()</span>
+<span class="n">backward_induction</span> <span class="o">=</span> <span class="n">BackwardInduction</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">)</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">backward_induction</span><span class="o">.</span><span class="n">backward_induction</span><span class="p">(</span><span class="n">tictactoe</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+<span class="n">gv</span> <span class="o">=</span> <span class="n">GraphVisualisation</span><span class="p">(</span><span class="n">max_level</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tictactoe_subgraph</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">node_to_graph</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">print_state</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">print_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">tictactoe_subgraph</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/87ce24492636c3a810f50d564993e19c31980f280c4cc4f8e6748a31042c8040.svg" src="../_images/87ce24492636c3a810f50d564993e19c31980f280c4cc4f8e6748a31042c8040.svg" /></div>
+</div>
+<p>Next, we show that from the state where the top row of the game is x-o-o,  the second is e-e-x (where e is ‘empty’), and the third row is empty, playing in the middle cell will guarantee a win for ‘x’ to win regardless what player ‘o’ does:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.tictactoe</span> <span class="kn">import</span> <span class="n">TicTacToe</span>
+
+<span class="n">tictactoe</span> <span class="o">=</span> <span class="n">TicTacToe</span><span class="p">()</span>
+<span class="n">backward_induction</span> <span class="o">=</span> <span class="n">BackwardInduction</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">)</span>
+<span class="n">state</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">],</span>
+         <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">],</span>
+         <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">]]</span>
+
+
+<span class="n">next_state</span> <span class="o">=</span> <span class="n">tictactoe</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">backward_induction</span><span class="o">.</span><span class="n">backward_induction</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+<span class="n">gv</span> <span class="o">=</span> <span class="n">GraphVisualisation</span><span class="p">(</span><span class="n">max_level</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">tictactoe_subgraph</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">node_to_graph</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">print_state</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">print_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">tictactoe_subgraph</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/53e1e528c27cd5064145ef96b708a3de3183dacc5739acb63e21c1b60a00bb3f.svg" src="../_images/53e1e528c27cd5064145ef96b708a3de3183dacc5739acb63e21c1b60a00bb3f.svg" /></div>
+</div>
+<p>As a result, the equilibrium of this sub-game is (1, -1). No matter which move player ‘o’ takes, they cannot draw or win if player ‘x’ follows the strategy highlighted.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./multi-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="extensive-form.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Extensive form games</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="multi-agent-rl.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi-agent reinforcement learning</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tictactoe">Tictactoe</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

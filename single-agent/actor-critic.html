@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Actor-critic methods &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/actor-critic';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Q-function approximation" href="function-approximation.html" />
+    <link rel="prev" title="Policy gradients" href="policy-gradients.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/actor-critic.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/actor-critic.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Actor-critic methods</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-actor-critic">Q Actor-Critic</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="actor-critic-methods">
+<span id="sec-policy-based-actor-critic"></span><h1>Actor-critic methods<a class="headerlink" href="#actor-critic-methods" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Apply actor-critic methods to solve small-scale MDP problems manually and program actor critic algorithms to solve medium-scale MDP problems automatically.</p></li>
+<li><p>Compare and contrast actor-critic methods with policy gradient methods like REINFORCE and value-based reinforcement learning.</p></li>
+</ol>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-actor-critic-methods admonition">
+<p class="admonition-title">Video byte: Actor-critic methods</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1053" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards <span class="math notranslate nohighlight">\(G\)</span> over episodes leads to instability.</p>
+<p><strong>Actor critic</strong> methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the <strong>actor</strong> and the  value function is called the <strong>critic</strong>. The primary idea is that the actor produces actions, and as in <a class="reference internal" href="temporal-difference-learning.html#sec-model-free-td-learning"><span class="std std-ref">temporal difference learning</span></a>, the  value function (the critic) provides feedback or “criticism” about these actions as a way of bootstrapping.</p>
+<figure class="align-default" id="fig-actor-critic-loop">
+<img alt="An abstract illustration of an actor critic algorithm. There are four boxes: environment, sample action, update actor, and update critic. From sample action to update actor  is an arrow labelled with the letter a-prime, representing the action that will be executed by the agent in the environment. The update actor uses a-prime to update the policy; that is, the actor. From update actor to update critic is an arrow labelled lower-case delta, representing the amount to update the critic. From the critic to the environment is the action a-prime again. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime." src="../_images/actor_critic_loop.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">An abstraction illustration of the actor-critic framework.</span><a class="headerlink" href="#fig-actor-critic-loop" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-actor-critic-loop"><span class="std std-numref">Fig. 13</span></a> gives an abstract overview of actor-critic frameworks — in this case, Q actor-critic. As with REINFORCE, actions are samples from the stochastic policy <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span>. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.</p>
+<section id="q-actor-critic">
+<h2>Q Actor-Critic<a class="headerlink" href="#q-actor-critic" title="Link to this heading">#</a></h2>
+<p>The <strong>Q Actor Critic</strong> algorithm uses a Q-function as the critic.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-actor-critic admonition">
+<p class="admonition-title">Video byte: Q actor critic</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1313" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="proof algorithm admonition" id="algorithm:q-actor-critic">
+<p class="admonition-title"><span class="caption-number">Algorithm 13 </span> (Q Actor Critic)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\alginput:\ \text{A differentiable actor policy}\ \pi_{\theta}(s,a)\\
+\alginput:\ \text{A differentiable critic Q-function}\ Q_w(s,a)\\
+\algoutput:\ \text{Policy}\ \pi_{\theta}(s,a) \\[2mm]
+\text{Initialise actor}\ \pi\ \text{parameters}\ \theta\ \text{and critic parameters}\ w\ \text{arbitrarily}\\[2mm]
+\algrepeat\ \text{(for each episode}\ e\ \text{)}\\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \text{Select action}\ a \sim \pi_\theta(s, a)\\
+\quad\quad \algrepeat\ \text{(for each step in episode e)}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s', a')\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)\\
+\quad\quad\quad\quad w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad s \leftarrow s'; a \leftarrow a'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ \pi_{\theta}\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><p>Note that we have two different learning rates <span class="math notranslate nohighlight">\(\alpha_w\)</span> and <span class="math notranslate nohighlight">\(\alpha_{\theta}\)</span> for the Q-function and policy respectively.</p>
+<p>Let’s analyse the key parts in more detail. The line that updates <span class="math notranslate nohighlight">\(\delta\)</span> is the same as the <span class="math notranslate nohighlight">\(\delta\)</span> calculation in SARSA:  it is temporal difference value for executing action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span>, with the estimate of the future discount reward being <span class="math notranslate nohighlight">\(Q_w(s',a')\)</span>.</p>
+<p>Once the <span class="math notranslate nohighlight">\(\delta\)</span> value is calculated, we update both the actor and the critic.  The weights of the critic <span class="math notranslate nohighlight">\(Q_w\)</span> are updated by following the gradient <span class="math notranslate nohighlight">\(\nabla Q_w(s,a)\)</span> of the critic Q-function at <span class="math notranslate nohighlight">\(s,a\)</span>, and then the parameters of the actor <span class="math notranslate nohighlight">\(\theta\)</span> are updated the same way as in REINFORCE, except that the value of <span class="math notranslate nohighlight">\(\delta\)</span> uses the temporal difference estimate based on <span class="math notranslate nohighlight">\(Q_w(s,a)\)</span> instead of using <span class="math notranslate nohighlight">\(G\)</span>.</p>
+<p>So, this simultaneously learns the policy (actor) <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span> and a critic (Q-function) <span class="math notranslate nohighlight">\(Q_w\)</span>, but the critic is learnt only to provide the temporal difference update, not to extract the policy.</p>
+<p><strong>But wait!</strong> Didn’t we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven’t we now gone backwards by including a Q-function? Why not just use the Q-function directly?</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-policy-gradients admonition">
+<p class="admonition-title">Video byte: Summary of policy gradients</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/33UdQc2nBDU?start=1610" title="Policy gradients" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The reason the actor critic methods still work like this is because the actor policy <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span> selects actions for us, while the critic <span class="math notranslate nohighlight">\(Q_w(s,a)\)</span> is only ever used to calculate the temporal difference estimate for an already selected action. We do not have to iterate over the critic Q-function to select actions, so we do not have to iterate over the set of actions – we just use the policy. As such, this will still extend to continuous and large state spaces and be more efficient for large action space.</p>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>To implement the Q Actor Critic framework, we first create a new base class called <code class="docutils literal notranslate"><span class="pre">ActorCritic</span></code>, which can be used as a base for other types of actor critic methods, such as <strong>advantage actor critics</strong>, which we will not discuss here.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ActorCritic</span></code> class is an abstract class that looks similar to that of <code class="docutils literal notranslate"><span class="pre">QLearning</span></code>, except that we update both the actor and the critic:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.model_free_learner</span> <span class="kn">import</span> <span class="n">ModelFreeLearner</span>
+
+
+<span class="k">class</span> <span class="nc">ActorCritic</span><span class="p">(</span><span class="n">ModelFreeLearner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor</span> <span class="o">=</span> <span class="n">actor</span>  <span class="c1"># Actor (policy based) to select actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span>  <span class="c1"># Critic (value based) to evaluate actions</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_episode_length</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)):</span>
+        <span class="n">episode_rewards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">episodes</span><span class="p">):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">()</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+            <span class="n">episode_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+                <span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span>
+                    <span class="n">next_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_delta</span><span class="p">(</span>
+                    <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">,</span> <span class="n">done</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Update both models immediately using the current transition.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_critic</span><span class="p">([</span><span class="n">state</span><span class="p">],</span> <span class="p">[</span><span class="n">action</span><span class="p">],</span> <span class="p">[</span><span class="n">delta</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_actor</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">state</span><span class="p">],</span> <span class="p">[</span><span class="n">action</span><span class="p">],</span> <span class="p">[</span><span class="n">delta</span><span class="p">],</span> <span class="n">action_spaces</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+                <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">next_action</span>
+                <span class="n">episode_reward</span> <span class="o">+=</span> <span class="n">reward</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">**</span> <span class="n">step</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">done</span> <span class="ow">or</span> <span class="n">step</span> <span class="o">==</span> <span class="n">max_episode_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">episode_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">episode_reward</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">episode_rewards</span>
+
+    <span class="k">def</span> <span class="nf">calculate_deltas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">rewards</span><span class="p">):</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">G_t</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">rewards</span><span class="p">):</span>
+            <span class="n">G_t</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="n">G_t</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">G_t</span><span class="p">)</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">[</span><span class="n">reward</span> <span class="o">-</span> <span class="n">value</span> <span class="k">for</span> <span class="n">reward</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">values</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">deltas</span>
+
+    <span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">next_state_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_value</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">reward</span>
+            <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="n">next_state_value</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">done</span><span class="p">))</span>
+            <span class="o">-</span> <span class="n">q_value</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">,</span> <span class="n">action_spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note from the code above that we use the actor (the policy) to choose an action, and then update both the critic and the actor. In this particular implementation, we batch update the actor policy at the end of the episode.</p>
+<p>Next, we have to instantiate the  <code class="docutils literal notranslate"><span class="pre">ActorCritic</span></code> class as a <code class="docutils literal notranslate"><span class="pre">QActorCritic</span></code> class to implement the <code class="docutils literal notranslate"><span class="pre">update_actor</span></code> and <code class="docutils literal notranslate"><span class="pre">update_critic</span></code> classes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.actor_critic</span> <span class="kn">import</span> <span class="n">ActorCritic</span>
+
+
+<span class="k">class</span> <span class="nc">QActorCritic</span><span class="p">(</span><span class="n">ActorCritic</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="n">critic</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">,</span> <span class="n">action_spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">,</span> <span class="n">action_spaces</span><span class="o">=</span><span class="n">action_spaces</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">batch_update</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we can create a policy and Q-function using any differentiable policy and any Q-function implementation. We choose <code class="docutils literal notranslate"><span class="pre">DeepNeuralNetworkPolicy</span></code> and <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> with <code class="docutils literal notranslate"><span class="pre">QLearning</span></code> updates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.q_actor_critic</span> <span class="kn">import</span> <span class="n">QActorCritic</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.deep_nn_policy</span> <span class="kn">import</span> <span class="n">DeepNeuralNetworkPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.deep_q_function</span> <span class="kn">import</span> <span class="n">DeepQFunction</span>
+
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">action_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+<span class="n">state_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+
+<span class="c1"># Instantiate the actor</span>
+<span class="n">actor</span> <span class="o">=</span> <span class="n">DeepNeuralNetworkPolicy</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+
+<span class="c1"># Instantiate the critic</span>
+<span class="n">critic</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+
+<span class="c1">#  Instantiate the actor critic agent</span>
+<span class="n">learner</span> <span class="o">=</span> <span class="n">QActorCritic</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="n">critic</span><span class="p">)</span>
+<span class="n">episode_rewards</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">critic</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_stochastic_policy</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ac8e919c364d7c35acafc5ef25d71f504852e79d0dcb0dfba98d5df5e78c4f3b.png" src="../_images/ac8e919c364d7c35acafc5ef25d71f504852e79d0dcb0dfba98d5df5e78c4f3b.png" />
+<img alt="../_images/66124995a7f4ca26973f5547cf9263f374fbb4cfd4e9ba596716cb5c53fb7c58.png" src="../_images/66124995a7f4ca26973f5547cf9263f374fbb4cfd4e9ba596716cb5c53fb7c58.png" />
+</div>
+</div>
+<p>We can see that the actor critic agent has learnt both a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.</p>
+</section>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>Like REINFORCE, <strong>actor-critic</strong> methods are policy-gradient based, so directly learn a policy instead of first learning a value function or Q-function.</p></li>
+<li><p>Actor-critic methods also learn a <strong>value function or Q-function</strong> to reduce the variance in the cumulative rewards.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="policy-gradients.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Policy gradients</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="function-approximation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Q-function approximation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-actor-critic">Q Actor-Critic</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

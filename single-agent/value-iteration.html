@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Value Iteration &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/value-iteration';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multi-armed bandits" href="multi-armed-bandits.html" />
+    <link rel="prev" title="Markov Decision Processes" href="MDPs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/value-iteration.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/value-iteration.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Value Iteration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-for-gridworld">Example: Value iteration for GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-policies">Evaluating policies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-examples">Further examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-for-maze-solving">Example: Value iteration for maze solving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-in-contested-crossing">Example: Value iteration in Contested Crossing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complexity">Complexity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="value-iteration">
+<span id="sec-value-iteration"></span><h1>Value Iteration<a class="headerlink" href="#value-iteration" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Apply value iteration to solve small-scale MDP problems manually and program value iteration algorithms to  solve medium-scale MDP problems automatically.</p></li>
+<li><p>Construct a policy from a value function.</p></li>
+<li><p>Discuss the strengths and weaknesses of value iteration.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p><strong>Value Iteration</strong> is a dynamic-programming method for finding the optimal value function <span class="math notranslate nohighlight">\(V^*\)</span> by solving the Bellman equations iteratively. It uses the concept of dynamic programming to maintain  a value function <span class="math notranslate nohighlight">\(V\)</span> that approximates the optimal value function <span class="math notranslate nohighlight">\(V^*\)</span>, iteratively improving <span class="math notranslate nohighlight">\(V\)</span> until it converges to <span class="math notranslate nohighlight">\(V^*\)</span> (or close to it).</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-value-iteration admonition">
+<p class="admonition-title">Video byte: Introduction to value iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1988" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">#</a></h2>
+<p>Once we understand the Bellman equation, the value iteration algorithm is straightforward: we just repeatedly calculate <span class="math notranslate nohighlight">\(V\)</span> using the Bellman equation until we converge to the solution or we execute a pre-determined number of iterations.</p>
+<div class="proof algorithm admonition" id="algorithm:value-iteration">
+<p class="admonition-title"><span class="caption-number">Algorithm 1 </span> (Value iteration)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(\begin{array}{l}
+  \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+  \algoutput:\ \text{Value function}\ V\\[2mm]
+  \text{Set}\ V\ \text{to arbitrary value function; e.g., }\ V(s) = 0\ \text{for all}\ s\\[2mm]
+  \algrepeat\ \\
+  \quad\quad \Delta \leftarrow 0 \\
+  \quad\quad \algforeach\ s \in S \\
+  \quad\quad\quad\quad \underbrace{V'(s) \leftarrow \max_{a \in A(s)} \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') + 
+ \gamma\ V(s') ]}_{\text{Bellman equation}} \\
+  \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'(s) - V(s)|) \\
+  \quad\quad V \leftarrow V' \\
+  \alguntil\ \Delta \leq \theta 
+\end{array}
+\)</span></p>
+</section>
+</div><aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-value-iteration-on-gridworld admonition">
+<p class="admonition-title">Video byte: Example – Value iteration on GridWorld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2295" title="Value iteration on GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>As we can see, this is just applying the Bellman equation iteratively until either the value function <span class="math notranslate nohighlight">\(V\)</span> doesn’t change anymore, or until it changes in by a very small amount (<span class="math notranslate nohighlight">\(\theta\)</span>).</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-quiz-value-iteration-in-gridworld admonition">
+<p class="admonition-title">Video byte: Quiz – Value iteration in GridWorld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2773" title="Quiz: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>We could also write the algorithm using the idea of Q-values, which is closer to a code-based implementation. For this, the loop is:</p>
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \quad\quad \Delta \leftarrow 0 \\
+  \quad\quad \algforeach\ s \in S \\
+  \quad\quad\quad\quad \algforeach\ a \in A(s) \\
+  \quad\quad\quad\quad\quad\quad Q(s,a) \leftarrow \sum_{s' \in S}  P_a(s' \mid s)\ [r(s,a,s') +  \gamma\ V(s') ] \\
+  \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |\max_{a \in A(s)} Q(s,a) - V(s)|) \\
+  \quad\quad\quad\quad V(s) \leftarrow \max_{a \in A(s)} Q(s,a)
+\end{array}
+\)</span></p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-quiz-answer-value-iteration-in-gridworld admonition">
+<p class="admonition-title">Video byte: Quiz answer – Value iteration in GridWorld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=2801" title="Quiz answer: Value iteration in GridWorld" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Value iteration converges to the optimal policy as iterations continue: <span class="math notranslate nohighlight">\(V \mapsto V^*\)</span> as <span class="math notranslate nohighlight">\(i \mapsto \infty\)</span>, where <span class="math notranslate nohighlight">\(i\)</span> is the number of iterations. So, given an infinite amount of iterations, it will be optimal.</p>
+<p>Value iteration <strong>converges</strong> to the optimal value function <span class="math notranslate nohighlight">\(V^*\)</span> asymptotically, but in practice, the algorithm terminates when the <strong>residual</strong>  <span class="math notranslate nohighlight">\(\Delta\)</span> reaches some pre-determined threshold <span class="math notranslate nohighlight">\(\theta\)</span> – that is, when the largest change in the values between iterations is “small enough”.</p>
+<p>A policy can now be easily defined: in a state <span class="math notranslate nohighlight">\(s\)</span>, given <span class="math notranslate nohighlight">\(V\)</span>, choose the action with the highest expected reward using <a class="reference internal" href="MDPs.html#sec-mdps-policy-extraction"><span class="std std-ref">policy extraction</span></a>.</p>
+<p>The loss of the result greedy policy terminating after <span class="math notranslate nohighlight">\(k\)</span> iterations is bounded by <span class="math notranslate nohighlight">\(\frac{2 \gamma  \delta_{max}}{1-\gamma}\)</span>, where <span class="math notranslate nohighlight">\(\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|\)</span>.</p>
+<p>Note that we do not need an optimal value function <span class="math notranslate nohighlight">\(V\)</span> to obtain an optimal policy. A value function that is “close enough” can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not <em>know</em> whether a policy is optimal unless we know the value function is optimal.</p>
+</section>
+<section id="implementation">
+<span id="sec-value-iteration-implementation"></span><h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<p>Below is a Python implementation for value iteration. In this implementation, the parameter <code class="docutils literal notranslate"><span class="pre">iterations</span></code> is the number of iterations around the loop, which will terminate before convergence is the maximum number of iterations is reach. The parameter <code class="docutils literal notranslate"><span class="pre">theta</span></code> is <span class="math notranslate nohighlight">\(\theta\)</span> in the value iteration algorithm above. Once the difference (<span class="math notranslate nohighlight">\(\Delta\)</span>) is less than <code class="docutils literal notranslate"><span class="pre">theta</span></code> , the loop will terminate.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.value_functions.tabular_value_function</span> <span class="kn">import</span> <span class="n">TabularValueFunction</span>
+
+
+<span class="k">class</span> <span class="nc">ValueIteration</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">value_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">new_values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+                <span class="n">qtable</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                    <span class="c1"># Calculate the value of Q(s,a)</span>
+                    <span class="n">new_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="k">for</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">probability</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_transitions</span><span class="p">(</span>
+                        <span class="n">state</span><span class="p">,</span> <span class="n">action</span>
+                    <span class="p">):</span>
+                        <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">new_state</span><span class="p">)</span>
+                        <span class="n">new_value</span> <span class="o">+=</span> <span class="n">probability</span> <span class="o">*</span> <span class="p">(</span>
+                            <span class="n">reward</span>
+                            <span class="o">+</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span>
+                                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="n">qtable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+                <span class="c1"># V(s) = max_a Q(sa)</span>
+                <span class="n">max_q</span> <span class="o">=</span> <span class="n">qtable</span><span class="o">.</span><span class="n">get_max_q</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">-</span> <span class="n">max_q</span><span class="p">))</span>
+                <span class="n">new_values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">max_q</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span>
+
+            <span class="c1"># Terminate if the value function has converged</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;</span> <span class="n">theta</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="example-value-iteration-for-gridworld">
+<h3>Example: Value iteration for GridWorld<a class="headerlink" href="#example-value-iteration-for-gridworld" title="Link to this heading">#</a></h3>
+<p>Given this, we can create a GridWorld MDP, and solve using value iteration. The code below computes a value function using value iteration for 100 iterations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.value_iteration</span> <span class="kn">import</span> <span class="n">ValueIteration</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.value_policy</span> <span class="kn">import</span> <span class="n">ValuePolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.value_functions.tabular_value_function</span> <span class="kn">import</span> <span class="n">TabularValueFunction</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+
+<span class="n">ValueIteration</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_value_function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;Value function after iteration 100&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3aef5d4b34dd72326e894f892b3a123928ba06f36bdae2e84e4fb1b38dc73723.png" src="../_images/3aef5d4b34dd72326e894f892b3a123928ba06f36bdae2e84e4fb1b38dc73723.png" />
+</div>
+</div>
+<p>From the value function, we extract a policy:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">ValuePolicy</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;Policy after iteration 100&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/70bc88036df39b3eadba13bc2a16770e6b657e8e3ef0d36eb7034c35d8c6c539.png" src="../_images/70bc88036df39b3eadba13bc2a16770e6b657e8e3ef0d36eb7034c35d8c6c539.png" />
+</div>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-convergence-of-value-iteration admonition">
+<p class="admonition-title">Video byte: Convergence of value iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3134" title="Convergence of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Stepping through the 100 iterations, we can see that using value iteration, the values converge within about 10 iterations (to two decimal places), with each iteration giving us diminishing returns:</p>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="gridworld_value_function" src=https://mastering-rl.github.io/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="gridworld_value_function" width=500></gif-player>
+</div>
+<p>
+</section>
+</section>
+<section id="evaluating-policies">
+<span id="sec-value-iteration-evaluating-policies"></span><h2>Evaluating policies<a class="headerlink" href="#evaluating-policies" title="Link to this heading">#</a></h2>
+<p>We can see the improvement that value iteration has on each iteration by extracting the policy after each iteration, running the policy on the GridWorld, and plotting the cumulative reward that is received. We run value iteration on GridWorld for 1 iteration, but 50 times, using the same value function each time, meaning the the value iteration algorithm will update the value function. After each iteration, we extract the policy and execute the policy for 1 episode, recording the cumulative reward that was received:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.policies.stochastic_value_policy</span> <span class="kn">import</span> <span class="n">StochasticValuePolicy</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticValuePolicy</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">gridworld</span><span class="o">.</span><span class="n">execute_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">ValueIteration</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticValuePolicy</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+    <span class="n">rewards</span> <span class="o">+=</span> <span class="n">gridworld</span><span class="o">.</span><span class="n">execute_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example, we use a <code class="docutils literal notranslate"><span class="pre">StochasticValuePolicy</span></code>, which uses a <a class="reference internal" href="multi-armed-bandits.html#sec-multi-armed-bandits"><span class="std std-ref">multi-armed bandit</span></a> to sometimes (10% of the time) select a random action instead of the action that leads to the best value.</p>
+<p>Why do this?</p>
+<p>Because a policy can contain loops! That is, in state <span class="math notranslate nohighlight">\(s_1\)</span>, the policy tells us to execute action <span class="math notranslate nohighlight">\(a_1\)</span>, taking us to state <span class="math notranslate nohighlight">\(s_2\)</span>. Then from state <span class="math notranslate nohighlight">\(s_2\)</span>, the policy tells us to execute action <span class="math notranslate nohighlight">\(a_2\)</span>, which takes us back to state <span class="math notranslate nohighlight">\(s_1\)</span>. Again, the policy will tell us to execute action <span class="math notranslate nohighlight">\(a_1\)</span>, return to state <span class="math notranslate nohighlight">\(s_2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ 
+\ldots s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} \ldots
+\]</div>
+<p>When we train GridWorld with 100 iterations, the resulting policy is (close to) optimal, and contains no loops. However, an initial policy is likely to contain some behaviour that makes it impossible to reach an end state. For example, in GridWorld, if the default action is <em>Left</em> in every state, the agent will never be able to go <em>Right</em>, even if the action is unsuccessful. Therefore, it can never reach the end state.</p>
+<p>If a policy contains a loop, it will loop infinitely  when: (a) the policy is deterministic (not stochastic); and (b) the environment actions are deterministic (not stochastic).</p>
+<p>This is particularly the case in early iterations, when we have minimal information to select actions. By sometimes selecting a random action, we will eventually exit the loop.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">rewards</span></code> variables contains the cumulative reward for each of the 50 episodes. We can plot this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Value iteration&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/249bf6185d099329c78b3d6d21dfdd7fdea5279439fe352d4cdb73ddc4204c17.png" src="../_images/249bf6185d099329c78b3d6d21dfdd7fdea5279439fe352d4cdb73ddc4204c17.png" />
+</div>
+</div>
+<p>As we can see, there is quite a bit of noise. This is because of the randomness in the GridWorld problem: each time an agent executes an action, it is successful 80% of the time, but fails 20%. Sometimes, the agent will fall into the hole in cell (2,1), and will receive reward -1.</p>
+<p>However, we can smooth out the noise by plotting the exponential moving average (EMA), which averages the rewards received so far, but exponentially discounting rewards that are further in the past (earlier in the list).  This is a standard way of smoothing time series data. Given a <strong>smoothing factor</strong> <span class="math notranslate nohighlight">\(\alpha \in [0,1]\)</span>, we calculate the smoothed value <span class="math notranslate nohighlight">\(s_t\)</span> at step (or time) <span class="math notranslate nohighlight">\(t\)</span>, the EMA for a sequence <span class="math notranslate nohighlight">\(\vec{x}\)</span> is calculated:</p>
+<p><span class="math notranslate nohighlight">\(\quad\quad s_0 = \vec{x}_0\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad s_t = (1 - \alpha) \cdot \vec{x}_t + \alpha \cdot s_{t-1} \quad \textrm{when}\ t &gt; 0\)</span></p>
+<p>A higher value of <span class="math notranslate nohighlight">\(\alpha\)</span> smooths the data more — that is, earlier values have more influence on <span class="math notranslate nohighlight">\(s_t\)</span>. A value of <span class="math notranslate nohighlight">\(\alpha=0\)</span> just means that <span class="math notranslate nohighlight">\(s_t = \vec{x}_t\)</span> (see the example above where we plot the cumulative rewards with <code class="docutils literal notranslate"><span class="pre">smoothing_factor=0.0</span></code>); while a value of <span class="math notranslate nohighlight">\(\alpha=1\)</span> means that <span class="math notranslate nohighlight">\(s_t = \vec{x}_0\)</span> for any <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>An implementation of the EMA in Python is shown below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_ema</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="n">smoothed_rewards</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">reward</span> <span class="ow">in</span> <span class="n">rewards</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">smoothed_rewards</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="n">smoothed_rewards</span> <span class="o">=</span> <span class="p">[</span><span class="n">reward</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">smoothed_rewards</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">smoothed_rewards</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">smoothing_factor</span>
+                <span class="o">+</span> <span class="n">reward</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">smoothing_factor</span><span class="p">)</span>
+            <span class="p">]</span>
+    <span class="k">return</span> <span class="n">smoothed_rewards</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Setting the smoothing factor <span class="math notranslate nohighlight">\(\alpha=0.9\)</span>, we can better see the trend that the policy gets increasingly better values:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Value iteration&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8d2796612a663de055ac51e47472563eaf61f895c0dcf2fcab54db43553f84ef.png" src="../_images/8d2796612a663de055ac51e47472563eaf61f895c0dcf2fcab54db43553f84ef.png" />
+</div>
+</div>
+<p>Even though the value function (and policy) are monotonically converging towards their optimal values, the curve still has some noise because of randomness in the GridWorld problem.</p>
+<p>We can show this by creating an instance of a deterministic <code class="docutils literal notranslate"><span class="pre">GridWorld</span></code> class, using the parameter <code class="docutils literal notranslate"><span class="pre">noise=0.0</span></code>. The <code class="docutils literal notranslate"><span class="pre">noise</span></code> parameter controls action failures in <code class="docutils literal notranslate"><span class="pre">GridWorld</span></code>, so that when the agent selects an action, it will fail with probability <code class="docutils literal notranslate"><span class="pre">noise</span></code>. When <code class="docutils literal notranslate"><span class="pre">noise==0.0</span></code>, the action will always be successful:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">noise</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticValuePolicy</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">gridworld</span><span class="o">.</span><span class="n">execute_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">ValueIteration</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticValuePolicy</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+    <span class="n">rewards</span> <span class="o">+=</span> <span class="n">gridworld</span><span class="o">.</span><span class="n">execute_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Plotting this with no smoothing shows that we reach the optimal policy in much fewer iterations than value iteration terminates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Value iteration&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dd2a0b363c7ec82d708ef22af102d2f910b303426f678eb35de32473d8328ef5.png" src="../_images/dd2a0b363c7ec82d708ef22af102d2f910b303426f678eb35de32473d8328ef5.png" />
+</div>
+</div>
+<p>Plotting this with smoothing at <span class="math notranslate nohighlight">\(\alpha=0.9\)</span> shows the gradual convergence nicely:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Value iteration&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/21fa914c5a23bc0b44572932773e2c780fa20023d57f2978df239e32422f18af.png" src="../_images/21fa914c5a23bc0b44572932773e2c780fa20023d57f2978df239e32422f18af.png" />
+</div>
+</div>
+</section>
+<section id="further-examples">
+<h2>Further examples<a class="headerlink" href="#further-examples" title="Link to this heading">#</a></h2>
+<section id="example-value-iteration-for-maze-solving">
+<h3>Example: Value iteration for maze solving<a class="headerlink" href="#example-value-iteration-for-maze-solving" title="Link to this heading">#</a></h3>
+<p>We can use the same technique to solve a maze. Below is the value function, obtained using value iteration, of a small maze with two rewards: +1 for existing the maze, and +5 for picking up an object along the way. It is not possible to visualise the value function in a single static image like this, because one part of the MDP state is a Boolean indicating whether the +5 reward has been collected already. However, we can see here the value function would produce a policy that ensure the +5 reward was collected before going to the exit:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.value_iteration</span> <span class="kn">import</span> <span class="n">ValueIteration</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.stochastic_value_policy</span> <span class="kn">import</span> <span class="n">StochasticValuePolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.value_functions.tabular_value_function</span> <span class="kn">import</span> <span class="n">TabularValueFunction</span>
+
+<span class="n">maze</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../mastering_rl/layouts/maze.txt&#39;</span><span class="p">)</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticValuePolicy</span><span class="p">(</span><span class="n">maze</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<span class="n">ValueIteration</span><span class="p">(</span><span class="n">maze</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">maze</span><span class="o">.</span><span class="n">visualise_value_function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;Maze value function after iteration 100&quot;</span><span class="p">)</span>
+<span class="n">maze</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;Maze policy after iteration 100&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5384c55b09c6b4ff3c0a73400ab972541127e5087eca0ef7d19b8468d40a81e8.png" src="../_images/5384c55b09c6b4ff3c0a73400ab972541127e5087eca0ef7d19b8468d40a81e8.png" />
+<img alt="../_images/9984d7f7be98aa71e3c445df94f0c7e11f7ad4239af15252b999acf1cd23fa40.png" src="../_images/9984d7f7be98aa71e3c445df94f0c7e11f7ad4239af15252b999acf1cd23fa40.png" />
+</div>
+</div>
+</section>
+<section id="example-value-iteration-in-contested-crossing">
+<h3>Example: Value iteration in Contested Crossing<a class="headerlink" href="#example-value-iteration-in-contested-crossing" title="Link to this heading">#</a></h3>
+<p>The process works in exactly the same way for the Contested Crossing problem. However, in this case, the state space is no longer represented only by the coordinates of the agent. We also have to take into account non-locational information - damage to the ship, damage to the enemy, and the previous direction of travel - since these features will also affect the likelihood of the ship reaching its goal.</p>
+<p>This can be difficult to visualise graphically. We can no longer simply assign one value to each physical location and so map the progress of the agent from each value to the largest adjacent one. We can, however, use other ways to get a general sense of how the state affects the behaviour of an agent at any one point. For instance, we can show the mean and standard deviation values for all states that are at a single location, as follows</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.value_iteration</span> <span class="kn">import</span> <span class="n">ValueIteration</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.contested_crossing</span> <span class="kn">import</span> <span class="n">ContestedCrossing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.value_functions.tabular_value_function</span> <span class="kn">import</span> <span class="n">TabularValueFunction</span>
+
+
+<span class="n">ccross</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">TabularValueFunction</span><span class="p">()</span>
+<span class="n">ValueIteration</span><span class="p">(</span><span class="n">ccross</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value_iteration</span><span class="p">(</span><span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">ccross</span><span class="o">.</span><span class="n">visualise_value_function</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">,</span> <span class="s2">&quot;Value function after iteration 100&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cell_size</span><span class="o">=</span><span class="mf">1.25</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/da012e9f6e1214138c6e6fa7139168b0ac9223324cac1f32d565eed252c6319a.png" src="../_images/da012e9f6e1214138c6e6fa7139168b0ac9223324cac1f32d565eed252c6319a.png" />
+</div>
+</div>
+<p>In the above, the value shown is NOT the value of the state at that location, because there are multiple states in the MDP that contain that location. Other factors, such as the ship and enemy health, are averaged into the figure.</p>
+<p>An agent simply traversing the map to each successive location with the highest mean value of all states would choose the safe path - heading west to the nearest no-danger location, traversing around the safe zones and only briefly cutting back in through the low-danger zones at the end.</p>
+<p>Below, we include a  visualisation that includes means for different values of ship health and enemy health (the two smaller columns). In this, there are two columns associated with each location: one for the ship and one for the enemy. Each columns shows the mean value of <span class="math notranslate nohighlight">\(V(s)\)</span> if the ship (enemy) has the corresponding health value. So, in the top left location, if the shop has health value of 0, the average value of the state is -10.0.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ccross</span><span class="o">.</span><span class="n">visualise_value_function</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">,</span> <span class="s2">&quot;Value function after iteration 100, with sub-tables&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cell_size</span><span class="o">=</span><span class="mf">1.25</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/228f019a81a0b0ecdefe71e40dfd1317c32159c9ca482e1a32a6fb5b79f85290.png" src="../_images/228f019a81a0b0ecdefe71e40dfd1317c32159c9ca482e1a32a6fb5b79f85290.png" />
+</div>
+</div>
+<p>The behaviour we could extract from this shows a more complicated picture than if we just consider the mean value of the states at the location. In states where the ship has full health the highest value first move is north-west and subsequent highest-value moves are all north-east, straight to the opposite shore. However, where the ship has sustained damage (health values 1 and 2) it is more likely that high-value states are found in the low-danger and no-danger areas, meaning that the ship will choose a safer path.</p>
+<p>Another way to visualise this is by aggregate policy plot or path plot of actual uses of the policy. An aggregate policy plot (aggregating at each location over all states which include that location) shows which policies may be preferred at which locations, for different full state values. The opacity of each arrow (or of the starburst which represents the ‘shoot’ action) shows how many different states have the action as policy. This is different from a stochastic policy, because the choice of policy is not based on probabilities. This is simply a representation of the fact that multiple states are visualised at one location because the problem is complex enough that visualising individual states is difficult.</p>
+<p>The path plot gives a number of episodes of the actual movement of an agent following the policy, over multiple iterations. Since the outcome of ‘shoot’ actions is random (as is the outcome of being shot at by the enemy), different paths may be taken by agents following the same policy. In this plot, the path colour becomes more red for higher values of ship damage (lower values of ship health) and becomes more blue for higher values of enemy damage. In this way we can see how the results of following the policy change depending on random outcomes during the operation of the agent. Agents that have been damaged tend to follow the safer path round the outside of the map while agents that have damaged the enemy (to the extent of destroying it completely) head straight for the nearest shore. Occasionally an agent is sunk (represented by a black star) - although the policy is optimal on average, this does not guarantee success at every iteration.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">ValuePolicy</span><span class="p">(</span><span class="n">ccross</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+<span class="n">ccross</span><span class="o">.</span><span class="n">visualise_as_image</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Policy Plot&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ccross</span><span class="o">.</span><span class="n">visualise_as_image</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Path Plot&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9f92e00286a706dd35fd234d1a86b8f23ece1af966b37515abd07140b133a6cf.png" src="../_images/9f92e00286a706dd35fd234d1a86b8f23ece1af966b37515abd07140b133a6cf.png" />
+<img alt="../_images/d4357b3ed44e4fdeb334a454bb49d284da69caee3395c380308ed2eb48b16d37.png" src="../_images/d4357b3ed44e4fdeb334a454bb49d284da69caee3395c380308ed2eb48b16d37.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="complexity">
+<h2>Complexity<a class="headerlink" href="#complexity" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-time-complexity-of-value-iteration admonition">
+<p class="admonition-title">Video byte: Time complexity of value iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3354" title="Time complexity of value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>In this section, we analyse the complexity of value iteration.</p>
+<p>The complexity of each iteration is <span class="math notranslate nohighlight">\(O(|S|^2 |A|)\)</span>. On each iteration, we iterate in an outer loop over all states in <span class="math notranslate nohighlight">\(S\)</span>, and in each outer loop iteration, we need to iterate over all states (<span class="math notranslate nohighlight">\(\sum_{s' \in S}\)</span>), meaning <span class="math notranslate nohighlight">\(|S|^2\)</span> iterations. But also within each outer loop iteration, we need to calculate the value for every action to find the maximum. How many iterations will we cover? That depends on the value of <span class="math notranslate nohighlight">\(\theta\)</span>, and cannot be pre-determined.</p>
+<p>It is clear to see that the value iteration can be easily parallelised by updating the value of many states at once: the values of states at step <span class="math notranslate nohighlight">\(t + 1\)</span> are dependent only on the value of other states at step <span class="math notranslate nohighlight">\(t\)</span>.</p>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-mdps-and-value-iteration admonition">
+<p class="admonition-title">Video byte: Summary: MDPs and value iteration</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3794" title="Summary: MDPs and value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>Value iteration is an algorithm for calculating a  value function <span class="math notranslate nohighlight">\(V\)</span>, from which a policy can be extracted using policy extraction.</p></li>
+<li><p>It produces an optimal policy  an infinite amount of time.</p></li>
+<li><p>For medium-scale problems, it can converge on the optimal policy in a “reasonable” amount of time, but does not scale as well as some other techniques.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="MDPs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Markov Decision Processes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="multi-armed-bandits.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi-armed bandits</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-for-gridworld">Example: Value iteration for GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-policies">Evaluating policies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-examples">Further examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-for-maze-solving">Example: Value iteration for maze solving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-value-iteration-in-contested-crossing">Example: Value iteration in Contested Crossing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complexity">Complexity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,667 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Modelling and abstraction for MDPs &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/modelling-and-abstraction';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Normal form games" href="../multi-agent/normal-form.html" />
+    <link rel="prev" title="Experience replay" href="experience-replay.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/modelling-and-abstraction.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/modelling-and-abstraction.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Modelling and abstraction for MDPs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstraction">Abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#state-abstraction">State abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#action-abstraction">Action abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rewarding-sub-goals">Rewarding sub-goals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partially-observable-state-variables">Partially-observable state variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heuristics">Heuristics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modelling-and-abstraction-for-mdps">
+<span id="sec-single-agent-modelling-and-abstraction"></span><h1>Modelling and abstraction for MDPs<a class="headerlink" href="#modelling-and-abstraction-for-mdps" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Describe modelling and abstraction strategies to scale MDP algorithms to problems.</p></li>
+<li><p>Apply modelling and abstraction strategies to non-trivial MDP problems.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>As discussed through Part I of this book, often our reinforcement learning algorithms struggle with <strong>scale</strong>. That is, as the state and action spaces of problems get larger, the time taken to arrive at good policies increases exponentially.</p>
+<p>Two strategies that are useful if you can apply them are to : (1) apply more computational power to the problem so that you can run more episodes or assess more states; or (2) increase the efficiency of a simulator (if you are using a simulation-based technique).</p>
+<p>However, often we may already be using all the computational power we have access to, or maybe we are not working in a simulated environment at all. In these cases, one way is to simplify the problem and solve that.</p>
+<p>In this section, I give some tips that I have found useful when applying reinforcement learning techniques. Implementing these tips requires us to understand the domain that we are working in. Such an implementation will only work on that  domain or others that are very similar – they will not likely  generalise to other domains. However, these tips/strategies themselves  are general, and would work on many domains if we take the time to apply them.</p>
+</section>
+<section id="abstraction">
+<h2>Abstraction<a class="headerlink" href="#abstraction" title="Link to this heading">#</a></h2>
+<p>One solution is to define an abstracted version of the MDP, solve that abstracted problem, and then translate the policy back to the original problem. Using abstraction, we take the original MDP model <span class="math notranslate nohighlight">\(M\)</span> that we have, and define a new MDP model <span class="math notranslate nohighlight">\(M_A\)</span> that is smaller than the original: it has fewer states and/or fewer actions than the original model.</p>
+<p>The process is that the modeller should ask themselves the following questions:</p>
+<ol class="arabic simple">
+<li><p>What are the important decisions that I need to make in this problem to achieve some objective?</p></li>
+<li><p>What information do I need to do this?</p></li>
+<li><p>Can I translate the original MDP action and state spaces into smaller action and state spaces so that I can access this information and discard some information that is less important?</p></li>
+</ol>
+<p>We then define an abstract model <span class="math notranslate nohighlight">\(M' = (S', s'_0, A', P', r', \gamma')\)</span> that is an abstraction of <span class="math notranslate nohighlight">\(M\)</span>, such that there is some mapping <span class="math notranslate nohighlight">\(f_s : S \rightarrow S'\)</span> such that <span class="math notranslate nohighlight">\(f_s(s)\)</span> abstracts state <span class="math notranslate nohighlight">\(s\)</span> into another state <span class="math notranslate nohighlight">\(s'\)</span>; and similarly mappings for <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(P\)</span>, <span class="math notranslate nohighlight">\(r'\)</span>, and even <span class="math notranslate nohighlight">\(\gamma\)</span> (the length of plans will be different if the action space is smaller).</p>
+<p>We solve the new model <span class="math notranslate nohighlight">\(M'\)</span>, obtaining abstract policy <span class="math notranslate nohighlight">\(\pi' : S' \rightarrow A'\)</span>. We then need to define a mapping <span class="math notranslate nohighlight">\(g : A' \rightarrow A\)</span> to map each abstract actions to actions in the original model. Given this, we can then define the policy for <span class="math notranslate nohighlight">\(M\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi(s) = g(\pi'(f_s(s)))
+\]</div>
+<p>This means that <span class="math notranslate nohighlight">\(\pi(s)\)</span> translates <span class="math notranslate nohighlight">\(s\)</span> to <span class="math notranslate nohighlight">\(s' \in S'\)</span> using <span class="math notranslate nohighlight">\(f_s\)</span>, then applies abstract policy <span class="math notranslate nohighlight">\(\pi'\)</span> to get an abstraction actions <span class="math notranslate nohighlight">\(a' \in A'\)</span>, and then maps this to concrete action <span class="math notranslate nohighlight">\(a \in A\)</span>.</p>
+<p>By “model”, I don’t just mean for model-based reinforcement learning: even in a model-free environment we can abstract the actions and states that we see, and modify the rewards, by putting a “layer” in between the environment and the reinforcement learning algorithm.</p>
+<p>For example, in these notes we use the GridWorld problem to illustrate various techniques because it is simple and intuitive. This is already an abstraction of a real navigation problem. In a real navigation problem, a robot would have to move in a continuous environment, with actions such as rotating and accelerating. However, our objective in the problem is to find the best route, not to move the wheels. For the purposes of finding the best route, we model the problem differently by dividing the state space into grids and mapping the actions into directions, as this is all the information that we need to find a good, but perhaps not optimal, route. If we wanted to actually move a robot, we would need a layer in-between that: (1) translates the real states into our abstracted grid coordinators and identifies when we are in a reward state, which is function <span class="math notranslate nohighlight">\(f_s\)</span>; and (2) translates our abstracted actions back into actions in the environment, which is function <span class="math notranslate nohighlight">\(g\)</span>. For example, the action <code class="docutils literal notranslate"><span class="pre">Right</span></code> may translate into rotating 90 degrees and then moving forward 2 metres.</p>
+<p>Sometimes a problem may already be as abstract as it can be. For example, if we are learning a controller for a robotic arm in a manufacturing facility, the information set from the sensors and to the actuators may strongly influence the effect of higher-level actions, so cannot be abstracted away. However, in practice, there are usually abstractions we can use.</p>
+<p>In reality, most of the techniques in this section are abstraction techniques of some sort, but some other tricks can help.</p>
+</section>
+<section id="state-abstraction">
+<h2>State abstraction<a class="headerlink" href="#state-abstraction" title="Link to this heading">#</a></h2>
+<p>In some cases, the size of the state space can be abstracted by combining some states that are different, but are either equivalent from a semantic view, or are similar enough that they will lead to the same action most of the time.</p>
+<p>AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then <em>which</em> corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information</p>
+<p>Other abstraction techniques may lose information, but still be useful. For example, the state abstraction in GridWorld from precise coordinates into a simple grid.</p>
+</section>
+<section id="action-abstraction">
+<h2>Action abstraction<a class="headerlink" href="#action-abstraction" title="Link to this heading">#</a></h2>
+<p>Similar to state abstraction, we can abstract actions. There are two main ways:</p>
+<ol class="arabic simple">
+<li><p>Abstract sequences of smaller actions into single higher-level actions, such as in the GridWorld domain where we abstract  physical navigation actions to just <code class="docutils literal notranslate"><span class="pre">Left</span></code>, <code class="docutils literal notranslate"><span class="pre">Right</span></code>, <code class="docutils literal notranslate"><span class="pre">Up</span></code>, and <code class="docutils literal notranslate"><span class="pre">Down</span></code>.</p></li>
+<li><p>We can also <strong>group similar actions</strong> into a single action. For example, in the GridWorld domain, if we have lower-level actions like <code class="docutils literal notranslate"><span class="pre">Rotate</span></code>, which rotates by a given number of degrees, instead of reasoning about 360 different version of <code class="docutils literal notranslate"><span class="pre">Rotate</span></code> (one for each degree), we could group actions into buckets: one abstract action for turning 0-15, one for 16-30, etc. We <strong>lose information/precision</strong>, but in may cases, the solution may be good enough, and the problem is much easier to solve.</p></li>
+</ol>
+</section>
+<section id="rewarding-sub-goals">
+<span id="sec-single-agent-modelling-and-abstraction-sub-goals"></span><h2>Rewarding sub-goals<a class="headerlink" href="#rewarding-sub-goals" title="Link to this heading">#</a></h2>
+<p>In some problems, there are final goals that need to be achieved, and we receive rewards for transitioning to states where those goals are achieved. One problem we saw in these notes, such as in the Freeway example, is when those rewards are a long way from the start state. As we often start with a random policy or value/Q-function, we spend a lot of time doing random simulation before we receive a reward by achieving the goal.</p>
+<p>However, often these problems have <strong>sub-goals</strong> that we need to achieve on the way. If we do not achieve the sub-goals, we cannot achieve the primary goal. For example, in the Freeway game, we need to reach row 1, then row 2, etc., until we reach the other side.</p>
+<p>If we can identify these sub-goals, we can give “partial” rewards to the sub-goals on the way to the goal. In this case, we identify key states (or more accurately, key transitions) that are like sub-goals of our problem. In Freeway, assuming the reward for reaching the other side is 100 points, we could give 1 point for reaching row 1, then 2 points for reaching row 2, etc., and then 100 - (1 + 2 + … + n) for reaching the other side, where <span class="math notranslate nohighlight">\(n\)</span> is the 2nd-last row.</p>
+<p>For an MDP <span class="math notranslate nohighlight">\((S, s_0, A, P, r, \gamma)\)</span>, the process is:</p>
+<ol class="arabic simple">
+<li><p>Identify sub-goals that need to be achieved to achieve the final goal.</p></li>
+<li><p>Create a new reward function <span class="math notranslate nohighlight">\(r'\)</span> where the rewards are re-distributed to sub-goals, and where cumulative reward of using the original reward <span class="math notranslate nohighlight">\(r\)</span> of any episode <span class="math notranslate nohighlight">\(e\)</span> that reaches a real goal is roughly equal to the cumulative reward for <span class="math notranslate nohighlight">\(e\)</span> using <span class="math notranslate nohighlight">\(r'\)</span>.</p></li>
+<li><p>Solve a new MDP <span class="math notranslate nohighlight">\((S, s_0, A, P, r', \gamma)\)</span> to obtain policy <span class="math notranslate nohighlight">\(\pi\)</span> (the MDP is the same but just with a different reward function).</p></li>
+<li><p>Evaluate <span class="math notranslate nohighlight">\(\pi\)</span> on the original MDP.</p></li>
+</ol>
+<p>For example, consider the single-agent card game <em>Solitaire</em>. The aim of the game is to win by having all cards placed in four piles, with various rules for when you can move a card to the pile. Each pile must be in order from ace to king, all of the same suit.</p>
+<p>Imagine we are given a  simulator for Solitaire and the only reward received  for winning the game by arriving in one of the terminal states where the cards are in the correct piles. This reward would only be given in that terminal state, and requires perhaps a few hundred actions to arrive at.</p>
+<p>Simulations of a game like this would have to be long because there are no rewards until the end of the game, and we would spend a LOT of random actions before we first won the game By re-distributed sub-goals that give a reward whenever a correct card is place on one of the piles, we feed rewards forward much earlier and give information for our reinforcement learning algorithm to exploit.</p>
+<p>This idea can be implemented using <a class="reference internal" href="reward-shaping.html#sec-single-agent-reward-shaping"><span class="std std-ref">reward shaping</span></a>. In these notes, we focused on potential-based reward shaping, which gives small “fake” rewards. This effectively asks that you define a heuristic for states that guide the agent towards promising actions early during learning when there is not much information to exploit. By using sub-goals, we can give a shaped reward <span class="math notranslate nohighlight">\(\Phi(s)\)</span> to any state that is a sub-goal, and assign <span class="math notranslate nohighlight">\(\Phi(s)=0\)</span> for any state that does not. Thinking about reward shaping as sub-goals can often be conceptually simpler to implement than considering it as an heuristic.</p>
+<p>Alternatively, we can just “intercept” the real reward function with our new reward function and not use reward shaping, but reward shaping is a more principled way of doing this and offers convergence guarantees when using Q-tables and linear approximation.</p>
+</section>
+<section id="partially-observable-state-variables">
+<h2>Partially-observable state variables<a class="headerlink" href="#partially-observable-state-variables" title="Link to this heading">#</a></h2>
+<p>Often we have situations where some variables are not observable for at least part of the game. For example, in Solitaire, the draw cards are not visible until we take each one. In this case, the model is a  <a class="reference internal" href="MDPs.html#sec-mdps-pomdps"><span class="std std-ref">partially-observable Markov Decision Process</span></a> (POMDP). We can translate this to an MDP where the states are not represented as states in the real-world, but are <strong>beliefs</strong> over states in the real world. However, the computational complexity of this is high.</p>
+<p>One option is to simplify by <strong>ignoring the partially observable variables</strong>. In Solitaire, it is simple enough to just not track the cards in the deck and only consider actions for the cards that we can already see. In Solitaire, this will work well. If you have ever played the game, you will know that you spend very little time wondering about the cards in the deck.</p>
+<p>Of course, this will not always be a good idea: sometimes it is important to keep track of the partially-observable variables; for example, by mapping the probability that certain cards could be played in the future.</p>
+</section>
+<section id="heuristics">
+<span id="sec-single-agent-modelling-and-abstraction-heuristics"></span><h2>Heuristics<a class="headerlink" href="#heuristics" title="Link to this heading">#</a></h2>
+<p>Using heuristics is a good way to speed up learning. There are three places where we can often use heuristics.</p>
+<p><strong>State/action pruning.</strong> First, if we have a reasonable heuristic, we can choose to “prune” states that are not promising, and explore only those that appear to be promising. For example, consider using <a class="reference internal" href="mcts.html#sec-mcts"><span class="std std-ref">MCTS</span></a> for Solitaire. If we are using a model or a simulator, we may be able to peek at the states resulting from actions. If one action results in us being able to move a block of cards to the goal pile, we may prioritise doing simulations using this action. Given we expand the first node fully before expanding any other nodes, we could look at the heuristic value of each node and prune it from the tree if it is too low. This would cut down our search space. Of course, a poor heuristic could do more damage than good! But it is not just MCTS that benefits. For example, using Q-learning or SARSA, we could terminate episodes when we reach unpromising states, either start new episodes or backtracking to an earlier promising node is using a simulator.</p>
+<p><strong>Exploiting.</strong> Second, heuristics can be good for helping to guide episodes towards good solutions. In any model-free or simulation-based technique, early episodes effectively choose each action with a uniform probability, as there is no good information to exploit. Like reward shaping, we can use heuristics to choose the most promising actions more often, meaning that simulations are still randomised, but informed. In MCTS, when we expand a node and then simulate, this is particularly valuable, as if we can find reasonable simulations, we get a better idea of the value of the expanded node. The trick here is to balance the heuristic against the information that we learn into our Q-function. Either we have a weighted measure, or we stop using the heuristic after we gain sufficient information in our Q-functions.</p>
+<p><strong>Shorter episodes and simulations.</strong> Finally, we can use heuristics to terminate episodes/simulations early. As we move towards terminal states, our heuristic values are likely to be more accurate, because it is “easier” to estimate how good a state is as we gain more information. As such, we can use heuristics to terminate episodes early. For example, in MCTS, instead of simulating until a terminal state, we can simulate for <span class="math notranslate nohighlight">\(X\)</span> number of actions and then return the heuristic value of the state. This is an estimate, but early in the learning process, it can often be more valuable to run shorter simulations that return heuristic values rather than much longer ones that take more time and often involve a lot of actions that were not helpful.  In fact, this is precisely what temporal different methods like <a class="reference internal" href="temporal-difference-learning.html#sec-model-free-q-learning"><span class="std std-ref">Q-learning</span></a> and <a class="reference internal" href="temporal-difference-learning.html#sec-model-free-sarsa"><span class="std std-ref">SARSA</span></a> do! They use <span class="math notranslate nohighlight">\(\max_a Q(s',a')\)</span> and <span class="math notranslate nohighlight">\(Q(s',a')\)</span> as heuristic estimates of the value of state <span class="math notranslate nohighlight">\(s'\)</span> so that we can assign ‘credit’ to the previously executed action. In those techniques, we are learning the heuristic. Hand-crafting a heuristic will be more helpful in earlier episodes.</p>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>Techniques for solving MDPs face <strong>scalability</strong> issues.</p></li>
+<li><p>Using modelling tricks, we can find problems that are easier to solve, and apply them back to the original problem.</p></li>
+<li><p>Sometimes the smaller problem is enough to solve our problem; other times, it is not.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="experience-replay.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Experience replay</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../multi-agent/normal-form.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Normal form games</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstraction">Abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#state-abstraction">State abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#action-abstraction">Action abstraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rewarding-sub-goals">Rewarding sub-goals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partially-observable-state-variables">Partially-observable state variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heuristics">Heuristics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

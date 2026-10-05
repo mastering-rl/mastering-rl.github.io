@@ -1,0 +1,1193 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Markov Decision Processes &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/MDPs';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Value Iteration" href="value-iteration.html" />
+    <link rel="prev" title="Introduction to value-based methods" href="value-based.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/MDPs.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/MDPs.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Markov Decision Processes</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Markov Decision Processes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mdps-vs-deterministic-search">MDPs vs deterministic search</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policies">Policies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deterministic-vs-stochastic-policies">Deterministic vs. stochastic policies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#representing-policies">Representing policies</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimal-solutions-for-mdps">Optimal Solutions for MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-extraction">Policy extraction</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partially-observable-mdps">Partially Observable MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="markov-decision-processes">
+<span id="sec-mdps"></span><h1>Markov Decision Processes<a class="headerlink" href="#markov-decision-processes" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Define <strong>Markov Decision Process</strong>.</p></li>
+<li><p>Identify situations in which Markov Decisions Processes (MDPs) are a suitable model of a problem.</p></li>
+<li><p>Compare MDPs to models of search, such as classical planning and heuristic search.</p></li>
+<li><p>Explain how Bellman equations are solutions to MDP problems.</p></li>
+</ol>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-mdps admonition">
+<p class="admonition-title">Video byte: Introduction to MDPs</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=0" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mdps-an-intuition admonition">
+<p class="admonition-title">Video byte: MDPs – An intuition</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=70" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>A <strong>Markov Decision Process</strong> (MDPs) is a framework for describing sequential decision making problems. In machine learning, problems such as classification and regression are one-time tasks. That is, a classification/regression model is given an input and returns an output. Then, the next input it is given it entirely independent from the first. In sequential decision making problems, we need to make a series of decisions over time, in which each decision influences the possible future. For example, navigating from one place to another requires us to choose a direction and velocity, move in that direction at the velocity, and then make this decision again and again until we reach our destination. So, even at that first step, we have to consider how each move affects the future. As another example, a clinician making medical treatment decisions has to consider whether decisions taken today will impact future decisions about their patients.</p>
+<p>In the language of reinforcement learning, we say that the decision maker is the <strong>agent</strong>, and their decisions are <strong>actions</strong> that they execute in an <strong>environment</strong> or <strong>state</strong>.</p>
+<p>Techniques like heuristic search and classical planning algorithms assume that action are <strong>deterministic</strong> – that is, before  an agent executes an action in a state, it knows that the outcome of the action will be. MDPs  remove the assumption of deterministic events and instead assume that each action could have multiple outcomes, with each outcome associated with a probability. If there is only one outcome for each action (with probability 1), then the problem is deterministic. Otherwise, it is <strong>non-deterministic</strong>. MDPs consider <strong>stochastic</strong> non-determinism; that is, where there is a probability distribution over outcomes.</p>
+<p>Here are some examples of stochastic actions:</p>
+<ul class="simple">
+<li><p>Flipping a coin has two outcomes: heads (<span class="math notranslate nohighlight">\(\frac{1}{2}\)</span>) and tails (<span class="math notranslate nohighlight">\(\frac{1}{2}\)</span>).</p></li>
+<li><p>Rolling two dices together has twelve outcomes: 2 (<span class="math notranslate nohighlight">\(\frac{1}{36}\)</span>), 3 (<span class="math notranslate nohighlight">\(\frac{1}{18}\)</span>), 4 (<span class="math notranslate nohighlight">\(\frac{3}{36}\)</span>), …, 12 (<span class="math notranslate nohighlight">\(\frac{1}{36}\)</span>).</p></li>
+<li><p>When trying to pick up an object with a robot arm, there could be two outcomes: successful (<span class="math notranslate nohighlight">\(\frac{4}{5}\)</span>) and unsuccessful  (<span class="math notranslate nohighlight">\(\frac{1}{5}\)</span>).</p></li>
+<li><p>When we connect to a web server, there is a 1% chance that the document we are requesting will not exist (404 error) and 99% it will exist.</p></li>
+<li><p>When we send a patient for a test, there is a 20% the test will come back negative, and an 80% chance it will come back positive.</p></li>
+</ul>
+<p>MDPs have been successfully applied to planning in many domains: robot navigation, planning which areas of a mine to dig for minerals, treatment for patients, maintenance scheduling on vehicles, and many others.</p>
+</section>
+<section id="id1">
+<h2>Markov Decision Processes<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mdps-a-definition admonition">
+<p class="admonition-title">Video byte: MDPs – A definition</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=229" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-markov-decision-process admonition">
+<p class="admonition-title">Definition – Markov Decision Process</p>
+<p>A <strong>Markov Decision Process</strong> (MDP) is a  <strong>fully observable</strong>, <strong>probabilistic</strong> state model. The most common formulation of MDPs is a <strong>Discounted-Reward Markov Decision
+Process</strong>. A discount-reward MDP  is a tuple <span class="math notranslate nohighlight">\((S, s_0, A, P, r, \gamma)\)</span> containing:</p>
+<ul class="simple">
+<li><p>a state space <span class="math notranslate nohighlight">\(S\)</span>;</p></li>
+<li><p>initial state <span class="math notranslate nohighlight">\(s_0 \in S\)</span>;</p></li>
+<li><p>actions <span class="math notranslate nohighlight">\(A(s) \subseteq A\)</span> applicable in each state <span class="math notranslate nohighlight">\(s \in S\)</span> that our agent can execute;</p></li>
+<li><p><strong>transition probabilities</strong> <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> for <span class="math notranslate nohighlight">\(s \in S\)</span> and
+<span class="math notranslate nohighlight">\(a \in A(s)\)</span>;</p></li>
+<li><p><strong>rewards</strong> <span class="math notranslate nohighlight">\(r(s,a,s')\)</span> positive or negative of transitioning from
+state <span class="math notranslate nohighlight">\(s\)</span> to state <span class="math notranslate nohighlight">\(s'\)</span> using action <span class="math notranslate nohighlight">\(a\)</span>; and</p></li>
+<li><p>a <strong>discount factor</strong> <span class="math notranslate nohighlight">\(0 \leq \gamma &lt; 1\)</span>.</p></li>
+</ul>
+</div>
+<p>Let’s break down the above points in model detail.</p>
+<p><strong>States</strong> are the possible situations in which the agent can be in. Each state captures the information required to make a decision. For example, in robot navigation, the state consists of the position of the robot, the current velocity of the robot, the direction it is heading, and  the position of obstacles, doors, etc. In an application for scheduling maintenance on vehicles for a delivery company, the state would consist of vehicle IDs, vehicle properties such as make, maximum load, etc., location of vehicles, number of kilometres since their last maintenance check, etc.</p>
+<p>The <strong>state space</strong> is simple the set of all possible states. That is, the combination of all vehicle IDs, vehicle properties, maximum loads, etc.</p>
+<p><strong>Actions</strong> allow agents to affect the environment/state — that is, actions transition the environment from one state to another. They are also the choices that are available to an agent in each state: <em>which action should I choose now?</em> For now, we assume that the agent is the only entity that can affect a state.</p>
+<p>As noted above, an action can have multiple possible outcomes. Exactly one outcome will occur, but the agent does not know which one until after the action is executed.</p>
+<p><strong>Transition probabilities</strong> tell us the effect(s) of each action, including the probabilities of each outcome. For example, in the vehicle maintenance task, when our agent schedules a vehicle to be inspected, possible outcomes could be: (a) no further maintenance required (80% chance); (b) minor maintenance required (15% chance); or (c) major maintenance required (5% chance).</p>
+<p><strong>Rewards</strong> specifies the benefit or cost of executing a particular action in a particular state. For example, a robot navigating to its destination receives a positive reward (benefit) for reaching its destination, a small negative reward (cost) for running into objects on the way; and a large negative reward for running into people.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-discounted-rewards admonition">
+<p class="admonition-title">Video byte: Discounted rewards</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=430" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The <strong>discount factor</strong> <span class="math notranslate nohighlight">\(\gamma\)</span> (pronounced “gamma”) determines how much a future reward should be discounted compared to a current reward.</p>
+<p>For example, would you prefer $100 today or $100 in a year’s time? We (humans) often <em>discount</em> the future and place a higher value on nearer-term rewards.</p>
+<p>Assume our agent receives rewards <span class="math notranslate nohighlight">\(r_1, r_2, r_3, r_4, \ldots\)</span> in that order. If <span class="math notranslate nohighlight">\(\gamma\)</span> is the discount factor, then the discounted reward is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ \begin{array}{lll}
+  V &amp; = &amp; r_1 + \gamma r_2 + \gamma^2 r_3 + \gamma^3 r_4 + \ldots\\
+    &amp; = &amp; r_1 + \gamma(r_2 + \gamma(r_3 + \gamma(r_4 + \ldots)))
+ \end{array}
+\end{split}\]</div>
+<p>If <span class="math notranslate nohighlight">\(V_t\)</span> is the value received at time-step <span class="math notranslate nohighlight">\(t\)</span>, then <span class="math notranslate nohighlight">\(V_t = r_t + \gamma V_{t+1}\)</span>. So, the further away a reward is from the start state <span class="math notranslate nohighlight">\(s_0\)</span>, the less actual reward we will receive from it.</p>
+<p>In an MDP, a discount reward must be strictly less than 1. Later, we will see why this is important.</p>
+<div class="admonition-example-mdp-grid-world admonition">
+<p class="admonition-title">Example MDP: Grid World</p>
+<p>An agent is in the bottom left cell of a grid. The grey cell is a wall. The two coloured cells give a <strong>reward</strong>. There is a reward of 1 of being in the top-right (green) cell, but a negative value of -1 for the cell immediately below (red).</p>
+<img alt="../_images/9322df0c1c9c3378ee27b457ed43bad878f17fd29ae92fd027efe05f7c835593.png" src="../_images/9322df0c1c9c3378ee27b457ed43bad878f17fd29ae92fd027efe05f7c835593.png" />
+<p>But! Things can go wrong — sometimes the effects of the actions are not what we want:</p>
+<ul class="simple">
+<li><p>If the agent tries to move in a particular direction, 80<span class="math notranslate nohighlight">\(\%\)</span> of the time, this works as planned (provided the wall is not in the way)</p></li>
+<li><p>10<span class="math notranslate nohighlight">\(\%\)</span> of the time, trying to move in a direction takes the agent left instead of straight  (provided the wall is not in the way);</p></li>
+<li><p>10<span class="math notranslate nohighlight">\(\%\)</span> of the time, trying to move in a direction takes the agent right instead of straight (provided the wall is not in the way)</p></li>
+<li><p>If the wall is in the way of the cell that would have been taken, the agent stays in the current cell.</p></li>
+</ul>
+<p>The task is to navigate from the start cell in the bottom left to maximise the expected reward. What would the best sequence of actions be for this problem?</p>
+</div>
+<div class="admonition-example-mdp-contested-crossing admonition">
+<p class="admonition-title">Example MDP: Contested Crossing</p>
+<p>An agent (a ship), denoted using ; is at the south shore of a body of water. It may sail between points on the hexagonal grid where the terrain is water (pale grey), but not on land (pale yellow), choosing a different direction at each step (West, North-West, North-East, East, South-East or South-West). There is a reward of 10 for reaching the north shore, but a negative value of -10 for sinking on the way.</p>
+<img alt="../_images/6570a33405c74bc15cf593e8dd9ea9909aa686c3d7e3aeafe5f00dfd0453e1a1.png" src="../_images/6570a33405c74bc15cf593e8dd9ea9909aa686c3d7e3aeafe5f00dfd0453e1a1.png" />
+<p>At the closest point of the north shore is an enemy, denoted using the ✺ character. The enemy will shoot at the ship when it is in areas of danger (yellow or red stars). It will do so once for each step. Therefore, the enemy’s behaviour is completely determined and no choice needs to be made.</p>
+<p>In locations with yellow or red stars, the ship may also shoot at the enemy, but it cannot do so and turn at the same time. If it chooses to shoot, it will continue sailing in the same direction.</p>
+<ul class="simple">
+<li><p>In areas of low danger (yellow), a shot will damage the target 10<span class="math notranslate nohighlight">\(\%\)</span> of the time (either the ship firing at the enemy, or the enemy firing at the ship).</p></li>
+<li><p>In areas of high danger (red), a shot will damage the target 99<span class="math notranslate nohighlight">\(\%\)</span> of the time.</p></li>
+<li><p>When the ship is damaged, it has a chance of failing to move in its step. At full health, the ship moves successfully 100<span class="math notranslate nohighlight">\(\%\)</span> of the time, with  damage level 1 it moves successfully 67<span class="math notranslate nohighlight">\(\%\)</span> and at  damage level 2, 33<span class="math notranslate nohighlight">\(\%\)</span>; and at damage level 3 , it sinks.</p></li>
+<li><p>When the enemy is at damage level 1, there is no change in its behaviour. When it is at damage level 2 it is destroyed. At this point the ship is in no further danger.</p></li>
+</ul>
+<p>The ship can observe the the entire state: it’s location, the enemy location, it’s own health, and the health of the enemy.</p>
+<p>In this task, the agent again has the problem of navigating to a place where a reward can be gained, but there is extra complexity in deciding the best plan. There are multiple different high reward end states and low reward end states. There are paths to the reward which are slow, but guarantee achieving the high reward, and there are other paths which are faster, but more risky.</p>
+</div>
+<div class="admonition-example-mdp-model admonition">
+<p class="admonition-title">Example MDP model</p>
+<p><em>Probabilistic PDDL</em> is one way to represent an MDP. It extends PDDL with a few additional constructs. Of most relevance is that outcomes can be associated with probabilities. The following describes the “Bomb and Toilet” problem, in which one of two packages contains a bomb. The bomb can be diffused by dunking it into a toilet, but there is a 0.05 probability of the bomb clogging the toilet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(define (domain gridworld)
+
+    (:requirements :conditional-effects :probabilistic-effects)
+
+    (:predicates (bomb-in-package ?pkg) (toilet-clogged) (bomb-defused))
+
+    (:action dunk-package
+     :parameters (?pkg)
+     :effect (and (when (bomb-in-package ?pkg) (bomb-defused))
+             (probabilistic 0.05 (toilet-clogged))))
+</pre></div>
+</div>
+</div>
+<p>MDPs can also be expressed as code, rather than just as a model. An algorithm for solving the MDP creates an instance of a class and obtains the information that it requires to solve it.</p>
+<div class="admonition-example-mdp-model-as-python-code-grid-world admonition">
+<p class="admonition-title">Example MDP model as Python code: Grid World</p>
+<p>First, we have an interface that defines what an MDP is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MDP</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return all states of this MDP &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return all actions with non-zero probability from this state &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return all non-zero probability transitions for this action</span>
+<span class="sd">        from this state, as a list of (state, probability) pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the reward for transitioning from state to</span>
+<span class="sd">        nextState via action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return true if and only if state is a terminal state of this MDP &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the discount factor for this MDP &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_discount_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the initial state of this MDP &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return all goal states of this MDP &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_goal_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+</pre></div>
+</div>
+<p>Then, we need to implement this interface to create an MDP. Below is the implementation for <code class="docutils literal notranslate"><span class="pre">get_transitions</span></code> and <code class="docutils literal notranslate"><span class="pre">get_reward</span></code> for GridWorld:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GridWorld</span><span class="p">(</span><span class="n">MDP</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TERMINATE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># Probability of not slipping left or right</span>
+        <span class="n">straight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_goal_states</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TERMINATE</span><span class="p">:</span>
+                <span class="n">transitions</span> <span class="o">+=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)]</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">straight</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">straight</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">:</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">straight</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">straight</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_add</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="c1"># Merge any duplicate outcomes</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">:</span>
+            <span class="n">merged</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">+</span> <span class="n">probability</span>
+
+        <span class="n">transitions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">outcome</span> <span class="ow">in</span> <span class="n">merged</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">transitions</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">outcome</span><span class="p">,</span> <span class="n">merged</span><span class="p">[</span><span class="n">outcome</span><span class="p">])]</span>
+
+        <span class="k">return</span> <span class="n">transitions</span>
+
+    <span class="k">def</span> <span class="nf">valid_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">probability</span><span class="p">):</span>
+        <span class="c1"># If the next state is blocked, stay in the same state</span>
+        <span class="k">if</span> <span class="n">probability</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_states</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">probability</span><span class="p">)]</span>
+
+        <span class="c1"># Move to the next space if it is not off the grid</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">new_state</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">probability</span><span class="p">)]</span>
+
+        <span class="c1"># If off the grid, state in the same state</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">probability</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_goal_states</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">new_state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_goal_states</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_cost</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">episode_rewards</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_rewards</span> <span class="o">+=</span> <span class="p">[</span><span class="n">reward</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discount_factor</span> <span class="o">**</span> <span class="n">step</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">reward</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s break this down into its parts:</p>
+<ul class="simple">
+<li><p>The state space <span class="math notranslate nohighlight">\(s\)</span> here is the location of the robot in Cartesian coordinates: <span class="math notranslate nohighlight">\((x,y)\)</span>, where <span class="math notranslate nohighlight">\(x\)</span> is the column and <span class="math notranslate nohighlight">\(y\)</span> the row. The state space is the set of all possible coordinates from <span class="math notranslate nohighlight">\((0,0)\)</span> to <span class="math notranslate nohighlight">\((3,2)\)</span>, as well as a special state called <span class="math notranslate nohighlight">\(Terminal\)</span> from which we cannot escape and transitioning to it has no reward. We can expand the state space to be larger.</p></li>
+<li><p>The initial state <span class="math notranslate nohighlight">\(s_0\)</span> is the location <span class="math notranslate nohighlight">\((0,0)\)</span> in the bottom left.</p></li>
+<li><p>The actions are <em>Up</em>, <em>Down</em>, <em>Left</em>, and <em>Right</em>, as well as the special action <em>Terminate</em>, which transitions into the <em>Terminal</em> state from a goal state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_transitions</span></code> defines the transition probabilities. For example, we can see that if the action is <em>Left</em>, then there are three possible transitions: to the left with 0.8 probability, and either up or down with 0.1 probability each. The method <code class="docutils literal notranslate"><span class="pre">valid_add</span></code> ensures that if we agent cannot go in that direction due to a wall, it remains in the current state for its outcome.</p></li>
+<li><p>The reward is modelled as receiving +1 or -1 for exiting a goal state and transitioning into the terminal state. We will see later that this models our desire that the goal states have the value of 1 and -1 respectively.</p></li>
+<li><p>Finally, the discount factor is simply a parameter to the MDP in this code, with default value 0.9.</p></li>
+</ul>
+<p>In later chapters, we will see how to use these code-based models in several ways, including both model-based and model-free methods.</p>
+<section id="mdps-vs-deterministic-search">
+<h3>MDPs vs deterministic search<a class="headerlink" href="#mdps-vs-deterministic-search" title="Link to this heading">#</a></h3>
+<p>You may have studied search algorithms previously, such as classical planning or heuristic search algorithms like A<span class="math notranslate nohighlight">\(*\)</span></p>
+<p>What is different between an MDP and search-based solutions? There are four main differences:</p>
+<ul class="simple">
+<li><p>The transition function is not deterministic. Each action has a probability of <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> of ending in state <span class="math notranslate nohighlight">\(s'\)</span> if <span class="math notranslate nohighlight">\(a\)</span> is executed in the state <span class="math notranslate nohighlight">\(s\)</span>, whereas in classical planning, the outcome of each action is known in advance.</p></li>
+<li><p>There are no goal states. Each action receives a reward when applied. The value of the reward is dependent on the state in which it is applied.</p></li>
+<li><p>There are no action costs. Actions costs are modelled as negative rewards.</p></li>
+<li><p>We have a discount factor. In classical planning, executing an action typically has a cost. A discount factor of less than 1 implicitly rewards shorter plans, all other things being equal.</p></li>
+</ul>
+</section>
+</section>
+<section id="policies">
+<span id="sec-mdps-policies"></span><h2>Policies<a class="headerlink" href="#policies" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-policies admonition">
+<p class="admonition-title">Video byte: Policies</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=610" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The planning problem for discounted-reward MDPs is different to that of classical planning or heuristic search because the actions are non-deterministic. Instead of a sequence of actions, an MDP produces a <em>policy</em>.</p>
+<div class="admonition-definition-policy admonition">
+<p class="admonition-title">Definition – Policy</p>
+<p>A <strong>policy</strong> <span class="math notranslate nohighlight">\(\pi\)</span> is a function that tells an agent which is the best action to choose in each state. A policy can be <strong>deterministic</strong> or <strong>stochastic</strong>.</p>
+</div>
+<section id="deterministic-vs-stochastic-policies">
+<span id="sec-mdp-deterministic-vs-stochastic-policies"></span><h3>Deterministic vs. stochastic policies<a class="headerlink" href="#deterministic-vs-stochastic-policies" title="Link to this heading">#</a></h3>
+<p>A <strong>deterministic policy</strong> <span class="math notranslate nohighlight">\(\pi : S \rightarrow A\)</span> is a function that maps states to actions. It specifies which action to choose in every possible state. Thus, if we are in state <span class="math notranslate nohighlight">\(s\)</span>, our agent should choose the action defined by <span class="math notranslate nohighlight">\(\pi(s)\)</span>.
+A graphical representation of the policy for Grid World is:</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<img alt="../_images/80a555a2a782df34f68a32aeeedc05d379f2d311e61a2bdc1183d9cf78c09db4.png" src="../_images/80a555a2a782df34f68a32aeeedc05d379f2d311e61a2bdc1183d9cf78c09db4.png" />
+</div>
+</div>
+<p>So, in the initial state (bottom left cell), following this policy the agent should go up. If it accidentally slips right, it should go left again to return to the initial state.</p>
+<p>Of course, agents do not work with graphical policies. The output from a planning algorithm would be a dictionary-like object or a function that takes a state and returns an action.</p>
+<p>A <strong>stochastic policy</strong> <span class="math notranslate nohighlight">\(\pi : S \times A \rightarrow \mathbb{R}\)</span> specifies the <strong>probability distribution</strong> from which an agent should select an action. Intuitively, <span class="math notranslate nohighlight">\(\pi(s,a)\)</span> specifies the probability that action <span class="math notranslate nohighlight">\(a\)</span> should be executed in state <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<p>To execute a stochastic policy, we could just take the action with the maximum <span class="math notranslate nohighlight">\(\pi(s,a)\)</span>. However, in some domains, it is better to select an action based on the probability distribution; that is, choose the action probabilistically such that actions with higher probability are chosen proportionally to their relative probabilities.</p>
+<figure class="align-default" id="fig-deterministic-vs-stochastic-policy">
+<img alt="An abstract illustration showing the different between a deterministic and stochastic policy. There are two boxes, one labelled deterministic, and one labelled stochastic. Each has an arrow coming into it, from a circle labelled s, which is the state. The arrow leading from the deterministic policy points to a circle containing the letter a, which is the action that is selected.  The arrow leading from the stochastic policy points to a bar graph with four actions a, b, c, and d, each with a different height bar, illustrating the probability of each action being selected." src="../_images/deterministic_vs_stochastic_policy.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">An abstraction illustration of showing the different between a deterministic and stochastic policy.</span><a class="headerlink" href="#fig-deterministic-vs-stochastic-policy" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-deterministic-vs-stochastic-policy"><span class="std std-numref">Fig. 3</span></a> shows the difference. The output of a deterministic policy is an action. A deterministic policy will always return the same action in the same state. The output of a stochastic policy is a probability distribution over the set of possible actions. Typically, the output is chosen stochastically from that output. In <a class="reference internal" href="#fig-deterministic-vs-stochastic-policy"><span class="std std-numref">Fig. 3</span></a>, action <span class="math notranslate nohighlight">\(b\)</span> would be the most likely to be chosen – just a bit more likely than action <span class="math notranslate nohighlight">\(c\)</span>.</p>
+<p>We can use stochastic policies to implement deterministic policies: always choose the most likely action. However, stochastic policies are typically used stochastically during learning, and then deterministically once learning has finished and we deploy our agents.</p>
+<p>In the early chapters, we will focus mostly on  deterministic policies, but stochastic policies have their place when we discuss <a class="reference internal" href="policy-gradients.html#sec-policy-based-policy-gradients"><span class="std std-ref">policy gradient methods</span></a>.</p>
+</section>
+<section id="representing-policies">
+<h3>Representing policies<a class="headerlink" href="#representing-policies" title="Link to this heading">#</a></h3>
+<p>Policies can be represented in several ways, but all have the same basic interface: the ability to update the policy and the ability to get an action for a state (in a deterministic policy) or get the value or probability of playing an action (in a stochastic policy):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+
+<span class="k">class</span> <span class="nc">Policy</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_stochastic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stochastic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stochastic</span> <span class="o">=</span> <span class="n">stochastic</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">DeterministicPolicy</span><span class="p">(</span><span class="n">Policy</span><span class="p">):</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_stochastic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stochastic</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">StochasticPolicy</span><span class="p">(</span><span class="n">Policy</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">rewards</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The simplest way to represent a policy is a tabular policy, which keeps a table that maps from each state to the action for that state. We implement this as a dictionary in Python:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.policy</span> <span class="kn">import</span> <span class="n">DeterministicPolicy</span>
+
+
+<span class="k">class</span> <span class="nc">TabularPolicy</span><span class="p">(</span><span class="n">DeterministicPolicy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy_table</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">default_action</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_table</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy_table</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy_table</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">policy_table</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">policy_table</span><span class="o">=</span><span class="n">policy_table</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we see later in the section on <a class="reference internal" href="policy-gradients.html#sec-policy-based-policy-gradients"><span class="std std-ref">policy gradients</span></a>, policies can be represented using other means, such as machine learning models, which do not require us to keep an explicit answer for every state.</p>
+</section>
+</section>
+<section id="optimal-solutions-for-mdps">
+<span id="sec-mdps-bellman-equation"></span><h2>Optimal Solutions for MDPs<a class="headerlink" href="#optimal-solutions-for-mdps" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-quiz-expected-return admonition">
+<p class="admonition-title">Video byte: Quiz – Expected return</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=962" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-quiz-answer-expected-return admonition">
+<p class="admonition-title">Video byte: Quiz answer – Expected return</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1030" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>For discounted-reward MDPs, optimal solutions maximise the <strong>expected discounted accumulated reward</strong> from the initial state <span class="math notranslate nohighlight">\(s_0\)</span>. But what is the expected discounted accumulated reward?</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-expected-discounted-reward admonition">
+<p class="admonition-title">Video byte: Expected discounted reward</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1139" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-expected-discounted-reward admonition" id="defn-expected-discounted-reward">
+<p class="admonition-title">Definition – Expected discounted reward</p>
+<p>The <strong>expected discounted reward</strong> from <span class="math notranslate nohighlight">\(s\)</span> for a policy <span class="math notranslate nohighlight">\(\pi\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+V^{\pi}(s) = E_{\pi}[\sum_{i} \gamma^i r(s_i, a_i, s_{i+1}) \mid s_0 = s, a_i = \pi(s_i)]
+\]</div>
+<p>So, <span class="math notranslate nohighlight">\(V^{\pi}(s)\)</span> defines the expected value of following the policy <span class="math notranslate nohighlight">\(\pi\)</span> from state <span class="math notranslate nohighlight">\(s\)</span>.</p>
+</div>
+<p>For our Grid World example, assuming only the -1 and +1 states have rewards, the expected value is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+   &amp; \gamma^5 \times 1 \times (0.8^5) &amp; \textrm{(optimal movement)}\\
+ + &amp;  \gamma^7 \times 1 \times (0.8^7) &amp; \textrm{(first move only fails)}\\
+ + &amp; \ldots                             \textrm{(etc.)}
+\end{array}
+\end{split}\]</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-bellman-equation admonition">
+<p class="admonition-title">Video byte: Bellman equation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=1512" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-bellman-equation admonition">
+<p class="admonition-title">Definition – Bellman equation</p>
+<p>The <strong>Bellman equation</strong>, identified by Richard Bellman, describes the
+condition that must hold for a policy to be optimal. The Bellman equation is defined recursively
+as:</p>
+<div class="math notranslate nohighlight">
+\[
+V(s) = \max_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]
+\]</div>
+</div>
+<p>Therefore, <span class="math notranslate nohighlight">\(V\)</span> is optimal <strong>if</strong> for all states <span class="math notranslate nohighlight">\(s\)</span>, <span class="math notranslate nohighlight">\(V(s)\)</span> describes the total discounted reward for taking the action with the highest reward over an indefinite/infinite horizon.</p>
+<p>Let’s break this down:</p>
+<div class="math notranslate nohighlight">
+\[
+V(s) = \overbrace{\max_{a \in A(s)}}^{\text{best action from $s$}} \overbrace{\underbrace{\sum_{s' \in S}}_{\text{for every state}} P_a(s' \mid s) [\underbrace{r(s,a,s')}_{\text{immediate reward}} + \underbrace{\gamma}_{\text{discount factor}} \cdot  \underbrace{V(s')}_{\text{value of } s'}]}^{\text{expected reward of executing action $a$ in state $s$}}
+\]</div>
+<p>First, we calculate the expected reward for each action. The reward of an action is: the sum of the immediate reward for all states possibly resulting from that action plus the discounted  future reward of those states. The discounted future reward is the <span class="math notranslate nohighlight">\(\gamma\)</span> (discount reward) times the value of <span class="math notranslate nohighlight">\(s'\)</span>, where <span class="math notranslate nohighlight">\(s'\)</span> is the state that we end up in. However, because we can end up in multiple states, we must multiple the reward by the probability of it happening: <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>.</p>
+<p>Second, the value <span class="math notranslate nohighlight">\(V(s)\)</span> is the value of the action with the maximum the expected reward. This is because the Bellman equation assumes that once we know the best states, we will always take the action that leads to the best state.</p>
+<p>Bellman equations can be described slightly differently, using what are known as <em><span class="math notranslate nohighlight">\(Q\)</span>-values</em>.</p>
+<p>If <span class="math notranslate nohighlight">\(V(s)\)</span> is the expected value of being in state <span class="math notranslate nohighlight">\(s\)</span> and acting optimally according to our policy, then we can also describe the <em>Q-value</em> of being in a state <span class="math notranslate nohighlight">\(s\)</span>, choosing action <span class="math notranslate nohighlight">\(a\)</span> and then acting optimally according to our policy as.</p>
+<div class="admonition-definition-q-value admonition">
+<p class="admonition-title">Definition – Q-value</p>
+<p>The <strong>Q-value</strong> for action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+Q(s,a) = \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s') ]
+\]</div>
+<p>This represents the value of choosing action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> and then following this same policy until termination.</p>
+</div>
+<p>This is just the expression inside the <span class="math notranslate nohighlight">\(\max\)</span> expression in the Bellman equation. Using this, we can then Bellman equation then defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+V(s) = \max_{a \in A(s)} Q(s,a)
+\]</div>
+<p>The two definitions are equivalent, and you may seem them defined in both ways. However, when we move onto Q-learning later, we will use <span class="math notranslate nohighlight">\(Q\)</span>-values more explicitly.</p>
+</section>
+<section id="policy-extraction">
+<span id="sec-mdps-policy-extraction"></span><h2>Policy extraction<a class="headerlink" href="#policy-extraction" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-policy-extraction admonition">
+<p class="admonition-title">Video byte: Policy extraction</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/0gVf3jcc07A?start=3554" title="Value iteration" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Given a value function <span class="math notranslate nohighlight">\(V\)</span>, how should we then select the action to play in a given state? It is reasonably straightforward: select the action that maximises our expected utility!</p>
+<p>So, if the value function <span class="math notranslate nohighlight">\(V\)</span> is optimal, we can select the action with the highest expected reward using:</p>
+<div class="math notranslate nohighlight">
+\[\pi(s) = \text{argmax}_{a \in A(s)} \sum_{s' \in S} P_a(s' \mid s)\ [r(s,a,s') + \gamma\  V(s')]\]</div>
+<p>This is known as <strong>policy extraction</strong>, because it extracts a policy for a value function (or Q-function). This can be calculated ‘on the fly’ at run time, or we can extract a policy beforehand and use this.</p>
+<p>Alternatively, given a Q-function instead of a value function, we can use:</p>
+<div class="math notranslate nohighlight">
+\[\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)\]</div>
+<p>This is simpler than using the value functions because we do not need to sum over the set of
+possible output states, but we need to store <span class="math notranslate nohighlight">\(|A| \times |S|\)</span> values in a Q-function, but just <span class="math notranslate nohighlight">\(|S|\)</span> values in a value function.</p>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>Policy extraction takes a value function and extracts a tabular policy. In this implementation, we extract a tabular policy using policy extraction from a value function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.policies.tabular_policy</span> <span class="kn">import</span> <span class="n">TabularPolicy</span>
+
+
+<span class="k">class</span> <span class="nc">ValueFunction</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_table</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the Q-value of action in state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">probability</span> <span class="ow">in</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_transitions</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">new_state</span><span class="p">)</span>
+            <span class="n">q_value</span> <span class="o">+=</span> <span class="n">probability</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">reward</span> <span class="o">+</span> <span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">new_state</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">q_value</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return a policy from this value function &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">extract_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">):</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="n">TabularPolicy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+            <span class="n">max_q</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+                <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+                <span class="c1"># If this is the maximum Q-value so far,</span>
+                <span class="c1"># set the policy for this state</span>
+                <span class="k">if</span> <span class="n">q_value</span> <span class="o">&gt;</span> <span class="n">max_q</span><span class="p">:</span>
+                    <span class="n">policy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                    <span class="n">max_q</span> <span class="o">=</span> <span class="n">q_value</span>
+
+        <span class="k">return</span> <span class="n">policy</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For each state, we find the best action in the state (the action that maximises the Q-value from that state); and for that state, we set that max action as the action to select in that state.</p>
+</section>
+</section>
+<section id="partially-observable-mdps">
+<span id="sec-mdps-pomdps"></span><h2>Partially Observable MDPs<a class="headerlink" href="#partially-observable-mdps" title="Link to this heading">#</a></h2>
+<p>MDPs assume that the agent always knows exactly what state it is in — the problem is fully-observable. However, this is not valid for many tasks; e.g. an unmanned aerial vehicle searching in a earthquake zone for survivors will by definition not know the location of survivors; a card-playing agent playing solitaire will not know the cards that are face-down;, etc.</p>
+<div class="admonition-definition-partially-observable-mdp admonition">
+<p class="admonition-title">Definition – Partially-observable MDP</p>
+<p><strong>Partially-observable MDPs</strong> (POMDPs) relax the assumption of
+full-observability. A POMDP is defined as:</p>
+<ul class="simple">
+<li><p>states <span class="math notranslate nohighlight">\(s \in S\)</span></p></li>
+<li><p>actions <span class="math notranslate nohighlight">\(A(s) \subseteq A\)</span></p></li>
+<li><p>transition probabilities <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> for <span class="math notranslate nohighlight">\(s \in S\)</span> and <span class="math notranslate nohighlight">\(a \in A(s)\)</span></p></li>
+<li><p>initial <strong>belief state</strong> <span class="math notranslate nohighlight">\(b_0\)</span></p></li>
+<li><p>reward function <span class="math notranslate nohighlight">\(r(s,a,s')\)</span></p></li>
+<li><p>a set of possible observations <span class="math notranslate nohighlight">\(Obs\)</span></p></li>
+<li><p>a <strong>sensor model</strong> given by probabilities <span class="math notranslate nohighlight">\(O_a(o \mid s)\)</span>, <span class="math notranslate nohighlight">\(o \in Obs\)</span></p></li>
+</ul>
+</div>
+<p>The sensor model allows the agent to observe the environment. If an agent executes an action <span class="math notranslate nohighlight">\(a\)</span>, it has probability <span class="math notranslate nohighlight">\(O_a(o \mid s')\)</span> of observing state <span class="math notranslate nohighlight">\(s'\)</span>.</p>
+<p>Solving POMDPs is similar to solving MDPs. In fact, the same algorithms can be applied. The only difference is that we case the POMDP problem as a standard MDP problem with a new state space: each state is a <strong>probability distribution</strong> over the set <span class="math notranslate nohighlight">\(S\)</span>. Thus, each state of the
+POMDP is a <strong>belief state</strong>, which defined the probability of being in each state <span class="math notranslate nohighlight">\(S\)</span>. This leads to an exponentially-larger state space, so POMDPs are typically harder problems to solve.</p>
+<p>Like MDPs, solutions are policies that map belief states into actions. Optimal policies maximise the expected reward.</p>
+<p>We will not cover this in detail in these notes. However, POMDPs are  a generalisation of MDPs, and they are more suited to practical solutions in  planning for autonomy than standard MDPs because it is unusual to always know the true state of the world in which an agent  is acting.</p>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p><strong>Markov Decision Processes</strong> (MDPs) model sequential decision-making problems in which the outcome of an action is stochastic; although the agent can observe the state once the action is executed.</p></li>
+<li><p>MDPs can be defined using code, simulators, or models.</p></li>
+<li><p>The solution to an MDP is a <strong>policy</strong>.</p></li>
+<li><p>A <strong>deterministic policy</strong> is a mapping from states to actions. For policy <span class="math notranslate nohighlight">\(\pi\)</span>, the term <span class="math notranslate nohighlight">\(\pi(s)\)</span> returns the action to execute in state <span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>A <strong>stochastic policy</strong> is a mapping from state actions pairs to probabilities. For policy <span class="math notranslate nohighlight">\(\pi\)</span>, the term <span class="math notranslate nohighlight">\(\pi(s,a)\)</span> returns the probability of selecting action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>An <strong>optimal policy</strong> maximises the expected discounted reward.</p></li>
+<li><p>The <strong>Bellman equation</strong> describes the condition that must hold for a policy to be optimal.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="value-based.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to value-based methods</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="value-iteration.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Value Iteration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Markov Decision Processes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mdps-vs-deterministic-search">MDPs vs deterministic search</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policies">Policies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deterministic-vs-stochastic-policies">Deterministic vs. stochastic policies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#representing-policies">Representing policies</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimal-solutions-for-mdps">Optimal Solutions for MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-extraction">Policy extraction</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partially-observable-mdps">Partially Observable MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

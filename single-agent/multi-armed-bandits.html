@@ -1,0 +1,1263 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Multi-armed bandits &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/multi-armed-bandits';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Temporal difference reinforcement learning" href="temporal-difference-learning.html" />
+    <link rel="prev" title="Value Iteration" href="value-iteration.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/multi-armed-bandits.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/multi-armed-bandits.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Multi-armed bandits</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-multi-armed-bandit-problem">The multi-armed bandit problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploration-vs-exploitation">Exploration vs. Exploitation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation">Simulation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-minimising-regret">Solutions for minimising regret</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-greedy-strategy"><span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-decreasing-strategy"><span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#softmax-strategy">Softmax strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upper-confidence-bounds-ucb1">Upper Confidence Bounds (UCB1)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison">Comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="multi-armed-bandits">
+<span id="sec-multi-armed-bandits"></span><h1>Multi-armed bandits<a class="headerlink" href="#multi-armed-bandits" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-multi-armed-bandits admonition">
+<p class="admonition-title">Video byte: Introduction to multi-armed bandits</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=0" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Select and apply multi-armed bandit algorithms for a given problem.</p></li>
+<li><p>Compare and contrast  the strengths a weaknesses of different multi-armed bandit algorithms.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-intuition-of-multi-armed-bandits admonition">
+<p class="admonition-title">Video byte: Intuition of multi-armed bandits</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=43" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p><strong>Multi-armed bandit</strong> techniques are not techniques for solving MDPs, but they are used throughout a lot of reinforcement learning techniques that do solve MDPs.</p>
+<p>The problem of multi-armed bandits can be illustrated as follows:</p>
+<figure class="align-default" id="id1">
+<img alt="../_images/multi-armed-bandit.png" src="../_images/multi-armed-bandit.png" />
+</figure>
+<blockquote>
+<div><p>Imagine that you have <span class="math notranslate nohighlight">\(N\)</span> number of slot machines (or poker machines in Australia), which are sometimes called <strong>one-armed bandits</strong>, due to the “arm” on the side that people pull to run again.  Over  time, each bandit pays a random reward from an unknown probability distribution.  Some bandits are more likely to get a winning payoff than others – we just do not know which ones at the start. The goal is to maximize the total rewards of a sequence of lever pulls of the machine.</p>
+</div></blockquote>
+<p>The question is: without knowing the probability distribution beforehand, how should we select the arms to increase our total payoff?  Multi-armed bandit techniques aim to solve this problem.</p>
+</section>
+<section id="the-multi-armed-bandit-problem">
+<h2>The multi-armed bandit problem<a class="headerlink" href="#the-multi-armed-bandit-problem" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-multi-armed-bandits-definition admonition">
+<p class="admonition-title">Video byte: Multi-armed bandits – Definition</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=107" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-multi-armed-bandit admonition">
+<p class="admonition-title">Definition – Multi-armed bandit</p>
+<p>A <strong>multi-armed bandit</strong> (also known as an <strong><span class="math notranslate nohighlight">\(N\)</span>-armed bandit</strong>) is defined by a set of random variables <span class="math notranslate nohighlight">\(X_{i,k}\)</span> where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \leq i \leq N\)</span>, such that <span class="math notranslate nohighlight">\(i\)</span> is the <strong>arm</strong> of the bandit; and</p></li>
+<li><p><span class="math notranslate nohighlight">\(k\)</span> the index of the <strong>play</strong> of arm <span class="math notranslate nohighlight">\(i\)</span>;</p></li>
+</ul>
+<p>Successive plays <span class="math notranslate nohighlight">\(X_{i,1}, X_{j,2}, X_{k,3}\ldots\)</span> are assumed to be independently distributed, but we do not know the probability distributions of the random variables.</p>
+<p>The idea is that a gambler iteratively plays rounds, observing the reward from the arm after each round, and can adjust their strategy each time. The aim is to maximise the sum of the rewards collected over all  rounds.</p>
+<p>Multi-arm bandit strategies aim to learn a <strong>policy</strong> <span class="math notranslate nohighlight">\(\pi(k)\)</span>, where <span class="math notranslate nohighlight">\(k\)</span> is the play.</p>
+</div>
+<p>Given that we do not know the probability distributions, a simple strategy is simply to select the arm given a uniform distribution; that is, select each arm with the same probability. This is just uniform sampling.</p>
+<p>Then, the Q-value for an action <span class="math notranslate nohighlight">\(a\)</span> can be estimated using the following formula:</p>
+<div class="math notranslate nohighlight">
+\[Q(a) = \frac{1}{N(a)} \sum_{i=1}^{t}  X_{a,i}\]</div>
+<p>where <span class="math notranslate nohighlight">\(t\)</span> is the number of rounds so far, <span class="math notranslate nohighlight">\(N(a)\)</span> is the number of times <span class="math notranslate nohighlight">\(a\)</span> selected in previous rounds, and <span class="math notranslate nohighlight">\(X_{a,i}\)</span> is the <strong>reward</strong> obtained in the <span class="math notranslate nohighlight">\(i\)</span>-th round for playing arm <span class="math notranslate nohighlight">\(a\)</span>..</p>
+<p>The idea here is that for a multi-armed bandit problem, we explore the options uniformly for some time, and then once we are confident we have enough samples (when the changes to the values of <span class="math notranslate nohighlight">\(Q(a)\)</span> start to stabilise), we start selecting <span class="math notranslate nohighlight">\(\text{argmax}_a Q(a)\)</span>. This is known as the <em><span class="math notranslate nohighlight">\(\epsilon\)</span>-first</em> strategy, where the parameter <span class="math notranslate nohighlight">\(\epsilon\)</span> (epsilon), determines how many rounds to select random actions before moving to the greedy action.</p>
+<p><strong>But what is the issue?</strong> Time is wasted equally in all actions using the uniform distribution. Instead, we can focus on the <em>most promising actions</em> given the rewards we have received so far.</p>
+</section>
+<section id="exploration-vs-exploitation">
+<h2>Exploration vs. Exploitation<a class="headerlink" href="#exploration-vs-exploitation" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exploration-vs-exploitation admonition">
+<p class="admonition-title">Video byte: Exploration vs. exploitation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=169" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>What we want is to play only the good actions; so just keep playing the actions that have given us the best reward so far. However, at first, we do not have information to tell us what the best actions are. Thus, we want strategies that <strong>exploit</strong> what we think are the best actions so far, but still <strong>explore</strong> other actions.</p>
+<p>But how much should we exploit and how much should we explore? This is known as the <strong>exploration vs. exploitation dilemma</strong>. It is driven by the <em>The Fear of Missing Out</em> (FOMO). FOMO drives us to search for strategies that <strong>minimise regret</strong>.</p>
+<div class="admonition-definition-regret admonition">
+<p class="admonition-title">Definition — Regret</p>
+<p>Given a policy <span class="math notranslate nohighlight">\(\pi\)</span> and <span class="math notranslate nohighlight">\(t\)</span> number of arm pulls, <strong>regret</strong> is defined formally as:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal {R(\pi, t) }  =  t \cdot \max_a Q^*(a) - \mathbb{E} [ \sum_{k=1}^{t} X_{\pi(k), k} ]\]</div>
+<p>where <span class="math notranslate nohighlight">\(Q^*(a)\)</span> is actual average return of playing arm <span class="math notranslate nohighlight">\(a\)</span>. We do not know <span class="math notranslate nohighlight">\(Q^*(a)\)</span> of course – otherwise we could simply play <span class="math notranslate nohighlight">\(\text{argmax}_a Q^*(a)\)</span> each round.</p>
+</div>
+<p>Informally: If we follow policy <span class="math notranslate nohighlight">\(\pi\)</span> by playing arm <span class="math notranslate nohighlight">\(\pi(k)\)</span> in round each round <span class="math notranslate nohighlight">\(k\)</span>, our regret over the <span class="math notranslate nohighlight">\(t\)</span> pulls  is the <em>best possible cumulative reward</em> minus the <em>expected reward of playing using policy <span class="math notranslate nohighlight">\(\pi\)</span></em>. So, regret is the <strong>expected loss</strong> from not taking the best action. If I take always action <span class="math notranslate nohighlight">\(\text{argmax}_a Q^*(a)\)</span> (the best action), my regret is 0.</p>
+<p>The aim of a multi-armed bandit strategy to learn a policy that minimises the total regret.</p>
+<p>A <strong>zero-regret</strong> strategy is a strategy whose average regret each round approaches zero as the number of rounds approached infinity. So, this means that a zero-regret strategy will converge to an optimal strategy given enough rounds.</p>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>The implementation for each strategy we discuss inherits from the class <code class="docutils literal notranslate"><span class="pre">MultiArmedBandit</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+
+<span class="k">class</span> <span class="nc">MultiArmedBandit</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select an action for this state given from a list given a Q-function&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reset a multi-armed bandit to its initial configuration &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each strategy must implement the  <code class="docutils literal notranslate"><span class="pre">select</span></code> method, which takes the list of available actions and their Q-values. The <code class="docutils literal notranslate"><span class="pre">reset</span></code>  method resets to the bandit to its initial configuration, and is used for demonstration purposes later.</p>
+</section>
+<section id="simulation">
+<span id="sec-multi-agent-bandit-simulation"></span><h3>Simulation<a class="headerlink" href="#simulation" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-simulation-example admonition">
+<p class="admonition-title">Video byte: Simulation example</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=516" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>To demonstrate the effect of different multi-armed bandit strategies and their parameters, we use the following simple simulation. The simulation is an implementation of a simple multi-armed bandit problem with five actions, <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4]</span></code>.  Each action has a probability associated with it: <code class="docutils literal notranslate"><span class="pre">probabilities</span> <span class="pre">=</span> <span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.7,</span> <span class="pre">0.2,</span> <span class="pre">0.1]</span></code>. The simulation runs  2000 episodes of a bandit problem, with each episode being 1000 steps long. At each step, the agent must chose an action. For the action <code class="docutils literal notranslate"><span class="pre">a</span></code> it chooses,  it receives a reward of 5 with a probability <code class="docutils literal notranslate"><span class="pre">probability[a]</span></code>.  With a probability of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">probability[a]</span></code> it receives a reward of 0. At the beginning of each episode, the bandit strategies are reset.</p>
+<p>The simulation returns a list of lists, representing the reward received at each step of each episode. The aim for the bandit is to maximise the expected rewards over each episode.</p>
+<div class="cell tag_remove-input docutils container">
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+
+<span class="sd">&quot;&quot;&quot; Run a bandit algorithm for a number of episodes, with each episode</span>
+<span class="sd">being a set length.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">run_bandit</span><span class="p">(</span><span class="n">bandit</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">episode_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">drift</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="c1"># The actions available</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+    <span class="c1"># A dummy state</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">rewards</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">episodes</span><span class="p">):</span>
+        <span class="n">bandit</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># The probability of receiving a payoff of 1 for each action</span>
+        <span class="n">probabilities</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+
+        <span class="c1"># The number of times each arm has been selected</span>
+        <span class="n">times_selected</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">qtable</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+
+        <span class="n">episode_rewards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">episode_length</span><span class="p">):</span>
+
+            <span class="c1"># Halfway through the episode, change the probabilities</span>
+            <span class="k">if</span> <span class="n">drift</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="n">episode_length</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">probabilities</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
+
+            <span class="c1"># Select an action using the bandit</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qtable</span><span class="p">)</span>
+
+            <span class="c1"># Get the reward for that action</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probabilities</span><span class="p">[</span><span class="n">action</span><span class="p">]:</span>
+                <span class="n">reward</span> <span class="o">=</span> <span class="mi">5</span>
+
+            <span class="n">episode_rewards</span> <span class="o">+=</span> <span class="p">[</span><span class="n">reward</span><span class="p">]</span>
+
+            <span class="n">times_selected</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">times_selected</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">qtable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">state</span><span class="p">,</span>
+                <span class="n">action</span><span class="p">,</span>
+                <span class="n">reward</span> <span class="o">-</span> <span class="n">qtable</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="n">rewards</span> <span class="o">+=</span> <span class="p">[</span><span class="n">episode_rewards</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">rewards</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="solutions-for-minimising-regret">
+<h2>Solutions for minimising regret<a class="headerlink" href="#solutions-for-minimising-regret" title="Link to this heading">#</a></h2>
+<p>There are several basic strategies for minimising regret. In each of these techniques, we record the average return of each arm over time. For consistency with the rest of these notes, we will call these Q-values, and will use <span class="math notranslate nohighlight">\(Q(a)\)</span> to represent the Q value of arm <span class="math notranslate nohighlight">\(a\)</span>.</p>
+<p>The multi-armed bandit solutions we will look at in these notes all follow the same basic format below, where <span class="math notranslate nohighlight">\(T\)</span> is the number of rounds or pulls that we will play, which may be infinite, and <span class="math notranslate nohighlight">\(A\)</span> is the set of arms available.</p>
+<div class="proof algorithm admonition" id="algorithm:multi-armed-bandit">
+<p class="admonition-title"><span class="caption-number">Algorithm 2 </span> (Abstract multi-armed bandit)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\ \text{Multi-armed bandit problem}\ M = \langle \{X_{i,k}\}, A, T\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+Q(a) \leftarrow 0\ \text{for all arms}\ a \in A\\
+N(a) \leftarrow 0\ \text{for all arms}\ a \in A\\[2mm]
+k \leftarrow 1\\
+\algwhile\ k \leq T\ \algdo\\
+\quad\quad a \leftarrow \textrm{select}(k)\\
+\quad\quad \text{Execute arm}\ a\ \text{for round}\ k\ \text{and observe reward}\ X_{a,k}\\
+\quad\quad N(a) \leftarrow N(a) + 1\\
+\quad\quad Q(a) \leftarrow Q(a) + \frac{1}{N(a)}[X_{a,k} - Q(a)]\\
+\quad\quad k \leftarrow k + 1
+\end{array}
+\)</span></p>
+</section>
+</div><p>So, these algorithms choose an arm, and then add the reward from that to a cumulative average of playing that arm so far.</p>
+<p>The key difference between the solutions we will look at is how the <span class="math notranslate nohighlight">\(\textrm{select}\)</span> function is implemented. This is what determines the policy <span class="math notranslate nohighlight">\(\pi(k)\)</span> for the multi-armed bandit problem.</p>
+<section id="epsilon-greedy-strategy">
+<span id="sec-multi-armed-bandits-epsilon-greedy"></span><h3><span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy strategy<a class="headerlink" href="#epsilon-greedy-strategy" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-epsilon-greedy admonition">
+<p class="admonition-title">Video byte: Epsilon greedy</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=594" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy (pronounced “epsilon-greedy”) strategy  is a simple and effective way of balancing exploration and exploitation. In this algorithm, the parameter <span class="math notranslate nohighlight">\(\epsilon \in [0,1]\)</span> (pronounced “epsilon”) controls how much we explore and how much we exploit.</p>
+<p>Each time we need to choose an action, we do the following:</p>
+<ul class="simple">
+<li><p>With probability <span class="math notranslate nohighlight">\(1-\epsilon\)</span> we choose the arm with the maximum Q value: <span class="math notranslate nohighlight">\(\text{argmax}_a Q(a)\)</span> (<strong>exploit</strong>). If there is a tie between multiple actions with the largest Q-value, break the tie randomly.</p></li>
+<li><p>With probability <span class="math notranslate nohighlight">\(\epsilon\)</span> we choose a random arm with uniform probability (<strong>explore</strong>).</p></li>
+</ul>
+<p>The best value for <span class="math notranslate nohighlight">\(\epsilon\)</span> depends on the particular problem, but typically, values around 0.05-0.2 work well as they exploit what they have learnt, while still exploring.</p>
+<section id="id2">
+<h4>Implementation<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
+<p>The implementation for epsilon greedy uses <code class="docutils literal notranslate"><span class="pre">random()</span></code> to select a random number between 0 and 1. If that number is less than epsilon, an action is randomly selected. If the number is greater than or equal to epsilon, it finds the actions with the maximum Q value, breaking ties randomly:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.multi_armed_bandit</span> <span class="kn">import</span> <span class="n">MultiArmedBandit</span>
+
+
+<span class="k">class</span> <span class="nc">EpsilonGreedy</span><span class="p">(</span><span class="n">MultiArmedBandit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+        <span class="c1"># Select a random action with epsilon probability</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        <span class="n">arg_max_q</span> <span class="o">=</span> <span class="n">qfunction</span><span class="o">.</span><span class="n">get_argmax_q</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arg_max_q</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The following plot shows the reward for each step, averaged over 2000 episodes, over the simulation described in the <a class="reference internal" href="#sec-multi-agent-bandit-simulation"><span class="std std-ref">Simulation</span></a> section. Each episode is 1000 steps long. We evaluate different values of epsilon:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.tests._02_multi_armed_bandit_tests.run_bandit</span> <span class="kn">import</span> <span class="n">run_bandit</span>
+
+
+<span class="k">def</span> <span class="nf">plot_epsilon_greedy</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">epsilon000</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.00</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon005</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon01</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon02</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon04</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.4</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon08</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon10</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+
+    <span class="n">Plot</span><span class="o">.</span><span class="n">plot_rewards</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;epsilon = 0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 0.05&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 0.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 0.2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 0.4&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 0.8&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon = 1.0&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="p">[</span><span class="n">epsilon000</span><span class="p">,</span> <span class="n">epsilon005</span><span class="p">,</span> <span class="n">epsilon01</span><span class="p">,</span> <span class="n">epsilon02</span><span class="p">,</span> <span class="n">epsilon04</span><span class="p">,</span> <span class="n">epsilon08</span><span class="p">,</span> <span class="n">epsilon10</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="n">plot_epsilon_greedy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6f8b1e317dc6a4e4e38a7e93b05a75e71d60e9169416c407999d6676b431e5ce.png" src="../_images/6f8b1e317dc6a4e4e38a7e93b05a75e71d60e9169416c407999d6676b431e5ce.png" />
+</div>
+</div>
+<p>As we can see, higher  values of epsilon tend to have a lower reward over time, except that we need some non-zero value of epsilon. Higher values mean more exploration, so the bandit spends more time exploring less valuable actions, even after it has a good estimate of the value of actions. The actual choice of the epsilon parameter is entirely dependent on the particular application: there is no magic number. However, as in this particular case, an epsilon between 0.05-0.1 is usually a reasonable choice.</p>
+<p>But we can also see that exploring early is a good strategy. Can we do better? Yes, we can!</p>
+</section>
+</section>
+<section id="epsilon-decreasing-strategy">
+<h3><span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy<a class="headerlink" href="#epsilon-decreasing-strategy" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-epsilon-decreasing admonition">
+<p class="admonition-title">Video byte: Epsilon decreasing</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=712" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p><strong><span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing</strong> (pronounced “epsilon-decreasing”)  follows a similar idea to epsilon greedy, however, it recognises that initially, we have very little feedback so exploiting is not a good strategy to being with: we need to explore first. Then, as we gather more data, we should exploit more.</p>
+<p>The <span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy does this by taking the basic epsilon greedy strategy and introducing another parameter <span class="math notranslate nohighlight">\(\alpha \in [0,1]\)</span> (pronounced “alpha”), which is used to decrease <span class="math notranslate nohighlight">\(\epsilon\)</span> over time. For this reason, <span class="math notranslate nohighlight">\(\alpha\)</span> is called the <strong>decay</strong>.</p>
+<p>The selection mechanism is the same as epsilon greedy: explore with probability <span class="math notranslate nohighlight">\(\epsilon\)</span>; and exploit with probability <span class="math notranslate nohighlight">\(1-\epsilon\)</span>.</p>
+<p>However, after each selection, we decay <span class="math notranslate nohighlight">\(\epsilon\)</span> using <span class="math notranslate nohighlight">\(\epsilon := \epsilon \times \alpha\)</span>. We start initially with a higher value of <span class="math notranslate nohighlight">\(\epsilon\)</span>, such as <span class="math notranslate nohighlight">\(\epsilon=1.0\)</span>, to ensure that we explore a lot, and it will slowly decay to a low number such that we explore less and less as we gather more feedback.</p>
+<section id="id3">
+<h4>Implementation<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
+<p>The following implementation for the <span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy uses the <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy strategy, just decreasing the epsilon value each step:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.multi_armed_bandit</span> <span class="kn">import</span> <span class="n">MultiArmedBandit</span>
+
+
+<span class="k">class</span> <span class="nc">EpsilonDecreasing</span><span class="p">(</span><span class="n">MultiArmedBandit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_greedy_bandit</span> <span class="o">=</span> <span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="n">lower_bound</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_greedy_bandit</span> <span class="o">=</span> <span class="n">EpsilonGreedy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_epsilon</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_greedy_bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_greedy_bandit</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_greedy_bandit</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lower_bound</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this implementation, we have a minimum value, <code class="docutils literal notranslate"><span class="pre">lower_bound</span></code>, such that <span class="math notranslate nohighlight">\(\epsilon\)</span> stop decaying. As <span class="math notranslate nohighlight">\(\epsilon\)</span> approaches 0,  the bandit stops exploring and just exploits. During learning, we do not want this, so we add a lower bound.</p>
+<p>The following plot shows the average reward over our simulation, varying the value of <span class="math notranslate nohighlight">\(\alpha\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_decreasing</span> <span class="kn">import</span> <span class="n">EpsilonDecreasing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.tests._02_multi_armed_bandit_tests.run_bandit</span> <span class="kn">import</span> <span class="n">run_bandit</span>
+
+
+<span class="k">def</span> <span class="nf">plot_epsilon_decreasing</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">alpha09</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonDecreasing</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">alpha099</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonDecreasing</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.99</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">alpha0999</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonDecreasing</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.999</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">alpha1</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonDecreasing</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+
+    <span class="n">Plot</span><span class="o">.</span><span class="n">plot_rewards</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;alpha = 0.9&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha = 0.99&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha= 0.999&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha = 1.0&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">alpha09</span><span class="p">,</span> <span class="n">alpha099</span><span class="p">,</span> <span class="n">alpha0999</span><span class="p">,</span> <span class="n">alpha1</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="n">plot_epsilon_decreasing</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a3e94cc741beeaa9c91483204c255b33a5689cfaf7b42285a7bb351968b305f8.png" src="../_images/a3e94cc741beeaa9c91483204c255b33a5689cfaf7b42285a7bb351968b305f8.png" />
+</div>
+</div>
+<p>This indicates that for this particular problem, a value of 0.99 for alpha has a slightly better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.</p>
+</section>
+</section>
+<section id="softmax-strategy">
+<h3>Softmax strategy<a class="headerlink" href="#softmax-strategy" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-softmax admonition">
+<p class="admonition-title">Video byte: Softmax</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=820" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p><strong>Softmax</strong> is a probability matching strategy, which means that the probability of each action being chosen is dependent on its Q-value so far. Formally, softmax chooses an action because on the Boltzmann distribution for that action:</p>
+<div class="math notranslate nohighlight">
+\[\frac{e^{Q(a)/\tau}}{\sum_{b=1}^{N} e^{Q(b)/\tau}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> is the number of arms, and <span class="math notranslate nohighlight">\(\tau &gt;  0\)</span> (pronounced “tau”) is the <strong>temperature</strong>, which dictates how much of an influence the past data has on the decision. A higher value of <span class="math notranslate nohighlight">\(\tau\)</span> would mean that the probability of selecting each action is close to each other (as <span class="math notranslate nohighlight">\(\tau\)</span> approaches infinity, softmax approaches a uniform strategy), while a lower value of <span class="math notranslate nohighlight">\(\tau\)</span> would imply that the probabilities are closer to their Q values. When <span class="math notranslate nohighlight">\(\tau=1\)</span>, the probabilities are just <span class="math notranslate nohighlight">\(e^{Q(a)}\)</span>, and as <span class="math notranslate nohighlight">\(\tau\)</span> approaches 0, softmax approaches a greedy strategy.</p>
+<p>As with the <span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy, we can add a decay parameter <span class="math notranslate nohighlight">\(\alpha\)</span> that allows the value of <span class="math notranslate nohighlight">\(\tau\)</span> to decay until it reaches 1. This encourages exploration in earlier phases, and exploration less as we gather more feedback.</p>
+<section id="id4">
+<h4>Implementation<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
+<p>The following implementation of the softmax strategy uses <code class="docutils literal notranslate"><span class="pre">random()</span></code> to generate a random number between 0 and 1, and divides this space 0-1 among the set of actions based on the value of <span class="math notranslate nohighlight">\(e^{Q(a)/\tau}\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.multi_armed_bandit</span> <span class="kn">import</span> <span class="n">MultiArmedBandit</span>
+
+
+<span class="k">class</span> <span class="nc">Softmax</span><span class="p">(</span><span class="n">MultiArmedBandit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+
+        <span class="c1"># calculate the denominator for the softmax strategy</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+
+        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="n">cumulative_probability</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">probability</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span> <span class="o">/</span> <span class="n">total</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cumulative_probability</span> <span class="o">&lt;=</span> <span class="n">rand</span> <span class="o">&lt;=</span> <span class="n">cumulative_probability</span> <span class="o">+</span> <span class="n">probability</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">action</span>
+            <span class="n">cumulative_probability</span> <span class="o">+=</span> <span class="n">probability</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As before, we plot the average reward at each step of our simulation, this time varying values of tau:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.softmax</span> <span class="kn">import</span> <span class="n">Softmax</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.tests._02_multi_armed_bandit_tests.run_bandit</span> <span class="kn">import</span> <span class="n">run_bandit</span>
+
+
+<span class="k">def</span> <span class="nf">plot_softmax</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">tau10</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">Softmax</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">tau11</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">Softmax</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="mf">1.1</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">tau15</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">Softmax</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">tau20</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">Softmax</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+
+    <span class="n">Plot</span><span class="o">.</span><span class="n">plot_rewards</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;tau = 1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;tau = 1.1&quot;</span><span class="p">,</span> <span class="s2">&quot;tau = 1.5&quot;</span><span class="p">,</span> <span class="s2">&quot;tau = 2.0&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">tau10</span><span class="p">,</span> <span class="n">tau11</span><span class="p">,</span> <span class="n">tau15</span><span class="p">,</span> <span class="n">tau20</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="n">plot_softmax</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8f4d8b5fdd30938ec570a8888dfd06d5b27fcd03a048ee78134f49f2857ea5ee.png" src="../_images/8f4d8b5fdd30938ec570a8888dfd06d5b27fcd03a048ee78134f49f2857ea5ee.png" />
+</div>
+</div>
+<p>In this particular case, we see that tau = 1.0 is a good choice, which means that the probability of selecting an action is directly proportional to  <span class="math notranslate nohighlight">\(e^{Q(a)}\)</span>. So, why should we use tau at all?</p>
+<p>The softmax strategy is designed to work well under <strong>drift</strong>; that is, when the underlying rewards or probability distributions change over time. In many real problems, the underlying probability distributions are not static. For example, if we are using a multi-armed bandit to determine which products to show to people visiting our website, where the reward is whether they click on the product link, the preferences of our visitors will change over time, depending on e.g. the news cycle, the weather, fashion, etc. Sometimes, preferences can change very quickly. Problems where the underlying rewards or probabilities can change over time are called <strong>restless bandits</strong>.</p>
+<p>In the following evaluation, we change the probabilities of the underlying actions at the halfway point of each episode, from <code class="docutils literal notranslate"><span class="pre">probabilities</span> <span class="pre">=</span> <span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.7,</span> <span class="pre">0.2,</span> <span class="pre">0.1]</span></code> to <code class="docutils literal notranslate"><span class="pre">probabilities</span> <span class="pre">=</span> <span class="pre">[0.5,</span> <span class="pre">0.2,</span> <span class="pre">0.0,</span> <span class="pre">0.3,</span> <span class="pre">0.3]</span></code>.  This is a sudden change in which the Q-values are almost worthless.</p>
+<p>If we plot the performance of the softmax algorithm with this, the results are as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_softmax</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6f081da1430c4ac84e758f91bf244e49308cba29311aa9021368c88a2fd6ccfb.png" src="../_images/6f081da1430c4ac84e758f91bf244e49308cba29311aa9021368c88a2fd6ccfb.png" />
+</div>
+</div>
+<p>As one can see, the strategies that are less “committed” to their Q-values are less affected by the sudden change. Of course, if the drift is more gradual, values closer to 1.0 may be more suitable.</p>
+<p>Note that higher values of tau also work when the drift is more gradual, rather than a sudden change as we simulate here.</p>
+</section>
+</section>
+<section id="upper-confidence-bounds-ucb1">
+<h3>Upper Confidence Bounds (UCB1)<a class="headerlink" href="#upper-confidence-bounds-ucb1" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-upper-confidence-bounds-ucb1 admonition">
+<p class="admonition-title">Video byte: Upper Confidence Bounds (UCB1)</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1105" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>A highly effective multi-armed bandit strategy is the <strong>Upper Confidence Bounds</strong> (UCB1) strategy.</p>
+<p>Using the UCB1 strategy, we select the next action  using the following:</p>
+<div class="math notranslate nohighlight">
+\[\text{argmax}_{a}\left(Q(a)   +   \sqrt{\frac{2 \ln t}{N(a)}}\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(t\)</span> is the number of rounds so far, and <span class="math notranslate nohighlight">\(N(a)\)</span> is the number of times times <span class="math notranslate nohighlight">\(a\)</span> has been chosen in all previous rounds. The term inside the square root is undefined if <span class="math notranslate nohighlight">\(N(a) = 0\)</span>. The avoid this, the typical strategy is to spend the first <span class="math notranslate nohighlight">\(N\)</span> rounds to select each of the <span class="math notranslate nohighlight">\(N\)</span> bandits once. This is a simple exploration strategy to ensure all arms are sampled at least once, but this problem could be handled in different ways, such as assigning the value <span class="math notranslate nohighlight">\(\infty\)</span> when <span class="math notranslate nohighlight">\(N(a)=0\)</span>.</p>
+<p>The left–hand side encourages exploitation: the Q-value is high for actions that have had a high reward.</p>
+<p>The right–hand side encourages exploration: it is high for actions that have been explored less – that is, when <span class="math notranslate nohighlight">\(N(a)\)</span> relative to other actions. When <span class="math notranslate nohighlight">\(t\)</span> is small (not many pull so far), all actions will have a high exploration value. As <span class="math notranslate nohighlight">\(t\)</span> increases, if some actions have low <span class="math notranslate nohighlight">\(N(a)\)</span>, then the expression <span class="math notranslate nohighlight">\(\sqrt{\frac{2 \ln t}{N(a)}}\)</span> is large compared to actions with higher <span class="math notranslate nohighlight">\(N(a)\)</span>.</p>
+<p>Together, adding these two expressions helps to balance exploration and exploitation.</p>
+<p>Note that the UCB formula is not parameterised – that is, there is no parameter giving weight to the <span class="math notranslate nohighlight">\(Q(a)\)</span> or the square root expression to balance exploration vs. exploitation.</p>
+<p>So how does it work? We will not get into all the details, but instead just give some intuition.</p>
+<p>We want to learn the Q-function, which gives us the average return on each action <span class="math notranslate nohighlight">\(a\)</span>, such that it approximates the real (unknown) Q-function, which we will call <span class="math notranslate nohighlight">\(Q^*\)</span>. At each round, we select the action <span class="math notranslate nohighlight">\(a\)</span> that maximises the expression inside the brackets. If arm <span class="math notranslate nohighlight">\(a\)</span> is optimal, then we want the following to hold for all actions <span class="math notranslate nohighlight">\(b \neq a\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[Q(b) + \sqrt{\frac{2 \ln t}{N(b)}} \leq Q^*(a)\]</div>
+<p>If this holds, we have some confidence that <span class="math notranslate nohighlight">\(Q(a)\)</span> is optimal. If <span class="math notranslate nohighlight">\(N(b)\)</span> is low for some actions, we do not have this confidence.</p>
+<p>So, the expression <span class="math notranslate nohighlight">\(\sqrt{\frac{2 \ln t}{N(a)}}\)</span>  is the <strong>confidence interval</strong> of our estimates for <span class="math notranslate nohighlight">\(Q(a)\)</span>, much like a confidence interval around an estimation of a population mean in statistic.</p>
+<p>If by chance the above expression does NOT hold for the optimal action <span class="math notranslate nohighlight">\(a\)</span>, then <span class="math notranslate nohighlight">\(a\)</span> is not chosen, but it should be. We want this to occur only with probability <span class="math notranslate nohighlight">\(\frac{1}{N}\)</span> to minimise pseudo-regret. This leads us to <span class="math notranslate nohighlight">\(2 \ln t\)</span> in the expression: if there has been relatively few pulls overall so far, then the confidence intervals will be similar for all arms. As more pulls are done, this increases, but only at a logarithmic rate so that exploration grows more slowly as <span class="math notranslate nohighlight">\(t\)</span> increases.</p>
+<p>We can visualise this using the following example, in which there are three arms. The blue bars represent the Q-values and the black error bars represent the confidence interval:</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<img alt="../_images/d1e4d7e5d642df23064306a69e08f923310b22bec9099f55c90eacf19b520cda.png" src="../_images/d1e4d7e5d642df23064306a69e08f923310b22bec9099f55c90eacf19b520cda.png" />
+</div>
+</div>
+<p>The confidence interval around these is an estimate of how confident we are about the Q-value estimate: if an arm has relatively fewer pulls than other arms, the confidence is lower, so the confidence interval is wider.</p>
+<p>In this case, Arm 1 has the highest Q-value, but as this arm has been explored more times, the confidence interval is much smaller than the other arms – we are more confident of our estimate of Arm 1 than of the other arms. Arm 2 has a lower Q-value, but has been explored less, so the confidence interval is larger. As such, adding the Q-value and the confidence interval gives us a higher value, as identified by the red dot at the top of the confidence interval. Arm 3 has a larger confidence interval, but the Q-value is much lower than Arm 2, so the top of the confidence interval is lower than that of Arm 2.</p>
+<p>From this, the <span class="math notranslate nohighlight">\(\text{argmax}_{a}\)</span> would choose Arm 2: it is the action with the confidence interval that is at the highest point on the graph. Then, we would increment both <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(N(Arm\ 2)\)</span>, making its confidence interval slightly narrower, while slightly increasing the confidence interval of all other arms.</p>
+<p>So, we can see how this would balance exploration and exploitation: as say, arm <span class="math notranslate nohighlight">\(a\)</span> gets chosen many times in succession, its confidence interval narrows while all others widen. Eventually, other arms will start to ‘rise to the top’ because their confidence interval is so large; but this will take longer if <span class="math notranslate nohighlight">\(Q(a)\)</span> is much better than the Q-value of all other actions. So, we would exploit arm <span class="math notranslate nohighlight">\(a\)</span> for a long time, but come to sample other arms.</p>
+<section id="id5">
+<h4>Implementation<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.multi_armed_bandit</span> <span class="kn">import</span> <span class="n">MultiArmedBandit</span>
+
+
+<span class="k">class</span> <span class="nc">UpperConfidenceBounds</span><span class="p">(</span><span class="n">MultiArmedBandit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># number of times each action has been chosen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+
+        <span class="c1"># First execute each action one time</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">action</span>
+
+        <span class="n">max_actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+                <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">max_value</span><span class="p">:</span>
+                <span class="n">max_actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">action</span><span class="p">]</span>
+                <span class="n">max_value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">max_value</span><span class="p">:</span>
+                <span class="n">max_actions</span> <span class="o">+=</span> <span class="p">[</span><span class="n">action</span><span class="p">]</span>
+
+        <span class="c1"># if there are multiple actions with the highest value</span>
+        <span class="c1"># choose one randomly</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">max_actions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span><span class="p">[</span><span class="n">result</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times_selected</span><span class="p">[</span><span class="n">result</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Because UCB does not have parameters, there is no exploration to be done, however, in the next section we compare UCB with the other three strategies.</p>
+</section>
+</section>
+<section id="comparison">
+<h3>Comparison<a class="headerlink" href="#comparison" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-comparison-multi-armed-bandit-solutions admonition">
+<p class="admonition-title">Video byte: Comparison multi-armed bandit solutions</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/Bop3xbVCnyc?t=1217s" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_decreasing</span> <span class="kn">import</span> <span class="n">EpsilonDecreasing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.softmax</span> <span class="kn">import</span> <span class="n">Softmax</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.ucb</span> <span class="kn">import</span> <span class="n">UpperConfidenceBounds</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.tests._02_multi_armed_bandit_tests.run_bandit</span> <span class="kn">import</span> <span class="n">run_bandit</span>
+
+
+<span class="k">def</span> <span class="nf">plot_comparison</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">epsilon_greedy</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">epsilon_decreasing</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">EpsilonDecreasing</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.99</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">softmax</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">Softmax</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+    <span class="n">ucb</span> <span class="o">=</span> <span class="n">run_bandit</span><span class="p">(</span><span class="n">UpperConfidenceBounds</span><span class="p">(),</span> <span class="n">drift</span><span class="o">=</span><span class="n">drift</span><span class="p">)</span>
+
+    <span class="n">Plot</span><span class="o">.</span><span class="n">plot_rewards</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Epsilon Greedy (epsilon = 0.1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Epsilon Decreasing (alpha = 0.99)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Softmax (tau = 1.0)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UCB&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="p">[</span><span class="n">epsilon_greedy</span><span class="p">,</span> <span class="n">epsilon_decreasing</span><span class="p">,</span> <span class="n">softmax</span><span class="p">,</span> <span class="n">ucb</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="n">plot_comparison</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c7ab7d4a65218a606a81dfec13a3d3b0b3a3a125c579fc3e2e905d85c0d29220.png" src="../_images/c7ab7d4a65218a606a81dfec13a3d3b0b3a3a125c579fc3e2e905d85c0d29220.png" />
+</div>
+</div>
+<p>We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.</p>
+<p>UCB1 is also remarkably good at adapting to drift, as demonstrated when we suddenly change the probabilities as we did earlier:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_comparison</span><span class="p">(</span><span class="n">drift</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cee2fad21359649860a71bbfad066f9f12a6f7fe5c08b248f38485dfaa36c99c.png" src="../_images/cee2fad21359649860a71bbfad066f9f12a6f7fe5c08b248f38485dfaa36c99c.png" />
+</div>
+</div>
+<p>From this comparison, we can see that all of the bandit algorithms adapt quickly to changes in the environment, especially for UCB1. For UCB1, the Q-values for the actions that were previously good are no longer good, so this encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration further, so it recovers quickly.</p>
+<p>While in this particular case, UCB1 has a higher average reward over the entire episode, this may not always be the case—it depends on the specific context.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-multi-armed-bandits admonition">
+<p class="admonition-title">Video byte: Summary of multi-armed bandits</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/FIzLRb_xXF0?start=1334" title="Multi-armed bandits" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>Multi-armed bandits are problems in where we must make a selection from a set of options, but we do not know the probability of success (or the expected return) of each options</p></li>
+<li><p>Several techniques can be used to solve these. This chapter looks at just a few: <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy, <span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing, softmax, and UCB1 strategy.</p></li>
+<li><p>In a simple experiment, we found that UCB1 was the fastest learner and recovered from shift quickly. However, this is just one experiment – other domains will have different properties.</p></li>
+</ul>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1204.5721">Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems</a>. Sébastien Bubeck and Nicolo Cesa–Bianchi, <em>Machine Learning</em> 5(1): 1-122, 2012</p>
+<ul class="simple">
+<li><p>A great analysis of multi-armed bandits.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="value-iteration.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Value Iteration</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="temporal-difference-learning.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Temporal difference reinforcement learning</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-multi-armed-bandit-problem">The multi-armed bandit problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploration-vs-exploitation">Exploration vs. Exploitation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation">Simulation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-minimising-regret">Solutions for minimising regret</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-greedy-strategy"><span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon-decreasing-strategy"><span class="math notranslate nohighlight">\(\epsilon\)</span>-decreasing strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#softmax-strategy">Softmax strategy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upper-confidence-bounds-ucb1">Upper Confidence Bounds (UCB1)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison">Comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

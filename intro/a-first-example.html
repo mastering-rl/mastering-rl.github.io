@@ -1,0 +1,867 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting started with a first example &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/a-first-example';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to value-based methods" href="../single-agent/value-based.html" />
+    <link rel="prev" title="What is reinforcement learning?" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fintro/a-first-example.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/intro/a-first-example.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Getting started with a first example</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-playing-freeway">Example: Playing Freeway</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#import-components-from-the-reinforcement-learning-framework">Import components from the reinforcement learning framework</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-learning-environment">Set up the learning environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-learner">Set up the learner</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-the-agent-with-reinforcement-learning">Training the agent with reinforcement learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-playing-frogger">Example: Playing Frogger</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discussion">Discussion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="getting-started-with-a-first-example">
+<span id="sec-a-first-example"></span><h1>Getting started with a first example<a class="headerlink" href="#getting-started-with-a-first-example" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Gain a basic understanding of reinforcement learning.</p></li>
+<li><p>Have practical experience in building a reinforcement learning agent using deep Q learning.</p></li>
+<li><p>Be excited about reinforcement learning and its possibilities.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<figure class="align-default" id="fig-atari">
+<a class="reference internal image-reference" href="../_images/Atari_Official_2012_Logo.png"><img alt="../_images/Atari_Official_2012_Logo.png" src="../_images/Atari_Official_2012_Logo.png" style="width: 200px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">The Atari logo. Trademark of <a class="reference external" href="https://atari.com/">Atari SA</a>. (Source: <a class="reference external" href="https://en.wikipedia.org/wiki/Atari">Wikipedia</a>)</span><a class="headerlink" href="#fig-atari" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</aside>
+<p>Before we start on the basic of reinforcement learning, let’s build an example of a reinforcement learning agent. We will use reinforcement learning to play <a class="reference external" href="https://atari.com/">Atari</a> games. Atari was a game consoles manufacturer in the 1990s – their logo is shown in <a class="reference internal" href="#fig-atari"><span class="std std-numref">Fig. 1</span></a>.</p>
+<p>The <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment">Arcade Learning Environment</a>, built on the Atari 2600 emulator <a class="reference external" href="https://stella-emu.github.io/">Stella</a>,  is a framework for reinforcement learning that allows people to experiment with dozens of Atari games. It is built on the popular <a class="reference external" href="https://gymnasium.farama.org/">Gymnasium</a> framework from OpenAI.</p>
+</section>
+<section id="example-playing-freeway">
+<h2>Example: Playing Freeway<a class="headerlink" href="#example-playing-freeway" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareLabelID=192">Freeway</a> is the Atari 2600 game that we will begin with. In Freeway, a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown in <a class="reference internal" href="#fig-freeway-screenshot"><span class="std std-numref">Fig. 2</span></a>.  Each time the chicken crosses to the top, we gain one point. If the chicken is struck by a vehicle, it goes back a few spaces, slowing it down. The aim is to cross the road as many times as possible in the allocated time.</p>
+<aside class="sidebar">
+<figure class="align-default" id="fig-freeway-screenshot">
+<img alt="../_images/freeway_screenshot.png" src="../_images/freeway_screenshot.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">A screenshot of the game <em>Freeway</em>. Simulated via the <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment">Arcade Learning Environment</a>, licensed under a <a class="reference external" href="https://github.com/stella-emu/stella/blob/master/License.txt">General Public Licence 2.0</a>, through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme">MIT License</a>.</span><a class="headerlink" href="#fig-freeway-screenshot" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</aside>
+<p>This is a simple game as far as video games go; and as far as reinforcement learner goes. However, let’s train a reinforcement learning agent to play it.</p>
+<section id="import-components-from-the-reinforcement-learning-framework">
+<h3>Import components from the reinforcement learning framework<a class="headerlink" href="#import-components-from-the-reinforcement-learning-framework" title="Link to this heading">#</a></h3>
+<p>First, we need to import some stuff for the deep learning package, and get some settings:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># if GPU is to be used</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">set_default_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The first line above simply imports <code class="docutils literal notranslate"><span class="pre">torch</span></code>, which is the Python package for the <a class="reference external" href="https://pytorch.org/">PyTorch deep learning framework</a>. This is a not a framework specifically for reinforcement learning — it is a general deep learning framework for production code, which we use as part of our reinforcement learning solution. The rest set up the device to use. If our machine has a GPU (graphics processing unit), then using <code class="docutils literal notranslate"><span class="pre">cuda</span></code> will use that GPU for doing matrix calculations in our deep learning model. If our machine does NOT have a GPU, we use the CPU instead. A GPU will allow us to train more quickly, but otherwise, we get the same results.</p>
+<p>Next, we import a few other things that are part of the reinforcement learning framework written for this book:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.experience_replay_learner</span> <span class="kn">import</span> <span class="n">ExperienceReplayLearner</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.deep_q_function</span> <span class="kn">import</span> <span class="n">DeepQFunction</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_decreasing</span> <span class="kn">import</span> <span class="n">EpsilonDecreasing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.ale_wrapper</span> <span class="kn">import</span> <span class="n">ALEWrapper</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ExperienceReplayLearner</span></code> is the reinforcement learning algorithm that we will be using for this example. It uses a <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> to learn the value of different actions in the game, depending on the context of the game. It is a variant of <a class="reference internal" href="../single-agent/function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q learning</span></a>. Effective, the way that <code class="docutils literal notranslate"><span class="pre">ExperienceReplayLearner</span></code> works is that it plays the game a number of times, then samples some of the moves from those games, and works out how good each move was, based on the score of the game that move was played in. It then uses machine learning to learn a predictor (<code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> in this example) for how good other moves are in other contexts. Using the machine learning predictor, the experience replay learner plays the game a bunch of times again — hopefully better this time because it knows something about the game. Then, it again samples moves and updates its machine learning predictor. It repeats this process until it has played a certain number of games. We will use 30 games for this example.</p>
+<p>The term “experience replay” comes from the fact that the agent first plays the games, and then “replays” them back again to learn. You can learn more about this in <a class="reference internal" href="../single-agent/experience-replay.html#sec-experience-replay"><span class="std std-ref">Experience Replay</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">EpsilonDecreasing</span></code> is a <a class="reference internal" href="../single-agent/multi-armed-bandits.html#sec-multi-armed-bandits"><span class="std std-ref">multi-armed bandit</span></a> algorithm. These are important in reinforcement learning. For now, just know that what this does is help us explore different moves of the game, so that the player ‘experiments’ to help it learn.</p>
+<p>Finally <code class="docutils literal notranslate"><span class="pre">ALEWrapper</span></code> is a simple wrapper class for the Arcade Learning Environment that we use to play Freeway.</p>
+</section>
+<section id="set-up-the-learning-environment">
+<h3>Set up the learning environment<a class="headerlink" href="#set-up-the-learning-environment" title="Link to this heading">#</a></h3>
+<p>Next, we setup the Arcade Learning Environment:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;Freeway-ramDeterministic-v4&quot;</span>
+<span class="n">policy_name</span> <span class="o">=</span> <span class="s2">&quot;../policies/Freeway.policy&quot;</span>
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">ALEWrapper</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">version</span></code> is the game that we are going to play – in this case, Freeway version 4, which uses the RAM to represent the problem. We could also learn directly from pixels, but for now, we keep it simple. <code class="docutils literal notranslate"><span class="pre">policy_name</span></code> is where we are going to store a policy for our agent, so we can use it later. A policy just tells the player which moves to make at each step of the game.</p>
+<p>Finally, we create our environment, which is called <code class="docutils literal notranslate"><span class="pre">mdp</span></code> because it is a <a class="reference internal" href="../single-agent/MDPs.html#sec-mdps"><span class="std std-ref">Markov Decision Process</span></a> (MDP), which is the model that describes reinforcement learning problems. More on that later!</p>
+</section>
+<section id="set-up-the-learner">
+<h3>Set up the learner<a class="headerlink" href="#set-up-the-learner" title="Link to this heading">#</a></h3>
+<p>Now, we are ready to set up our learning algorithm. The following five lines are all it takes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">action_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+<span class="n">state_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+
+<span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">target_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">learner</span> <span class="o">=</span> <span class="n">ExperienceReplayLearner</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonDecreasing</span><span class="p">(),</span> <span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">target_qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We create two <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> instances. The reasons for this are described in <a class="reference internal" href="../single-agent/experience-replay.html#sec-experience-replay"><span class="std std-ref">Experience Replay</span></a>, but for now, what is important is that we have one called <code class="docutils literal notranslate"><span class="pre">policy_qfunction</span></code>, which is the machine learning model that will be choosing moves during learning, and will also form the basis of our policy when we have finished learning and create a player to just play the game. The <code class="docutils literal notranslate"><span class="pre">target_qfunction</span></code> helps the learning, but is then not used again.</p>
+<p>We create the <code class="docutils literal notranslate"><span class="pre">ExperienceReplayLearner</span></code> by passing it the environment that it will learn from, <code class="docutils literal notranslate"><span class="pre">mdp</span></code>, a multi-armed bandit algorithm <code class="docutils literal notranslate"><span class="pre">EpsilonDecreasing</span></code>, and the two deep Q functions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">policy_qfunction</span></code> will end up being the basis for our policy after we have finished learning. For now, it is just a deep learning model with random parameters, so it does not do anything useful. We can use this to construct a policy for our agent player to use:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span> 
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We save the policy to a file so we can use it later without having to re-train the agent.</p>
+<p>Let’s watch it play Freeway by creating a GIF of it playing:</p>
+<div class="cell tag_remove-input docutils container">
+</div>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="freeway_initial_deep_q_function" src="https://mastering-rl.github.io/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="0">
+    <gif-player id="freeway_initial_deep_q_function" width=500></gif-player>
+</div>
+<p>
+<p>Freeway is simulated via the <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment">Arcade Learning Environment</a>, licensed under a <a class="reference external" href="https://github.com/stella-emu/stella/blob/master/License.txt">General Public Licence 2.0</a>, through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme">MIT License</a>.</p>
+<p>As we can see, it does not do so well, because we have not yet tried to learn any behaviour.</p>
+<p>But, we are ready to start learning!</p>
+</section>
+<section id="training-the-agent-with-reinforcement-learning">
+<h3>Training the agent with reinforcement learning<a class="headerlink" href="#training-the-agent-with-reinforcement-learning" title="Link to this heading">#</a></h3>
+<p>Next, we need to do the hard work – training the agent! This should be difficult to code, right? This is where the learning actually happens. Well, not so difficult to code once we have a good framework in place:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rewards</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">execute</span></code> function is what runs the games, collects the experience, rates the quality of moves, and puts the right data into the deep Q functions. We need to specify how many episodes (games) it should play. In this case, we choose 30. It returns a list of <strong>rewards</strong> (in this case: points in the game) received at each step.</p>
+<p>Now, we can construct a new policy for our agent player to use. This is easy enough too. Remember that <code class="docutils literal notranslate"><span class="pre">policy_qfunction</span></code>? That has learnt a <strong>Q function</strong>, which simply tells us, at each step of the game, the estimated ‘value’ of each of the possible moves. Here, value is just saying: at this step, I think action ‘Up’ will, on average, give us a score of 10.</p>
+<p>We can now just put that inside a policy class, and we save the policy for future use:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">policy_qfunction</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">policy_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">QPolicy</span></code> provides a function called <code class="docutils literal notranslate"><span class="pre">select_action(state,</span> <span class="pre">actions)</span></code>, where <code class="docutils literal notranslate"><span class="pre">state</span></code> is the current step of the game and <code class="docutils literal notranslate"><span class="pre">actions</span></code> are the set of applicable actions. All <code class="docutils literal notranslate"><span class="pre">select_action</span></code> does it iterate over all actions in <code class="docutils literal notranslate"><span class="pre">actions</span></code> and return the one with the highest estimate.</p>
+<p>That’s it! We now have a trained player that can play Freeway.</p>
+<p>Let’s have a look at how it goes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">policy_name</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">create_gif</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;../assets/gifs/freeway_trained_deep_q_function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="freeway_trained_deep_q_function" src="https://mastering-rl.github.io/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="0">
+    <gif-player id="freeway_trained_deep_q_function" width=500></gif-player>
+</div>
+<p>
+<p>Much better!</p>
+<p>We can also study how well the algorithm was learning during the learning process. The following graph plots the number of rewards (number of times the chicken makes it to the other side of the road in this case) received, against the number of games that it has played:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Deep Experience Replay Q learner&quot;</span>
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="n">label</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<figure class="align-default" id="fig-freeway-training-curve">
+<img alt="../_images/freeway_training_curve.png" src="../_images/freeway_training_curve.png" />
+</figure>
+</section>
+</section>
+<section id="example-playing-frogger">
+<h2>Example: Playing Frogger<a class="headerlink" href="#example-playing-frogger" title="Link to this heading">#</a></h2>
+<p>Let’s build another one, but this time, to play the game <a class="reference external" href="https://atariage.com/software_page.php?SoftwareLabelID=194">Frogger</a>. This is a very similar game. Instead of a chicken, there is a frog. The frog has to get to the other side of a road and river. If the frog is struck by a vehicle, it loses a life and starts back at the begging. Once it gets to the river at the top, it needs to jump on the logs and other floating debris to get to the other side of the river. If it falls into the water, it loses a life and starts back at the begging. It has three lives in total.</p>
+<p>The first thing we do is create an MDP for the Frogger game:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;ALE/Frogger-ram-v5&quot;</span>
+<span class="n">policy_name</span> <span class="o">=</span> <span class="s2">&quot;../policies/Frogger.policy&quot;</span>
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">ALEWrapper</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Everything else is just the same as before: we create the <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> instances and the learner, and then execute it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">action_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+<span class="n">state_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+
+<span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">target_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">learner</span> <span class="o">=</span> <span class="n">ExperienceReplayLearner</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonDecreasing</span><span class="p">(),</span> <span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">target_qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As with Freeway, let’s watch a policy that has randomly initialised parameters first:</p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdp</span><span class="o">.</span><span class="n">create_gif</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;../assets/gifs/frogger_initial_deep_q_function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="frogger_initial_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="0">
+    <gif-player id="frogger_initial_deep_q_function" width=500></gif-player>
+</div>
+<p>
+<p>Frogger is simulated via the <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment">Arcade Learning Environment</a>, licensed under a <a class="reference external" href="https://github.com/stella-emu/stella/blob/master/License.txt">General Public Licence 2.0</a>, through the Stella emulator. Farama-Foundation/Gymnasium is licensed under the <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium?tab=MIT-1-ov-file#readme">MIT License</a>.</p>
+<p>We can see that it does quite poorly.  But let’s train this for 30 episodes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rewards</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">policy_qfunction</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">policy_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s look at how it goes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">policy_name</span><span class="p">,</span> <span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">create_gif</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;../assets/gifs/frogger_trained_deep_q_function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="frogger_trained_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="0">
+    <gif-player id="frogger_trained_deep_q_function" width=500></gif-player>
+</div>
+<p>
+<p>Hmmm… not much better. What is happening? Why does it not work for Frogger, but it works for Freeway?</p>
+<p>The answer is simple: Freeway has just three moves: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour.</p>
+<p>What if we train it for more episodes?</p>
+<p>Here is one that I prepared earlier, which is trained for 2000 episodes (and ran overnight for several hours):</p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">policy_name</span> <span class="o">=</span> <span class="s2">&quot;../policies/frogger_2000_episodes.policy&quot;</span>
+<span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">policy_name</span><span class="p">,</span> <span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">create_gif</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;../assets/gifs/frogger_trained_2000_deep_q_function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="frogger_trained_2000_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="0">
+    <gif-player id="frogger_trained_2000_deep_q_function" width=500></gif-player>
+</div>
+<p>
+<p>This is much better! It still does not reach the other side, which would (presumably) require another few thousands episodes — or a better learning algorithm!</p>
+</section>
+<section id="discussion">
+<h2>Discussion<a class="headerlink" href="#discussion" title="Link to this heading">#</a></h2>
+<p>We looked at training a couple of simple player agents to play two Atari games. These worked OK.</p>
+<p>Depending on the properties of the application, some types of reinforcement learning algorithms work better than others.</p>
+<p>How do the algorithm learn what they do? Which learning algorithms are best for which type of application?</p>
+<p>In the rest of these notes, we will learn more about this.</p>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>Pulling together an agent that can learn is not difficult when we use an existing framework.</p></li>
+<li><p>But the more complex the application, the more computational time it takes to train them.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./intro"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">What is reinforcement learning?</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../single-agent/value-based.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Introduction to value-based methods</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-playing-freeway">Example: Playing Freeway</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#import-components-from-the-reinforcement-learning-framework">Import components from the reinforcement learning framework</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-learning-environment">Set up the learning environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-learner">Set up the learner</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-the-agent-with-reinforcement-learning">Training the agent with reinforcement learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-playing-frogger">Example: Playing Frogger</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discussion">Discussion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

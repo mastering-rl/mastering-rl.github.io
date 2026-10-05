@@ -1,0 +1,759 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Multi-agent reinforcement learning &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'multi-agent/multi-agent-rl';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modelling and abstraction for multi-agent games" href="modelling-and-abstraction.html" />
+    <link rel="prev" title="Backward induction" href="backward-induction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fmulti-agent/multi-agent-rl.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/multi-agent/multi-agent-rl.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Multi-agent reinforcement learning</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-games">Stochastic games</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-stochastic-games">Solutions for stochastic games</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-agent-independent-q-learning">Multi-agent Independent Q-learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#opponent-moves">Opponent moves</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-agent-monte-carlo-tree-search">Multi-agent Monte-Carlo tree search</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="multi-agent-reinforcement-learning">
+<h1>Multi-agent reinforcement learning<a class="headerlink" href="#multi-agent-reinforcement-learning" title="Link to this heading">#</a></h1>
+<p>The field of <strong>multi-agent reinforcement learning</strong> has become quite vast, and there are several algorithms for solving them. We are just going to look at how we can extend the lessons learnt in the first part of these notes to work for <strong>stochastic games</strong>, which are generalisations of extensive form games.</p>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes for this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Define ‘stochastic game’.</p></li>
+<li><p>Explain the difference between single-agent reinforcement learning and multi-agent reinforcement learning.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Recall the idea of <a class="reference internal" href="../single-agent/mcts.html#sec-mcts-expectimax-trees"><span class="std std-ref">ExpectiMax trees</span></a> which we first encountered in the section on <a class="reference internal" href="../single-agent/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a>. ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:</p>
+<figure class="align-default" id="expectimax-duplicate">
+<img alt="../_images/mcts_expectimax.png" src="../_images/mcts_expectimax.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 15 </span><span class="caption-text">Abstract example of an ExpectiMax Tree</span><a class="headerlink" href="#expectimax-duplicate" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>An extensive form game tree can be thought of as a slight modification to an ExpectiMax tree, except the choice at the black node is no longer left up to the ‘environment’, but is made by another agent instead:</p>
+<figure class="align-default" id="extensiveform">
+<img alt="../_images/mcts_game_tree.png" src="../_images/mcts_game_tree.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 16 </span><span class="caption-text">Extensive form game tree as a reinforcement learning problem</span><a class="headerlink" href="#extensiveform" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-multi-agent-reinforcement-learning admonition">
+<p class="admonition-title">Video byte: Multi-agent reinforcement learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1270" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>From this visualisation, we can see that an extensive form game can be solved with model-free reinforcement learning techniques and Monte-Carlo tree search techniques: we can just treat our opponent as the environment; albeit one that has a particular goal itself.</p>
+<p>In this section, we just give the intuition of how reinforcement learning techniques can be applied in multi-agent settings like this. Extensions that are specific to multi-agent techniques also exist.</p>
+</section>
+<section id="stochastic-games">
+<h2>Stochastic games<a class="headerlink" href="#stochastic-games" title="Link to this heading">#</a></h2>
+<div class="admonition-definition-stochastic-game admonition">
+<p class="admonition-title">Definition – Stochastic game</p>
+<p>A <strong>stochastic game</strong> is a tuple <span class="math notranslate nohighlight">\(G = (S, s_0, A^1, \ldots A^n, r^1, \ldots, r^n, Agt, P, \gamma)\)</span> where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(S\)</span> is a set of states</p></li>
+<li><p><span class="math notranslate nohighlight">\(s_0\)</span> is the initial state</p></li>
+<li><p><span class="math notranslate nohighlight">\(A^j\)</span> is the set of actions for agent <span class="math notranslate nohighlight">\(j\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(P: S \times A^1 \times \ldots A^n \rightarrow \Omega(S)\)</span> is a transition function that defines the probability of arriving in a state given a starting state and the actions chosen by all players</p></li>
+<li><p><span class="math notranslate nohighlight">\(r^j : S \times A^1 \times \ldots A^n \times S \rightarrow \mathbb{R}\)</span> is the reward function for agent <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\gamma\)</span> is the discount factor</p></li>
+</ul>
+</div>
+<p>From this definition we can see two things:</p>
+<ol class="arabic simple">
+<li><p>A stochastic game is a simply  a version of an MDP in which the actions space and reward space are tuples: one action and one reward for each agent. It is, in fact, a generalisation of MDPs because we can just set <span class="math notranslate nohighlight">\(n=1\)</span> and we have a standard MDP.</p></li>
+<li><p>A stochastic game is a generalisation of an extensive form game. That is, we can express any extensive form game as a stochastic game; but not vice-versa because, for example, actions in extensive form games are deterministic and multiple agents cannot execute actions simultaneously. However, we can simulate an extensive form game by restricting all but one player to playing just a “null” action that has no effect.</p></li>
+</ol>
+</section>
+<section id="solutions-for-stochastic-games">
+<h2>Solutions for stochastic games<a class="headerlink" href="#solutions-for-stochastic-games" title="Link to this heading">#</a></h2>
+<p>In a stochastic game, the solution is a set of policies: one policy <span class="math notranslate nohighlight">\(\pi^j\)</span> for each agent <span class="math notranslate nohighlight">\(j\)</span>. The <strong>joint policy</strong> of all agents is simply</p>
+<div class="math notranslate nohighlight">
+\[
+\pi = [\pi^1, \ldots \pi^n]
+\]</div>
+<p>The objective for an agent is to maximise its own expected discounted accumulated reward:</p>
+<div class="math notranslate nohighlight">
+\[
+V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 = s, a = \pi(s_i)]
+\]</div>
+<p>Note that <span class="math notranslate nohighlight">\(a = \pi(s_i)\)</span> is the joint action of all agents. So, each agent’s objective is to maximise its own expected reward considering the possible actions of all other agents.</p>
+</section>
+<section id="multi-agent-independent-q-learning">
+<h2>Multi-agent Independent Q-learning<a class="headerlink" href="#multi-agent-independent-q-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-multi-agent-q-learning admonition">
+<p class="admonition-title">Video byte: Multi-agent Q-learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1470" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Given the similarities between MDPs and stochastic games, we can re-cast our standard Q-learning algorithm as a multi-agent version.</p>
+<div class="proof algorithm admonition" id="algorithm:multi-agent-q-learning">
+<p class="admonition-title"><span class="caption-number">Algorithm 19 </span> (Multi-agent Q-learning)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\ \text{Stochastic game}\ G =  (S, s_0, A^1, \ldots A^n, r^1, \ldots, r^n, Agt, P, \gamma)\\
+\algoutput:\ \text{Q-function}\ Q^j\ \text{where}\ j\ \text{is the}\ \mathit{self}\ \text{agent}\\[2mm]
+\text{Initialise}\ Q^j\ \text{arbitrarily; e.g.,}\ Q^j(s,a)=0\ \text{for all states}\ s\ \text{and joint actions}\ a\\[2mm]
+\algrepeat \\
+\quad\quad s \leftarrow \text{the first state in episode}\ e\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Select action}\ a^j\ \text{to apply in s;}\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q^j\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
+\quad\quad\quad\quad \text{Execute action}\ a^j\ \text{in state} s\\
+\quad\quad\quad\quad \text{Observe reward}\ r^j\ \text{and new state}\ s'\\
+\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha \cdot [r^j + \gamma \cdot \max_{a'} Q^j(s',a') - Q^j(s,a)]\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad \alguntil\ \text{the end of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><p>So, this is just the same as standard Q-learning. This will learn well because the model of MDPs is general enough that the opponents’ actions can just be approximated as the environment.</p>
+<p>However, if we want to solve for just an extensive form game, where players take turns, we can modify the above algorithm slightly to make the opponents’ moves more explicit by modifying the execution and update parts of the algorithm:</p>
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\quad\quad\quad\quad \text{Execute action}\ a^j\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Wait for other agents' actions (via simulation or via play)}\\
+\quad\quad\quad\quad \text{Observe rewards}\ r_t^j, \ldots, r_{t+n}^j\ \text{and new state}\ s_{t+n}\\
+\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j +  \ldots + r_{t+n}^j + \gamma \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]
+\end{array}
+\)</span></p>
+<p>This algorithm differs from the first  in two main ways:</p>
+<ol class="arabic simple">
+<li><p>After execution our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state <span class="math notranslate nohighlight">\(s_{t+n}\)</span>, where <span class="math notranslate nohighlight">\(n-1\)</span> moves have been made by other agents.</p></li>
+<li><p>We observe <strong>all rewards</strong> that we have received over that sequence, including from other agents.</p></li>
+</ol>
+<p>These two algorithms are equivalent for an extensive form game,  however, rather than simulating “null” actions for an agent when it is not their turn, it is often simpler and less computationally expensive to instead use the latter.</p>
+<p>These algorithms work well as the learning is independent of all of the other agents. This is known as <strong>independent learning</strong>. However, it assumes that all the other agents’ policies are <strong>stationary</strong> — that is, it assumes that the other agents’ policies do not change over time. This is a limitation, but there are several techniques that do not make this assumption, which are out of scope for these notes. However, we can discuss ways to model our opponent for improving multi-agent Q-learning.</p>
+<p>Of course, it is not just Q-learning that can be extended to the multi-agent case. Algorithms like value iteration, SARSA and policy-based methods can similarly extended. In the simplest case, they require small changes as we have done above; however, more sophisticated versions that are tailored specifically to handle multiple agents will give better results.</p>
+<section id="opponent-moves">
+<h3>Opponent moves<a class="headerlink" href="#opponent-moves" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-opponent-moves admonition">
+<p class="admonition-title">Video byte: Opponent moves</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1611" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The main question we need to answer is: how can we “decide” our opponents moves if we are learning offline?</p>
+<p>In a truly model-free problem, we cannot simulate our opponents, however, our opponent will be executing their own moves, so we don’t need to.</p>
+<p>However, if we are learning in a simulated environment without real opponents, we will need to simulate their moves ourselves, rather than just “waiting” for their actions. How should we choose actions for opponents’ moves? There are a few ways to do this:</p>
+<ol class="arabic simple">
+<li><p><strong>Random selection</strong>: Select a random action. This is easy, but it means that we may end up exploring a lot of actions that will never be taken by a good opponent and therefore we will learn poor Q-values for our actions.</p></li>
+<li><p><strong>Using a fixed policy</strong>: We can use an existing <strong>stochastic</strong> policy that gives reasonable behaviour of the opponent. This could be hand-coded or learnt from a similar game.</p></li>
+<li><p><strong>Self play</strong>: We can simultaneously learn a policy for both ourselves and our opponents, and we choose actions for our opponents based on the learnt policies. If our actions spaces are the same, such as in games like Chess and Tictactoe, we can learn a single policy and have both ourselves and our opponents use it. This is the technique used by AlphaZero.</p></li>
+</ol>
+</section>
+</section>
+<section id="multi-agent-monte-carlo-tree-search">
+<span id="sec-multi-agent-rl-mcts"></span><h2>Multi-agent Monte-Carlo tree search<a class="headerlink" href="#multi-agent-monte-carlo-tree-search" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-multi-agent-mcts admonition">
+<p class="admonition-title">Video byte: Multi-agent MCTS</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1820" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Just as we extend Q-learning to a multi-agent case, we can extend <a class="reference internal" href="../single-agent/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a> to the multi-agent case with just a small change in our algorithms.</p>
+<p>Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic MCTS algorithm as follows:</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-application-poker admonition">
+<p class="admonition-title">Video byte: Application – Poker</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=2037" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<ol class="arabic simple">
+<li><p><strong>Selection</strong>: For ‘our’ moves, we run selection as before, however, we also need to select models for our opponents. In multi-agent MCTS, an easy way to do this is via self-play. Each node has a player whose turn it is, and we use a multi-armed bandit algorithm to choose an action for that player.</p></li>
+<li><p><strong>Expansion</strong>: Instead of expanding a child node based on <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>, we expand one of our actions, which leads to our opponents’ node. In the next iteration, that node becomes a node of expansion.</p></li>
+<li><p><strong>Simulate</strong>: We then simulate as before, and we learn the rewards when we receive them. Recall that the rewards are a vector of rewards: one for each player.</p></li>
+<li><p><strong>Backpropagate</strong>: The backpropagation step is the same as before, except that we need to keep the value of the node for every player, not just ourselves.</p></li>
+</ol>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-extensive-form-games admonition">
+<p class="admonition-title">Video byte: Summary of extensive form games</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=2227" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>For solving extensive form games in a model-free or simulated environment, we can extend techniques like Q-learning, SARSA, and MCTS from single-agent to multi-agent environments in a straightforward way.</p></li>
+<li><p>Other more sophisticated techniques exist for true stochastic games (with simultaneous moves), such as <strong>mean field Q-learning</strong>, which reduces the number of possible interactions between actions by approximating joint actions between all pairs of actions, rather than all global interactions among the agents.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./multi-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="backward-induction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Backward induction</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="modelling-and-abstraction.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Modelling and abstraction for multi-agent games</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-games">Stochastic games</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-stochastic-games">Solutions for stochastic games</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-agent-independent-q-learning">Multi-agent Independent Q-learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#opponent-moves">Opponent moves</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-agent-monte-carlo-tree-search">Multi-agent Monte-Carlo tree search</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

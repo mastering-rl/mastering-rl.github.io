@@ -1,0 +1,866 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Experience replay &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/experience-replay';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modelling and abstraction for MDPs" href="modelling-and-abstraction.html" />
+    <link rel="prev" title="n-step reinforcement learning" href="n-step.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/experience-replay.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/experience-replay.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Experience replay</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-use-experience-replay">Why use experience replay?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intuition">Intuition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#target-network">Target network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replay-buffer">Replay buffer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Experience replay</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="experience-replay">
+<span id="sec-experience-replay"></span><h1>Experience replay<a class="headerlink" href="#experience-replay" title="Link to this heading">#</a></h1>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Explain the advantages and disadvantages of experience replay approaches.</p></li>
+<li><p>Design and implement experience replay algorithms to solve medium-scale MDP problems.</p></li>
+<li><p>Identify and explain the assumptions behind experience replay approaches.</p></li>
+</ol>
+</div>
+<p>Experience replay is a reinforcement learning technique in which, instead of executing a transition and then updating a Q-function immediately, such as in Q-learning and SARSA, instead, the <strong>experiences</strong> (state, reward, next state) are stored in a buffer of transitions. Then, intermittently, a set of experiences from the buffer are randomly sampled and <strong>replayed</strong> to update the Q-function.</p>
+<section id="why-use-experience-replay">
+<h2>Why use experience replay?<a class="headerlink" href="#why-use-experience-replay" title="Link to this heading">#</a></h2>
+<p><strong>Why re-use old traces?</strong> This seems like a strange idea. The reason is really because of the <strong>Independent and Identical Distribution (i.i.d.)</strong> assumption of machine learning.</p>
+<div class="admonition-definition-independent-and-identical-distribution-i-i-d admonition">
+<p class="admonition-title">Definition – Independent and Identical Distribution (i.i.d.)</p>
+<p>Machine learning algorithms typically assume that training data is:</p>
+<ol class="arabic simple">
+<li><p><strong>Independent</strong>: Each data point is independent of the others; for example, in a set of images of skin lesions, the same lesion is not present more than once, even if taken at a different time.</p></li>
+<li><p><strong>Identically distributed</strong>: All data points are from the same probability distribution.</p></li>
+</ol>
+</div>
+<p>In algorithms such as <a class="reference internal" href="temporal-difference-learning.html#sec-model-free-q-learning"><span class="std std-ref">Q-learning</span></a>, the assumption of independence is broken due to the temporal correlation between experiences/transitions when using <a class="reference internal" href="function-approximation.html#sec-qfunction-approximation"><span class="std std-ref">function approximation</span></a>. That is, if we execute a transition, update, execute another transition, update, then the two transitions are not independent. Both transitions come from the same episode that will receive the same reward. By storing experiences and randomly sampling, we can <strong>approximate</strong> the i.i.d. assumption.</p>
+<p>Further to this, experience replay can <strong>improve data efficiency</strong> by sampling past experiences multiple times.</p>
+</section>
+<section id="intuition">
+<h2>Intuition<a class="headerlink" href="#intuition" title="Link to this heading">#</a></h2>
+<p>There are two parts to the way the experience replay is usually implemented: the <strong>target network</strong> and the <strong>replay buffer</strong>.</p>
+<section id="target-network">
+<h3>Target network<a class="headerlink" href="#target-network" title="Link to this heading">#</a></h3>
+<p>The technique that is often paired with experience replay, is the use of a <strong>target Q-function</strong> (often called a target network), which is a separate Q-function just used for calculating the amount to update the Q-function. We keep both a <strong>policy Q-function</strong> <span class="math notranslate nohighlight">\(Q_{policy}\)</span>, which is the one used to generate actions for the experiences, and the target Q-function <span class="math notranslate nohighlight">\(Q_{target}\)</span>, using the target Q-function only to estimate future rewards.</p>
+<p>With this in mind, the Q-function update becomes:</p>
+<div class="math notranslate nohighlight">
+\[\delta \leftarrow r + \gamma \cdot \overbrace{\max_{a'} Q_{target}(s',a')}^{\text{target estimate}}- \overbrace{Q_{policy}(s,a)}^{\text{policy estimate}}\]</div>
+<p><strong>Why do this?</strong> Doesn’t this just basically copy values over so now both functions estimate the same thing?</p>
+<p>Yes! But the trick is that we only update the target Q-function, <span class="math notranslate nohighlight">\(Q_{target}\)</span> intermittently at fixed intervals, or update it slowly compared to the policy. For examlpe, we update the target function every 1000 steps by coping over the parameters to the target Q-function, or we update it every step, but with a smoothing factor.</p>
+<p>The issue with using <a class="reference internal" href="function-approximation.html#sec-qfunction-approximation"><span class="std std-ref">Q-function approximation techniques</span></a> such as <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-learning</span></a> is that when a Q-function is updated, this actually updates many state-action values at the same time, because of the approximation techniques that help this scale. So, this means that if we do an update of the form <span class="math notranslate nohighlight">\(\delta \leftarrow r + \gamma \cdot \max_{a'} Q_{policy}(s',a') - Q_{policy}(s,a)\)</span>, where <span class="math notranslate nohighlight">\(Q_{policy}\)</span> is both used to estimate future reward using <span class="math notranslate nohighlight">\(\max_{a'} Q_{policy}(s',a')\)</span>, then the actual value of <span class="math notranslate nohighlight">\(\max_{a'} Q_{policy}(s',a')\)</span> may in fact be a <strong>different value after the update</strong>, so the estimate can be quite wrong. This leads to instability in the learning.</p>
+<p>An analogy to this would be if you were learning how to play a new game, and your friend with experience was giving you feedback. You can see when you are getting points (the reward), but your friend’s feedback tells you whether each move would be good in the future (the <span class="math notranslate nohighlight">\(\max_{a'} Q(s',a')\)</span>). Now imagine that your friend changes their mind about how to play the game each time you make a move! It would be difficult to determine how well you were playing. By updating the target network periodically, effectively, your friend gives you consistent feedback for a while, but then improves the feedback periodically, leading to more stable learning.</p>
+</section>
+<section id="replay-buffer">
+<h3>Replay buffer<a class="headerlink" href="#replay-buffer" title="Link to this heading">#</a></h3>
+<p>The intuition behind experience replay is quite straightforward: as we execute transitions, we store them in a <strong>replay buffer</strong> for later use. Once we have enough transitions (a pre-defined limit), we randomly sample the buffer and update our Q-function based on that sample. The size of the buffer is typically bounded, and uses a first-in, first-out (FIFO) queue, where the oldest experiences are removed to make way for new ones.</p>
+<p>But doesn’t replaying old samples mean that we just learn the same behaviour multiple times, both not learning anything new, and breaking the i.i.d. assumption?</p>
+<p>No! Even when we replay a sample that we have used before, we reuse the transition (state, reward, action, next state, done), but we do not reuse the estimates for the state and next state values.</p>
+<div class="math notranslate nohighlight">
+\[\delta \leftarrow \underbrace{r}_{\text{reused}} + \gamma \cdot \overbrace{\max_{a'} Q_{target}(\underbrace{s',a'}_{\text{reused}})}^{\text{new estimate}}- \overbrace{Q_{policy}(\underbrace{s,a}_{\text{reused}})}^{\text{new estimate}}\]</div>
+<p>Given that we <strong>know</strong> the reward, state, and next state from the transitions, and we can provide new estimates for the values of the state and next state, replaying an old transition is <strong>as if</strong> we had only just sampled it.</p>
+</section>
+</section>
+<section id="id1">
+<h2>Experience replay<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>The change from standard Q-learning to experience replay is reasonably straightforward. First, we keep a replay buffer of transitions, <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>,  sample these and replay them back for the update. Second, we update using target network <span class="math notranslate nohighlight">\(Q_{target}\)</span> to estimate the future discounted rewards; that is, <span class="math notranslate nohighlight">\(\max_{a'} Q_{target}(s',a')\)</span>.</p>
+<div class="proof algorithm admonition" id="algorithm:experience-replay">
+<p class="admonition-title"><span class="caption-number">Algorithm 15 </span> (Experience Replay)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle, \\
+\quad\quad\quad \text{Replay Buffer}\ \mathcal{D}, \text{Batch Size}\ B, \text{Update Period}\ U, \text{smoothing factor}\ \tau\\
+\algoutput:\ \text{Q-functions}\ Q_{target}, Q_{policy}\\[2mm]
+\text{Initialise}\ Q_{policy}\ \text{arbitrarily}\\
+\text{Initialise}\ Q_{target}\ \text{with}\ Q_{policy}\\
+\text{Initialise Replay Buffer}\ \mathcal{D}\ \text{with capacity}\ N\\[2mm]
+\algrepeat\ \text{(for each episode}\ e \text{)}\\
+\quad\quad s \leftarrow\ \text{initial state of episode}\ e\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Select action}\ a\ \text{using policy derived from}\ Q_{policy}\ \text{(e.g., }\epsilon\text{-greedy)}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \text{Store transition}\ (s, a, s', r)\ \text{in Replay Buffer}\ \mathcal{D}\\
+\quad\quad\quad\quad \text{If}\ \text{Replay Buffer}\ \mathcal{D}\ \text{contains enough samples:}\\
+\quad\quad\quad\quad\quad\quad \text{Sample random batch of transitions of size}\ B\ \text{from}\ \mathcal{D}\\
+\quad\quad\quad\quad\quad\quad \text{For each transition}\ (s, a, s', r)\ \text{in batch:}\\
+\quad\quad\quad\quad\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q_{target}(s',a') - Q_{policy}(s,a)\\
+\quad\quad\quad\quad\quad\quad\quad\quad Q_{policy}(s,a) \leftarrow Q_{policy}(s,a) + \alpha \cdot \delta\\
+\quad\quad\quad\quad \text{Every}\ U\ \text{steps:}\\
+\quad\quad\quad\quad\quad\quad \text{Update}\ Q_{target}\ \text{with}\ Q_{policy}\ \text{with smoothing factor}\ \tau\\
+\quad\quad \alguntil\ s\ \text{is a terminal state}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><p>In the algorithm, note that we intermittently (every <span class="math notranslate nohighlight">\(U\)</span> steps) update <span class="math notranslate nohighlight">\(Q_{target}\)</span> with <span class="math notranslate nohighlight">\(Q_{policy}\)</span>, but we can do so with a so-called <strong>soft update</strong>. A <strong>hard update</strong> would simply copy the parameters of <span class="math notranslate nohighlight">\(Q_{policy}\)</span> and put them in <span class="math notranslate nohighlight">\(Q_{target}\)</span>, while a soft update only “nudges” the parameters of <span class="math notranslate nohighlight">\(Q_{target}\)</span> towards <span class="math notranslate nohighlight">\(Q_{policy}\)</span>.</p>
+<p>Soft updates help to provide a more stable learning process. Just like using a single Q-function leads to instability, abrupt changes in <span class="math notranslate nohighlight">\(Q_{target}\)</span> can make learning unstable. Updating more gradually can help with this.</p>
+<p>This can be implemented by taking a weighted average of each parameter. For example:</p>
+<div class="math notranslate nohighlight">
+\[\theta_{target} \leftarrow \tau \theta_{policy} + (1 - \tau) \theta_{target}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_{target}\)</span> are the parameters for e.g. a <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-function</span></a> of the target Q-function, <span class="math notranslate nohighlight">\(\theta_{policy}\)</span> are the parameters for the policy deep Q-function, and <span class="math notranslate nohighlight">\(\tau \in [0,1]\)</span> is the update rate. A value of <span class="math notranslate nohighlight">\(\tau=1.0\)</span> gives us a hard update, while <span class="math notranslate nohighlight">\(\tau &lt; 1.0\)</span> is a soft update.</p>
+<p>Typically, we either update every <span class="math notranslate nohighlight">\(U &gt; 1\)</span> steps (e.g. <span class="math notranslate nohighlight">\(U=100\)</span>) using a hard update (<span class="math notranslate nohighlight">\(\tau=1.0\)</span>), or we update every step (<span class="math notranslate nohighlight">\(U=1\)</span>) using a value of <span class="math notranslate nohighlight">\(\tau\)</span> in the range <span class="math notranslate nohighlight">\([0.001,0.05]\)</span>. If we do both a soft update and every <span class="math notranslate nohighlight">\(U &gt;&gt; 1\)</span> steps, the target network becomes out of date quickly.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<p>Below is a Python implementation for experience replay. First, we need to setup of the replay buffer, which is defined in the class <code class="docutils literal notranslate"><span class="pre">ReplayBuffer</span></code>. This keeps experiences of the form <code class="docutils literal notranslate"><span class="pre">(&quot;state&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;next_state&quot;,</span> <span class="pre">&quot;reward&quot;,</span> <span class="pre">&quot;done&quot;)</span></code>, and allows us to sample random batches.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ExperienceReplayLearner</span></code> class looks quite similar to standard Q-learning, except for: (1) storing and then sampling experiences for replay; and (2) doing a soft update every time <code class="docutils literal notranslate"><span class="pre">step</span> <span class="pre">%</span> <span class="pre">self.update_period</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.model_free_learner</span> <span class="kn">import</span> <span class="n">ModelFreeLearner</span>
+
+<span class="n">Transition</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s2">&quot;Transition&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;next_state&quot;</span><span class="p">,</span> <span class="s2">&quot;reward&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;delta&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ReplayBuffer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">delta</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">update_priorities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ExperienceReplayLearner</span><span class="p">(</span><span class="n">ModelFreeLearner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mdp</span><span class="p">,</span>
+        <span class="n">bandit</span><span class="p">,</span>
+        <span class="n">policy_qfunction</span><span class="p">,</span>
+        <span class="n">target_qfunction</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">buffer_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">update_period</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">min_replay_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">target_update_tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="n">bandit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">policy_qfunction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_qfunction</span> <span class="o">=</span> <span class="n">target_qfunction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">ReplayBuffer</span><span class="p">(</span><span class="n">buffer_size</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span> <span class="k">if</span> <span class="n">buffer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_replay_size</span> <span class="o">=</span> <span class="n">min_replay_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_update_tau</span> <span class="o">=</span> <span class="n">target_update_tau</span>
+
+        <span class="c1"># Initialize target network by copying the policy network.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_qfunction</span><span class="o">.</span><span class="n">soft_update</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">1.0</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_episode_length</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)):</span>
+
+        <span class="n">episode_rewards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">episodes</span><span class="p">):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">()</span>
+            <span class="n">episode_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="p">)</span>
+                <span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="n">reached_episode_limit</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">max_episode_length</span>
+                <span class="n">terminal</span> <span class="o">=</span> <span class="n">done</span> <span class="ow">or</span> <span class="n">reached_episode_limit</span>
+
+                <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_delta</span><span class="p">(</span><span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">terminal</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+
+                <span class="c1"># Perform an update on the policy qfunction using a batch</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_replay_size</span><span class="p">):</span>
+                    <span class="n">transitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">transitions</span><span class="p">))</span>
+
+                    <span class="n">deltas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deltas</span><span class="p">(</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">,</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">,</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span><span class="p">,</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">done</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="o">.</span><span class="n">batch_update</span><span class="p">(</span>
+                        <span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">deltas</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">update_priorities</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_replay_size</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="c1"># Soft update of the target Q-function</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">target_qfunction</span><span class="o">.</span><span class="n">soft_update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_update_tau</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Move to the next state</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+                <span class="n">episode_reward</span> <span class="o">+=</span> <span class="n">reward</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">**</span> <span class="n">step</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">terminal</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="n">episode_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">episode_reward</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">episode_rewards</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the deltas for the update &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_deltas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">next_states</span><span class="p">,</span> <span class="n">dones</span><span class="p">):</span>
+        <span class="n">q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="o">.</span><span class="n">get_q_values</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+
+        <span class="c1"># Double DQN target: policy network selects next actions, target network evaluates them.</span>
+        <span class="n">next_actions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="o">.</span><span class="n">get_argmax_q</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">next_state</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">next_state</span> <span class="ow">in</span> <span class="n">next_states</span>
+        <span class="p">]</span>
+        <span class="n">next_state_q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_qfunction</span><span class="o">.</span><span class="n">get_q_values</span><span class="p">(</span>
+            <span class="n">next_states</span><span class="p">,</span> <span class="n">next_actions</span>
+        <span class="p">)</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">reward</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="n">next_state_q_value</span><span class="p">)</span> <span class="o">-</span> <span class="n">q_value</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">reward</span> <span class="o">-</span> <span class="n">q_value</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_state_q_value</span><span class="p">,</span> <span class="n">q_value</span><span class="p">,</span> <span class="n">done</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">rewards</span><span class="p">,</span> <span class="n">next_state_q_values</span><span class="p">,</span> <span class="n">q_values</span><span class="p">,</span> <span class="n">dones</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">deltas</span>
+
+    <span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_qfunction</span><span class="o">.</span><span class="n">get_argmax_q</span><span class="p">(</span>
+            <span class="n">next_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">next_state_q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">)</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">reward</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="n">next_state_q_value</span><span class="p">)</span> <span class="o">-</span> <span class="n">q_value</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">reward</span> <span class="o">-</span> <span class="n">q_value</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">deltas</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In our framework, the soft update is encapsulated in the implemention of the Q-function. For example, this is the update for a <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-function</span></a> with parameters:</p>
+<div class="cell tag_remove-input docutils container">
+</div>
+<p>Here is Python code to run this on the <code class="docutils literal notranslate"><span class="pre">GridWorld</span></code> example, with an update period of 1 step:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.experience_replay_learner</span> <span class="kn">import</span> <span class="n">ExperienceReplayLearner</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.deep_q_function</span> <span class="kn">import</span> <span class="n">DeepQFunction</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">action_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridworld</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+<span class="n">state_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridworld</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+
+<span class="n">policy_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">target_qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="c1">#from mastering_rl.qfunctions.qtable import QTable</span>
+<span class="c1">#policy_qfunction = QTable()</span>
+<span class="c1">#target_qfunction = QTable()</span>
+
+<span class="n">learner</span> <span class="o">=</span> <span class="n">ExperienceReplayLearner</span><span class="p">(</span>
+    <span class="n">gridworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">target_qfunction</span><span class="p">,</span> <span class="n">update_period</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">policy_qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy_as_image</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6c73b4f795b3ad9c8bab5facdab639505164b35e43cf7b8ff62afde1ac4fc393.png" src="../_images/6c73b4f795b3ad9c8bab5facdab639505164b35e43cf7b8ff62afde1ac4fc393.png" />
+<img alt="../_images/0ad4fa535f61e74fb723b5f7baa88249467ec952b7046ebf80465bba4e9a2f8f.png" src="../_images/0ad4fa535f61e74fb723b5f7baa88249467ec952b7046ebf80465bba4e9a2f8f.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="n-step.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">n-step reinforcement learning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="modelling-and-abstraction.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Modelling and abstraction for MDPs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-use-experience-replay">Why use experience replay?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intuition">Intuition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#target-network">Target network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replay-buffer">Replay buffer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Experience replay</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

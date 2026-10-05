@@ -1,0 +1,1472 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Temporal difference reinforcement learning &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/temporal-difference-learning';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Monte-Carlo Tree Search (MCTS)" href="mcts.html" />
+    <link rel="prev" title="Multi-armed bandits" href="multi-armed-bandits.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/temporal-difference-learning.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/temporal-difference-learning.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Temporal difference reinforcement learning</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-based-vs-model-free">Model-based vs model-free</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intuition-of-model-free-reinforcement-learning">Intuition of model-free reinforcement learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-reinforcement-learning">Monte-Carlo reinforcement learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-tables">Q-Tables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-difference-td-reinforcement-learning">Temporal difference (TD) reinforcement learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-learning-off-policy-temporal-difference-learning">Q-Learning: Off-policy temporal-difference learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-the-q-function">Updating the Q-function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-extraction-using-q-functions">Policy extraction using Q-functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-on-policy-temporal-difference-learning">SARSA: On-policy temporal difference learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-vs-q-learning-example-cliff-world">SARSA vs. Q-learning example: Cliff world</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-vs-q-learning-example-contested-crossing">SARSA vs. Q-learning example: Contested crossing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#on-policy-vs-off-policy-why-do-we-have-both">On-policy vs. off-policy: Why do we have both?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-from-prior-experience">Learning from prior experience</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-on-the-job">Learning on the job</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-off-policy-and-on-policy-learning">Combining off-policy and on-policy learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-and-termination">Evaluation and termination</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-q-learning-and-sarsa">Limitations of Q-learning and SARSA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-of-reinforcement-learning">Applications of Reinforcement Learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="temporal-difference-reinforcement-learning">
+<h1>Temporal difference reinforcement learning<a class="headerlink" href="#temporal-difference-reinforcement-learning" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-temporal-difference-learning admonition">
+<p class="admonition-title">Video byte: Introduction to temporal-difference learning</p>
+<iframe width="248" height="141" src=" https://www.youtube.com/embed/lNxIB8jGWmI?start=0" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Identify situations in which model-free reinforcement learning is a suitable solution for an MDP.</p></li>
+<li><p>Explain how model-free planning differs from model-based planning.</p></li>
+<li><p>Apply temporal difference methods Q-learning and SARSA to solve small-scale MDP problems manually and program Q-learning and SARSA algorithms to solve medium-scale MDP problems automatically.</p></li>
+<li><p>Compare and contrast off-policy reinforcement learning with on-policy reinforcement learning.</p></li>
+</ol>
+</div>
+<section id="model-based-vs-model-free">
+<h2>Model-based vs model-free<a class="headerlink" href="#model-based-vs-model-free" title="Link to this heading">#</a></h2>
+<p>Value iteration is part of a class of solutions known as <strong>model-based</strong> techniques. This means that we need to know the model; in particular, we have access to <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> and <span class="math notranslate nohighlight">\(r(s,a,s')\)</span>.</p>
+<p>In this section, we look at Q-learning and SARSA, which are <strong>model-free</strong>   techniques. This means that we do NOT know <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> and <span class="math notranslate nohighlight">\(r(s,a,s')\)</span> of our model</p>
+<p><em>How can we calculate a policy if we don’t know the transitions and the rewards?!</em> We <strong>learn through experience</strong> by trying actions and seeing what the results is, making this machine learning problem.</p>
+<p>Importantly, in model-free reinforcement learning, we do NOT try to learn <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> or <span class="math notranslate nohighlight">\(r(s,a,s')\)</span> — we learn a value function or a policy directly.</p>
+<p>There is something in between model-based and model-free: simulation-based techniques. In these cases, we have a model as a <strong>simulator</strong>, so we can <strong>simulate</strong> <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> and <span class="math notranslate nohighlight">\(r(s,a,s')\)</span> and learn a policy with a model-free technique, but we cannot “see” <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> and <span class="math notranslate nohighlight">\(r(s,a,s')\)</span>, so model-based techniques like value iteration are not possible.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-the-mystery-game admonition">
+<p class="admonition-title">Video byte: The Mystery game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=53" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-exercise-the-mystery-game admonition">
+<p class="admonition-title">Exercise – The Mystery game</p>
+<p>Consider the following game, implemented by Github user guiferviz, and available for download at <a class="github reference external" href="https://github.com/guiferviz/rl_udacity/">guiferviz/rl_udacity</a>.</p>
+<p>The aim of the game is to win the game. You have six actions available, which can be executed by pressing keys 1, 2, 3, 4, 5, and 6. You need to learn what the actions do and what the rewards are. No other instructions are given, but you will know when you receive any rewards/points. Try to play the game and see if you can win. Have fun!</p>
+ <div class="section" id="container" markdown="1">
+ <center>
+ <script>
+        var game = null;
+        window.addEventListener("load", function ()
+        {
+            var container = document.getElementById("container");
+            var classes = [[2, 1, 0, 1, 1, 3],
+                           [1, 1, 0, 1, 1, 1],
+                           [1, 1, 1, 1, 1, 1],
+                           [1, 1, 1, 1, 1, 1],
+                           [1, 0, 1, 1, 0, 0],
+                           [4, 0, 1, 1, 1, 5]];
+            var player = [2, 2];
+            var object = [5, 3];
+            var actions = ["up", "left", "right", "release", "down", "catch"];
+            game = new MysteryGame(container, classes, player, object, actions);
+         });
+    </script>
+    </center>
+</div>
+<p><a class="reference external" href="https://github.com/guiferviz/rl_udacity/tree/master/mystery_game">Mystery Game</a> by Github user guiferviz, used under the <a class="reference external" href="https://github.com/guiferviz/rl_udacity/blob/master/LICENSE.md">MIT License (MIT)</a></p>
+<p>Once you have played this, ask yourself the following questions:</p>
+<ul class="simple">
+<li><p>What was the process you took?</p></li>
+<li><p>What did you learn?</p></li>
+<li><p>What assumptions did you use?</p></li>
+</ul>
+<p>I would guess that you experimented by pressing the keys 1 to 6, from the outcome of the keys, you learnt the effect of each of the keys, including the state transitions and the rewards. From this, you could easily construct a winning strategy. I also would guess that you perhaps used the colours as a way to guess what you should do.</p>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-model-free-reinforcement-learning admonition">
+<p class="admonition-title">Video byte: Model-free reinforcement learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=309" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>This game is of interest because it is a <strong>model-free</strong> (at least initially) Markov decision process: you didn’t know the transition function or the reward function; instead you had to learn it. Similarly, model-free reinforcement learning techniques don’t know the transition function or the reward function of an MDP, so they just learn by trying different behaviours and observing what rewards they get. Over time, they learn which behaviours lead to positive rewards, so they reinforce the policy to try that behaviour more, and which behaviours lead to negative rewards, and they reinforce the policy to avoid that behaviour.</p>
+<p>Imagine how hard it is for a computer that doesn’t have any assumptions or intuition for this game though! It will not match the colours, nor will it really have any prior knowledge about similar games, unless it is explicitly told about it. Model-free reinforcement learning techniques start with no or minimal initial knowledge, and will learn a policy (e.g. a value function, a Q-function, or a policy directly) just by trying behaviours and seeing what happens. Most techniques (at least the ones covered in these notes) do not learn a model in the same way that you did — they just construct the policy directly.</p>
+<section id="intuition-of-model-free-reinforcement-learning">
+<h3>Intuition of model-free reinforcement learning<a class="headerlink" href="#intuition-of-model-free-reinforcement-learning" title="Link to this heading">#</a></h3>
+<figure class="align-default" id="fig-model-free-rl-loop">
+<img alt="An abstract illustration of model-free reinforcement learning. There is a box called Agent and a box called environment, connected in a loop. From agent to environment is an arrow labelled with the letter a, representing the action being executed by the agent in the environment. From the environment to agent are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime." src="../_images/model_free_rl_loop.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">An abstraction illustration of model-free reinforcement learning.</span><a class="headerlink" href="#fig-model-free-rl-loop" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>There are many different techniques for model-free reinforcement learning, all with the same basis. <a class="reference internal" href="#fig-model-free-rl-loop"><span class="std std-numref">Fig. 4</span></a> gives an abstract illustration of this process:</p>
+<ul class="simple">
+<li><p>We execute many different <strong>episodes</strong> of the problem we want to solve in order to learn a <strong>policy</strong>.</p></li>
+<li><p>During each episode, we loop between executing actions and learning our policy.</p></li>
+<li><p>When our agent executes an action, we get a reward (which may be 0) and we can see the new state that results from executing the action.</p></li>
+<li><p>From this, we <strong>reinforce</strong> our estimates of applying the previous action in the previous state.</p></li>
+<li><p>Then, we select a new action and execute it in the environment.</p></li>
+<li><p>We repeat this until either: (1) we run out of training time; (2) we have iterated over a fixed number of episodes or steps; (3) we think our policy has converged to an optimal policy; or (4) our policy is ‘good enough’ (for each new episode we see minimal improvement). In practice, it is difficult to know whether we have converged to an optimal policy.</p></li>
+</ul>
+</section>
+</section>
+<section id="monte-carlo-reinforcement-learning">
+<span id="sec-model-free-monte-carlo-learning"></span><h2>Monte-Carlo reinforcement learning<a class="headerlink" href="#monte-carlo-reinforcement-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-monte-carlo-simulation admonition">
+<p class="admonition-title">Video byte: Monte-Carlo simulation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=386" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Monte-Carlo reinforcement learning  is perhaps the simplest of reinforcement learning methods, and is based on how animals learn from their environment. The intuition is quite straightforward. Maintain a <a class="reference internal" href="MDPs.html#sec-mdps-bellman-equation"><span class="std std-ref">Q-function</span></a> that records the value <span class="math notranslate nohighlight">\(Q(s,a)\)</span> for every state-action pair. At each step: (1) choose an action using a multi-armed bandit algorithm; (2) apply that action and receive the reward; and (3) update <span class="math notranslate nohighlight">\(Q(s,a)\)</span> based on that reward. Repeat over a number of episodes until …when?</p>
+<p>It is called <strong>Monte-Carlo reinforcement learning</strong> after the area within  within Monaco (small principality on the French riviera) called Monte Carlo, which is best known for its extravagant casinos. As gambling and casinos are largely associated with chance, simulations that use some randomness to explore actions are often called Monte Carlo methods.</p>
+<div class="proof algorithm admonition" id="algorithm:monte-carlo-reinforcement-learning">
+<p class="admonition-title"><span class="caption-number">Algorithm 3 </span> (Monte-Carlo reinforcement learning)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\
+N(s, a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad \text{Generate an episode}\ (s_0, a_0, r_1, \ldots, s_{T-1}, a_{T-1}, r_T);\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
+\quad\quad G \leftarrow 0\\
+\quad\quad t \leftarrow T-1\\
+\quad\quad \algwhile\ t \geq 0\ \algdo\\
+\quad\quad\quad\quad G \leftarrow r_{t+1} + \gamma \cdot G\\
+\quad\quad\quad\quad \algif\ s_t, a_t\ \text{does not appear in}\ s_0, a_0,\ldots, s_{t-1}, a_{t-1}\ \algthen\\
+\quad\quad\quad\quad\quad\quad Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \frac{1}{N(s_t, a_t)}[G - Q(s_t, a_t)]\\
+\quad\quad\quad\quad\quad\quad N(s_t, a_t) \leftarrow N(s_t, a_t) + 1\\
+\quad\quad\quad\quad t \leftarrow t-1\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><p>This algorithm generates an entire episode following some policy, such <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy, observing the reward <span class="math notranslate nohighlight">\(r_{t+1}\)</span> at each step <span class="math notranslate nohighlight">\(t\)</span>. It then calculates the discounted future reward <span class="math notranslate nohighlight">\(G\)</span> at each step. If <span class="math notranslate nohighlight">\(s_t, a_t\)</span> occurs earlier in the episode, then we do not update <span class="math notranslate nohighlight">\(Q(s_t, a_t)\)</span> as we will update it later in the loop. If it does not occur, we update <span class="math notranslate nohighlight">\(Q(s_t, a_t)\)</span> as the cumulative average over all executions of <span class="math notranslate nohighlight">\(s_t, a_t\)</span> over all episodes. In this algorithm <span class="math notranslate nohighlight">\(N(s_t,a_t)\)</span> represents the number of times that <span class="math notranslate nohighlight">\(s_t, a_t\)</span> have been evaluated over all episodes.</p>
+</section>
+<section id="q-tables">
+<h2>Q-Tables<a class="headerlink" href="#q-tables" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-tables admonition">
+<p class="admonition-title">Video byte: Q-Tables</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=755" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Q-tables are the simplest way to maintain a Q-function. They are a table with an entry for every <span class="math notranslate nohighlight">\(Q(s,a)\)</span>. Thus, like value functions in value iteration, they do not scale to large state-spaces. (More on scaling in the next lecture).</p>
+<p>Initially, we would have an arbitrary Q-table, which may look something like this if initialised with all zeros, taking the GridWorld example:</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<img alt="../_images/4a1a2e4c3137efd32b551a3419d3339530b7fe71c0788a131f376b995bac3813.png" src="../_images/4a1a2e4c3137efd32b551a3419d3339530b7fe71c0788a131f376b995bac3813.png" />
+</div>
+</div>
+<p>After some training, we may end up with a Q-function that looks something like this:</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<img alt="../_images/dafd39b17fff5a60bf6838f8ea255dcd0abe843cb0369f42c657e577b7f64ead.png" src="../_images/dafd39b17fff5a60bf6838f8ea255dcd0abe843cb0369f42c657e577b7f64ead.png" />
+</div>
+</div>
+<p>The following is an implementation of a Q-table using a Python dictionary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qfunction</span> <span class="kn">import</span> <span class="n">QFunction</span>
+
+
+<span class="k">class</span> <span class="nc">QTable</span><span class="p">(</span><span class="n">QFunction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">default_q_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_q_value</span> <span class="o">=</span> <span class="n">default_q_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_q_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">delta</span>
+
+    <span class="k">def</span> <span class="nf">batch_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">soft_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">),</span> <span class="n">q_value</span> <span class="ow">in</span> <span class="n">policy_qfunction</span><span class="o">.</span><span class="n">qtable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tau</span> <span class="o">*</span> <span class="n">q_value</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="p">[(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">get_q_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_q_value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">serialised</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">serialised</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">serialised</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qtable</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
+                <span class="k">lambda</span><span class="p">:</span> <span class="n">default</span><span class="p">,</span>
+                <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">key</span><span class="p">)):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">serialised</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="temporal-difference-td-reinforcement-learning">
+<span id="sec-model-free-td-learning"></span><h2>Temporal difference (TD) reinforcement learning<a class="headerlink" href="#temporal-difference-td-reinforcement-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-temporal-difference-learning admonition">
+<p class="admonition-title">Video byte: Temporal difference learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=863" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Monte Carlo reinforcement learning is simple, but it has a number of problems. The most important is that it has high <strong>variance</strong>. Recall that we calculate the future discounted reward for an episode and use that to calculate the average reward for each state-action pair. However, the term <span class="math notranslate nohighlight">\(\gamma G\)</span> is often <em>not</em> a good estimate of the average future reward that we would receive. If we execute action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> many times throughout different episodes, we might find that the future trajectories we execute after that vary significantly because we are using Monte Carlo simulation. This means that it will take a long term to learn a good estimate of the true average reward is for that state-action pair.</p>
+<p><strong>Temporal difference</strong> (TD) methods alleviate this problem using <strong>bootstrapping</strong>. Much the same way that value iteration bootstraps by using the last iteration’s value function, in TD methods, instead of updating based on <span class="math notranslate nohighlight">\(G\)</span> – the actual future discounted reward received in the episode – we update based on the actual immediate reward received plus an estimate of our future discounted reward.</p>
+<figure class="align-default" id="fig-td-learning-loop">
+<img alt="An abstract illustration of temporal difference reinforcement learning. There are four boxes:  environment, update Q-function, explore, and exploit, connected in a loop. From both explore and exploit to environment are arrows labelled with the letter a, representing the action being executed by the agent in the environment. This indicates that the action is either chosen as the best action, or a random action is selected. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime." src="../_images/td_learning_loop.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 5 </span><span class="caption-text">An abstraction illustration of temporal-difference learning.</span><a class="headerlink" href="#fig-td-learning-loop" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>In TD methods, our update rules always follow a pattern:</p>
+<div class="math notranslate nohighlight">
+\[
+Q(s,a) \leftarrow \underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot [\underbrace{\overbrace{r}^{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot V(s')}_{\text{TD target}} - \overbrace{Q(s,a)}^{\text{do not count extra } Q(s,a)}]
+\]</div>
+<p><span class="math notranslate nohighlight">\(V(s')\)</span> is our TD estimate of the average future reward, and is  the bootstrapped value of our future discounted reward.
+The new information is weighted by a parameter <span class="math notranslate nohighlight">\(\alpha \in [0,1]\)</span> (pronounced “alpha”), which is the **learning rate(*.  A higher learning rate <span class="math notranslate nohighlight">\(\alpha\)</span> will weight more recent information higher than older information, so will learn more quickly, but will make it more difficult to stabilise because it is strongly influenced by outliers.</p>
+<p>The idea is that over time, the TD estimate will become be more stable than the actual rewards we receive in an episode, converging to the optimal value function <span class="math notranslate nohighlight">\(V(s')\)</span> defined by the Bellman equation, which leads to <span class="math notranslate nohighlight">\(Q(s,a)\)</span> converging more quickly.</p>
+<p>Why is there the expression <span class="math notranslate nohighlight">\(-Q(s,a)\)</span> inside the square brackets? This is because the old value is weighted <span class="math notranslate nohighlight">\((1 - \alpha) \cdot Q(s,a)\)</span>. We can expand this to <span class="math notranslate nohighlight">\(Q(s,a) - \alpha \cdot Q(s,a)\)</span>, and can then move the latter <span class="math notranslate nohighlight">\(-Q(s,a)\)</span> inside the square brackets where the learning rate <span class="math notranslate nohighlight">\(\alpha\)</span> is applied.</p>
+<p>In this chapter, we will look at two TD methods that differ in the way that they estimate the future reward <span class="math notranslate nohighlight">\(V(s')\)</span>:</p>
+<ol class="arabic simple">
+<li><p><strong>Q-learning</strong>, which is what we call an <strong>off-policy</strong> approach; and</p></li>
+<li><p><strong>SARSA</strong>, which is what we call an <strong>on-policy</strong> approach.</p></li>
+</ol>
+</section>
+<section id="q-learning-off-policy-temporal-difference-learning">
+<span id="sec-model-free-q-learning"></span><h2>Q-Learning: Off-policy temporal-difference learning<a class="headerlink" href="#q-learning-off-policy-temporal-difference-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-learning admonition">
+<p class="admonition-title">Video byte: Q-learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1199" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Q-learning is a foundational method for reinforcement learning. It is TD method that estimates the future reward <span class="math notranslate nohighlight">\(V(s')\)</span> using the Q-function itself, assuming that from state <span class="math notranslate nohighlight">\(s'\)</span>, the best action (according to <span class="math notranslate nohighlight">\(Q\)</span>) will be executed at each state.</p>
+<p>Below is the Q_learning algorithm. It uses <span class="math notranslate nohighlight">\(\max_{a'} Q(s',a')\)</span> as the estimate of <span class="math notranslate nohighlight">\(V(s')\)</span>; that is, it estimates this by using <span class="math notranslate nohighlight">\(Q\)</span> to estimate the value of the best action from <span class="math notranslate nohighlight">\(s'\)</span>. This helps to stabilise the learning.</p>
+<p>Note that, unlike Monte Carlo reinforcement learning, because Q-learning uses the bootstrapped value, it can interleave execution and update, meaning that <span class="math notranslate nohighlight">\(Q\)</span> is improved at each step of an episode, rather than having to wait until the end of the episode to calculate <span class="math notranslate nohighlight">\(G\)</span>. This has benefit early episodes benefit from learning more than in Monte Carlo reinforcement learning.</p>
+<div class="proof algorithm admonition" id="algorithm:q-learning">
+<p class="admonition-title"><span class="caption-number">Algorithm 4 </span> (Q-learning)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a') - Q(s,a)\\
+\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><section id="updating-the-q-function">
+<h3>Updating the Q-function<a class="headerlink" href="#updating-the-q-function" title="Link to this heading">#</a></h3>
+<p>Updating the Q-function is where the learning happens:</p>
+<div class="math notranslate nohighlight">
+\[\delta \leftarrow [\underbrace{\overbrace{r}^{\text{reward}} + \overbrace{\gamma}^{\text{discount factor}} \cdot \overbrace{\max_{a'} Q(s',a')}^{V(s') \text{ estimate}}}_{\text{TD target}}  \overbrace{- Q(s,a)}^{\text{do not count extra } Q(s,a)}]\]</div>
+<div class="math notranslate nohighlight">
+\[Q(s,a) \leftarrow 
+\underbrace{Q(s,a)}_\text{old value} + \overbrace{\alpha}^{\text{learning rate}} \cdot \underbrace{\delta}_{\text{delta value}}\]</div>
+<p>We can see that at each step, <span class="math notranslate nohighlight">\(Q(s,a)\)</span> is update by taking the old value of <span class="math notranslate nohighlight">\(Q(s,a)\)</span> and adding this to the new information.</p>
+<p>The estimate from the new observations is given by <span class="math notranslate nohighlight">\(\delta \leftarrow r + \gamma \cdot \max_{a'} Q(s',a')\)</span>, where <span class="math notranslate nohighlight">\(\delta\)</span> (pronounced “delta”) is the difference between the previous estimate and the most recent observation, <span class="math notranslate nohighlight">\(r\)</span> is the reward that was received by executing action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(r + \gamma  \cdot \max_{a'} Q(s',a')\)</span> is the <strong>temporal difference</strong> target. What this says is that the estimate of <span class="math notranslate nohighlight">\(Q(s,a)\)</span> based on the new information is the reward <span class="math notranslate nohighlight">\(r\)</span>, plus the estimated discounted future reward from being in state <span class="math notranslate nohighlight">\(s'\)</span>.  The definition of <span class="math notranslate nohighlight">\(\delta\)</span> is the update similar to that of the Bellman equation. We do not know <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>, so we cannot calculate the Bellman update directly, but we can estimate the value using <span class="math notranslate nohighlight">\(r\)</span> and the temporal difference target.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that we estimate the future value using <span class="math notranslate nohighlight">\(\max_{a'} Q(s',a')\)</span>, which means it <em>ignores</em> the actual next action that will be executed, and instead updates based on the <strong>estimated best action</strong> for the update. This is known as <strong>off policy</strong> learning — more on this later.</p>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-learning-update-example admonition">
+<p class="admonition-title">Video byte: Q-learning update example</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1383" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-q-learning-update admonition">
+<p class="admonition-title">Example – Q-learning update</p>
+<p>Using the table above, we can illustrate the inner loop of the Q-learning algorithm. Assume that we are in state <span class="math notranslate nohighlight">\(s=(2,2)\)</span>, and the action <span class="math notranslate nohighlight">\(a=Up\)</span> is chosen and executed successfully, which would return to state <span class="math notranslate nohighlight">\(s'=(2,2)\)</span> as there is no cell above (2,2). Using the Q-table above, we would update the Q-value as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+Q((2,2),Up) &amp; \leftarrow &amp; Q((2,2),Up) + \alpha [r + \gamma \max_{a'} Q((2,2),a') - Q((2,2),Up)]\\
+           &amp; \leftarrow &amp; 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2), Right) - Q((2,2),Up)]\\
+           &amp; \leftarrow &amp; 0.79 + 0.1 [0 + 0.9 \cdot 0.90 - 0.79]\\
+           &amp; \leftarrow &amp; 0.792\\
+\end{array}
+\end{split}\]</div>
+</div>
+<div class="admonition-theoretical-guarantee admonition">
+<p class="admonition-title">Theoretical guarantee</p>
+<p>Using Q-tables to represent Q-functions, Q-learning will converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often.</p>
+</div>
+</section>
+<section id="policy-extraction-using-q-functions">
+<h3>Policy extraction using Q-functions<a class="headerlink" href="#policy-extraction-using-q-functions" title="Link to this heading">#</a></h3>
+<p>Using model-free learning, we iterate over as many episodes as possible, or until each episode hardly improves our Q-values. This gives us a (close to) optimal Q-function.</p>
+<p>Once we have such a Q-function, we stop exploring and just exploit. We use <a class="reference internal" href="MDPs.html#sec-mdps-policy-extraction"><span class="std std-ref">policy extraction</span></a>, exactly as we do for value iteration, except we extract from the Q-function instead of the value function:</p>
+<div class="math notranslate nohighlight">
+\[\pi(s) = \text{argmax}_{a \in A(s)} Q(s,a)\]</div>
+<p>This selects the action with the maximum Q-value. Given an optimal Q-function (for the MDP), this results in optimal behaviour.</p>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>To implement Q-learning, we first implement an abstract superclass <code class="docutils literal notranslate"><span class="pre">ModelFreeLearner</span></code> that defines the interface for any model-free learning algorithm:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+
+<span class="k">class</span> <span class="nc">ModelFreeLearner</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we implement a second abstract superclass <code class="docutils literal notranslate"><span class="pre">TemporalDifferenceLearner</span></code>, which contains most of the code we need:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.model_free_learner</span> <span class="kn">import</span> <span class="n">ModelFreeLearner</span>
+
+
+<span class="k">class</span> <span class="nc">TemporalDifferenceLearner</span><span class="p">(</span><span class="n">ModelFreeLearner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">bandit</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="n">bandit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">qfunction</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">max_episode_length</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)):</span>
+
+        <span class="n">episode_rewards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">episodes</span><span class="p">):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">()</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="p">)</span>
+
+            <span class="n">episode_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+                <span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+                <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="p">)</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_delta</span><span class="p">(</span>
+                    <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">,</span> <span class="n">done</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+
+                <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">next_action</span>
+                <span class="n">episode_reward</span> <span class="o">+=</span> <span class="n">reward</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">**</span> <span class="n">step</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">done</span> <span class="ow">or</span> <span class="n">step</span> <span class="o">==</span> <span class="n">max_episode_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="n">episode_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">episode_reward</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">episode_rewards</span>
+
+    <span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">next_state_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_value</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">reward</span>
+            <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">()</span> <span class="o">*</span> <span class="n">next_state_value</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">done</span><span class="p">))</span>
+            <span class="o">-</span> <span class="n">q_value</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta</span>
+        
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note a slight difference in the update from <a class="reference internal" href="#algorithm:q-learning">Algorithm 4</a> and the update in the code:</p>
+<p><code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">=</span> <span class="pre">reward</span> <span class="pre">+</span> <span class="pre">(self.mdp.discount_factor</span> <span class="pre">*</span> <span class="pre">next_state_value</span> <span class="pre">*</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">done))</span> <span class="pre">-</span> <span class="pre">q_value</span></code></p>
+<p>The expression <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">done</span></code> will equal 0 if the episode has not finished, and 1 otherwise. Therefore, this update calculates that <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">=</span> <span class="pre">reward</span> <span class="pre">-</span> <span class="pre">q_value</span></code> at a terminal state – we do not need to estimate the value of the next state because there is no next state for a terminal state.</p>
+<p>We will see later that we inherit from <code class="docutils literal notranslate"><span class="pre">TemporalDifferenceLearner</span></code> for other algorithms that are very similar to Q-learning.</p>
+<p>We inherit from this class to implement the Q-learning algorithm:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.temporal_difference_learner</span> <span class="kn">import</span> <span class="n">TemporalDifferenceLearner</span>
+
+
+<span class="k">class</span> <span class="nc">QLearning</span><span class="p">(</span><span class="n">TemporalDifferenceLearner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">max_q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_max_q</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">max_q_value</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the <code class="docutils literal notranslate"><span class="pre">TemporalDifferenceLearner</span></code> does most of the work. All the <code class="docutils literal notranslate"><span class="pre">QLearning</span></code> class has to do is define what the value of <span class="math notranslate nohighlight">\(V(s')\)</span> for the new state <span class="math notranslate nohighlight">\(s'\)</span>, which the state and the next action that will be executed. Why does we model it like this instead of just implementing all of this in a single algorithm? In the next section on <a class="reference internal" href="#sec-model-free-sarsa"><span class="std std-ref">SARSA</span></a>, we will see why.</p>
+<p>Using this implementation, we execute 100 episodes on the GridWorld example, resulting in the following Q-function, where each cell represents a cell from the GridWorld example and the four entries correspond to the Q-values for the respective direction:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">QLearning</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">,</span> <span class="s2">&quot;Q-Function&quot;</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c81582d5e91978dba04d624ac9ae05f8ce6881696d628c53d8e8208cce878b22.png" src="../_images/c81582d5e91978dba04d624ac9ae05f8ce6881696d628c53d8e8208cce878b22.png" />
+</div>
+</div>
+<p>If we compare this to the value function for the <a class="reference internal" href="value-iteration.html#sec-value-iteration-implementation"><span class="std std-ref">value iteration implementation</span></a>, we can see that the values learnt are not very accurate. Training for more episodes would result in more accurate values, but the alpha parameter means that recent information is weighted 0.1 in this case, and any unusual samples (from exploration or noise in the simulation), can affect the values.</p>
+<p>Despite this, if we extract a policy from this, we still see that the policy corresponds to the optimal policy, although this is by no means guaranteed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ef036d48e060327c2d2a32a46ddcb45af489ff7955a812d43c4349a4f705aa77.png" src="../_images/ef036d48e060327c2d2a32a46ddcb45af489ff7955a812d43c4349a4f705aa77.png" />
+</div>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-convergence admonition">
+<p class="admonition-title">Video byte: Convergence</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1550" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:</p>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="qlearning" src=https://mastering-rl.github.io/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="qlearning" width=500></gif-player>
+</div>
+<p>
+</section>
+</section>
+<section id="sarsa-on-policy-temporal-difference-learning">
+<span id="sec-model-free-sarsa"></span><h2>SARSA: On-policy temporal difference learning<a class="headerlink" href="#sarsa-on-policy-temporal-difference-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-sarsa-on-policy-temporal-difference-learning admonition">
+<p class="admonition-title">Video byte: SARSA – On-policy temporal difference learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using <span class="math notranslate nohighlight">\(\max{a \in A(s)} Q(s',a)\)</span>, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as <strong>on-policy reinforcement learning</strong>. Later in this section, we’ll discuss why this matters, but for now, let’s look at the SARSA algorithm and on-policy learning a bit more.</p>
+<div class="admonition-definition-on-policy-and-off-policy-reinforcement-learning admonition">
+<p class="admonition-title">Definition – On-policy and off-policy reinforcement learning</p>
+<p>Instead of estimating <span class="math notranslate nohighlight">\(Q(s',a')\)</span> for the best estimated future state during update, <strong>on-policy reinforcement learning</strong> uses the actual next action to update.</p>
+<p>On-policy learning estimates <span class="math notranslate nohighlight">\(\mathcal{Q^{\pi}}(s,a)\)</span> state action pairs, for the current behaviour policy <span class="math notranslate nohighlight">\(\pi\)</span>,
+whereas <strong>off-policy learning</strong> estimates the policy independent of the current behaviour.</p>
+</div>
+<p>To illustrate how this differs, let’s take a look at the SARSA algorithm.</p>
+<div class="proof algorithm admonition" id="algorithm:sarsa">
+<p class="admonition-title"><span class="caption-number">Algorithm 5 </span> (SARSA)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\  \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
+\algoutput:\ \text{Q-function}\ Q\\[2mm]
+\text{Initialise}\ Q\ \text{arbitrarily; e.g.,}\ Q(s,a) \leftarrow 0\ \text{for all}\ s\ \text{and}\ a\\[2mm]
+\algrepeat \\
+\quad\quad s \leftarrow\ \text{the first state in episode}\ e\\
+\quad\quad \text{Select action}\ a\ \text{to apply in}\ s;\\
+\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
+\quad\quad \algrepeat\ \text{(for each step in episode}\ e \text{)}\\
+\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
+\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad \text{Select action}\ a\ \text{to apply in}\ s';\\
+\quad\quad\quad\quad\quad\quad \text{e.g. using}\ Q\ \text{and a multi-armed bandit algorithm such as}\ \epsilon\text{-greedy}\\
+\quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q(s',a') - Q(s,a)\\
+\quad\quad\quad\quad Q(s,a) \leftarrow Q(s,a) + \alpha \cdot \delta\\
+\quad\quad\quad\quad s \leftarrow s'\\
+\quad\quad\quad\quad a \leftarrow a'\\
+\quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
+\alguntil\ Q\ \text{converges}
+\end{array}
+\)</span></p>
+</section>
+</div><p>The difference between the Q-learning and SARSA algorithms is what happens in the update in the loop body.</p>
+<p>Q-learning: (1) selects an action <span class="math notranslate nohighlight">\(a\)</span>; (2) takes that actions and observes the reward &amp; next state <span class="math notranslate nohighlight">\(s'\)</span>; and (3) updates <strong>optimistically</strong> by assuming the future reward is <span class="math notranslate nohighlight">\(\max_{a'}Q(s',a')\)</span> – that is, it assumes that future behaviour will be optimal (according to its policy).</p>
+<p>SARSA: (1) selects action <span class="math notranslate nohighlight">\(a'\)</span> for the <em>next</em> loop iteration; (2) in the next iteration, takes that action and observes the reward &amp; next state <span class="math notranslate nohighlight">\(s'\)</span>; (3) only then chooses <span class="math notranslate nohighlight">\(a'\)</span> for the next iteration; and (4) updates using the estimate for the actual next action chosen – which may not be the greediest one (e.g. it could be selected so that it can explore).</p>
+<p><em>So what difference does this really make?</em> There are two main differences:</p>
+<ul class="simple">
+<li><p>Q-learning will converge to the optimal policy irrelevant of the policy followed, because it is <strong>off-policy</strong>: it uses the greedy reward estimate in its update rather than following the policy such as <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy). Using a random policy, Q-learning will still  converge to the optimal policy, but SARSA will not (necessarily).</p></li>
+<li><p>Q-learning learns an optimal policy, but this can be ‘unsafe’ or risky <em>during training</em>.</p></li>
+</ul>
+<div class="admonition-example-sarsa-update admonition">
+<p class="admonition-title">Example – SARSA update</p>
+<p>For this example, we will use the same Q-table as the earlier Q-learning example.</p>
+<p>Assume that in state (2,2), the action ‘Up’ is chosen and executed successfully, which would return to state (2,2) there is no cell above (2,2). The next selected action is ‘Left’. Note that this is not the maximum action according to the Q-table – the selection function has explored instead of exploited. Using the Q-table above, we would update the Q-value using SARSA as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+Q((2,2),N) &amp; \leftarrow &amp; Q((2,2),N) + \alpha [r + \gamma Q((2,2),W) - Q((2,2),N)]\\
+           &amp; \leftarrow &amp; 0.79 + 0.1 [0 + 0.9 \cdot Q((2,2),W) - Q((2,2),N)]\\
+           &amp; \leftarrow &amp; 0.79 + 0.1 [0 + 0.9 \cdot 0.72 - 0.79]\\
+           &amp; \leftarrow &amp; 0.7758\\
+\end{array}
+\end{split}\]</div>
+</div>
+<section id="id1">
+<h3>Implementation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>As with the Q-learning agent, we inherit from the <code class="docutils literal notranslate"><span class="pre">TemporalDifferenceLearner</span></code> class to implement SARSA. But the value of the next state <span class="math notranslate nohighlight">\(V(s')\)</span> is calculated differently in the <code class="docutils literal notranslate"><span class="pre">SARSA</span></code> class:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.temporal_difference_learner</span> <span class="kn">import</span> <span class="n">TemporalDifferenceLearner</span>
+
+
+<span class="k">class</span> <span class="nc">SARSA</span><span class="p">(</span><span class="n">TemporalDifferenceLearner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>So, as we can see, the value of state is instead <span class="math notranslate nohighlight">\(Q(s',a')\)</span> instead of <span class="math notranslate nohighlight">\(\max_{a \in A} Q(s,a)\)</span>.</p>
+<p>As with Q-learning, we execute SARSA for 100 episodes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.sarsa</span> <span class="kn">import</span> <span class="n">SARSA</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">SARSA</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ed8a2c313af8df85434c5672a4e3523b4b4d94df8cdd2c2335941b2aee8867db.png" src="../_images/ed8a2c313af8df85434c5672a4e3523b4b4d94df8cdd2c2335941b2aee8867db.png" />
+</div>
+</div>
+<p>Again, we get an approximate Q-function. In this particular run, the policy is not optimal, because the action the policy selects from state (3,0) is down, not left, and the action from (2,0) is left, not up.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e653d993421f931fa465736d61a66151fa4354189afea93476f1248122db25d8.png" src="../_images/e653d993421f931fa465736d61a66151fa4354189afea93476f1248122db25d8.png" />
+</div>
+</div>
+<p>This is (probably!) not because the SARSA implementation, but is because of the randomness in exploration combined with the value of alpha being quite high. A high value of alpha will learn more quickly, but this will also weight later updates more, so any unlikely events occurring late in the training will result in inaccurate Q-values. By selecting a lower value of alpha and training for more episodes, we can increase the likelihood of resulting in an optimal policy. This will require more time and resources to compute. In an example like GridWorld, this is not an issue, but for larger systems, it could be.</p>
+</section>
+<section id="sarsa-vs-q-learning-example-cliff-world">
+<h3>SARSA vs. Q-learning example: Cliff world<a class="headerlink" href="#sarsa-vs-q-learning-example-cliff-world" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-cliffworld-example admonition">
+<p class="admonition-title">Video byte: CliffWorld example</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2046" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Consider the example below called “Cliff World”, which is taken from Chapter 6 of Sutton and Barto’s <em>Introduction to Reinforcement Learning</em> book (see further reading below). The bottom-left cell is the starting state  and the bottom-right is the goal state, which receives a reward of 0. The four middle cells represent a cliff. Falling off the cliff receives a reward of -5. All other actions cost -0.05. Unlike the earlier GridWorld example, all actions are deterministic, which means that if the agent chooses to go to another cell, it will arrive at that cell with 100% probability. However, <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> is unknown to the learning agent.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">CliffWorld</span>
+
+<span class="n">cliffworld</span> <span class="o">=</span> <span class="n">CliffWorld</span><span class="p">()</span>
+<span class="n">cliffworld_image</span> <span class="o">=</span> <span class="n">cliffworld</span><span class="o">.</span><span class="n">visualise</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/67863ad0db2d4aeb843dbb1a7b3eb73f61c9009621f005b58aedc7848d2dad68.png" src="../_images/67863ad0db2d4aeb843dbb1a7b3eb73f61c9009621f005b58aedc7848d2dad68.png" />
+</div>
+</div>
+<p>Let’s try training this with Q-learning for 2000 episodes, using an epsilon greedy strategy with epsilon = 0.2. The resulting Q-table is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">cliffworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>From this, we extract the following policy:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">cliffworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/35279ed9ba7645f3db96b9a1b37c89d31b4df76119bbaa36e81f8c55904502d2.png" src="../_images/35279ed9ba7645f3db96b9a1b37c89d31b4df76119bbaa36e81f8c55904502d2.png" />
+</div>
+</div>
+<p>We can see that the policy will initially move the agent up, and then along the cliff, going down to the terminal state at the end, receiving the reward of 5. We can see that the policy (and Q-table) for the upper cells are somewhat inaccurate: because they are low value states, they have not been explored as much as the states along the cliff.</p>
+<p>Now, let’s try training the same problem with SARSA:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cliffworld</span> <span class="o">=</span> <span class="n">CliffWorld</span><span class="p">()</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">SARSA</span><span class="p">(</span><span class="n">cliffworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Extracting the policy, we get:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">cliffworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f673b9da8a47dac0e47c68006c8519fbff0fdec21b8ff20b91807799b15b68a4.png" src="../_images/f673b9da8a47dac0e47c68006c8519fbff0fdec21b8ff20b91807799b15b68a4.png" />
+</div>
+</div>
+<p>We can see that SARSA will instead not go along the cliff, but will take a sub-optimal path that avoids the cliff. <em>Why is this so?</em></p>
+<p>The answer is because SARSA uses a reward from the <em>actual</em> next action that is executed. Even with a mature Q-function, with epsilon = 0.2 in the bandit used,, the actual next action with be an exploratory action with probability 0.2, which means some of the time, the next action chosen will be “down”, so the agent falls of the cliff.</p>
+<p>Consider each agent moving from state <span class="math notranslate nohighlight">\((1,1)\)</span> to state <span class="math notranslate nohighlight">\((2,1)\)</span>. The Q-learning agent will update its Q-value for the preceding action by assuming that the agent continues along the cliff path, including <span class="math notranslate nohighlight">\(\max_{a \in A} Q(s,a)\)</span> as the temporal difference reward. However, 10% of the time, the next action is NOT the optimal action because the agent will explore. Some of exploration actions will make the agent fall off the cliff, but this negative reward is not learnt by the Q-learning agent. The SARSA agent, on the other hand, selects its next action <em>before</em> the update, so in the cases where it chooses an action from state <span class="math notranslate nohighlight">\((2,1)\)</span> that falls off the cliff, the value <span class="math notranslate nohighlight">\(Q(s',a')\)</span> will include this negative reward. As a result, the SARSA agent learns that staying close to the cliff is a “risky” behaviour, so will learn to instead take the safe path away from the cliff: exploring from the safe path does not result in a strong negative reward. As such, the SARSA agent will fall off the cliff less than the Q-learning agent during training.</p>
+<p>However, <em>during</em> learning, the agent will still fall off the cliff sometimes when the agent is exploring actions. If trained using SARSA, the the result will be a sub-optimal policy that learns the safe path. The SARSA learning agent will still fall off the cliff sometimes when exploring actions, however, it will fall off <em>less</em> than the Q-learning agent because it takes actions on the safe path more often during learning?</p>
+<p>Consider the following in which we run both Q-learning and SARSA for 2000 episodes using epsilon greedy with epsilon = 0.2. Then, we take the resulting Q-function and run another 2000 episodes following the policy (which is equivalent to using an epsilon greedy strategy with epsilon = 0.0, initialising with the trained Q-function. If we plot the rewards for each episode for both SARSA and Q-Learning, we can see that SARSA receives more rewards the more we train, but at 2000 episodes when we start using the policy, Q-learning receives a higher reward per episode:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">CliffWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.compare_convergence_curves</span> <span class="kn">import</span> <span class="n">qlearning_vs_sarsa</span>
+
+<span class="n">mdp_q</span> <span class="o">=</span> <span class="n">CliffWorld</span><span class="p">()</span>
+<span class="n">mdp_s</span> <span class="o">=</span> <span class="n">CliffWorld</span><span class="p">()</span>
+
+<span class="n">qlearning_vs_sarsa</span><span class="p">(</span><span class="n">mdp_q</span><span class="p">,</span> <span class="n">mdp_s</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/df7ad7f9c3047f730a9681ed7462a4e3aebf4b0862cde083755a2e3b4a6e0545.png" src="../_images/df7ad7f9c3047f730a9681ed7462a4e3aebf4b0862cde083755a2e3b4a6e0545.png" />
+</div>
+</div>
+<p>During training, SARSA receives a higher average reward <em>per episode</em> than Q-Learning, because it falls off the cliff less as its policy improves. The Q-learning agent will follow the path along the cliff, but fall off when it explores, meaning that the average reward is lower.  However,
+Q-learning learns the optimal policy, meaning that once we extract the policy, its rewards will be higher on average.</p>
+<p><em>How is it possible that on-policy learning has a sub-optimal policy but higher rewards during training?</em></p>
+<p>Consider a case of two agents training: one with Q-learning and one with SARSA, both using <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy with epsilon=0.2. Then, consider training episode 100 for each agent. From the plot above,  we can see that both policies are close to converged.</p>
+<p>However, once training is complete, we extract a policy. Because the actions are deterministic, the Q-learning policy is optimal: it will follow the path next to the cliff, but will not fall off. The SARSA agent will follow the safe path, but this safety is no longer required because no exploration is done.</p>
+<p>The end result for the SARSA (on policy) method is a sub-optimal policy, but one that achieves stronger rewards during training.</p>
+</section>
+<section id="sarsa-vs-q-learning-example-contested-crossing">
+<h3>SARSA vs. Q-learning example: Contested crossing<a class="headerlink" href="#sarsa-vs-q-learning-example-contested-crossing" title="Link to this heading">#</a></h3>
+<p>What happens when we train on a more complicated example?</p>
+<p>In a game such as the Contested Crossing example, the addition of even a small number of extra actions and outcomes has a significant effect on the ability of both Q-learning and SARSA to find a good policy.</p>
+<p>In the example of CliffWorld, multiple runs of the algorithm above (train for <em>n</em> episodes then test for n episodes) produce a stable optimal policy for when <em>n</em> is about 500. If we go through the procedure of training and testing for both Q-learning and SARSA multiple times, the final policy gives close to the same output each time.</p>
+<p>In the case of Contested Crossing, there are seven actions available (compared to four for CliffWorld), the number of steps taken in executing the policy is somewhere between 6 and around 20 depending on the amount of damage the ship takes (compared to 7 for CliffWorld using Q-learning and 9 using SARSA) and the amount of chance involved is significantly higher, because a ship can shoot or be shot at any time within the danger zones, with medium or high probability.</p>
+<p>The result of this is to considerably increase the amount of time taken to converge towards a good policy, for either Q-learning or SARSA. For <span class="math notranslate nohighlight">\(n=2000\)</span>, the policy found by Q-learning is usually – but not always – superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.</p>
+<p>At <span class="math notranslate nohighlight">\(n=20,000\)</span>, a good policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at <span class="math notranslate nohighlight">\(n=20,000\)</span> does not do so well because of it’s on-policy nature, but it is still quite good.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.contested_crossing</span> <span class="kn">import</span> <span class="n">ContestedCrossing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.tests.compare_convergence_curves</span> <span class="kn">import</span> <span class="n">qlearning_vs_sarsa</span>
+
+<span class="n">mdp_q</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+<span class="n">mdp_s</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+
+<span class="n">qlearning_vs_sarsa</span><span class="p">(</span><span class="n">mdp_q</span><span class="p">,</span> <span class="n">mdp_s</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+
+<span class="n">mdp_q</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+<span class="n">mdp_s</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+
+<span class="n">qlearning_vs_sarsa</span><span class="p">(</span><span class="n">mdp_q</span><span class="p">,</span> <span class="n">mdp_s</span><span class="p">,</span> <span class="n">episodes</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a014df7e8b3578f1574845d52972c9cc99f24ec991191824535a7d60bbc35c9b.png" src="../_images/a014df7e8b3578f1574845d52972c9cc99f24ec991191824535a7d60bbc35c9b.png" />
+<img alt="../_images/570577cc38faa5a2e386c1a06fd914da96afa3ba52d18083cf2f39ce78125f91.png" src="../_images/570577cc38faa5a2e386c1a06fd914da96afa3ba52d18083cf2f39ce78125f91.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="on-policy-vs-off-policy-why-do-we-have-both">
+<span id="sec-model-free-on-policy-vs-off-policy"></span><h2>On-policy vs. off-policy: Why do we have both?<a class="headerlink" href="#on-policy-vs-off-policy-why-do-we-have-both" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-on-policy-vs-off-policy-why-do-we-have-both admonition">
+<p class="admonition-title">Video byte: On-policy vs. off-policy – Why do we have both?</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2299" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>There are a few reasons why we have both on-policy and off-policy learning.</p>
+<section id="learning-from-prior-experience">
+<h3>Learning from prior experience<a class="headerlink" href="#learning-from-prior-experience" title="Link to this heading">#</a></h3>
+<p>The main advantage of off-policy approaches is that they can use samples from sources other than their own policy. For example, off-policy agents can be given a set of episodes of behaviour from another agent, such as a human expert, and can learn a policy by <strong>demonstration</strong>. In Q-learning, this would mean instead of selecting action <span class="math notranslate nohighlight">\(a\)</span> to apply in state <span class="math notranslate nohighlight">\(s\)</span> using a multi-armed bandit algorithm on <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, we can simply take the next action of a trajectory and then update <span class="math notranslate nohighlight">\(Q\)</span> as before. The policy that we are trying to learn is independent of the samples in the episodes. However, with SARSA, while we could in theory sample the same way, the update rule explicitly uses <span class="math notranslate nohighlight">\(Q(s',a')\)</span>, so the policy used to generate the trajectories in episodes is the same as the policy being learnt.</p>
+</section>
+<section id="learning-on-the-job">
+<h3>Learning on the job<a class="headerlink" href="#learning-on-the-job" title="Link to this heading">#</a></h3>
+<p>The main advantage of on-policy approaches is that they are useful for ‘learning on the job’, meaning that it is better for cases in which we want an agent to learn optimal behaviour while operating in its environment.</p>
+<p>For example, imagine a reinforcement learning agent that manages resources for a cloud-based platform and we have no prior data to inform a policy. We could program a simulator for this environment, but it is highly unlikely that the simulator would be an accurate reflection of the real world, as estimating the number of jobs, their lengths, their timing, etc., would be difficult without prior data. So, the only way to learn a policy is to get data from our cloud platform while it operates.</p>
+<p>As such, if the average reward <em>per episode</em> is better using on-policy, this would give us better overall outcomes than off-policy learning, because the episodes are not practice – they actually influence real rewards,  such as throughput, downtime, etc., and ultimately profit.</p>
+<p>If we could run our reinforcement learning algorithm in a simulated environment before deploying (and we had reason to believe that simulated environment was accurate), off-policy learning may be better because its optimal policy could be followed.</p>
+</section>
+<section id="combining-off-policy-and-on-policy-learning">
+<h3>Combining off-policy and on-policy learning<a class="headerlink" href="#combining-off-policy-and-on-policy-learning" title="Link to this heading">#</a></h3>
+<p>We can combine the two approaches for particular applications. For example, if we use take our cloud platform from above, it would be silly to start with a random policy. We would quickly lose customers as the scheduling etc., would be terrible.</p>
+<p>A better approach would be to hand-craft an algorithm that gave good results initially, and use this with an off-policy approach to train a good initial policy. We could use the hand-crafted algorithm to select actions for training initially to gain an initial policy.</p>
+<p>However, this new policy will merely mimic the hand-crafted algorithm. Presumably we are using reinforcement learning because the problem is so complex that a hand-crafted approach is not good enough. So, we can then take the policy trained using off-policy and optimise it further using on-policy learning.</p>
+<p>Another common place for combining off-policy and on-policy learning is when we have an existing approach and we can use data from this with an off-policy approach to come up with an initial policy, which can be refined using on-policy.</p>
+</section>
+</section>
+<section id="evaluation-and-termination">
+<h2>Evaluation and termination<a class="headerlink" href="#evaluation-and-termination" title="Link to this heading">#</a></h2>
+<p>How do we know how many episodes we should train a model-free learning algorithm for?</p>
+<p>With <a class="reference internal" href="value-iteration.html#sec-value-iteration"><span class="std std-ref">value iteration</span></a>, we terminate the algorithm once the improvement in value function reaches some threshold. However, in the model-free environment, we are not aiming to learn a complete policy – only enough to get us from the initial state to an absorbing state; or, in the case of an infinite MDP, to maximise rewards. Due to the randomness of the exploration and the fact that an episode may visit a state it has rarely visited, it is likely that for each episode, a Q-value of at least one state-action pair changes.</p>
+<p>With model-free learning, we can instead evaluate the policy directly by <strong>executing it and recording the reward we receive</strong>. Then, we terminate when the policy has reached <strong>convergence</strong>. By convergence, we mean that the average cumulative reward of the policy is no longer increasing during learning.</p>
+<p>There are a few ways we can measure this:</p>
+<ol class="arabic simple">
+<li><p>We can simply record the reward received during each episode of learning, and monitor how much this is increasing. The weakness with this is that a single episode can be noisy due to the exploration parameter used to select actions and the stochastic nature of the MDP. For example, if we use a <a class="reference internal" href="multi-armed-bandits.html#sec-multi-armed-bandits"><span class="std std-ref">multi-armed bandit</span></a> to control exploration vs. exploitation during learning, then at each step, we choose a random action with probability <span class="math notranslate nohighlight">\(\epsilon\)</span>. This means that we are not evaluating our real policy — we are evaluating our really policy plus some random actions.</p></li>
+<li><p>We can pause our learning every now and then, and run our actual policy on the MDP. The strength of this is that we avoid randomness in action selection. However, we still have randomness caused by the stochastic nature of the MDP. The weakness is that it requires us to run more episodes; or more accurately, we are executing episodes and not learning from them.</p></li>
+<li><p>To avoid stochasticity in both the environment and the exploration strategy, we can average the reward over a number of simulations. The weakness is that this is more costly – it requires us to run additional episodes that do not explore and learn.</p></li>
+</ol>
+<p>In these notes, we use the strategy in item 2 above. Every 20 episodes, we run our policy and record the cumulative reward. As we don’t know what the maximum reward could be, we monitor the learning and terminate when the <a class="reference internal" href="value-iteration.html#sec-value-iteration-evaluating-policies"><span class="std std-ref">exponential moving average</span></a> of our reward is no longer increasing, similar to what we did in <a class="reference internal" href="value-iteration.html#sec-value-iteration-evaluating-policies"><span class="std std-ref">evaluating the value iteration policy</span></a>. Here, we plot the <strong>learning curve</strong> for Q-learning on the GridWorld example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Once we have the rewards of the episodes, we can plot the rewards:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Q-learning&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5eb9ab18be28097a955e97a850edc24971244e815571c965473b6aec802e52dc.png" src="../_images/5eb9ab18be28097a955e97a850edc24971244e815571c965473b6aec802e52dc.png" />
+</div>
+</div>
+<p>We can see that the policy converges quickly, however, there is still quite a bit of volatility as some episodes get a poor reward due to the randomness in the action selection during exploration.</p>
+<p>Next, we do the same for the contested crossing example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">ContestedCrossing</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">([</span><span class="s2">&quot;Q-learning&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">rewards</span><span class="p">],</span> <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b7eb87277382cd5e7a941b2f048a4aa862948a589da7db2ceee71ec24346c5e1.png" src="../_images/b7eb87277382cd5e7a941b2f048a4aa862948a589da7db2ceee71ec24346c5e1.png" />
+</div>
+</div>
+</section>
+<section id="limitations-of-q-learning-and-sarsa">
+<h2>Limitations of Q-learning and SARSA<a class="headerlink" href="#limitations-of-q-learning-and-sarsa" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-limitations-of-q-learning-and-sarsa admonition">
+<p class="admonition-title">Video byte: Limitations of Q-learning and SARSA</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2665" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The standard versions that we see in this section have two major limitations:</p>
+<ol class="arabic simple">
+<li><p>Because we need to select the best action <span class="math notranslate nohighlight">\(a\)</span> in Q-learning, we iterate over all actions. This limits Q-learning to discrete action spaces.</p></li>
+<li><p>If we use a Q-table to represent our Q-function, both state spaces and action spaces must be discrete, and further, they must be modest in size or the Q-table will become too large to fit into memory or at least so large that it will take many episodes to sample all state-action pairs.</p></li>
+</ol>
+</section>
+<section id="applications-of-reinforcement-learning">
+<h2>Applications of Reinforcement Learning<a class="headerlink" href="#applications-of-reinforcement-learning" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Checkers (Samuel, 1959): first use of RL in an interesting real game</p></li>
+<li><p>(Inverted) Helicopter Flight (Ng et al. 2004), better than any human</p></li>
+<li><p>Computer Go (AlphaGo 2016): AlphaGo beats Go world champion Lee Sedol 4:1</p></li>
+<li><p>Atari 2600 Games (DQN &amp; Blob-PROST 2015): human-level performance on half of 50+ games</p></li>
+<li><p>Robocup Soccer Teams (Stone &amp; Veloso, Reidmiller et al.): World’s best player of simulated soccer, 1999; Runner-up 2000</p></li>
+<li><p>Inventory Management (Van Roy, Bertsekas, Lee &amp; Tsitsiklis): 10-15% improvement over industry standard methods</p></li>
+<li><p>Dynamic Channel Assignment (Singh &amp; Bertsekas, Nie &amp; Haykin): World’s best assigner of radio channels to mobile telephone calls</p></li>
+<li><p>TD-Gammon and Jellyfish (Tesauro, Dahl): World’s best backgammon player. Grandmaster level</p></li>
+</ul>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary admonition">
+<p class="admonition-title">Video byte: Summary</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=2771" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p><strong>On-policy</strong> reinforcement learning uses the action chosen by the policy for the update.</p></li>
+<li><p><strong>Off-policy</strong> reinforcement learning assumes that the next action chosen is the action that has the maximum Q-value, but this may not be the case because with some probability the algorithm will explore instead of exploit.</p></li>
+<li><p><strong>Q-Learning</strong> (off-policy) does it relative to the greedy policy.</p></li>
+<li><p><strong>SARSA</strong> (on-policy) learns action values relative to the policy it follows.</p></li>
+<li><p>If we know the MDP, we can use model-based techniques:</p>
+<ul>
+<li><p><strong>Offline</strong>: Value Iteration</p></li>
+<li><p><strong>Online</strong>: <a class="reference internal" href="mcts.html#sec-mcts"><span class="std std-ref">Monte Carlo Tree Search</span></a> and friends.</p></li>
+</ul>
+</li>
+<li><p>We can also use model-free techniques if we know the MDP model: we just sample transitions and observe rewards from the model.</p></li>
+<li><p>If we do <strong>not</strong> know MDP, we need to use model-free techniques:</p>
+<ul>
+<li><p><strong>Offline</strong>: Q-learning, SARSA, and friends.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Chapter 6 of <a class="reference external" href="http://incompleteideas.net/book/the-book-2nd.html">Introduction to Reinforcement Learning, Sutton and Barto</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="multi-armed-bandits.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Multi-armed bandits</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mcts.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Monte-Carlo Tree Search (MCTS)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-based-vs-model-free">Model-based vs model-free</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intuition-of-model-free-reinforcement-learning">Intuition of model-free reinforcement learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-reinforcement-learning">Monte-Carlo reinforcement learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-tables">Q-Tables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-difference-td-reinforcement-learning">Temporal difference (TD) reinforcement learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-learning-off-policy-temporal-difference-learning">Q-Learning: Off-policy temporal-difference learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-the-q-function">Updating the Q-function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-extraction-using-q-functions">Policy extraction using Q-functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-on-policy-temporal-difference-learning">SARSA: On-policy temporal difference learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-vs-q-learning-example-cliff-world">SARSA vs. Q-learning example: Cliff world</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sarsa-vs-q-learning-example-contested-crossing">SARSA vs. Q-learning example: Contested crossing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#on-policy-vs-off-policy-why-do-we-have-both">On-policy vs. off-policy: Why do we have both?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-from-prior-experience">Learning from prior experience</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-on-the-job">Learning on the job</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-off-policy-and-on-policy-learning">Combining off-policy and on-policy learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-and-termination">Evaluation and termination</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-q-learning-and-sarsa">Limitations of Q-learning and SARSA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-of-reinforcement-learning">Applications of Reinforcement Learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

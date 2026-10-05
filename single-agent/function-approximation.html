@@ -1,0 +1,1432 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Q-function approximation &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/function-approximation';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reward shaping" href="reward-shaping.html" />
+    <link rel="prev" title="Actor-critic methods" href="actor-critic.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/function-approximation.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/function-approximation.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Q-function approximation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-learning-linear-function-approximation">Linear Q-learning (Linear Function Approximation)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-function-representation">Linear Q-function Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-state-action-features">Defining State-Action Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#q-values-from-linear-q-functions">Q-values from linear Q-functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-function-update">Linear Q-function Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-q-function-approximation-on-gridworld">Example: Linear Q-function approximation on Gridworld</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-q-function-approximation-on-contested-crossing">Example: Linear Q-function approximation on Contested Crossing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-function-approximation-vs-q-tables">Example – Linear function approximation vs Q-tables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-and-tips">Challenges and tips</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-learning">Deep Q-learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-function-representation">Deep Q-function representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-function-update">Deep Q-function update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advantages-and-disadvantages">Advantages and disadvantages</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strengths-and-limitations-of-q-function-approximation">Strengths and Limitations of Q-function Approximation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="q-function-approximation">
+<span id="sec-qfunction-approximation"></span><h1>Q-function approximation<a class="headerlink" href="#q-function-approximation" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-q-function-approximation admonition">
+<p class="admonition-title">Video byte: Introduction to Q-function approximation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=0s" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Manually apply linear Q-function approximation to solve small-scale MDP problems given some known features.</p></li>
+<li><p>Select suitable features and design &amp; implement Q-function approximation for model-free reinforcement learning techniques to solve medium-scale MDP problems automatically.</p></li>
+<li><p>Argue the strengths and weaknesses of function approximation approaches.</p></li>
+<li><p>Compare and contrast linear Q-learning with deep Q-learning.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Using a Q-table has two main limitations:</p>
+<ol class="arabic simple">
+<li><p>It requires that we visit every reachable state many times and apply every action many times to get a good estimate of <span class="math notranslate nohighlight">\(Q(s,a)\)</span>. Thus, if we never visit a state <span class="math notranslate nohighlight">\(s\)</span>, we have no estimate of <span class="math notranslate nohighlight">\(Q(s,a)\)</span>, even if we have visited states that are very similar to <span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>It requires us to maintain a table of size <span class="math notranslate nohighlight">\(|A| \times |S|\)</span>, which is prohibitively large for any non-trivial problem.</p></li>
+</ol>
+<p>To get around these we will look at how to use machine learning to approximate Q-functions. In particular, we will look at <strong>linear function approximation</strong> and approximation using <strong>deep learning</strong> (deep Q-learning). Instead of calculating an exact Q-function, we approximate it using simple methods that both eliminate the need for a large Q-table (therefore the methods scale better), and also allowing use to provide reasonable estimates of <span class="math notranslate nohighlight">\(Q(s,a)\)</span> <em>even if we have not applied action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> previously</em>.</p>
+<div class="admonition-example-freeway admonition">
+<p class="admonition-title">Example — Freeway</p>
+<p>Consider the game <em>Freeway</em>, in which a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown below:</p>
+<p><img alt="image" src="../_images/freeway_screenshot.png" /></p>
+<p>Let us assume that there are 12 rows and about 40 columns. This grossly underestimates the actual number of rows and columns because the cars move a few pixels at a time, not in columns. This means there are 480 different positions that a chicken can be in, and there are two chickens. We also need to record whether there is a car in each location.</p>
+<p>This leads to:</p>
+<div class="math notranslate nohighlight">
+\[480^2 \times  2^{480} \approx 7 \times 10^{149} \text{ states}\]</div>
+<p>There are four actions: left, right, up, down.</p>
+<p>A Q-table would need to store <span class="math notranslate nohighlight">\(28\times 10^{149}\)</span> entries. This is a huge Q-table for what is a trivial example compared to many other problems.</p>
+</div>
+</section>
+<section id="linear-q-learning-linear-function-approximation">
+<h2>Linear Q-learning (Linear Function Approximation)<a class="headerlink" href="#linear-q-learning-linear-function-approximation" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-intuition-of-q-function-approximation admonition">
+<p class="admonition-title">Video byte: Intuition of Q-function approximation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=72" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The key idea is to <strong>approximate</strong> the Q-function using a linear combination of <strong>features</strong> and their <strong>weights</strong>. Instead of recording everything in detail, we think about what is most important to know, and model that.</p>
+<p>What are some features that are relevant to the Freeway example?</p>
+<p>The overall process is:</p>
+<ol class="arabic simple">
+<li><p>for the states, consider what are the features that determine its representation;</p></li>
+<li><p>during learning, perform updates based on the <strong>weights of features</strong> instead of states; and</p></li>
+<li><p>estimate <span class="math notranslate nohighlight">\(Q(s,a)\)</span> by summing the features and their weights.</p></li>
+</ol>
+<div class="admonition-example-features-for-freeway admonition">
+<p class="admonition-title">Example — Features for <em>Freeway</em></p>
+<p>Instead of recording the position of both chickens and whether there is a car in every position, we just record the following features:</p>
+<ul class="simple">
+<li><p>the number of rows each chicken is away from the other side of the road in (two features – one for each chicken); and</p></li>
+<li><p>how far away the <em>closest</em> car is in the row above and below each chicken (four features — two for each chicken).</p></li>
+</ul>
+<p>This requires just six features.</p>
+</div>
+<section id="linear-q-function-representation">
+<h3>Linear Q-function Representation<a class="headerlink" href="#linear-q-function-representation" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-linear-q-function-representation admonition">
+<p class="admonition-title">Video byte: Linear Q-function representation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=405" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>In linear Q-learning, we store features and weights, not states. What we need to learn is how important each feature is (its <strong>weight</strong>) for each action.</p>
+<p>To represent this, we have two vectors:</p>
+<ol class="arabic">
+<li><p>A <strong>feature vector</strong>, <span class="math notranslate nohighlight">\(f(s,a)\)</span>, which is a vector of <span class="math notranslate nohighlight">\(n \cdot |A|\)</span> different functions, where <span class="math notranslate nohighlight">\(n\)</span> is the number of state features and <span class="math notranslate nohighlight">\(|A|\)</span> the number of actions. Each function extracts the value of a feature for state-action pair <span class="math notranslate nohighlight">\((s,a)\)</span>. We say <span class="math notranslate nohighlight">\(f_i(s,a)\)</span> extracts  the <span class="math notranslate nohighlight">\(i\)</span>th feature from the state-action pair <span class="math notranslate nohighlight">\((s,a)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(s,a) = \begin{pmatrix} 
+        f_1(s,a) \\
+        f_2(s,a) \\
+        \ldots\\
+        f_{n \times |A|}(s,a) \\
+        \end{pmatrix}\end{split}\]</div>
+<p>In the Freeway example, we have a vector with six state features times four actions. The function <span class="math notranslate nohighlight">\(f_1(s,Up)\)</span> returns value of the feature that represents the distance chicken 1 is away from the goal. The function <span class="math notranslate nohighlight">\(f_{3}(s, Up)\)</span> returns the distance to the nearest car in the row above the first chicken.</p>
+</li>
+<li><p>A <strong>weight vector</strong> <span class="math notranslate nohighlight">\(w\)</span> of size <span class="math notranslate nohighlight">\(n \times |A|\)</span>: one weight for each feature-action pair. <span class="math notranslate nohighlight">\(w^a_i\)</span> defines the weight of a feature <span class="math notranslate nohighlight">\(i\)</span> for action <span class="math notranslate nohighlight">\(a\)</span>.</p></li>
+</ol>
+</section>
+<section id="defining-state-action-features">
+<h3>Defining State-Action Features<a class="headerlink" href="#defining-state-action-features" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-defining-state-action-features admonition">
+<p class="admonition-title">Video byte: Defining state-action features</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1156" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Often it is easier to just define features for states, rather than state-action pairs. The features are just a vector of <span class="math notranslate nohighlight">\(n\)</span> functions of the form <span class="math notranslate nohighlight">\(f_i(s)\)</span>.</p>
+<p>However, for most applications, the weight of a feature is related to the action. The weight of being one step away from the end in Freeway is different if we go Up to if we go Right.</p>
+<p>It is straightforward to construct <span class="math notranslate nohighlight">\(n \times |A|\)</span> state-pair features from just <span class="math notranslate nohighlight">\(n\)</span> state features:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+f_{i,k}(s,a) = \Bigg \{
+\begin{array}{ll}
+ f_i(s) &amp; \text{if } a=a_k\\
+ 0      &amp; \text{otherwise}
+ ~~~ 1 \leq i \leq n, 1 \leq k \leq |A|
+ \end{array}
+\end{split}\]</div>
+<p>This effectively results in <span class="math notranslate nohighlight">\(|A|\)</span> different weight vectors:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ f(s,a_1) = \begin{pmatrix} 
+f_{1,a_1}(s,a) \\
+f_{2,a_1}(s,a) \\
+0\\
+0\\
+0\\
+0\\
+\ldots
+\end{pmatrix}~~
+f(s,a_2) = \begin{pmatrix} 
+0\\
+0\\
+f_{1,a_2}(s,a) \\
+f_{2,a_2}(s,a) \\
+0\\
+0\\
+\ldots
+\end{pmatrix}~~
+f(s,a_3) = \begin{pmatrix} 
+0\\
+0\\
+0\\
+0\\
+f_{1,a_3}(s,a) \\
+f_{2,a_3}(s,a) \\
+\ldots
+\end{pmatrix}~~\ldots
+\end{split}\]</div>
+</section>
+<section id="q-values-from-linear-q-functions">
+<span id="sec-single-agent-q-function-approximation-linear-q-values"></span><h3>Q-values from linear Q-functions<a class="headerlink" href="#q-values-from-linear-q-functions" title="Link to this heading">#</a></h3>
+<p>Give a feature vector <span class="math notranslate nohighlight">\(f\)</span> and a weight vector <span class="math notranslate nohighlight">\(w\)</span>, the Q-value of a state is a simple linear combination of features and weights:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  Q(s,a) &amp; = &amp; f_1(s,a) \cdot w^a_1 + f_2(s,a)\cdot w^a_2 + \ldots  + f_{n}(s,a) \cdot w^a_n\\
+         &amp; = &amp; \sum_{i=0}^{n} f_i(s,a) w^a_i
+\end{array}
+\end{split}\]</div>
+<p>In practice, we also multiple the feature vector for weights <span class="math notranslate nohighlight">\(w^b_n\)</span> for all actions <span class="math notranslate nohighlight">\(b \neq a\)</span>, but as the feature values will be 0, we know that it does not influence the result.</p>
+<div class="admonition-example-approximate-q-function-computation-for-freeway admonition">
+<p class="admonition-title">Example — Approximate Q-function computation for Freeway</p>
+<p>For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state <span class="math notranslate nohighlight">\(s\)</span> where the chicken is in row 1:</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{array}{lll}
+  Q(s,Up)   &amp; = &amp;  f_1(s,Up)\cdot 0.31  + \ldots + f_{6}(s,Up) \cdot 0.04
+\end{array}
+\]</div>
+</div>
+</section>
+<section id="linear-q-function-update">
+<span id="sec-single-agent-q-function-approximation-linear-update"></span><h3>Linear Q-function Update<a class="headerlink" href="#linear-q-function-update" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-linear-q-function-update admonition">
+<p class="admonition-title">Video byte: Linear Q-function update</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=697" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>To use approximate Q-functions in reinforcement learning, there are two steps we need to change from the standard algorithms: (1) initialisation; and (2) update.</p>
+<p>For initialisation, initialise all weights to 0. Alternatively, you can try Q-function initialisation and assign weights that you think will be “good” weights.</p>
+<p>For update, we now need to update the weights instead of the Q-table values. The update rule is now:</p>
+<p><span class="math notranslate nohighlight">\(\quad\quad\)</span> For each state-action feature <span class="math notranslate nohighlight">\(i\)</span><br />
+<span class="math notranslate nohighlight">\(\quad\quad\quad\quad w^a_i \leftarrow w^a_i + \alpha \cdot \delta \cdot \ f_i(s,a)\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(\delta\)</span> depends on which algorithm we are using; e.g. Q-learning, SARSA.</p>
+<p>As this is linear, it is therefore convex, so the weights will converge.</p>
+<div class="admonition-note-q-value-propagation admonition">
+<p class="admonition-title">Note — Q-value propagation</p>
+<p>Note that this has the effect of updating Q-values to states that have never been visited!</p>
+<p>In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from <em>any</em> position on the final row.</p>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-linear-q-function-update-for-freeway admonition">
+<p class="admonition-title">Video byte: Example — Linear Q-function update for Freeway</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=937" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-linear-q-function-update-for-freeway admonition">
+<p class="admonition-title">Example — Linear Q-function update for Freeway</p>
+<p>Assume that all weights are 0, therefore, <span class="math notranslate nohighlight">\(Q(s,a) = 0\)</span> for every state and action. Now, we receive the reward of 10 for getting to the other side of the road. If feature 6 has the value <span class="math notranslate nohighlight">\(\frac{r}{D}\)</span>, where <span class="math notranslate nohighlight">\(r\)</span> is the current row and <span class="math notranslate nohighlight">\(D\)</span> is the distance to the other side, then
+we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  w^a_i &amp; \leftarrow &amp; w^a_i + \alpha[r + \gamma \max_{a'} Q(s',a') - Q(s,a)] f_i(s,a)\\
+  w^{Up}_{6} &amp; \leftarrow &amp; 0 + 0.5[10 + 0.9 \times 0] \frac{10}{10}\\
+              &amp; = &amp;5
+\end{array}
+\end{split}\]</div>
+<p>From this, we now can get an estimate of <span class="math notranslate nohighlight">\(Q(s,Up)\)</span> from any state because we have some weights in our linear function. Those that are closer to the other size of the road will get a higher Q-value than those further away (all other things being equal).</p>
+</div>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>To implement linear function approximation, we implement a new class that inherits from <code class="docutils literal notranslate"><span class="pre">QFunction</span></code> called <code class="docutils literal notranslate"><span class="pre">LinearQFunction</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qfunction</span> <span class="kn">import</span> <span class="n">QFunction</span>
+
+
+<span class="k">class</span> <span class="nc">LinearQFunction</span><span class="p">(</span><span class="n">QFunction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_q_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_q_value</span> <span class="o">=</span> <span class="n">default_q_value</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_weights</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_q_value</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">num_actions</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">num_features</span><span class="p">())</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="c1"># update the weights</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">feature_values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_values</span><span class="p">)):</span>
+            <span class="n">q_value</span> <span class="o">+=</span> <span class="n">feature_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">q_value</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_weights</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">},</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>A linear Q-function is initialised with either some given weights or with a default weight for all weights. The <code class="docutils literal notranslate"><span class="pre">update</span></code> method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding <span class="math notranslate nohighlight">\(\delta \cdot f_i(s,a)\)</span>. Computing the Q-value implements the weighted sum outlined <a class="reference internal" href="#sec-single-agent-q-function-approximation-linear-update"><span class="std std-ref">above</span></a>.</p>
+</section>
+<section id="example-linear-q-function-approximation-on-gridworld">
+<h3>Example: Linear Q-function approximation on Gridworld<a class="headerlink" href="#example-linear-q-function-approximation-on-gridworld" title="Link to this heading">#</a></h3>
+<p>To use on an example, we need a feature extractor. The first thing we need to do is define some features for the task. As discussed above, feature engineering is not always straightforward. However, for the GridWorld task, it is reasonably clear that the distance from the goal cell is important. As such, we define three features here:</p>
+<ol class="arabic simple">
+<li><p>The distance from the goal on the X-axis.</p></li>
+<li><p>The distance from the goal on the Y-axis.</p></li>
+<li><p>The total distance from the goal as a Manhattan distance.</p></li>
+</ol>
+<p>As noted above, normalising features is important to ensure that they are in the same magnitude. So, given the current position <span class="math notranslate nohighlight">\((x,y)\)</span> as the state, we extract the values of the state features as follows:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\((x(s) + \epsilon) / (x(g) + \epsilon)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\((y(s) + \epsilon) / (y(g) + \epsilon)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\((x(g) - x(s) + y(g) - y(s) + \epsilon) / (x(g) + y(g) + \epsilon)\)</span>.</p></li>
+</ol>
+<p>where <span class="math notranslate nohighlight">\(x(s)\)</span> and <span class="math notranslate nohighlight">\(y(s)\)</span> return the x and y coordinates of the agent respectively, and <span class="math notranslate nohighlight">\(g\)</span> is the goal state. These expressions normalise the feature values to the range <span class="math notranslate nohighlight">\([0,1]\)</span> by dividing by the goal state. The <span class="math notranslate nohighlight">\(\epsilon\)</span> is some small value such as <span class="math notranslate nohighlight">\(0.01\)</span> to ensure two things: (1) that we do not divide by 0 if the goal is at a coordinator where x or y are 0; and (2) that the state (0,0) has a non-zero value, otherwise there will be no Q-value for it.</p>
+<p>Then, to extract state-action features, we need to define these as <span class="math notranslate nohighlight">\(f(s,a)\)</span> is defined from <span class="math notranslate nohighlight">\(f(s)\)</span> above.</p>
+<p>We can implement these in a feature extractor class:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FeatureExtractor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">extract_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">abstract</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.feature_extractors.feature_extractor</span> <span class="kn">import</span> <span class="n">FeatureExtractor</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+
+
+<span class="k">class</span> <span class="nc">GridWorldFeatureExtractor</span><span class="p">(</span><span class="n">FeatureExtractor</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+
+    <span class="k">def</span> <span class="nf">num_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">3</span>
+
+    <span class="k">def</span> <span class="nf">num_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">action</span> <span class="ow">and</span> <span class="n">state</span> <span class="o">!=</span> <span class="n">GridWorld</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">:</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)]</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)]</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">()):</span>
+                    <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">feature_values</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we just simply pass this as a feature extractor to our implementation of <code class="docutils literal notranslate"><span class="pre">LinearQFunction</span></code>, and use this as the Q-function instead of a Q-table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.linear_qfunction</span> <span class="kn">import</span> <span class="n">LinearQFunction</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.feature_extractors.gridworld_feature_extractor</span> <span class="kn">import</span> <span class="n">GridWorldFeatureExtractor</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">GridWorldFeatureExtractor</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">LinearQFunction</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+<span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1ba6a0b7e33daee9d152567648b9ddb0e2fdb0c7e4cccaae9746b39a4b65377f.png" src="../_images/1ba6a0b7e33daee9d152567648b9ddb0e2fdb0c7e4cccaae9746b39a4b65377f.png" />
+<img alt="../_images/b9096325db9236c502f2878b596fd55dd061ddf71d7bd433ee3e0ce17799914d.png" src="../_images/b9096325db9236c502f2878b596fd55dd061ddf71d7bd433ee3e0ce17799914d.png" />
+</div>
+</div>
+<p>We can see that this gives OK Q-values and an OK policy, but there are issues. In particular, if we are in cell (2,1), the policy directs us to go right to the terminal state that gives us a -1 reward!</p>
+<p>This is because our linear approximation learns one weight for going right, left, up, and down. Going right at the state <span class="math notranslate nohighlight">\((2,2)\)</span> is clearly good, so the weight will be learnt as positive, but every time an update is performed after the agent transitions from <span class="math notranslate nohighlight">\((2,2)\)</span> to the goal state <span class="math notranslate nohighlight">\((3,2)\)</span>, the weight updates the value of <span class="math notranslate nohighlight">\(Q(s, Right)\)</span> for all states <span class="math notranslate nohighlight">\(s\)</span>, including the state <span class="math notranslate nohighlight">\((2,1)\)</span>. As such, we learn that going right at (2,1) is good when it is not.</p>
+<p>The choice of features is key to solving the problem. We have defined features that assume there is just the goal in the top-right corner. However, this does not help us avoid the negative reward.</p>
+<p>We can solve this by improving our features using feature engineering. One way is to encode specific features that learn that we are e.g. in state <span class="math notranslate nohighlight">\((2,1)\)</span>. Our learning algorithm will then learn that when this feature value is true, going right is a bad move.</p>
+<p>However, more of these features we engineer, the more domain knowledge we are encoding into our solution.</p>
+<p>A more general to engineering features about specific states is to add two new features that are true (1) if and only if we are in the same column (or row respectively) as the goal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.feature_extractors.feature_extractor</span> <span class="kn">import</span> <span class="n">FeatureExtractor</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+
+
+<span class="k">class</span> <span class="nc">GridWorldBetterFeatureExtractor</span><span class="p">(</span><span class="n">FeatureExtractor</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+
+    <span class="k">def</span> <span class="nf">num_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">5</span>
+
+    <span class="k">def</span> <span class="nf">num_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">action</span> <span class="ow">and</span> <span class="n">state</span> <span class="o">!=</span> <span class="n">GridWorld</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">:</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)]</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)]</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="c1"># Features to determine if we are in goal row or column</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">()):</span>
+                    <span class="n">feature_values</span> <span class="o">+=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">feature_values</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If we now run this on the GridWorld, we get better results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.feature_extractors.gridworld_better_feature_extractor</span> <span class="kn">import</span> <span class="p">(</span><span class="n">GridWorldBetterFeatureExtractor</span><span class="p">)</span>
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">GridWorldBetterFeatureExtractor</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">LinearQFunction</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+<span class="n">linear_qlearning_rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/82f833a225bcc4a0a873a2d16b88d4ea5191619015ecd86c322281fadf58fd82.png" src="../_images/82f833a225bcc4a0a873a2d16b88d4ea5191619015ecd86c322281fadf58fd82.png" />
+<img alt="../_images/3886e56d053a09cede731a3397b478ea3b76a8270839d2d689267599a08ac9a8.png" src="../_images/3886e56d053a09cede731a3397b478ea3b76a8270839d2d689267599a08ac9a8.png" />
+</div>
+</div>
+<p>However, this is still not perfect. As we see, the policy recommends going up in state (1,0), which runs straight into the blocked cell. This is the downside of using linear function approximation. While it comes with convergence guarantees, it will not produce optimal policies if the underlying problem is non-linear.</p>
+<p>We could work around the above problem by adding two more features to avoid the blocked cells, but the more domain knowledge we require, the more effort we require in both engineering and maintenance. It is fine to encode domain knowledge, but eventually we end up encoding so much domain knowledge that we nearly encode the entire solution by hand. If it is feasible to encode the solution by hand, there is little point using reinforcement learning.</p>
+<p>Is there much value using function approximation? Comparing the reward curves of tabular Q-learning and linear Q-function approximation, we see that the linear version converges quickly, while the Q-table version is still learning. We have to extend the size of the grid to 7x6 see this effect as the smaller problem is so easy:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">goals</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">tabular_qlearning_rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_cumulative_rewards</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;Tabular Q-learning&quot;</span><span class="p">,</span> <span class="s2">&quot;Linear Q-learning&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">tabular_qlearning_rewards</span><span class="p">,</span> <span class="n">linear_qlearning_rewards</span><span class="p">],</span>
+    <span class="n">smoothing_factor</span><span class="o">=</span><span class="mf">0.99</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/782612eb2590b277105c724b55e0ac757a65efe6a8fdee59bf39f53b7d375cca.png" src="../_images/782612eb2590b277105c724b55e0ac757a65efe6a8fdee59bf39f53b7d375cca.png" />
+</div>
+</div>
+<p>If we ran this for much longer, we would see the Q-table version ‘catching’ the linear function approximation.</p>
+</section>
+<section id="example-linear-q-function-approximation-on-contested-crossing">
+<h3>Example: Linear Q-function approximation on Contested Crossing<a class="headerlink" href="#example-linear-q-function-approximation-on-contested-crossing" title="Link to this heading">#</a></h3>
+<p>In the Contested Crossing example, a similar set of features to the Gridworld problem works: distance to the other side of the crossing. However, using only the distance ignores other important factors, such as the risk of being shot the amount of health remaining. For this example, we use four features:</p>
+<ol class="arabic simple">
+<li><p>the (normalised) x-distance to the other side of the crossing;</p></li>
+<li><p>the (normalised) y-distance to the other side of the crossing;</p></li>
+<li><p>the health level; and</p></li>
+<li><p>the (normalised) difference between the Manhattan distance to the other side of the crossing minus the amount of damage done to the ship. Intuitively, the amount of moves required to successfully cross interacts with the health remaining, so have these as separate features in a linear model will not capture this interaction.</p></li>
+</ol>
+<p>This results in the following policy visualisation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.feature_extractors.ccross_feature_extractor</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CCrossFeatureExtractor</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes</span> <span class="kn">import</span> <span class="n">contested_crossing</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.stochastic_q_policy</span> <span class="kn">import</span> <span class="n">StochasticQPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.linear_qfunction</span> <span class="kn">import</span> <span class="n">LinearQFunction</span>
+
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">contested_crossing</span><span class="o">.</span><span class="n">ContestedCrossing</span><span class="p">()</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">CCrossFeatureExtractor</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">LinearQFunction</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+<span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">StochasticQPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_as_image</span><span class="p">(</span>
+    <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Low danger: </span><span class="si">{0}</span><span class="s2">, High danger: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdp</span><span class="o">.</span><span class="n">low_danger</span><span class="p">,</span><span class="n">mdp</span><span class="o">.</span><span class="n">high_danger</span><span class="p">),</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ee0c5df9c67c64dbe19962aa65cd43ed4dcffc491d3dafeaf923c9246e259d7f.png" src="../_images/ee0c5df9c67c64dbe19962aa65cd43ed4dcffc491d3dafeaf923c9246e259d7f.png" />
+</div>
+</div>
+</section>
+<section id="example-linear-function-approximation-vs-q-tables">
+<h3>Example – Linear function approximation vs Q-tables<a class="headerlink" href="#example-linear-function-approximation-vs-q-tables" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-tables-vs-linear-q-functions admonition">
+<p class="admonition-title">Video byte: Q-tables vs. linear Q-functions</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1330" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Below we see a comparison of how linear Q-functions update over time in Gridworld, compared to standard Q-tables.</p>
+<div class="full-width docutils">
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="qtable_vs_linear_qlearning" src="https://mastering-rl.github.io/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
+</div>
+<p>
+</div>
+<p>We can see that, even after a single update after episode 1, the values of the Up action are updated for all states.</p>
+</section>
+<section id="challenges-and-tips">
+<h3>Challenges and tips<a class="headerlink" href="#challenges-and-tips" title="Link to this heading">#</a></h3>
+<p>The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.</p>
+<p><strong>Tip:</strong> Note that to make analysis and debugging easier, our feature values can be <strong>normalised</strong> using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.</p>
+</section>
+</section>
+<section id="deep-q-learning">
+<span id="sec-function-approximation-deep-q-learning"></span><h2>Deep Q-learning<a class="headerlink" href="#deep-q-learning" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-deep-q-function-approximation admonition">
+<p class="admonition-title">Video byte: Deep Q-function approximation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1576" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The latest hype in reinforcement learning is all about the use of deep neural networks to approximate value and Q-functions.</p>
+<section id="deep-q-function-representation">
+<h3>Deep Q-function representation<a class="headerlink" href="#deep-q-function-representation" title="Link to this heading">#</a></h3>
+<p>In deep Q-learning, Q-functions are represented using deep neural networks. Instead of selecting features and training weights, we learn the parameters <span class="math notranslate nohighlight">\(\theta\)</span> to a neural network. The Q-function is <span class="math notranslate nohighlight">\(Q(s,a; \theta)\)</span>, so takes the parameters as an argument.</p>
+<p>This has the advantage (over linear Q-function approximation) that feature engineering is not required, the ‘features’ will be learnt as part of the hidden layers of the neural network.</p>
+<p>A further advantage is that states can be non-structured (or less structured), rather than using a factored state representation. This means that states can be images, videos (sequences of images), or unstructured text.</p>
+</section>
+<section id="deep-q-function-update">
+<h3>Deep Q-function update<a class="headerlink" href="#deep-q-function-update" title="Link to this heading">#</a></h3>
+<p>The update rule for deep Q-learning looks similar to that of updating a linear Q-function.</p>
+<p>The deep reinforcement learning TD update is:</p>
+<div class="math notranslate nohighlight">
+\[\theta \leftarrow \theta + \alpha \cdot \delta \cdot \nabla_{\theta} Q(s,a; \theta)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\nabla_{\theta} Q(s,a; \theta)\)</span> is the <strong>gradient</strong> of the Q-function. In these notes, we will not cover how to calculate the gradient of the Q-function: there are many excellent text books that cover gradients, such as <a class="reference external" href="https://d2l.ai/">Dive into Deep Learning</a>.</p>
+</section>
+<section id="id1">
+<h3>Implementation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Deep Q-learning is identical to tabular or linear Q-learning, except that we use a deep neural network to represent the Q-function instead of a Q-table or a linear equation.</p>
+<p>In this implementation, we use  the <a class="reference external" href="https://pytorch.org/">PyTorch deep learning framework</a>.
+This is a not a framework specifically for reinforcement learning — it is a general deep learning framework for production code, which means it is also suitable for reinforcement learning.</p>
+<p>Using PyTorch, we create a sequential neural network with the following:</p>
+<ol class="arabic simple">
+<li><p>The first layer takes the state vector, so the input features are the features of the state. In the case of the GridWorld example, this would be just the x- and y-coordinates of the agent.</p></li>
+<li><p>We have a hidden layer, with a default number of 64 hidden dimensions, but this is parameterised by the variable <code class="docutils literal notranslate"><span class="pre">hidden_dim</span></code> in the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> constructor.</p></li>
+<li><p>The third and final layer is the output layer, whose dimensionality is the same as the action space, so that each action has a Q-value associated with it.</p></li>
+<li><p>We use a non-linear ReLU (rectified linear unit) between layers.</p></li>
+</ol>
+<p>The input, hidden, and output layers are all <code class="docutils literal notranslate"><span class="pre">Linear</span></code> layers, which is the name for a dense (fully connected) layer in PyTorch. This just means that the layers each learn linear weights, and during inference, they feed these values forward to the next layer. The ReLU layers in between prevent values less than 0 from activating, creating non-linear effects between layers.</p>
+<p>From this, we implement the <code class="docutils literal notranslate"><span class="pre">update</span></code> method, which uses the PyTorch implementation to update the network parameters <span class="math notranslate nohighlight">\(\theta\)</span>, rather than calculating the gradient itself. We could also get the gradient and update <span class="math notranslate nohighlight">\(\theta\)</span>, but using an off-the-shelf implementation allows us to take advantage of optimisations.</p>
+<p>We also need to implement the <code class="docutils literal notranslate"><span class="pre">get_q_value</span></code> method to pass through the network to get our Q-values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Adam</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qfunction</span> <span class="kn">import</span> <span class="n">QFunction</span>
+
+
+<span class="k">class</span> <span class="nc">DeepQFunction</span><span class="p">(</span><span class="n">QFunction</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A neural network to represent a Q-function.</span>
+<span class="sd">    This class uses PyTorch for the neural network framework (https://pytorch.org/).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">clip_max_norm</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+
+        <span class="c1"># Assign the provided device to q_network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_space</span> <span class="o">=</span> <span class="n">state_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">action_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">state_space</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">action_space</span><span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimiser</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_max_norm</span> <span class="o">=</span> <span class="n">clip_max_norm</span>
+
+        <span class="c1"># Initialize weights using Xavier initialization and biases to zero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_weights</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">nonlinearity</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_weights</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_update</span><span class="p">([</span><span class="n">state</span><span class="p">],</span> <span class="p">[</span><span class="n">action</span><span class="p">],</span> <span class="p">[</span><span class="n">delta</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">batch_update_from_experiences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiences</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">,</span> <span class="n">dones</span><span class="p">)</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">experiences</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_update</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">batch_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
+        <span class="n">states_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">actions_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">deltas_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">deltas</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">q_values</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">states_tensor</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">actions_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Construct the target values</span>
+        <span class="n">targets_tensor</span> <span class="o">=</span> <span class="n">q_values</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="o">+</span> <span class="n">deltas_tensor</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span>
+            <span class="n">q_values</span><span class="p">,</span>
+            <span class="n">targets_tensor</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimiser</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clip_max_norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clip_max_norm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimiser</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">get_q_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="n">states_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">actions_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">states_tensor</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="n">actions_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">q_values</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_max_q_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="n">states_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">max_q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">states_tensor</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">return</span> <span class="n">max_q_values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">get_max_q_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">state_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">max_q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">state_tensor</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">max_q_value</span>
+
+    <span class="k">def</span> <span class="nf">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">state_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">state_tensor</span><span class="p">)</span>
+
+        <span class="n">q_value</span> <span class="o">=</span> <span class="n">q_values</span><span class="p">[</span><span class="n">action</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">q_value</span>
+
+    <span class="k">def</span> <span class="nf">get_max_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="c1"># Convert the state into a tensor</span>
+        <span class="n">state_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">state_tensor</span><span class="p">)</span>
+
+        <span class="c1"># Deterministic tie-breaking (first max) avoids extra randomness during early learning.</span>
+        <span class="n">best_action</span> <span class="o">=</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">best_q</span> <span class="o">=</span> <span class="n">q_values</span><span class="p">[</span><span class="n">best_action</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">q_value</span> <span class="o">=</span> <span class="n">q_values</span><span class="p">[</span><span class="n">action</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q_value</span> <span class="o">&gt;</span> <span class="n">best_q</span><span class="p">:</span>
+                <span class="n">best_action</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="n">best_q</span> <span class="o">=</span> <span class="n">q_value</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">best_action</span><span class="p">,</span> <span class="n">best_q</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">soft_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy_qfunction</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="n">target_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="n">policy_dict</span> <span class="o">=</span> <span class="n">policy_qfunction</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">policy_dict</span><span class="p">:</span>
+            <span class="n">target_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">policy_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">+</span> <span class="n">target_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">target_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">({</span>
+            <span class="s1">&#39;state_space&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">,</span>
+            <span class="s1">&#39;action_space&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="p">,</span>
+            <span class="s1">&#39;state_dict&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+        <span class="p">},</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">qfunction</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;state_space&#39;</span><span class="p">],</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;action_space&#39;</span><span class="p">])</span>
+        <span class="n">qfunction</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;state_dict&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">qfunction</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note in this implementation that PyTorch does not support strings as values, so we need to encode action names and states as numbers.</p>
+<p>We can now use this implementation by creating a standard Q-learning agent with a deep Q network as the Q function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.deep_q_function</span> <span class="kn">import</span> <span class="n">DeepQFunction</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">action_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridworld</span><span class="o">.</span><span class="n">get_actions</span><span class="p">())</span>
+<span class="n">state_space</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridworld</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">())</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">DeepQFunction</span><span class="p">(</span><span class="n">state_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">)</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">QLearning</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy_as_image</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7fc7260fb3121d0b3ad3861707c3ad613c162cfe241e7a4ac074f4a76c0b2e51.png" src="../_images/7fc7260fb3121d0b3ad3861707c3ad613c162cfe241e7a4ac074f4a76c0b2e51.png" />
+<img alt="../_images/b0d0a9636a907a79a99749653a244f952f8d59277af5e813ab1f2a46c6b607e5.png" src="../_images/b0d0a9636a907a79a99749653a244f952f8d59277af5e813ab1f2a46c6b607e5.png" />
+</div>
+</div>
+<p>Note the value of the learning rate <span class="math notranslate nohighlight">\(\alpha=1.0\)</span>. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the <code class="docutils literal notranslate"><span class="pre">update</span></code> method of the <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> implementation. Therefore, we do not need to multiply the TD value by the learning rate <span class="math notranslate nohighlight">\(\alpha\)</span> as the ADAM optimiser already does this. By setting <span class="math notranslate nohighlight">\(\alpha=1.0\)</span>, this means that the learning rate is not used in the <code class="docutils literal notranslate"><span class="pre">update</span></code> method, except implicitly by the call to the optimiser.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-linear-q-functions-vs-deep-q-functions admonition">
+<p class="admonition-title">Video byte: Linear Q-functions vs Deep Q-functions</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1769" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Below we see a comparison between deep Q-functions and linear Q-functions.</p>
+<div class="full-width docutils">
+<div id="container2" markdown="1" style="text-align: center;">
+    <img id="linear_qlearning_vs_deep_qlearning" src="https://mastering-rl.github.io/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <gif-player id="linear_qlearning_vs_deep_qlearning" width="900"></gif-player>
+</div>
+<p>
+</div>
+<p>We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we initialise linear weights to 0, so Q-values are all 0.</p>
+<p>There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus under fitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.</p>
+<p>The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.</p>
+</section>
+<section id="advantages-and-disadvantages">
+<h3>Advantages and disadvantages<a class="headerlink" href="#advantages-and-disadvantages" title="Link to this heading">#</a></h3>
+<p><strong>Advantages</strong> of deep Q-function approximation  (compared to linear Q-function approximation):</p>
+<ul class="simple">
+<li><p><strong>Feature selection</strong>: We do not need to select features – the ‘features’ will be learnt as part of the hidden layers of the neural network.</p></li>
+<li><p><strong>Unstructured data</strong>: The state <span class="math notranslate nohighlight">\(s\)</span> can be less structured, such as images or sequences of images (video).</p></li>
+</ul>
+<p><strong>Disadvantages</strong>:</p>
+<ul class="simple">
+<li><p><strong>Convergence</strong>: There are no convergence guarantees.</p></li>
+<li><p><strong>Data hungry</strong>: Deep neural networks are more data hungry because they need to learn features as well as “the Q-function”, so compared to a linear approximation with good features, learning good Q-functions can be  difficult. Large amounts of computation are often required.</p></li>
+</ul>
+<p>Despite this, deep Q-learning  works remarkably well in some areas, especially for tasks that require vision (see the robotic arm grasping unknown objects).</p>
+</section>
+</section>
+<section id="strengths-and-limitations-of-q-function-approximation">
+<h2>Strengths and Limitations of Q-function Approximation<a class="headerlink" href="#strengths-and-limitations-of-q-function-approximation" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-strengths-and-limitations-of-q-function-approximation admonition">
+<p class="admonition-title">Video byte: Strengths and limitations of Q-function approximation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=1890" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Approximating Q-functions using machine learning techniques such as linear functions or deep learning  has advantages and disadvantages.</p>
+<p><strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Memory: More efficient representation compared with Q-tables because we only store weights/parameters for the Q-function, rather than the the <span class="math notranslate nohighlight">\(|A| \times |S|\)</span> entries for a Q-table.</p></li>
+<li><p>Q-value propagation: we do not need to apply action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> to get a value for <span class="math notranslate nohighlight">\(Q(s,a)\)</span> because the Q-function generalises.</p></li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>The Q-function is now only an approximation of the real Q-function: states that share feature values will have the same Q-value according to the Q-function, but the actual Q-value according to the (unknown) optimal Q-function may be different.</p></li>
+</ul>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-q-function-approximation admonition">
+<p class="admonition-title">Video byte: Summary of Q-function approximation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/cfJiDvb82gM?start=2099" title="Q-function approximation" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>We can scale reinforcement learning by <strong>approximating Q-functions</strong>, rather than storing complete Q-tables.</p></li>
+<li><p>Using simple <strong>linear methods</strong> in which we select features and learn weights are effective and guarantee convergence.</p></li>
+<li><p><strong>Deep Q-learning</strong> offers an alternative in which we can learn a state representation, but requires more training data (more episodes) and has no convergence guarantees.</p></li>
+</ul>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Chapter 9 (Approximate Solution Methods) of <a class="reference external" href="http://incompleteideas.net/book/the-book-2nd.html">Introduction to Reinforcement Learning, Sutton and Barto</a></p></li>
+<li><p>Deep Q-learning for Atari. This uses Convolutional Neural Networks (CNN) to estimate <span class="math notranslate nohighlight">\(\mathcal{Q}(s,a)\)</span>. The input for the CNN is the state, and the output is the estimated reward for each action. There are two papers worth reading on this:</p>
+<ul>
+<li><p><a class="reference external" href="http://www.davidqiu.com:8888/research/nature14236.pdf">Human-level control through deep reinforcement learning</a>. Mnih, V., et al. Nature 529 (2015).</p></li>
+<li><p><a class="reference external" href="https://arxiv.org/pdf/1312.5602v1.pdf">Playing Atari with Deep Reinforcement Learning</a>. Mnih, V., et al. arXiv: preprint arXiv:1312.5602 (2013).</p></li>
+</ul>
+</li>
+<li><p>Before AlphaGo there was TD-gammon, which was the first paper to combine reinforcement learning and neural networks:
+<a class="reference external" href="http://www.aaai.org/Papers/Symposia/Fall/1993/FS-93-02/FS93-02-003.pdf">TD-Gammon, A Self-Teaching Backgammon Program, Achieves Master-Level Play</a>, AAAI Technical Report FS-93-02 (1993).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="actor-critic.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Actor-critic methods</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="reward-shaping.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Reward shaping</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-learning-linear-function-approximation">Linear Q-learning (Linear Function Approximation)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-function-representation">Linear Q-function Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-state-action-features">Defining State-Action Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#q-values-from-linear-q-functions">Q-values from linear Q-functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-q-function-update">Linear Q-function Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-q-function-approximation-on-gridworld">Example: Linear Q-function approximation on Gridworld</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-q-function-approximation-on-contested-crossing">Example: Linear Q-function approximation on Contested Crossing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-linear-function-approximation-vs-q-tables">Example – Linear function approximation vs Q-tables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-and-tips">Challenges and tips</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-learning">Deep Q-learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-function-representation">Deep Q-function representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-q-function-update">Deep Q-function update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advantages-and-disadvantages">Advantages and disadvantages</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strengths-and-limitations-of-q-function-approximation">Strengths and Limitations of Q-function Approximation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

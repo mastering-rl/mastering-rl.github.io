@@ -1,0 +1,1361 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Monte-Carlo Tree Search (MCTS) &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/mcts';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to policy-based methods" href="policy-based.html" />
+    <link rel="prev" title="Temporal difference reinforcement learning" href="temporal-difference-learning.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/mcts.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/mcts.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Monte-Carlo Tree Search (MCTS)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-planning-online-planning-for-mdps">Offline Planning &amp; Online Planning for MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foundation-mdps-as-expectimax-trees">Foundation: MDPs as ExpectiMax Trees</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-tree-search-overview">Monte Carlo Tree Search – Overview</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-framework-monte-carlo-tree-search-mcts">The Framework: Monte Carlo Tree Search (MCTS)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selection">Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#expansion">Expansion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation">Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backpropagation">Backpropagation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#action-selection">Action selection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upper-confidence-trees-uct">Upper Confidence Trees (UCT)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function-approximation">Function approximation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-does-it-work-so-well-sometimes">Why does it work so well (sometimes)?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-iteration-vs-mcts">Value iteration vs. MCTS</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-mcts-and-td-learning-alpha-zero">Combining MCTS and TD learning: Alpha Zero</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="monte-carlo-tree-search-mcts">
+<span id="sec-mcts"></span><h1>Monte-Carlo Tree Search (MCTS)<a class="headerlink" href="#monte-carlo-tree-search-mcts" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-mcts admonition">
+<p class="admonition-title">Video byte: Introduction to MCTS</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=0s" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Explain the difference between offline and online planning for MDPs.</p></li>
+<li><p>Apply MCTS solve small-scale MDP problems manually and program MCTS algorithms to solve medium-scale MDP problems automatically.</p></li>
+<li><p>Construct a policy from Q-functions resulting from MCTS algorithms.</p></li>
+<li><p>Integrate multi-armed bandit algorithms (including UCB) to MCTS algorithms.</p></li>
+<li><p>Compare and contrast MCTS to value iteration.</p></li>
+<li><p>Discuss the strengths and weaknesses of the MCTS family of algorithms.</p></li>
+</ol>
+</div>
+<section id="offline-planning-online-planning-for-mdps">
+<h2>Offline Planning &amp; Online Planning for MDPs<a class="headerlink" href="#offline-planning-online-planning-for-mdps" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-online-vs-offline-planning admonition">
+<p class="admonition-title">Video byte: Online vs offline planning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=90" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>We saw value iteration in the previous section. This is an <strong>offline</strong> planning method because we solve the problem offline for all possible states, and then use the solution (a policy) online to act.</p>
+<p>Yet the state space <span class="math notranslate nohighlight">\(S\)</span> is usually <em>far</em> too big to determine <span class="math notranslate nohighlight">\(V(s)\)</span> or <span class="math notranslate nohighlight">\(\pi\)</span> exactly. Even games like Go, which are famously difficult for reinforcement learning, requiring computational power available to only a handful of organisations, are small compared to many real-world problems.</p>
+<p>There are methods to approximate the MDP by reducing the dimensionality of <span class="math notranslate nohighlight">\(S\)</span>, but we will not discuss these until later.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-monte-carlo-simulation admonition">
+<p class="admonition-title">Video byte: Monte-Carlo simulation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=317" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>In <strong>online</strong> planning, planning is undertaken immediately before executing an action. Once an action (or perhaps a sequence of actions) is executed, we start planning again from the new state. As such, planning and execution are interleaved such that:</p>
+<ul class="simple">
+<li><p>For each state <span class="math notranslate nohighlight">\(s\)</span> visited, the set of all available actions <span class="math notranslate nohighlight">\(A(s)\)</span> partially evaluated</p></li>
+<li><p>The quality of each action <span class="math notranslate nohighlight">\(a\)</span> is approximated by averaging the expected reward of trajectories over <span class="math notranslate nohighlight">\(S\)</span> obtained by repeated simulations, giving as an approximation for <span class="math notranslate nohighlight">\(Q(s,a)\)</span>.</p></li>
+<li><p>The chosen action is <span class="math notranslate nohighlight">\(\text{argmax}_{a'} Q(s,a)\)</span></p></li>
+</ul>
+<p>In online planning, we need access to a <strong>simulator</strong> that approximates the transitions function <span class="math notranslate nohighlight">\(P_a(s' |s)\)</span> and reward function <span class="math notranslate nohighlight">\(r\)</span> of our MDP. A  model can be used, however, often it is easier to write a simulation that can choose outcomes with probability <span class="math notranslate nohighlight">\(P_a(s' | s)\)</span> than it is to analytically calculate the probabilities for any state. For example, consider games like StarCraft. Calculating the probability of ending in a state for a given action is more difficult than simulating possible states.</p>
+<p>The simulator allows us to run repeated simulations of possible futures to gain an idea of what moves are likely to be good moves compared to others.</p>
+<p>The question is: how to we do the repeated simulations? <strong>Monte Carlo</strong> methods are by far the most widely-used approach.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Monte Carlo Tree Search (MTCS) is a name for a <em>set</em> of algorithms all based around the same idea. Here, we will focus on using an algorithm for solving single-agent MDPs in a model-based manner. Later, we look at solving single-agent MDPs in a model-free manner and  multi-agent MDPs using MCTS.</p>
+<section id="foundation-mdps-as-expectimax-trees">
+<span id="sec-mcts-expectimax-trees"></span><h3>Foundation: MDPs as ExpectiMax Trees<a class="headerlink" href="#foundation-mdps-as-expectimax-trees" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-expectimax-trees admonition">
+<p class="admonition-title">Video byte: ExpectiMax trees</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=439" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>To get the idea of MCTS, we note that MDPs can be represented as trees (or graphs), called <strong>ExpectiMax</strong> trees:</p>
+<figure class="align-default" id="expectimax">
+<img alt="../_images/mcts_expectimax.png" src="../_images/mcts_expectimax.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Abstract example of an ExpectiMax Tree</span><a class="headerlink" href="#expectimax" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The letters <span class="math notranslate nohighlight">\(a\)</span>-<span class="math notranslate nohighlight">\(e\)</span> represent actions, and letters <span class="math notranslate nohighlight">\(s\)</span>-<span class="math notranslate nohighlight">\(x\)</span> represent states. White nodes are state nodes, and the small black nodes represent the probabilistic uncertainty: the ‘environment’ choosing which outcome from an action happens, based on the transition function.</p>
+</section>
+<section id="monte-carlo-tree-search-overview">
+<h3>Monte Carlo Tree Search – Overview<a class="headerlink" href="#monte-carlo-tree-search-overview" title="Link to this heading">#</a></h3>
+<p>The algorithm is online, which means the action selection is interleaved with action execution. Thus, MCTS is invoked every time an agent visits a new state.</p>
+<p>Fundamental features:</p>
+<ol class="arabic simple">
+<li><p>The Q-value <span class="math notranslate nohighlight">\(Q(s,a)\)</span> for each is approximated using <strong>random simulation</strong>.</p></li>
+<li><p>For a single-agent problem, an ExpectiMax <strong>search tree</strong> is built incrementally</p></li>
+<li><p>The search terminates when some pre-defined computational budget is used up, such as a time limit or a number of expanded nodes. Therefore, it is an <strong>anytime</strong> algorithm, as it can be terminated at any time and still give an answer.</p></li>
+<li><p>The best performing action is returned.</p>
+<ul class="simple">
+<li><p>This is complete if there are no dead–ends.</p></li>
+<li><p>This is optimal if an entire search can be performed (which is unusual – if the problem is that small we should just use a dynamic programming technique such as  value iteration).</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="the-framework-monte-carlo-tree-search-mcts">
+<h2>The Framework: Monte Carlo Tree Search (MCTS)<a class="headerlink" href="#the-framework-monte-carlo-tree-search-mcts" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mcts-framework admonition">
+<p class="admonition-title">Video byte: MCTS framework</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is <strong>incrementally</strong> built be iterating over the following four steps:</p>
+<ul class="simple">
+<li><p><strong>Select</strong>: Select a single node in the tree that is <strong>not fully expanded</strong>. By this, we mean at least one of its children is not yet explored.</p></li>
+<li><p><strong>Expand</strong>: Expand this node by applying one available action (as defined by the MDP) from the node.</p></li>
+<li><p><strong>Simulate</strong>: From one of the outcomes of the expanded, perform a complete random simulation of the MDP to a terminating state. This therefore assumes that the simulation is finite, but versions of MCTS exist in which we just execute for some time and then estimate the outcome.</p></li>
+<li><p><strong>Backpropagate</strong>: Finally, the value of the node is backpropagated to the root node, updating the value of each ancestor node on the way using expected value.</p></li>
+</ul>
+<section id="selection">
+<h3>Selection<a class="headerlink" href="#selection" title="Link to this heading">#</a></h3>
+<p>Start at the root node, and successively <strong>select a child node</strong> until we reach a node that is not fully expanded.</p>
+<figure class="align-default" id="mcts-selection">
+<img alt="../_images/mcts_selection.png" src="../_images/mcts_selection.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 7 </span><span class="caption-text">MCTS Selection step. The red arcs and nodes are those that have been selected</span><a class="headerlink" href="#mcts-selection" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="expansion">
+<h3>Expansion<a class="headerlink" href="#expansion" title="Link to this heading">#</a></h3>
+<p>Unless the node we end up at is a terminating state, <strong>expand the children</strong> of the selected node by choosing an action and creating new nodes using the action outcomes.</p>
+<figure class="align-default" id="mcts-expansion">
+<img alt="../_images/mcts_expansion.png" src="../_images/mcts_expansion.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 8 </span><span class="caption-text">MCTS Expansion step. The blue arcs and nodes are those that have been selected.</span><a class="headerlink" href="#mcts-expansion" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="simulation">
+<h3>Simulation<a class="headerlink" href="#simulation" title="Link to this heading">#</a></h3>
+<p>Choose one of the new nodes and perform a <strong>random simulation</strong> of the MDP to the terminating state:</p>
+<figure class="align-default" id="mcts-simulation">
+<img alt="../_images/mcts_simulation.png" src="../_images/mcts_simulation.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">MCTS Simulation step. The pink nodes and arcs represent the simulation.</span><a class="headerlink" href="#mcts-simulation" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="backpropagation">
+<h3>Backpropagation<a class="headerlink" href="#backpropagation" title="Link to this heading">#</a></h3>
+<p>Given the reward <span class="math notranslate nohighlight">\(r\)</span> at the terminating state, <strong>backpropagate</strong> the reward to calculate the value <span class="math notranslate nohighlight">\(V(s)\)</span> at each state along the path.</p>
+<figure class="align-default" id="mcts-backpropagation">
+<img alt="../_images/mcts_backpropagation.png" src="../_images/mcts_backpropagation.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 10 </span><span class="caption-text">MCTS Backpropagation step. The green arcs and nodes represent the states and actions whose Q-values will be updated.</span><a class="headerlink" href="#mcts-backpropagation" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">#</a></h2>
+<p>In a basic MCTS algorithm we incrementally build of the search tree. Each node in the tree stores:</p>
+<ol class="arabic simple">
+<li><p>a set of children nodes;</p></li>
+<li><p>pointers to its parent node and parent action; and</p></li>
+<li><p>the number of times it has been visited.</p></li>
+</ol>
+<p>We use this tree to explore different Monte-Carlo simulations to learn a Q-function <span class="math notranslate nohighlight">\(Q\)</span>.</p>
+<div class="proof algorithm admonition" id="algorithm:single-agent-mcts">
+<p class="admonition-title"><span class="caption-number">Algorithm 6 </span> (Monte-Carlo Tree Search)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \alginput:\ \text{MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle, \text{base Q-function}\ Q, \text{time limit}\ T  \\
+  \algoutput:\ \text{updated Q-function}\ Q  \\[2mm]
+  \algwhile\ current\_time &lt; T\ \algdo  \\
+  \quad\quad selected\_node \leftarrow \text{Select}(s_0)  \\
+  \quad\quad child \leftarrow \text{Expand}(selected\_node)\ \text{-- expand and choose a child to simulate}  \\
+  \quad\quad G \leftarrow \text{Simulate}(child)\ \text{ -- simulate from}\ child
+    \\
+  \quad\quad \text{Backpropagate}(selected\_node, child, Q, G)  \\
+  \algreturn \ Q 
+\end{array}
+\)</span></p>
+</section>
+</div><p>Given this, there are four main parts to the algorithm above:</p>
+<ol class="arabic simple">
+<li><p><strong>Selection</strong>: The first loop progressively selects a branch in the tree using a multi-armed bandit algorithm using <span class="math notranslate nohighlight">\(Q(s,a)\)</span>. The outcome that occurs from an action is chosen according to <span class="math notranslate nohighlight">\(P(s' \mid s)\)</span> defined in the MDP.</p></li>
+</ol>
+<div class="proof algorithm admonition" id="algorithm:mcts:select">
+<p class="admonition-title"><span class="caption-number">Algorithm 7 </span> (Function – <span class="math notranslate nohighlight">\(\text{Select}(s : S)\)</span>)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \alginput:\ \text{state}\ s  \\
+  \algoutput:\ \text{unexpanded state}\ s  \\[2mm]
+  \algwhile\ s\ \text{is fully expanded}\ \algdo  \\
+  \quad\quad \text{Select action}\ a\ \text{to apply in}\ s\ \text{using a multi-armed bandit algorithm}  \\
+  \quad\quad \text{Choose one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)  \\
+  \quad\quad s \leftarrow s'  \\
+  \algreturn\ s
+\end{array}
+\)</span></p>
+</section>
+</div><ol class="arabic simple" start="2">
+<li><p><strong>Expansion</strong>: Select an action <span class="math notranslate nohighlight">\(a\)</span> to apply in  state <span class="math notranslate nohighlight">\(s\)</span>, either randomly or using an heuristic. Get an outcome state <span class="math notranslate nohighlight">\(s'\)</span> from applying action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> according to the probability distribution <span class="math notranslate nohighlight">\(P(s' \mid s)\)</span>. Expand a new environment node and a new state node for that outcome.</p></li>
+</ol>
+<div class="proof algorithm admonition" id="algorithm:mcts:expand">
+<p class="admonition-title"><span class="caption-number">Algorithm 8 </span> (Function – <span class="math notranslate nohighlight">\(\text{Expand}(s : S)\)</span>)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \alginput:\ \text{state}\ s  \\
+  \algoutput:\ \text{expanded state}\ s'  \\[2mm]
+  \algif\ s\ \text{is fully expanded}\ \algthen \\
+  \quad\quad \text{Randomly select action}\ a\ \text{to apply in}\ s\   \\
+  \quad\quad \text{Expand one outcome}\ s'\ \text{according to}\ P_a(s' \mid s)\ \textrm{and observe reward}\ r  \\
+  \algreturn\ s'
+\end{array}
+\)</span></p>
+</section>
+</div><ol class="arabic" start="3">
+<li><p><strong>Simulation</strong>: Perform a randomised simulation of the MDP until we reach a terminating state. That is, at each choice point, randomly select an possible action from the MDP, and use transition probabilities <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> to choose an outcome for each action. Heuristics can be used to improve the random simulation by guiding it towards more promising states. <span class="math notranslate nohighlight">\(G\)</span> is the cumulative discounted reward received from the simulation starting at <span class="math notranslate nohighlight">\(s'\)</span> until the simulation terminates.</p>
+<p>To avoid memory explosion, we discard all nodes generated from the simulation. In any non-trivial search, we are unlikely to ever need them again.</p>
+</li>
+<li><p><strong>Backpropagation</strong>: The reward from the simulation is backpropagated from the selected node to its ancestors recursively. We must not forget the discount factor! For each state <span class="math notranslate nohighlight">\(s\)</span> and action <span class="math notranslate nohighlight">\(a\)</span> selected in the Select step, update the cumulative reward of that state.</p></li>
+</ol>
+<div class="proof algorithm admonition" id="algorithm:mcts:backpropagation">
+<p class="admonition-title"><span class="caption-number">Algorithm 9 </span> (Function – <span class="math notranslate nohighlight">\(\text{Backpropagation}(s : S; a : A; Q : S\times A \rightarrow \mathbb{R}; G : \mathbb{R})\)</span>)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+  \alginput:\ \text{state-action pair}\ (s, a), \text{Q-function}\ Q,\ \text{rewards}\ G\\
+  \algoutput:\ \text{none} \\[2mm]
+  \algdo  \\
+  \quad\quad N(s,a) \leftarrow N(s,a) + 1  \\
+  \quad\quad G \leftarrow r + \gamma G  \\
+  \quad\quad Q(s,a) \leftarrow Q(s,a) + \tfrac{1}{N(s,a)}[G - Q(s,a)]   \\
+  \quad\quad s \leftarrow\ \text{parent of}\ s  \\
+  \quad\quad a \leftarrow\ \text{parent action of}\ s  \\
+  \algwhile\ s \neq s_0
+\end{array}
+\)</span></p>
+</section>
+</div><p>Because action outcomes are selected according to <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>, this will converge to the average expected reward. This is why the tree is called an <strong>ExpectiMax</strong> tree:  we maximise the expected return.</p>
+<p><strong>But:</strong> what if we do not know <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>?</p>
+<p>Provided that we can <strong>simulate</strong> the outcomes; e.g. using a code-based simulator, then this does not matter. Over many simulations, the Select (and Expand/Execute steps) will sample <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span> sufficiently close that <span class="math notranslate nohighlight">\(Q(s,a)\)</span> will converge to the average expected reward. Note that this is <strong>not a model-free</strong> approach: we still need a model in the form of a simulator, but we do not need to have explicit transition and reward functions.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mcts-example admonition">
+<p class="admonition-title">Video byte: MCTS example</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1370" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-backpropagation admonition">
+<p class="admonition-title">Example: Backpropagation</p>
+<p>Consider the following ExpectiMax tree that has been expanded several times. Assume <span class="math notranslate nohighlight">\(\gamma=0.8\)</span>, <span class="math notranslate nohighlight">\(r=X\)</span> represents reward <span class="math notranslate nohighlight">\(X\)</span> received at a state, and the length of the simulation is 3. After the simulation step, but before backpropagation, our tree would look like this:</p>
+<figure class="align-default" id="mcts-example">
+<img alt="../_images/mcts_example.png" src="../_images/mcts_example.png" />
+</figure>
+<p>In the current iteration, the red actions are selected, and the blue node is expanded to its three children nodes. A simulation is run from <span class="math notranslate nohighlight">\(y\)</span>, which terminates after 3 steps. A reward of 31.25 is received in the terminal state. This would mean that the discounted reward returned at node <span class="math notranslate nohighlight">\(y\)</span> would be <span class="math notranslate nohighlight">\(\gamma^{2} \times 31.25\)</span>, which is 20.</p>
+<p>Before backpropagation, we  have the following:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{llr}
+ Q(s,a) &amp; = &amp; 18\\
+ Q(t,f) &amp; = &amp; 0
+\end{array}
+\end{split}\]</div>
+<p>We leave out the remainder of the Q-function as it is not relevant to the example.</p>
+<p>The backpropagation step is then calculated for the nodes <span class="math notranslate nohighlight">\(y\)</span>, <span class="math notranslate nohighlight">\(t\)</span>, and <span class="math notranslate nohighlight">\(s\)</span> as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+   Q(y, g) &amp; = &amp; \gamma^{2} \times 31.25~~\text{(simulation is 3 steps long and receives reward of 31.25)}\\
+          &amp; = &amp;   20\\
+~~\\
+N(t,f) &amp; \leftarrow &amp; N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
+~~\\
+  Q(t,f)   &amp; = &amp;  Q(t,f) + \frac{1}{N(t, f)}[r + \gamma G - Q(t,f)]\\
+          &amp; = &amp;  0   + \frac{1}{2}[0 + 0.8 \cdot 20 - 0]\\
+          &amp; = &amp;  8\\
+~~\\
+  N(s,a) &amp; \leftarrow &amp; N(s,a) + 1 = N(t) + N(t') + 1 = 5
+~~\\
+  Q(s,a)    &amp; = &amp; Q(s,a) + \frac{1}{N(s,a)}[r + \gamma G - Q(s,a)]\\
+            &amp; = &amp; 18   + \frac{1}{5}[6 + 0.8 \cdot (0.8 \cdot 20) - 18]\\            
+            &amp; = &amp; 18   + \frac{1}{5}[6 + 12.8 - 18]\\
+            &amp; = &amp; 18.16
+\end{array}
+\end{split}\]</div>
+</div>
+</section>
+<section id="action-selection">
+<h2>Action selection<a class="headerlink" href="#action-selection" title="Link to this heading">#</a></h2>
+<p>Once we have run out of computational time, we select the action that maximises are expected return, which is simply the one with the highest Q-value from our simulations:</p>
+<div class="math notranslate nohighlight">
+\[\text{argmax}_{a \in A(s)} Q(s_0, a)\]</div>
+<p>We execute that action and wait to see which outcome occurs for the action.</p>
+<p>Once we see the outcome state, which we will call <span class="math notranslate nohighlight">\(s'\)</span>, we start the process all over again, except with <span class="math notranslate nohighlight">\(s_0 \leftarrow s'\)</span>.</p>
+<p>However, importantly, we can <em>keep</em> the sub-tree from state <span class="math notranslate nohighlight">\(s'\)</span>, as we already have done simulations from that state. We discard the rest of the tree (all child of <span class="math notranslate nohighlight">\(s_0\)</span> other than the chosen action) and incrementally build from <span class="math notranslate nohighlight">\(s'\)</span>.</p>
+</section>
+<section id="upper-confidence-trees-uct">
+<h2>Upper Confidence Trees (UCT)<a class="headerlink" href="#upper-confidence-trees-uct" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-upper-confidence-trees-uct admonition">
+<p class="admonition-title">Video byte: Upper Confidence Trees (UCT)</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1846" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>When we select nodes, we select using some <a class="reference internal" href="multi-armed-bandits.html#sec-multi-armed-bandits"><span class="std std-ref">multi-armed bandit algorithm</span></a>. We can use any multi-armed bandit algorithm, but in practice, using a slight variation of the UCB1 algorithm has proved to be successful in MCTS.</p>
+<p>The <strong>Upper Confidence Trees</strong> (UCT) algorithm  is the combination of MCTS with the UCB1 strategy for selecting the next node to follow:</p>
+<div class="math notranslate nohighlight">
+\[UCT = MCTS + UCB1\]</div>
+<p>The UCT selection strategy is similar to the UCB1 strategy:</p>
+<div class="math notranslate nohighlight">
+\[\text{argmax}_{a \in A(s)} Q(s,a) + 2 C_p \sqrt{\frac{2 \ln N(s)}{N(s,a)}}\]</div>
+<p><span class="math notranslate nohighlight">\(N(s)\)</span> is the number of times a state node has been visited, and <span class="math notranslate nohighlight">\(N(s,a)\)</span> is the number of times <span class="math notranslate nohighlight">\(a\)</span> has been selected from this node. <span class="math notranslate nohighlight">\(C_p &gt;0\)</span> is the exploration constant, which determines can be increased to encourage more exploration, and decreased to encourage less exploration. Ties are broken randomly.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <span class="math notranslate nohighlight">\(Q(s,a) \in [0,1]\)</span> and <span class="math notranslate nohighlight">\(C_p=\frac{1}{\sqrt{2}}\)</span> then in two-player zero-sum, UCT converges to the well-known Minimax algorithm.</p>
+</div>
+</section>
+<section id="implementation">
+<span id="sec-mcts-implementation"></span><h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<p>Below is an implementation of MCTS in Python. This is a simulation-based implementation as it simulates outcomes and uses a moving average to calculate a value. However, the implementation keeps track of probabilities for the purpose of visualisation.</p>
+<p>First, we create a class <code class="docutils literal notranslate"><span class="pre">Node</span></code>, which forms the basis for the tree:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+
+<span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+
+    <span class="c1"># Record a unique node id to distinguish duplicated states</span>
+    <span class="n">next_node_id</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Records the number of times states have been visited</span>
+    <span class="n">visits</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">,</span> <span class="n">bandit</span><span class="p">,</span> <span class="n">reward</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">next_node_id</span>
+        <span class="n">Node</span><span class="o">.</span><span class="n">next_node_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># The Q function used to store state-action values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">qfunction</span>
+
+        <span class="c1"># A multi-armed bandit for this node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="n">bandit</span>
+
+        <span class="c1"># The immediate reward received for reaching this state, used for backpropagation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward</span> <span class="o">=</span> <span class="n">reward</span>
+
+        <span class="c1"># The action that generated this node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Select a node that is not fully expanded &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Expand a node if it is not a terminal node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Backpropogate the reward back to the parent node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">back_propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the value of this node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">max_q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_max_q</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">max_q_value</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the number of visits to this state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_visits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">MCTS</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">,</span> <span class="n">bandit</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span> <span class="o">=</span> <span class="n">qfunction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="n">bandit</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Execute the MCTS algorithm from the initial state given, with timeout in seconds</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">mcts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">root_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">root_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">root_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_root_node</span><span class="p">()</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">timeout</span><span class="p">:</span>
+
+            <span class="c1"># Find a state node to expand</span>
+            <span class="n">selected_node</span> <span class="o">=</span> <span class="n">root_node</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="n">selected_node</span><span class="p">):</span>
+
+                <span class="n">child</span> <span class="o">=</span> <span class="n">selected_node</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
+                <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                <span class="n">selected_node</span><span class="o">.</span><span class="n">back_propagate</span><span class="p">(</span><span class="n">reward</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">root_node</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a root node representing an initial state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">create_root_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">abstract</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Choose a random action. Heustics can be used here to improve simulations. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Simulate until a terminal state &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">cumulative_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="c1"># Choose an action to execute</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+            <span class="c1"># Execute the action</span>
+            <span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+            <span class="c1"># Discount the reward</span>
+            <span class="n">cumulative_reward</span> <span class="o">+=</span> <span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_discount_factor</span><span class="p">(),</span> <span class="n">depth</span><span class="p">)</span> <span class="o">*</span> <span class="n">reward</span>
+            <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+        <span class="k">return</span> <span class="n">cumulative_reward</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In our single-agent MCTS problem, we have two nodes in an ExpectiMax tree: nodes representing states, and nodes representing `choice points’ for the environment (that is, the filled nodes that correspond to an action outcome).</p>
+<p>In our implementation, we represent this with just one class called <code class="docutils literal notranslate"><span class="pre">Node</span></code>. When we expand a new action, we choose a child node of that action:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.mcts</span> <span class="kn">import</span> <span class="n">MCTS</span><span class="p">,</span> <span class="n">Node</span>
+
+
+<span class="k">class</span> <span class="nc">SingleAgentNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mdp</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">,</span>
+        <span class="n">state</span><span class="p">,</span>
+        <span class="n">qfunction</span><span class="p">,</span>
+        <span class="n">bandit</span><span class="p">,</span>
+        <span class="n">reward</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">,</span> <span class="n">bandit</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+        <span class="c1"># A dictionary from actions to a set of node-probability pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return true if and only if all child actions have been expanded &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">is_fully_expanded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">valid_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_actions</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Select a node that is not fully expanded &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fully_expanded</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_outcome_child</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Expand a node if it is not a terminal node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">):</span>
+            <span class="c1"># Randomly select an unexpanded action to expand</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">actions</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_outcome_child</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Backpropogate the reward back to the parent node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">back_propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">action</span>
+
+        <span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">visits</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)]))</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">reward</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">back_propagate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reward</span> <span class="o">+</span> <span class="n">reward</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Simulate the outcome of an action, and return the child node &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_outcome_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="c1"># Choose one outcome based on transition probabilities</span>
+        <span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+        <span class="c1"># Find the corresponding state and return if this already exists</span>
+        <span class="k">for</span> <span class="n">child</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">next_state</span> <span class="o">==</span> <span class="n">child</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">child</span>
+
+        <span class="c1"># This outcome has not occured from this state-action pair previously</span>
+        <span class="n">new_child</span> <span class="o">=</span> <span class="n">SingleAgentNode</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">action</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Find the probability of this outcome (only possible for model-based)</span>
+        <span class="n">probability</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">probability</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_transitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">outcome</span> <span class="o">==</span> <span class="n">next_state</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">probability</span><span class="p">)]</span>
+                <span class="k">return</span> <span class="n">new_child</span>
+
+
+<span class="k">class</span> <span class="nc">SingleAgentMCTS</span><span class="p">(</span><span class="n">MCTS</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_root_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SingleAgentNode</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">get_initial_state</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The advantage of using this single node is that our <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class forms the basis of a <a class="reference internal" href="../multi-agent/multi-agent-rl.html#sec-multi-agent-rl-mcts"><span class="std std-ref">multi-agent MCTS</span></a> algorithm, where we design a new class that implements the selection, expansion and backpropagation steps, while the base MCTS algorithm remains the same.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mcts-example-on-gridworld admonition">
+<p class="admonition-title">Video byte: MCTS example on Gridworld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=1983" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>We can visualise one of our MCTS trees to demonstrate another issue with this vanilla MCTS algorithm. Here, we execute for just 0.03 seconds (to avoid a tree that is too large to visualise), we show the tree, and we only visualise up to the 6th level (including both state and environment nodes). At each node, <span class="math notranslate nohighlight">\(V(s)\)</span> is the value of that node (the child with the highest Q-value). Right-click and open the image in a new tab to see a larger version:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.single_agent_mcts</span> <span class="kn">import</span> <span class="n">SingleAgentMCTS</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.ucb</span> <span class="kn">import</span> <span class="n">UpperConfidenceBounds</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.utils.graph_visualisation</span> <span class="kn">import</span> <span class="n">GraphVisualisation</span>
+
+<span class="n">gridworld</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">root_node</span> <span class="o">=</span> <span class="n">SingleAgentMCTS</span><span class="p">(</span><span class="n">gridworld</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">,</span> <span class="n">UpperConfidenceBounds</span><span class="p">())</span><span class="o">.</span><span class="n">mcts</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
+<span class="n">gv</span> <span class="o">=</span> <span class="n">GraphVisualisation</span><span class="p">(</span><span class="n">max_level</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">single_agent_mcts_to_graph</span><span class="p">(</span><span class="n">root_node</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;mcts&quot;</span><span class="p">)</span>
+<span class="n">graph</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e45471872e5a7b55eb9c5ce22affeca8a7575cd87ded946ac0c3157f528c3e57.svg" src="../_images/e45471872e5a7b55eb9c5ce22affeca8a7575cd87ded946ac0c3157f528c3e57.svg" /></div>
+</div>
+<p>The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning <span class="math notranslate nohighlight">\(V(s)\)</span> as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.</p>
+<p>If we visualise the Q-function, we can see that only the actions that occur early in episodes have any informed Q-values:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3a0792ea8148543f25f2c7afec6c90161090d9d0b9a851cf6a87d4cc2381147d.png" src="../_images/3a0792ea8148543f25f2c7afec6c90161090d9d0b9a851cf6a87d4cc2381147d.png" />
+</div>
+</div>
+<p>Therefore, the extracted policy is not yet very good:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">gridworld</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/71aacf59b7d15c137afc87ae56375b74c35659176894ff99f8cdc3c6960c808f.png" src="../_images/71aacf59b7d15c137afc87ae56375b74c35659176894ff99f8cdc3c6960c808f.png" />
+</div>
+</div>
+<p>After 0.03 seconds, the rewards are improving but are still quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations are often long sequences of actions and so they received a small discounted reward. Finally, there is actually  little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-convergence admonition">
+<p class="admonition-title">Video byte: Convergence</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2118" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:</p>
+<div id="container" markdown="1" style="text-align: center;">
+    <img id="mcts" src=https://mastering-rl.github.io/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="mcts" width=500></gif-player>
+</div>
+<p>
+<p>The final values after 1 second are much closer to what we expect.</p>
+<section id="function-approximation">
+<h3>Function approximation<a class="headerlink" href="#function-approximation" title="Link to this heading">#</a></h3>
+<p>As with standard Q-learning, we can use <a class="reference internal" href="function-approximation.html#sec-qfunction-approximation"><span class="std std-ref">Q-function approximation</span></a> to help generalise learning in MCTS.</p>
+<p>In particular, we can use an off-line method such as Q-learning or SARSA with Q-function approximation to learn a general Q-function. Often this will work quite well, however, the issue with Q-function approximation is sometimes the approximation does not work well for certain states during execution.</p>
+<p>To mitigate this, we can then use MCTS (online planning) to search from the actual state, but starting with the pre-trained Q-function. This has two benefits:</p>
+<ol class="arabic simple">
+<li><p>The MCTS supplements the pre-trained Q-function by running simulations from the actual initial state <span class="math notranslate nohighlight">\(s_0\)</span>, which may  reflect the real rewards more accurately than the pre-trained Q-function given that it is an approximation.</p></li>
+<li><p>The pre-trained Q-function improves the MCTS search by guiding the selection step. In effect, the early simulations are not as random because there is some signal to use. This helps to mitigate the <strong>cold start</strong> problem, which is when we have no information to exploit at the start of learning.</p></li>
+</ol>
+<p>Later in this chapter, we see an example of this with <a class="reference internal" href="#sec-mcts-alpha-zero"><span class="std std-ref">AlphaZero</span></a>.</p>
+</section>
+</section>
+<section id="why-does-it-work-so-well-sometimes">
+<span id="sec-mcts-demo"></span><h2>Why does it work so well (sometimes)?<a class="headerlink" href="#why-does-it-work-so-well-sometimes" title="Link to this heading">#</a></h2>
+<p>It addresses exploitation vs. exploration comprehensively.</p>
+<ul class="simple">
+<li><p>UCT is <strong>systematic</strong>:</p>
+<ul>
+<li><p>Policy evaluation is <strong>exhaustive</strong> up to a certain depth.</p></li>
+<li><p>Exploration aims to <strong>minimise regret</strong>.</p></li>
+</ul>
+</li>
+</ul>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mcts-demo admonition">
+<p class="admonition-title">Video byte: MCTS demo</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2389" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Below is a video of MCTS playing the game <em>Mario brothers</em>. The lines in front of Mario illustrate the exploration:</p>
+<p align="center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/HRiEUUC9TUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
+<p>Here is UCT doing  poorly playing a game of <em>Freeway</em>:</p>
+<p align="center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/YVbTbMO4rtM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
+<p>It fails here because the character does not receive a reward until it reaches the other side of the road, so UCT has no feedback to go on. This is the same problem that we see in GridWorld: random simulations spend a lot of time exploring for no reward. In this case, the length of a path to reach a reward is so long that it does not even get to the other side of the road. Heuristics are needed here.</p>
+<section id="value-iteration-vs-mcts">
+<h3>Value iteration vs. MCTS<a class="headerlink" href="#value-iteration-vs-mcts" title="Link to this heading">#</a></h3>
+<p>Often the set of states reachable from the initial state <span class="math notranslate nohighlight">\(s_0\)</span> using an optimal policy is much smaller than the set of total states. In this regards, value iteration is exhaustive: it calculates behaviour from states that will never be encountered if we know the initial state of the problem.</p>
+<p>MCTS (and other search methods) methods thus can be used by just taking samples starting at <span class="math notranslate nohighlight">\(s_0\)</span>. However, the result is not as general as using value/policy iteration: the resulting solution will work only from the known initial state <span class="math notranslate nohighlight">\(s_0\)</span> or any state reachable from <span class="math notranslate nohighlight">\(s_0\)</span> using actions defined in the model. Whereas value iteration  works from any state.</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p></p></th>
+<th class="head text-center"><p><strong>Value iteration</strong></p></th>
+<th class="head text-center"><p><strong>MCTS</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Cost</p></td>
+<td class="text-center"><p>Higher cost (exhaustive)</p></td>
+<td class="text-center"><p>Lower cost (does not solve for entire state space)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Coverage/ Robustness</p></td>
+<td class="text-center"><p>Higher (works from any state)</p></td>
+<td class="text-center"><p>Lower (works only from initial state or state reachable from initial state)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p></p></td>
+<td class="text-center"><p></p></td>
+<td class="text-center"><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>This is important: value iteration is then more expensive for many problems, however, for an agent operating in its environment, we only solve exhaustively once, and we can use the resulting policy many times no matter state we are in latter.</p>
+<p>For MCTS, we need to solve <strong>online</strong> each time we encounter a state we have not considered before. As we see, even for a simple problem like GridWorld, doing many rollouts in a one second interval does not lead to a good policy; but with some careful crafting of the algorithm (avoid duplicate states, use a heuristic for rollouts), this can be improved.</p>
+</section>
+</section>
+<section id="combining-mcts-and-td-learning-alpha-zero">
+<span id="sec-mcts-alpha-zero"></span><h2>Combining MCTS and TD learning: Alpha Zero<a class="headerlink" href="#combining-mcts-and-td-learning-alpha-zero" title="Link to this heading">#</a></h2>
+<p><strong>Alpha Zero</strong> (or more accurately its predecessor AlphaGo) made headlines when it beat Go world champion Lee Sodol in 2016. It uses a combination of MCTS and (deep) reinforcement learning to learn a policy.</p>
+<p>A simple overview:</p>
+<ol class="arabic simple">
+<li><p>AlphaZero uses a deep neural network to estimate the Q-function. More accurately, it gives an estimate of the probability of selecting action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span> (<span class="math notranslate nohighlight">\(P(a|s)\)</span>), and the value of the state (<span class="math notranslate nohighlight">\(V(s)\)</span>), which represents the probability of the player winning from <span class="math notranslate nohighlight">\(s\)</span>.</p></li>
+<li><p>It is trained via <strong>self-play</strong>*. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.</p></li>
+<li><p>At each move, AlphaZero:</p>
+<ol class="arabic simple">
+<li><p>Executes an MCTS search using UCB-like selection: <span class="math notranslate nohighlight">\(Q(s,a) + P(s,a)/(1+N(s,a))\)</span>,
+which returns the probabilities of playing each move.</p></li>
+<li><p>The neural network is used to guide the MCTS by influencing
+<span class="math notranslate nohighlight">\(Q(s,a)\)</span>.</p></li>
+<li><p>The final result of a simulated game is used as the reward for
+each simulation.</p></li>
+<li><p>After a set number of MCTS simulations, the best move is chosen
+for self-play.</p></li>
+<li><p>Repeat steps 1-4 for each move until the self-play game ends.</p></li>
+<li><p>Then, feedback the result of the self-play game to update the
+<span class="math notranslate nohighlight">\(Q\)</span> function for each move.</p></li>
+</ol>
+</li>
+</ol>
+<p>AlphaZero is best summarised using the following figure from the Alpha Zero Nature paper (2017):</p>
+<figure class="align-default" id="alphazero">
+<img alt="../_images/AlphaGoZero-Architecture.png" src="../_images/AlphaGoZero-Architecture.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 11 </span><span class="caption-text">The AlphaZero framework. <a class="reference external" href="https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf">Mastering the Game of Go without Human Knowledge</a>. D. Silver, et al. Nature volume 550, pages 354–359 (2017)</span><a class="headerlink" href="#alphazero" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-mcts admonition">
+<p class="admonition-title">Video byte: Summary of MCTS</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=2562" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p><strong>Monte Carlo Tree Search</strong> (MCTS) is an anytime search algorithm, especially good for stochastic domains, such as MDPs.</p>
+<ul>
+<li><p>It can be used for model-based or simulation-based problems.</p></li>
+<li><p>Smart selection strategies are <em>crucial</em> for good performance.</p></li>
+</ul>
+</li>
+<li><p><strong>UCT</strong> is the combination of MCTS and UCB1, and is a successful algorithm on many problems.</p></li>
+</ul>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Chapters 2 and 5 of <a class="reference external" href="http://incompleteideas.net/book/the-book-2nd.html">Reinforcement Learning: An Introduction, second edition</a>.</p></li>
+<li><p><a class="reference external" href="https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf">Mastering the Game of Go without Human Knowledge</a>. D. Silver, et al. Nature volume 550, pages 354–359 (2017)</p></li>
+<li><p><a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.297.3086&amp;amp;rep=rep1&amp;amp;type=pdf">A Survey of Monte Carlo Tree Search Methods</a>. Cameron Browne, Edward Powley, Daniel Whitehouse, Simon Lucas,  Peter I. Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis and Simon Colton. <em>IEEE Transactions on Computational Intelligence and AI in Games</em>, (4)1: 1-49, 2012</p></li>
+<li><p><a class="reference external" href="https://www.aaai.org/Papers/AIIDE/2008/AIIDE08-036.pdf">Monte-Carlo Tree Search: A New Framework for Game AI</a>.  Guillaume Chaslot, Sander Bakkes, Istvan Szita, and Pieter Spronck.  In <em>AIIDE</em>, 1-2, 2008.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="temporal-difference-learning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Temporal difference reinforcement learning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="policy-based.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Introduction to policy-based methods</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-planning-online-planning-for-mdps">Offline Planning &amp; Online Planning for MDPs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foundation-mdps-as-expectimax-trees">Foundation: MDPs as ExpectiMax Trees</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-tree-search-overview">Monte Carlo Tree Search – Overview</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-framework-monte-carlo-tree-search-mcts">The Framework: Monte Carlo Tree Search (MCTS)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selection">Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#expansion">Expansion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation">Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backpropagation">Backpropagation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#action-selection">Action selection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upper-confidence-trees-uct">Upper Confidence Trees (UCT)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function-approximation">Function approximation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-does-it-work-so-well-sometimes">Why does it work so well (sometimes)?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-iteration-vs-mcts">Value iteration vs. MCTS</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-mcts-and-td-learning-alpha-zero">Combining MCTS and TD learning: Alpha Zero</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

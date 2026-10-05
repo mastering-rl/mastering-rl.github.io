@@ -1,0 +1,946 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Normal form games &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'multi-agent/normal-form';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extensive form games" href="extensive-form.html" />
+    <link rel="prev" title="Modelling and abstraction for MDPs" href="../single-agent/modelling-and-abstraction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fmulti-agent/normal-form.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/multi-agent/normal-form.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Normal form games</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-normal-form-games-strategies">Solutions for normal form games: strategies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#best-response-and-nash-equilibria">Best response and Nash equilibria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-best-response-and-nash-equilibria">Calculating best response and Nash equilibria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-strategies">Mixed strategies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="normal-form-games">
+<h1>Normal form games<a class="headerlink" href="#normal-form-games" title="Link to this heading">#</a></h1>
+<p>In the following chapters, we will look at <strong>games</strong>. By  “games”, we do not only mean games like Chess or digital games – the term “game” is a more general term to describe a problem that involves <strong>multiple agents or players</strong>.</p>
+<p>The standard definition of an MDP is for a single agent, who controls all of the actions. In a multi-agent system, we face further challenges: the effects of actions and the rewards we receive are dependent also on the actions of the agents. In fact, the other agents can even be our adversaries, so they may be working to minimise our rewards.</p>
+<p>First, we look at <strong>normal form games</strong>, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or <strong>payoff</strong> that they receive is dependent on the moves of the other agents.</p>
+<p>Then, we look at <strong>extensive form games</strong>, which are sequential games, meaning that there are multiple actions played in sequence.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-normal-form-games admonition">
+<p class="admonition-title">Video byte: Introduction to normal form games</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=0s" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Identify situations in which normal form games are a suitable model of a problem.</p></li>
+<li><p>Manually calculate the best responses and Nash equilibria for two-player normal form games.</p></li>
+<li><p>Compare and contrast pure strategies and mixed strategies.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Normal form games capture many different applications in the field of multi-agent systems. We will just look at the foundation of these, focusing on both deterministic and stochastic strategies for playing the games. We will cover how to solve these analytically.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exercise-prisoner-s-dilemma admonition">
+<p class="admonition-title">Video byte: Exercise — Prisoner’s dilemma</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=97" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-exercise-prisoner-s-dilemma admonition">
+<p class="admonition-title">Exercise – Prisoner’s dilemma</p>
+<p>The best known example of a normal form game is known as the <em>Prisoner’s dilemma</em>, which is as follows.</p>
+<p>Consider the following (hopefully fictional) scenario. You and your partner in crime have been arrested for armed robbery. The police would like to avoid a lengthy trial because they have little evidence that you committed the crime, however, both of you were caught carrying illegal weapons, so the police can use this against you.</p>
+<p>You and your partner in crime are placed in separate cells, unable to communicate with each other. The police offer you each the following deal:</p>
+<ul class="simple">
+<li><p>If neither of you admit your guilt, you will be charged with carrying illegal weapons, and receive 1 year each in prison.</p></li>
+<li><ul>
+<li><p>If one of you admits both are guilty, while the other does not, the prisoner that admitted will get off free in exchange for the confession, while the other prisoner will receive 4 years in prison.</p></li>
+</ul>
+</li>
+<li><p>If both of you admit you are guilty, you will each receive 2 years in prison — the length is reduced from 4 years in exchange for your confession.</p></li>
+</ul>
+<p>What do you do: admit or deny?</p>
+</div>
+<p>This problem can be represented by the following two-dimensional matrix:</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<img alt="../_images/11e99aa28e3be6cabcb97e1c47d0c2ddca48308603c20b3bc16de35d3a31ef12.png" src="../_images/11e99aa28e3be6cabcb97e1c47d0c2ddca48308603c20b3bc16de35d3a31ef12.png" />
+</div>
+</div>
+<p><em>Prisoner A</em> and <em>Prisoner B</em> are the <strong>players</strong>, <em>admit</em> and <em>deny</em> are the <strong>actions</strong>, and the values in the cells are the <strong>utility</strong> or <strong>payoffs</strong> given to the player. For example, if both players choose to admit, both will receive two years in prison, so the utility is -2 for each player. The left number in each cell is Prisoner A’s utility and the right number in each cell is Prisoner B’s utility.</p>
+<p>So, what should each prisoner do? Let’s first list some assumptions about the game, which are general assumptions that we are going to hold throughout this chapter:</p>
+<ol class="arabic simple">
+<li><p>We assume that all agents are <strong>rational</strong>, which means that they aim to maximise their total utility.</p></li>
+<li><p>We assume that all agents are <strong>self-interested</strong>, which means that they do not care about the other agents’ utility.</p></li>
+<li><p>We assume that the game is a <strong>perfect information</strong> game, which means that rules of the game are <strong>common knowledge</strong> for all agents; that is, all agents know the rules, including the actions and utilities for all other agents, and all agents know that all agents know the rules, and all agents know that all agents know that all agents know the rules, and all agents know that…. <em>ad infinitum</em>. In short, there is no way to “trick” another agent by taking advantage of something that they don’t know.</p></li>
+</ol>
+<p>Given these assumptions, both agents should choose to admit, with the result being that both receive two years in prison. This may seem surprising: If both agents choose to deny, they would both receive just one year in prison. Why do these choose to spend more time in prison?</p>
+<p>The answer all comes down to the self interest: they are not trying to minimise the amount of time that they both spend in prison. Instead, each of them is trying to minimise the amount of time they spend in prison themselves.</p>
+<p>Let’s look at this from the perspective of one agent. Your initial intuition may be to think like this: “if I choose to admit, then my opponent could either admit or deny. If they admit, then my utility is -2”, etc. However, perhaps a better way to think is to instead reverse this: “if my opponent admits, what should I do?”</p>
+<p>If we reason this way, it is clear to see why both players admit. The game is symmetric, so we only need to reason about one player:</p>
+<ol class="arabic simple">
+<li><p>If my opponent admits, then I should admit, which has utility -2, rather than deny, which has utility -4.</p></li>
+<li><p>If my opponent denies, then I should admit, which has utility 0, rather than deny, which has utility -1.</p></li>
+</ol>
+<p>So, whatever my opponent does, my best action is to admit. Similarly, my opponent can reason in the same way, and their best action is to admit as well. Because both of us reason like this an both of us are self interested, we both end up spending two years in prison instead of one.  Interestingly, we cannot use this to out-reason our opponent. If we “know” they will admit, switching to deny is not a good response: we will end up with four years in prison instead of two! This is why it is known as the Prisoner’s <em>dilemma</em>: both prisoners know there is a better outcome for them both, but neither of them has an incentive to deny.</p>
+<p>Now that we have seen an example, let’s look at a more formal definition of normal form game.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-definition-normal-form-game admonition">
+<p class="admonition-title">Video byte: Definition – Normal form game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=547" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-normal-form-game admonition">
+<p class="admonition-title">Definition – Normal form game</p>
+<p>A <strong>normal form game</strong> is a tuple <span class="math notranslate nohighlight">\(G = (N, A, u)\)</span></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N\)</span> is a set of <span class="math notranslate nohighlight">\(n\)</span> number of players</p></li>
+<li><p><span class="math notranslate nohighlight">\(A = A_1 \times \ldots \times A_n\)</span> is an <strong>action profile</strong>, where <span class="math notranslate nohighlight">\(A_i\)</span> is the set of actions for player <span class="math notranslate nohighlight">\(i\)</span>. Thus, an action profile <span class="math notranslate nohighlight">\(a = (a_1,\ldots,a_n)\)</span> describes the simultaneous moves by all players.</p></li>
+<li><p><span class="math notranslate nohighlight">\(u : A \rightarrow \mathbb{R}^N\)</span> is a reward function that returns an <span class="math notranslate nohighlight">\(N\)</span>-tuple specifying the payoff each player receives in state <span class="math notranslate nohighlight">\(S\)</span>. This is called the <strong>utility</strong> for an action.</p></li>
+</ul>
+</div>
+<p>Normal game games can be visualised as matrices, as shown above for the prisoner’s dilemma, with each agent representing one dimension of the matrix, each row represents an action for a player, and each cell represents the utility received when the players each take the action.</p>
+</section>
+<section id="solutions-for-normal-form-games-strategies">
+<h2>Solutions for normal form games: strategies<a class="headerlink" href="#solutions-for-normal-form-games-strategies" title="Link to this heading">#</a></h2>
+<p>In normal form games, the solution for a player in the game is known as a <strong>strategy</strong>. There are several types of strategy.</p>
+<div class="admonition-definition-pure-strategy admonition">
+<p class="admonition-title">Definition – Pure strategy</p>
+<p>A <strong>pure strategy</strong> for an agent is when the agent selects a single action and plays it. If the agent were to play the game multiple times, they would choose the same action every time.</p>
+</div>
+<div class="admonition-definition-mixed-strategy admonition">
+<p class="admonition-title">Definition – Mixed strategy</p>
+<p>A <strong>mixed strategy</strong> is when an agent selects the action to play based on some probability distribution. That is, we choose action <span class="math notranslate nohighlight">\(a\)</span> with probability 0.8 and action <span class="math notranslate nohighlight">\(b\)</span> with probability 0.2. If the agent were to play the game an infinite number of times, it would select <span class="math notranslate nohighlight">\(a\)</span> 80% of the time and <span class="math notranslate nohighlight">\(b\)</span> 20% of the time.</p>
+</div>
+<p>Note that a pure strategy is a special case of a mixed strategy where one of the actions has a probability of 1.</p>
+<p>We call the set of strategies for an agent a <strong>strategy profile</strong>. The strategy profile for agent <span class="math notranslate nohighlight">\(i\)</span> is denoted <span class="math notranslate nohighlight">\(S_i\)</span>. Note that <span class="math notranslate nohighlight">\(S_i \neq A_i\)</span> because <span class="math notranslate nohighlight">\(S_i\)</span> contains mixed strategies. The set of mixed-strategy profiles for all agents is simply <span class="math notranslate nohighlight">\(S = S_1 \times \ldots S_n\)</span>.</p>
+<p>We use the notation <span class="math notranslate nohighlight">\(S_{-i}\)</span> to denote the set of mixed-strategy profiles for all agents except for agent <span class="math notranslate nohighlight">\(i\)</span>, and <span class="math notranslate nohighlight">\(s_{-i} \in S_{-i}\)</span> to denote an element of this.</p>
+<p>It is not immediately obvious why an agent would want to use randomisation when select an action, but we will see examples where this is important.</p>
+<div class="admonition-definition-dominant-strategy admonition">
+<p class="admonition-title">Definition – Dominant strategy</p>
+<p>Strategy <span class="math notranslate nohighlight">\(s_i\)</span> for player <span class="math notranslate nohighlight">\(i\)</span>  <strong>weakly dominates</strong> strategy <span class="math notranslate nohighlight">\(s'_i\)</span> if the utility received by the agent for playing strategy <span class="math notranslate nohighlight">\(s_i\)</span>  is greater than or equal to  the utility received by that agent for playing <span class="math notranslate nohighlight">\(s'_i\)</span>. Formally, <span class="math notranslate nohighlight">\(s_i\)</span> weakly dominates <span class="math notranslate nohighlight">\(s'_i\)</span> if and only if:</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{for all}\ s_{-i} \in S_{-i}, \textrm{we have that } u_i(s_i, s_{-i}) \geq u_i(s'_i, s_{-i})
+\]</div>
+<p>Strategy <span class="math notranslate nohighlight">\(s_i\)</span> <strong>strongly dominates</strong> strategy <span class="math notranslate nohighlight">\(s'_i\)</span> if its utility is strictly greater. Formally:</p>
+<div class="math notranslate nohighlight">
+\[
+\textrm{for all}\ s_{-i} \in S_{-i}, \textrm{we have that } u_i(s_i, s_{-i}) &gt; u_i(s'_i, s_{-i})
+\]</div>
+<p>A strategy is a <strong>weakly (resp. strictly)  dominant strategy</strong>  if it weakly (resp. strictly) dominates all other strategies.</p>
+</div>
+<p>A dominant strategy is <strong>strategy-proof</strong>: we can even tell our opponents beforehand that this is the strategy that we are going to choose and this would not give them any advantage: it would still be a dominant strategy.</p>
+<p>In the Prisoner’s dilemma game, the strategy to admit is strictly dominant: is the best action to take for any of the strategies that an opponent can play.</p>
+</section>
+<section id="best-response-and-nash-equilibria">
+<h2>Best response and Nash equilibria<a class="headerlink" href="#best-response-and-nash-equilibria" title="Link to this heading">#</a></h2>
+<p>First, we look at how to solve games from the perspective of one of the agents, known as the agent’s <strong>best response</strong>.</p>
+<p>Then, we look at solutions at the concept of <strong>equilibria</strong>, which captures solutions to the entire game.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-best-response-and-nash-equilibria admonition">
+<p class="admonition-title">Video byte: Best response and Nash equilibria</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=741" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>Informally, the concept of a best response refers to the best strategy that an agent  could select <em>if</em> it know how all of the other agents in the game were going to play.</p>
+<div class="admonition-definition-best-response admonition">
+<p class="admonition-title">Definition – Best response</p>
+<p>The <strong>best response</strong> for an agent <span class="math notranslate nohighlight">\(i\)</span> if its opponents play strategy profile <span class="math notranslate nohighlight">\(s_{-i} \in S_{-i}\)</span> is a mixed  strategy <span class="math notranslate nohighlight">\(s^*_i \in S_i\)</span> such that <span class="math notranslate nohighlight">\(u_(s^*_i, s_{-i}) \geq u_(s'_i, s_{-i})\)</span> for all strategies <span class="math notranslate nohighlight">\(s'_i \in S_i\)</span></p>
+</div>
+<p>Note that for many problems, there can be multiple best responses.</p>
+<p>Using this, we can define the Nash equilibrium of a game, which is named after the famous mathematician John Nash, who proved in his PhD thesis that all finite normal form games have a Nash equilibrium. Informally, as Nash equilibrium is a <strong>stable</strong> strategy profile for all agents in <span class="math notranslate nohighlight">\(N\)</span> such that no agent has an incentive to change strategy if all other agents kept their strategy the same.</p>
+<div class="admonition-definition-nash-equilibrium admonition">
+<p class="admonition-title">Definition – Nash equilibrium</p>
+<p>A strategy profile <span class="math notranslate nohighlight">\(s = (s_1,\ldots, s_n)\)</span> is a <strong>Nash equilibrium</strong> if for all agents <span class="math notranslate nohighlight">\(i\)</span> and for all strategies <span class="math notranslate nohighlight">\(s_i\)</span> is a best response to the strategy <span class="math notranslate nohighlight">\(s_{-i}\)</span>.</p>
+</div>
+<p>If the strategies in a Nash equilibrium are all pure strategies, then we call this a <strong>pure-strategy Nash equilibrium</strong>. Otherwise, if is a <strong>mixed-strategy Nash equilibrium</strong>.</p>
+<p>This is called an “equilibrium” because it is <strong>stable</strong>. Effectively, what it means is that each player in the game has no incentive to deviate from this. In fact, if player <span class="math notranslate nohighlight">\(A\)</span> tells player <span class="math notranslate nohighlight">\(B\)</span> what strategy they are going to play, player <span class="math notranslate nohighlight">\(B\)</span> can’t even do anything with that information – the strategy of the equilibrium is still the best strategy. Player <span class="math notranslate nohighlight">\(A\)</span> is happy with their strategy given player <span class="math notranslate nohighlight">\(B\)</span>’s strategy, and player <span class="math notranslate nohighlight">\(B\)</span> is happy with their strategy given player <span class="math notranslate nohighlight">\(A\)</span>’s strategy.</p>
+</section>
+<section id="calculating-best-response-and-nash-equilibria">
+<h2>Calculating best response and Nash equilibria<a class="headerlink" href="#calculating-best-response-and-nash-equilibria" title="Link to this heading">#</a></h2>
+<p>The set of best responses for a normal form game can be calculated by searching through all strategies to find those with the highest payoff.</p>
+<div class="proof algorithm admonition" id="algorithm:best-response">
+<p class="admonition-title"><span class="caption-number">Algorithm 16 </span> (Best response)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\ \text{Normal form game}\ G =  (N, A, u)\\
+\alginput:\ \text{agent}\ i\\
+\alginput:\ \text{and strategy profile}\ s_{-i}\ \text{for agents other than}\ i\\
+\algoutput:\ \text{Set of best responses}\\[2mm]
+best\_response = \emptyset\\
+best\_response\_value = -\infty\\
+\algforeach\ s_i \in S_i\\
+\quad\quad \algif\ u(s_i, s_{-i}) &gt; best\_response\_value\ \algthen\\
+\quad\quad\quad\quad best\_response = \{s_i\}\\
+\quad\quad \algelsif\ u(s_i, s_{-i}) = best\_response\_value\ \algthen\\
+\quad\quad\quad\quad best\_response = best\_response \cup \{s_i\}\\
+\algreturn\ best\_response
+\end{array}
+\)</span></p>
+</section>
+</div><p>This has complexity <span class="math notranslate nohighlight">\(O(|S_i|)\)</span>: we check each strategy once.</p>
+<p>As an example, consider the Prisoner’s dilemma. Clearly, the best response for both agents is the unique strategy to admit.</p>
+<p>Finding Nash equilibria involves searching through all strategy profiles and finding those in which all agents strategies are a best response in that profile. Here is an algorithm for finding the Nash equilibria for a two-player normal form game:</p>
+<div class="proof algorithm admonition" id="algorithm:nash-equilibria">
+<p class="admonition-title"><span class="caption-number">Algorithm 17 </span> (Nash equilibria)</p>
+<section class="algorithm-content" id="proof-content">
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\alginput:\ \text{Normal form game}\ G =  (N, A, u)\\
+\algoutput:\ \text{Set of Nash equilibria}\\[2mm]
+nash\_equilibria = \emptyset\\
+\algforeach\ s_1 \in A_1\\
+\quad\quad \algforeach\ s_2 \in A_2\\
+\quad\quad\quad\quad \algif \ s_i \in BestResponse(i, s_j)\ \algand\ s_j \in BestResponse(j, s_i)\ \algthen\\
+\quad\quad\quad\quad\quad\quad nash\_equilibria = nash\_equilibria \cup \{(s_i, s_j)\}\\
+\algreturn\ nash\_equilibria
+\end{array}
+\)</span></p>
+</section>
+</div><p>Informally, given a normal form game, we can look at each cell <span class="math notranslate nohighlight">\((s_1, s_2)\)</span> of the game, and search along the rows and columns to determine whether any player can do better by changing their strategy (while all other agents’ strategies state the same).</p>
+<p>To search for pure strategy equilibria, we just set <span class="math notranslate nohighlight">\(S_i \leftarrow A_i\)</span>; that is, we search only over pure strategies.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exercise-the-advertising-game admonition">
+<p class="admonition-title">Video byte: Exercise – The advertising game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1180" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-nash-equilibria-for-prisoner-s-dilemma admonition">
+<p class="admonition-title">Example – Nash equilibria for Prisoner’s dilemma</p>
+<p>Prisoner’s dilemma has a unique pure-strategy Nash equilibrium: <span class="math notranslate nohighlight">\((admit, admit)\)</span>. In fact, for any game in which all agents have a dominant strategy, that will form a unique Nash equilibrium.</p>
+<p>We can verify this by looking at each cell and reasoning as follows:</p>
+<ul class="simple">
+<li><p>At <span class="math notranslate nohighlight">\((admit, admit)\)</span> the utility is <span class="math notranslate nohighlight">\((-2, -2)\)</span>. If either agent switches to <span class="math notranslate nohighlight">\(deny\)</span>, then that agent will receive <span class="math notranslate nohighlight">\(-4\)</span>, so they have no reason to deviate from <span class="math notranslate nohighlight">\(admit\)</span>. Therefore, this is a Nash equilibrium.</p></li>
+<li><p>At <span class="math notranslate nohighlight">\((deny, deny)\)</span> the utility is <span class="math notranslate nohighlight">\((-1, -1)\)</span>. If either agent switches to <span class="math notranslate nohighlight">\(admit\)</span>, their utility will increase to <span class="math notranslate nohighlight">\(0\)</span>, so they have an incentive to deviate. Therefore, this is NOT a Nash equilibrium.</p></li>
+<li><p>For <span class="math notranslate nohighlight">\((admin, deny)\)</span> or <span class="math notranslate nohighlight">\((deny,admit)\)</span>, the agent that denies has an incentive to admit to increase its utility from <span class="math notranslate nohighlight">\(-1\)</span> to <span class="math notranslate nohighlight">\(0\)</span>, therefore, neither is a Nash equilibrium.</p></li>
+</ul>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exercise-split-or-steal admonition">
+<p class="admonition-title">Video byte: Exercise – Split or steal</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1455" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-nash-equilibria-for-split-or-steal admonition">
+<p class="admonition-title">Example – Nash equilibria for <em>Split or steal</em></p>
+<p><em>Split or steal</em> is a game in which two agents need to decide whether to split a pot of prize money, or try to steal it from the other. If they share, both receive half of the prize money. If one steals and one shares, the player who steals receives all of the prize and the other agent receives nothing. If they both steal, both receive nothing.  The game matrix for this can be described as follows:</p>
+<img alt="../_images/629d3dd1f53a19cece455c7d2d48ec0130b8d4a20a881c06aee26c246dc5f671.png" src="../_images/629d3dd1f53a19cece455c7d2d48ec0130b8d4a20a881c06aee26c246dc5f671.png" />
+<p>What are the Nash equilibria. There are in fact three Nash equilibria for this game, highlighted using the square brackets above! Let’s reason about them:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((steal, steal)\)</span> is a Nash equilibrium for both agents, because if either agent deviates by playing <span class="math notranslate nohighlight">\(split\)</span>, their utility remains at  0.</p></li>
+<li><p><span class="math notranslate nohighlight">\((steal, split)\)</span> and <span class="math notranslate nohighlight">\((split, steal)\)</span> are both equilibria because if either agent deviates from <span class="math notranslate nohighlight">\(steal\)</span> their utility decreases from 2 to 1, while if either deviates from <span class="math notranslate nohighlight">\(split\)</span> their utility remains at 0</p></li>
+<li><p><span class="math notranslate nohighlight">\((split,split)\)</span> is not a Nash equilibrium because both agents have incentive to deviate to <span class="math notranslate nohighlight">\(steal\)</span>, which would increase their utility from 1 to 2.</p></li>
+</ul>
+</div>
+</section>
+<section id="mixed-strategies">
+<h2>Mixed strategies<a class="headerlink" href="#mixed-strategies" title="Link to this heading">#</a></h2>
+<p>Recall from earlier in this chapter where we defined <strong>mixed strategies</strong>, which are strategies that use randomisation. To illustrate why these are necessary, consider the following simple game.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-matching-pennies-game admonition">
+<p class="admonition-title">Video byte: Example – Matching pennies game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1622" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-matching-pennies admonition">
+<p class="admonition-title">Example – Matching Pennies</p>
+<p>In the <em>Matching Pennies</em> game, two players each have a penny, and simultaneously they need to show either a <span class="math notranslate nohighlight">\(head\)</span> or a <span class="math notranslate nohighlight">\(tail\)</span> of their penny to their opponent. The <span class="math notranslate nohighlight">\(Odd\)</span> player will win if there is just one head, and the <span class="math notranslate nohighlight">\(Even\)</span> player will win if there are two heads. We can model this as follows:</p>
+<img alt="../_images/db192f94dc572cc4a36b099555bbaad76d17e120f51f1ecad1bb50e46a4449ea.png" src="../_images/db192f94dc572cc4a36b099555bbaad76d17e120f51f1ecad1bb50e46a4449ea.png" />
+<p>It is clear that neither agent has a dominant strategy and there are no pure-strategy equilibria: in every call, there is an incentive for the agent receiving -1 to deviate from their strategy.</p>
+<p>So, what strategy should we play? If we were to play this game a number of times, clearly picking either <span class="math notranslate nohighlight">\(heads\)</span> or <span class="math notranslate nohighlight">\(tails\)</span> every time would be a bad strategy: our opponent would learn this and would start picking their strategy to beat us. Instead, we need to <strong>randomise</strong> by choosing <span class="math notranslate nohighlight">\(heads\)</span> sometimes and <span class="math notranslate nohighlight">\(tails\)</span> sometimes. Intuitively, we would choose each with probability 0.5; but can we calculate this analytically?</p>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-expected-utility admonition">
+<p class="admonition-title">Video byte: Expected utility</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1789" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>To do this, we need to define the concepts of <strong>expected utility</strong> and <strong>indifference</strong>.</p>
+<div class="admonition-definition-expected-utility-of-a-pure-strategy admonition">
+<p class="admonition-title">Definition – Expected utility of a pure strategy</p>
+<p><strong>Expected utility</strong> is the weighted average  received by an playing a particular pure strategy. For an action <span class="math notranslate nohighlight">\(a_i \in A_i\)</span>, the expected utility  of that action is:</p>
+<div class="math notranslate nohighlight">
+\[
+U_i(a_i) = p_1 \times u_i(a_i,a^1_{-i}) + \ldots + p_m \times u_i(a_i, a^m_{-i})
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(a^1_{-i}, \ldots, a^m_{-i}\)</span> are the action profiles for all agents other than <span class="math notranslate nohighlight">\(i\)</span>, and <span class="math notranslate nohighlight">\(p_1, \ldots, p_m\)</span> are the probabilities of our opponents playing those action profiles.</p>
+</div>
+<p>In theory, we can maximise our overall  utility by picking the pure strategy with the highest expected utility. However, in a game, we do not know the probabilities that our opponents will play those moves! This is where indifference comes in.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-indifference admonition">
+<p class="admonition-title">Video byte: Indifference</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1871" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-indifference admonition">
+<p class="admonition-title">Definition – Indifference</p>
+<p>An agent <span class="math notranslate nohighlight">\(i\)</span> is <strong>indifferent</strong> between a set of pure strategies <span class="math notranslate nohighlight">\(I \subseteq A_i\)</span> if for all <span class="math notranslate nohighlight">\(a_i, a_j \in I\)</span>, we have that <span class="math notranslate nohighlight">\(U_i(a_i) = U_i(a_j)\)</span>.</p>
+</div>
+<p>Informally, this states that an agent is indifferent between a set of pure strategies if the expected return of all strategies is the same. The agent is therefore indifferent between these pure strategies because it does not matter which action they choose.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-mixed-strategies admonition">
+<p class="admonition-title">Video byte: Mixed strategies</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=1941" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-mixed-strategy-nash-equilibria admonition">
+<p class="admonition-title">Definition – Mixed-strategy Nash equilibria</p>
+<p>A <strong>mixed-strategy Nash equilibria</strong> is a mixed-strategy profile <span class="math notranslate nohighlight">\(S\)</span> such that the strategy for each agent <span class="math notranslate nohighlight">\(i \in N\)</span> is a tuple of probabilities <span class="math notranslate nohighlight">\(P_i = (p_1, \ldots, p_m)\)</span>, one for each pure strategy, such that <span class="math notranslate nohighlight">\(p_1 + \ldots + p_m = 1\)</span> and that all opponents <span class="math notranslate nohighlight">\(j\)</span> are indifferent to their pure strategies <span class="math notranslate nohighlight">\(A_j\)</span>..</p>
+</div>
+<p>Informally, this states that each agent should choose a mixed strategy such that it makes their opponents indifferent to their own actions. Intuitively, this does not really make much sense: each agents’ strategy is to make its opponents indifferent to their own strategy. However, if we analyse it from the perspective of the opponent, it becomes clear: if we select the probabilities for a mixed strategy such that our opponent is <em>not</em> indifferent, then this means there is at least one strategy that has a higher expected utility than all others. In that case, the opponent would play that strategy.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-mixed-strategies-for-matching-pennies admonition">
+<p class="admonition-title">Video byte: Example – Mixed strategies for matching pennies</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2141" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-mixed-strategies-for-matching-pennies admonition">
+<p class="admonition-title">Example – Mixed strategies for matching pennies</p>
+<p>For the matching pennies game, as agent <span class="math notranslate nohighlight">\(Odd\)</span>, we want to set the probabilities of <span class="math notranslate nohighlight">\(heads\)</span> and <span class="math notranslate nohighlight">\(tails\)</span> such that <span class="math notranslate nohighlight">\(U_{Even}(heads) = U_{Even}(tails)\)</span>.</p>
+<p>Let <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(1-Y\)</span> be the probabilities that agent <span class="math notranslate nohighlight">\(Odd\)</span> plays <span class="math notranslate nohighlight">\(heads\)</span> and <span class="math notranslate nohighlight">\(tails\)</span> respectively. We need to solve to <span class="math notranslate nohighlight">\(Y\)</span> to make <span class="math notranslate nohighlight">\(Even\)</span> indifferent to playing <span class="math notranslate nohighlight">\(heads\)</span> or <span class="math notranslate nohighlight">\(tails\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{rcl}
+ U_{Even}(heads) &amp; = &amp; U_{Even}(tails)\\
+ Y \times 1 + -1(1-Y) &amp; = &amp; Y \times -1 + 1(1-Y)\\
+ 2Y - 1 &amp; = &amp; 1 - 2Y\\
+ 4Y &amp; = &amp; 2\\
+ Y &amp; = &amp; \frac{1}{2}
+ \end{array}
+\end{split}\]</div>
+<p>Therefore, <span class="math notranslate nohighlight">\(Odd\)</span> should play <span class="math notranslate nohighlight">\(heads\)</span> and <span class="math notranslate nohighlight">\(tails\)</span> with probability <span class="math notranslate nohighlight">\(\frac{1}{2}\)</span> each. If we solve for player <span class="math notranslate nohighlight">\(Even\)</span>, we would find the same answer.</p>
+</div>
+<p>In this example, the probabilities of the game are reasonably clear without having to solve. Now, let’s look at a more complicated game, which is an example of a <strong>security game</strong>.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-exercise-security-game admonition">
+<p class="admonition-title">Video byte: Exercise – Security game</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2454" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-application-security-games admonition">
+<p class="admonition-title">Video byte: Application – Security games</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2752" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-example-mixed-strategies-for-the-security-game admonition">
+<p class="admonition-title">Example – Mixed strategies for the security game</p>
+<p>A security game is a model of how to place resources to improve safety and security of key assets. In this example, we look at the issue of where to place resources each hour to defend from an attack at an airport that has two terminals. It is infeasible to always patrol all terminals, but with a randomised strategy, we can make it difficult for an adversary to know which terminal to target.</p>
+<p>The difficulty is that the two terminals have different “values” for both the defender and the adversary.  Both value terminal 1 more highly (e.g. it is a  terminal that has more people on a typical day), but both also value the terminals different to each other. This can be modelled with the following normal form game:</p>
+<img alt="../_images/5a7ea689f5789708c7986a9c290245e785e0b119542f5f8e94b7478d164a7ffd.png" src="../_images/5a7ea689f5789708c7986a9c290245e785e0b119542f5f8e94b7478d164a7ffd.png" />
+<p>It is clear that having a uniform strategy is not the best strategy, but we can use indifference to determine what is.</p>
+<p>If <span class="math notranslate nohighlight">\(Y\)</span> is the probability that the adversary will attack Terminal 1, then the expected utility of the defender’s two pure strategies are:</p>
+<p><span class="math notranslate nohighlight">\(\quad\quad U_D(T1) = 5Y + -1(1 - Y) = 6Y - 1\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad\quad U_D(T2) = -5Y + 2(1 - Y) = 2 - 7Y\)</span></p>
+<p>If the adversary wants to make the defender indifferent between its two pure strategies, then the utility for the defender’s two pure strategies must be the same.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ \begin{array}{rcl}
+  U_D(T1) &amp; = &amp; U_D(T2)\\
+  6Y - 1  &amp; = &amp; 2 - 7Y\\
+  3       &amp; = &amp; 13Y\\
+  Y       &amp; = &amp; \frac{3}{13}
+ \end{array}
+\end{split}\]</div>
+<p>So, the adversary should target Terminal 1 with probability <span class="math notranslate nohighlight">\(\frac{3}{13}\)</span> and Terminal 2 with probability <span class="math notranslate nohighlight">\(\frac{10}{13}\)</span>.</p>
+<p>If <span class="math notranslate nohighlight">\(X\)</span> is the probability that the defender will defend Terminal 1, then the expected utility of the adversary’s two pure strategies are:</p>
+<p><span class="math notranslate nohighlight">\(\quad\quad U_A(T1) = -3X + 5(1-X) = 5 - 8X\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad\quad U_A(T2) = 1X + -1(1-X) = 2X - 1\)</span></p>
+<p>If the defender wants to make the adversary indifferent between its two pure strategies, then the utility for the adversary’s two pure strategies must be the same:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+ \begin{array}{rcl}
+  U_A(T1) &amp; = &amp; U_A(T2)\\
+  5 - 8X  &amp; = &amp; 2X - 1\\
+       6  &amp; = &amp; 10X\\
+       X  &amp; = &amp; \frac{6}{10}
+ \end{array}
+\end{split}\]</div>
+<p>So, the defender should choose to defend Terminal 1 with the probability <span class="math notranslate nohighlight">\(\frac{3}{5}\)</span> and Terminal 2 with <span class="math notranslate nohighlight">\(\frac{2}{5}\)</span>.</p>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary-of-normal-form-games admonition">
+<p class="admonition-title">Video byte: Summary of normal form games</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/aUDPCA4Veis?start=2988" title="Normal form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p><strong>Normal form games</strong> model non-sequential games where agents take actions simultaneously.</p></li>
+<li><p><strong>Pure strategies</strong> and <strong>mixed strategies</strong> can be used by agents. We analyse which strategies are good and also how these relate to Nash equilibria.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./multi-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../single-agent/modelling-and-abstraction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Modelling and abstraction for MDPs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="extensive-form.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Extensive form games</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solutions-for-normal-form-games-strategies">Solutions for normal form games: strategies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#best-response-and-nash-equilibria">Best response and Nash equilibria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-best-response-and-nash-equilibria">Calculating best response and Nash equilibria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-strategies">Mixed strategies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

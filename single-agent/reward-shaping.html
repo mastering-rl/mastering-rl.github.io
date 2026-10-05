@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Reward shaping &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/reward-shaping';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="n-step reinforcement learning" href="n-step.html" />
+    <link rel="prev" title="Q-function approximation" href="function-approximation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../appendix/intro-to-probability-theory.html">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/reward-shaping.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/single-agent/reward-shaping.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Reward shaping</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Reward shaping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shaped-reward">Shaped Reward</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#potential-based-reward-shaping">Potential-based Reward Shaping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-potential-reward-shaping-for-gridworld">Example – Potential Reward Shaping for GridWorld</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-a-bad-potential-function-for-gridworld">Example – A Bad Potential Function  for GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-value-initialisation">Q-value initialisation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-q-value-initialisation-in-gridworld">Example – Q-value Initialisation in GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#related-reading">Related Reading</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="reward-shaping">
+<span id="sec-single-agent-reward-shaping"></span><h1>Reward shaping<a class="headerlink" href="#reward-shaping" title="Link to this heading">#</a></h1>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-introduction-to-reward-shaping admonition">
+<p class="admonition-title">Video byte: Introduction to reward shaping</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=0" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-learning-outcomes admonition">
+<p class="admonition-title">Learning outcomes</p>
+<p>The learning outcomes of this chapter are:</p>
+<ol class="arabic simple">
+<li><p>Explain how reward shaping can be used to help model-free
+reinforcement learning methods to converge.</p></li>
+<li><p>Manually apply reward shaping for a given potential function to
+solve small-scale MDP problems.</p></li>
+<li><p>Design and implement potential functions to solve medium-scale MDP
+problems automatically.</p></li>
+<li><p>Compare and contrast reward shaping with Q-value initialisation.</p></li>
+</ol>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes <strong>sparse</strong>. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a <a class="reference internal" href="mcts.html#sec-mcts-demo"><span class="std std-ref">UCT algorithm playing Freeway</span></a>.</p>
+<p>In this section, we look at two simple approaches that can improve temporal difference methods:</p>
+<ol class="arabic simple">
+<li><p><strong>Reward shaping</strong>: If rewards are sparse, we can modify/augment our reward function to reward behaviour that we think moves us closer to the solution.</p></li>
+<li><p><strong>Q-value Initialisation</strong>:  We can “guess” good Q-values at the start and initialise <span class="math notranslate nohighlight">\(Q(s,a)\)</span> to be this at the start, which will guide our learning algorithm.</p></li>
+</ol>
+</section>
+<section id="id1">
+<h2>Reward shaping<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-rewarding-shaping-the-problem admonition">
+<p class="admonition-title">Video byte: Rewarding shaping — The problem</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-definition-reward-sharping admonition">
+<p class="admonition-title">Definition – Reward sharping</p>
+<p><strong>Reward shaping</strong> is the use of small intermediate ‘fake’ rewards given to the learning agent that help it converge more quickly.</p>
+</div>
+<p>In many applications, you will have some idea of what a good solution should look like. For example, in our simple navigation task, it is clear that moving towards the reward of +1 and away from the reward of -1 are likely to be good solutions.</p>
+<p>Can we then speed up learning and/or improve our final solution by nudging our
+reinforcement learner towards this behaviour?</p>
+<p>The answer is: Yes! We can modify our reinforcement learning algorithm
+slightly to give the algorithm some information to help, while also guaranteeing optimality.</p>
+<p>This information is known as <strong>domain knowledge</strong> — that is, stuff about the domain
+that the human modeller knows about while constructing the model to be
+solved.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-reward-shaping-intuition admonition">
+<p class="admonition-title">Video byte: Reward shaping intuition</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=180" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<div class="admonition-exercise-freeway-what-would-be-a-good-heuristic-for-the-freeway-game-to-learn-how-to-get-the-chicken-across-the-freeway admonition">
+<p class="admonition-title">Exercise: Freeway What would be a good heuristic for the Freeway game to learn how to get the chicken across the freeway?</p>
+<p><img alt="image" src="../_images/freeway_screenshot.png" /></p>
+</div>
+<div class="admonition-exercise-gridworld-what-would-be-a-good-heuristic-for-gridworld admonition">
+<p class="admonition-title">Exercise: GridWorld What would be a good heuristic for GridWorld?</p>
+<img alt="../_images/9322df0c1c9c3378ee27b457ed43bad878f17fd29ae92fd027efe05f7c835593.png" src="../_images/9322df0c1c9c3378ee27b457ed43bad878f17fd29ae92fd027efe05f7c835593.png" />
+</div>
+<section id="shaped-reward">
+<h3>Shaped Reward<a class="headerlink" href="#shaped-reward" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-shaped-reward-updates admonition">
+<p class="admonition-title">Video byte: Shaped reward updates</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=253" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>In TD learning methods, we update a Q-function when a reward is received. E.g, for 1-step Q-learning:</p>
+<div class="math notranslate nohighlight">
+\[Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]\]</div>
+<p>The approach to reward shaping is not to modify the reward function or the received reward <span class="math notranslate nohighlight">\(r\)</span>, but to just give some additional reward for some actions:</p>
+<div class="math notranslate nohighlight">
+\[Q(s,a) \leftarrow Q(s,a) + \alpha [r + \underbrace{F(s,s')}_{\text{additional reward}} + \gamma \max_{a'} Q(s',a') - Q(s,a)]\]</div>
+<p>The purpose of the function is to give an additional reward <span class="math notranslate nohighlight">\(F(s,s')\)</span> when any action transitions from state <span class="math notranslate nohighlight">\(s\)</span> to state <span class="math notranslate nohighlight">\(s'\)</span>. The function <span class="math notranslate nohighlight">\(F : S \times S \to \mathbb{R}\)</span> provides <strong>heuristic domain knowledge</strong> to the problem that is typically manually programmed.</p>
+<p>We say that <span class="math notranslate nohighlight">\(r + F(s,s')\)</span> is the <strong>shaped reward</strong> for an action.</p>
+<p>Further, we say that <span class="math notranslate nohighlight">\(G^{\Phi} = \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))\)</span> is the
+shaped reward for the entire episode.</p>
+<p>If we define <span class="math notranslate nohighlight">\(F(s,s') &gt; 0\)</span> for states <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(s'\)</span>, then this provides a small positive reward for transitioning from <span class="math notranslate nohighlight">\(s\)</span> to <span class="math notranslate nohighlight">\(s'\)</span>, thus encouraging actions that transition from <span class="math notranslate nohighlight">\(s\)</span> to <span class="math notranslate nohighlight">\(s'\)</span> in future exploitation. If we define <span class="math notranslate nohighlight">\(F(s,s') &lt; 0\)</span> for states <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(s'\)</span>, then this provides a small <em>negative</em> reward for transitioning from <span class="math notranslate nohighlight">\(s\)</span> to <span class="math notranslate nohighlight">\(s'\)</span>, thus discouraging actions that transition like this in future exploitation.</p>
+</section>
+<section id="potential-based-reward-shaping">
+<h3>Potential-based Reward Shaping<a class="headerlink" href="#potential-based-reward-shaping" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-potential-based-reward-shaping admonition">
+<p class="admonition-title">Video byte: Potential-based reward shaping</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=387" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p><strong>Potential-based</strong> reward shaping is a particular type of reward shaping with nice theoretical guarantees. In potential-based reward shaping, <span class="math notranslate nohighlight">\(F\)</span> is of the form:</p>
+<div class="math notranslate nohighlight">
+\[F(s,s') = \gamma \Phi(s') - \Phi(s)\]</div>
+<p>We call <span class="math notranslate nohighlight">\(\Phi\)</span> the <strong>potential function</strong> and <span class="math notranslate nohighlight">\(\Phi(s)\)</span> is the <strong>potential</strong> of state <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<p>So, instead of defining <span class="math notranslate nohighlight">\(F : S \times S \to \mathbb{R}\)</span>, we define <span class="math notranslate nohighlight">\(\Phi : S \to \mathbb{R}\)</span>, which is some heuristic measure of the value of each state <span class="math notranslate nohighlight">\(s \in S\)</span>.</p>
+<p><strong>Theoretical guarantee</strong>: this will still converge to the optimal policy under the assumption that all state-action pairs are sampled infinitely often.</p>
+<p>This is quite straightforward to show as follows. Consider an episode with shaped reward <span class="math notranslate nohighlight">\(G^{\Phi}\)</span>:</p>
+<p><span class="math notranslate nohighlight">\(
+\begin{array}{lll}
+G^{\Phi} &amp; = &amp; \sum_{i=0}^{\infty} \gamma^i (r_i + F(s_i,s_{i+1}))\\
+         &amp; = &amp; \sum_{i=0}^{\infty} \gamma^i (r_i + \gamma\Phi(s_{i+1}) - \Phi(s_i))\\
+         &amp; = &amp; \sum_{i=0}^{\infty} \gamma^i r_i + \sum_{i=0}^{\infty}\gamma^{i+1}\Phi(s_{i+1}) - \sum_{i=0}^{\infty}\gamma^i\Phi(s_i)\\
+         &amp; = &amp; G + \sum_{i=0}^{\infty}\gamma^{i}\Phi(s_{i}) - \Phi(s_0) - \sum_{i=0}^{\infty}\gamma^i\Phi(s_i) \\
+         &amp; = &amp; G - \Phi(s_0)
+\end{array}
+\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(G\)</span> refers to the shaped reward for the episode, and <span class="math notranslate nohighlight">\(s_0\)</span> is the starting state of the episode. What this says is that the shaped reward <span class="math notranslate nohighlight">\(G^{\Phi}\)</span> is just the unshaped reward <span class="math notranslate nohighlight">\(G\)</span> minus the potential of the initial state <span class="math notranslate nohighlight">\(s_0\)</span>. However, because <span class="math notranslate nohighlight">\(F\)</span> does not depend on the actions and <span class="math notranslate nohighlight">\(G^{\Phi}\)</span> does not depend on shaped rewards beyond the initial state, the <strong>shaped Q function</strong>, which we refer to as <span class="math notranslate nohighlight">\(Q^{\Phi}\)</span>, can be defined as just <span class="math notranslate nohighlight">\(Q^{\Phi}(s,a) = Q(s,a) - \Phi(s)\)</span>. Given this, any optimal policy extracted from <span class="math notranslate nohighlight">\(Q^{\Phi}\)</span> will be equivalent to any optimal policy extracted from <span class="math notranslate nohighlight">\(Q\)</span>.</p>
+<p><strong>However!</strong> While it provides guarantees about the end result, potential-based reward shaping may either increase or decrease the time taken to learn. A well-designed potential function decrease the time to convergence.</p>
+</section>
+<section id="example-potential-reward-shaping-for-gridworld">
+<h3>Example – Potential Reward Shaping for GridWorld<a class="headerlink" href="#example-potential-reward-shaping-for-gridworld" title="Link to this heading">#</a></h3>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-example-reward-shaping-in-q-learning admonition">
+<p class="admonition-title">Video byte: Example – Reward shaping in Q-learning</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=503" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>For Grid World, we use the Manhattan distance to define the potential function, normalised by the size of the grid:</p>
+<div class="math notranslate nohighlight">
+\[
+\Phi(s) = 1 - \frac{|x(g) - x(s)| + |y(g) - y(s)|}{width + height - 2}
+\]</div>
+<p>in which <span class="math notranslate nohighlight">\(x(s)\)</span> and <span class="math notranslate nohighlight">\(y(s)\)</span> return the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> coordinates of the agent respectively, <span class="math notranslate nohighlight">\(g\)</span> is the goal state. and <span class="math notranslate nohighlight">\(width\)</span> and <span class="math notranslate nohighlight">\(height\)</span> are the width and height of the grid respectively. Note that the coordinates are indexed from 0, so we subtract 2 from the denominator.</p>
+<p>Even on the very first iteration, a greedy policy such as <span class="math notranslate nohighlight">\(\epsilon\)</span>-greedy, will feedback those states closer to the +1 reward. From state (1,2) with <span class="math notranslate nohighlight">\(\gamma=0.9\)</span> if we go Right, we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lll}
+  F((1,2), (2,2)) &amp; = &amp; \gamma\Phi(2,2) - \Phi(1,2)\\
+                    &amp; = &amp; 0.9 \cdot (1 - \frac{1}{5}) - (1 - \frac{2}{5})\\
+                    &amp; = &amp; 0.12
+\end{array}
+\end{split}\]</div>
+<p>We can compare the Q-values for these states for the four different possible moves that could have been taken from (1,2), using and <span class="math notranslate nohighlight">\(\alpha=0.1\)</span> and <span class="math notranslate nohighlight">\(\gamma=0.9\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{lllcc}
+\hline
+ \textbf{Action}  &amp; r &amp; F(s,s') &amp; \gamma \max_{a'}Q(s',a') &amp; \textrm{New}~ Q(s,a)\\
+ \hline
+ Up    &amp; 0 &amp; 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 &amp; 0 &amp; -0.006\\
+ Down  &amp; 0 &amp; 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) = -0.06 &amp; 0 &amp; -0.006\\
+ Right &amp; 0 &amp; 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) = \phantom{-}0.12 &amp; 0 &amp; \phantom{-}0.012\\
+ Left  &amp; 0 &amp; 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) = -0.24 &amp; 0 &amp; -0.024\\
+ \hline
+ \end{array}
+\end{split}\]</div>
+<p>Thus, we can see that our potential reward function rewards actions that go towards the goal and penalises actions that go away from the goal. Recall that state (1,2) is in the top row, so action Up just leaves us in state (1,2) and Down similarly because we cannot go through the walls.</p>
+<p>But! It will not always work. Compare states (0,0) and (0,1). Our potential function will reward (0,1) because it is closer to the goal, but we know from from our value iteration example that (0,0) is a higher value state than (0,1). This is because our reward function does not consider the negative reward.</p>
+<p>In practice, it is non-trivial to derive a perfect reward function – it is the same problem as deriving the perfect search heuristic. If we could do this, we would not need to even use reinforcement learning – we could just do a greedy search over the reward function.</p>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h3>
+<p>To implement potential-based reward shaping, we need to first implement a potential function. We implement potential functions as subclasses of <code class="docutils literal notranslate"><span class="pre">PotentialFunction</span></code>. For the GridWorld example, the potential function is 1 minus the normalised distance from the goal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.reward_shaping.potential_function</span> <span class="kn">import</span> <span class="n">PotentialFunction</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.markov_decision_processes.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+
+
+<span class="k">class</span> <span class="nc">GridWorldPotentialFunction</span><span class="p">(</span><span class="n">PotentialFunction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span> <span class="o">=</span> <span class="n">mdp</span>
+
+    <span class="k">def</span> <span class="nf">get_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">!=</span> <span class="n">GridWorld</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">:</span>
+            <span class="n">goal</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">goal</span><span class="p">[</span><span class="n">y</span><span class="p">]))</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Reward shaping for Q-learning is then a simple extension of the <code class="docutils literal notranslate"><span class="pre">QLearning</span></code> class, overriding the <code class="docutils literal notranslate"><span class="pre">get_delta</span></code> method:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+
+
+<span class="k">class</span> <span class="nc">RewardShapedQLearning</span><span class="p">(</span><span class="n">QLearning</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdp</span><span class="p">,</span> <span class="n">bandit</span><span class="p">,</span> <span class="n">potential</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">bandit</span><span class="p">,</span> <span class="n">qfunction</span><span class="o">=</span><span class="n">qfunction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">potential</span>
+
+    <span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
+        <span class="n">q_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qfunction</span><span class="o">.</span><span class="n">get_q_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">next_state_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_value</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">next_action</span><span class="p">)</span>
+        <span class="n">state_potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="o">.</span><span class="n">get_potential</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">next_state_potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="o">.</span><span class="n">get_potential</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+        <span class="n">potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">discount_factor</span> <span class="o">*</span> <span class="n">next_state_potential</span> <span class="o">-</span> <span class="n">state_potential</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">reward</span>
+            <span class="o">+</span> <span class="n">potential</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdp</span><span class="o">.</span><span class="n">discount_factor</span> <span class="o">*</span> <span class="n">next_state_value</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">done</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">q_value</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta</span>
+</pre></div>
+</div>
+</div>
+</div>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-reward-shaping-in-super-gridworld admonition">
+<p class="admonition-title">Video byte: Reward shaping in Super Gridworld</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=838" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>We can run this on a GridWorld example with more states, to make the problem harder:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.qfunctions.qtable</span> <span class="kn">import</span> <span class="n">QTable</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.qlearning</span> <span class="kn">import</span> <span class="n">QLearning</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.reward_shaping.reward_shaped_qlearning</span> <span class="kn">import</span> <span class="p">(</span><span class="n">RewardShapedQLearning</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.learners.reward_shaping.gridworld_potential_function</span> <span class="kn">import</span> <span class="p">(</span><span class="n">GridWorldPotentialFunction</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.policies.q_policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">mastering_rl.multi_armed_bandit.epsilon_greedy</span> <span class="kn">import</span> <span class="n">EpsilonGreedy</span>
+
+
+<span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">goals</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">potential</span> <span class="o">=</span> <span class="n">GridWorldPotentialFunction</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<span class="n">RewardShapedQLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">potential</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+<span class="n">shaped_rewards</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_rewards</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f6686ab86ec40a3428af728db000d21b3ad7d87ff6a88c04fc936409a7c0a013.png" src="../_images/f6686ab86ec40a3428af728db000d21b3ad7d87ff6a88c04fc936409a7c0a013.png" />
+<img alt="../_images/7957383168470accdb74ec12e7de02798fd98eec01d475035dd1a40a09c2a653.png" src="../_images/7957383168470accdb74ec12e7de02798fd98eec01d475035dd1a40a09c2a653.png" />
+</div>
+</div>
+<p>Now, we compare this with Q-learning without reward shaping:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">goals</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">QLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+<span class="n">q_learning_rewards</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_rewards</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e7216890b2a9a7d2c5b9920b14af709e9b5fb87aecd8679271dbc1dfeabd58a6.png" src="../_images/e7216890b2a9a7d2c5b9920b14af709e9b5fb87aecd8679271dbc1dfeabd58a6.png" />
+<img alt="../_images/37b3d208854c23b79487920f2fbbe343c1c4ed8349e6fa611339c5cdc77645a6.png" src="../_images/37b3d208854c23b79487920f2fbbe343c1c4ed8349e6fa611339c5cdc77645a6.png" />
+</div>
+</div>
+<p>If we plot the average episode length during training, we see that reward shaping reduces the length of the early episodes because it has knowledge nudging it towards the goal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.tests.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">Plot</span><span class="o">.</span><span class="n">plot_episode_length</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;Tabular Q-learning&quot;</span><span class="p">,</span> <span class="s2">&quot;Reward shaping&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">q_learning_rewards</span><span class="p">,</span> <span class="n">shaped_rewards</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0f372c32a68e8524db4fe891363131c45d39c6eb6df050716f7434d433849890.png" src="../_images/0f372c32a68e8524db4fe891363131c45d39c6eb6df050716f7434d433849890.png" />
+</div>
+</div>
+</section>
+<section id="example-a-bad-potential-function-for-gridworld">
+<span id="sec-reward-shaping-bad-potential-function"></span><h3>Example – A Bad Potential Function  for GridWorld<a class="headerlink" href="#example-a-bad-potential-function-for-gridworld" title="Link to this heading">#</a></h3>
+<p>This example is thanks to <a class="reference external" href="http://www.wucathy.com/">Dr Cathy Wu</a>.
+Now, let’s consider a poorly-designed potential function — one that gives a shaped reward that is the opposite of the earlier potential function for GridWorld:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.learners.reward_shaping.gridworld_potential_function</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GridWorldPotentialFunction</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GridWorldBadPotentialFunction</span><span class="p">(</span><span class="n">GridWorldPotentialFunction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_potential</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We again compare this to standard Q-learning without reward shaping, but using just the original 4x3 GridWorld (doing this on the larger GridWorld never terminated when I ran this):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mdp</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">()</span>
+<span class="n">qfunction</span> <span class="o">=</span> <span class="n">QTable</span><span class="p">()</span>
+<span class="n">potential</span> <span class="o">=</span> <span class="n">GridWorldBadPotentialFunction</span><span class="p">(</span><span class="n">mdp</span><span class="p">)</span>
+<span class="n">RewardShapedQLearning</span><span class="p">(</span><span class="n">mdp</span><span class="p">,</span> <span class="n">EpsilonGreedy</span><span class="p">(),</span> <span class="n">potential</span><span class="p">,</span> <span class="n">qfunction</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">episodes</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">QPolicy</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_q_function</span><span class="p">(</span><span class="n">qfunction</span><span class="p">)</span>
+<span class="n">mdp</span><span class="o">.</span><span class="n">visualise_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+<span class="n">bad_shaped_rewards</span> <span class="o">=</span> <span class="n">mdp</span><span class="o">.</span><span class="n">get_rewards</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e7dce4281ca9f1f03eb0e2ef79f748c4aa613bdd8e177f4e37111c5e7c678019.png" src="../_images/e7dce4281ca9f1f03eb0e2ef79f748c4aa613bdd8e177f4e37111c5e7c678019.png" />
+<img alt="../_images/c6eb43691a099018a57453aa85724457ffb6edf860faf96c824fce6dd50e993f.png" src="../_images/c6eb43691a099018a57453aa85724457ffb6edf860faf96c824fce6dd50e993f.png" />
+</div>
+</div>
+<p>Plotting the episode length, we see that it shapes the reward quite poorly:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_episode_length</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;Tabular Q-learning 10x7&quot;</span><span class="p">,</span> <span class="s2">&quot;Reward shaping 10x7&quot;</span><span class="p">,</span> <span class="s2">&quot;Bad reward shaping 4x3&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">q_learning_rewards</span><span class="p">,</span> <span class="n">shaped_rewards</span><span class="p">,</span> <span class="n">bad_shaped_rewards</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cd903335f723fd52f9caf7cf67e53d3328b31835f9d44a8589f5c535d9bbeb70.png" src="../_images/cd903335f723fd52f9caf7cf67e53d3328b31835f9d44a8589f5c535d9bbeb70.png" />
+</div>
+</div>
+<p>Note that this is so poor that the difference between the standard Q-learning and reward-shaped Q-learning is barely visible on this new graph — and remember that the bad reward shaping example is run on the small 4x3 GridWorld example, not the larger 10x8 version, for which the results would be much worse.</p>
+<p>However, notice that  because we use a potential function, it still converges to a (close-to) optimal policy! But in this case, the convergence takes longer because the potential function is misleading.</p>
+</section>
+</section>
+<section id="q-value-initialisation">
+<h2>Q-value initialisation<a class="headerlink" href="#q-value-initialisation" title="Link to this heading">#</a></h2>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-q-value-initialisation admonition">
+<p class="admonition-title">Video byte: Q-value initialisation</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=1014" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+<p>An approach related to reward shaping is <strong>Q-value initialisation</strong>. Recall that TD learning methods can start
+at any arbitrary Q-function. The closer our Q-values is to the optimal Q-values, the quicker it will converge.</p>
+<p>Imagine if we happened to initialise our Q-values to the optimal Q-value. It would converge in one step!</p>
+<p>Q-value initialisation is similar to reward shaping: we use heuristics to assign higher values to ‘better’ states. If we just define <span class="math notranslate nohighlight">\(\Phi(s) = V_0(s)\)</span>, then they are equivalent. In fact, if our potential function is <strong>static</strong> (the definition does not change during learning), then Q-value initialisation and reward shaping are equivalent<a class="footnote-reference brackets" href="#id3" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<section id="example-q-value-initialisation-in-gridworld">
+<h3>Example – Q-value Initialisation in GridWorld<a class="headerlink" href="#example-q-value-initialisation-in-gridworld" title="Link to this heading">#</a></h3>
+<p>Using the idea of  Manhattan distance for a potential function, we can define an initial Q-function as follows for state (1,2) using our potential function:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{llllr}
+ Q((1,2), Up) &amp; = &amp; 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) &amp; = &amp; -0.06\\
+ Q((1,2), Down) &amp; = &amp; 0.9(1 - \frac{2}{5}) - (1 - \frac{2}{5}) &amp; = &amp; -0.06\\
+ Q((1,2), Right)  &amp; = &amp; 0.9(1 - \frac{1}{5}) - (1 - \frac{2}{5}) &amp; = &amp; 0.12\\ 
+ Q((1,2), Left)  &amp; = &amp; 0.9(1 - \frac{3}{5}) - (1 - \frac{2}{5}) &amp; = &amp; -0.24
+\end{array}
+\end{split}\]</div>
+<p>Once we start learning over episodes, we will select those actions with a higher heuristic value, and also we are already closer to the optimal Q-function, so will will converge faster. As with reward shaping though, this entirely depends on having a good potential function! A poor potential function will give an inaccurate initial Q-values, which may take longer to converge.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition-video-byte-summary admonition">
+<p class="admonition-title">Video byte: Summary</p>
+<iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=1142" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</aside>
+</section>
+</section>
+<section id="takeaways">
+<h2>Takeaways<a class="headerlink" href="#takeaways" title="Link to this heading">#</a></h2>
+<div class="admonition-takeaways admonition">
+<p class="admonition-title">Takeaways</p>
+<ul class="simple">
+<li><p>A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.</p></li>
+<li><p><strong>Reward shaping</strong> takes in some domain knowledge that “nudges” the learning algorithm towards more positive actions.</p></li>
+<li><p><strong>Q-value initialisation</strong> is a “guess” of the initial Q-values to guide early exploration</p></li>
+<li><p>Reward sharping and Q-value initialisation are equivalent if our potential function is static.</p></li>
+<li><p><strong>Potential-based reward shaping</strong> guarantees that the policy will converge to the same policy without reward shaping.</p></li>
+</ul>
+</div>
+<section id="related-reading">
+<h3>Related Reading<a class="headerlink" href="#related-reading" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Chapter 9 (Approximate Solution Methods) of <a class="reference external" href="http://incompleteideas.net/book/the-book-2nd.html">Introduction to Reinforcement Learning, Sutton and Barto</a></p></li>
+</ul>
+<hr class="footnotes docutils" />
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Wiewiora, Eric. “Potential-based shaping and Q-value initialization are equivalent.” Journal of Artificial Intelligence Research 19 (2003): 205-208. <a class="reference external" href="https://www.jair.org/index.php/jair/article/download/10338/24713/">https://www.jair.org/index.php/jair/article/download/10338/24713/</a></p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./single-agent"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="function-approximation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Q-function approximation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="n-step.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">n-step reinforcement learning</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Reward shaping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shaped-reward">Shaped Reward</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#potential-based-reward-shaping">Potential-based Reward Shaping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-potential-reward-shaping-for-gridworld">Example – Potential Reward Shaping for GridWorld</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-a-bad-potential-function-for-gridworld">Example – A Bad Potential Function  for GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#q-value-initialisation">Q-value initialisation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-q-value-initialisation-in-gridworld">Example – Q-value Initialisation in GridWorld</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaways">Takeaways</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#related-reading">Related Reading</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Introduction to basic probability theory &#8212; Mastering Reinforcement Learning</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script src="../_static/documentation_options.js?v=c73c0f3e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MJY0T8BLG8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-MJY0T8BLG8');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'appendix/intro-to-probability-theory';</script>
+    <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
+    <script src="../_static/rubbable.js?v=43a8f1f6"></script>
+    <script src="../_static/js/libgif.js?v=b9910099"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Modelling and abstraction for multi-agent games" href="../multi-agent/modelling-and-abstraction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/RL.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/RL.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Contents
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I: INTRODUCTION</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/foreword.html">Foreword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">What is reinforcement learning?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/normal-form.html">Normal form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/extensive-form.html">Extensive form games</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/backward-induction.html">Backward induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/multi-agent-rl.html">Multi-agent reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-agent/modelling-and-abstraction.html">Modelling and abstraction for multi-agent games</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">VI: APPENDIX</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to basic probability theory</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fappendix/intro-to-probability-theory.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/appendix/intro-to-probability-theory.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Introduction to basic probability theory</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-prerequisite-set-theory">Some prerequisite set theory</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-spaces-and-outcomes">Sample spaces and outcomes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#probability">Probability</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="cell tag_remove-input docutils container">
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="introduction-to-basic-probability-theory">
+<span id="appendix-intro-to-probability-theory"></span><h1>Introduction to basic probability theory<a class="headerlink" href="#introduction-to-basic-probability-theory" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#some-prerequisite-set-theory" id="id2">Some prerequisite set theory</a></p></li>
+<li><p><a class="reference internal" href="#sample-spaces-and-outcomes" id="id3">Sample spaces and outcomes</a></p></li>
+<li><p><a class="reference internal" href="#probability" id="id4">Probability</a></p></li>
+</ul>
+</nav>
+<p>This chapter covers basic probability theory, with enough understanding for the main chapters of this book.</p>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Probability theory is concerned with <em>chance</em>. Whenever there is an event or an activity where the outcome is uncertain, then probabilities are involved. We can think of any activity or event with an uncertain outcome as an <em>experiment</em> whose outcome we observe. Probabilities are then measures of the likelihood of any of the possible outcomes of an event.</p>
+<p>An <em>experiment</em> represents an activity whose output is subject to chance (or variation). The output of the experiment is referred to as the <em>outcome</em> of the experiment. The set of all possible outcomes is called the <em>sample space</em>.</p>
+</section>
+<section id="some-prerequisite-set-theory">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Some prerequisite set theory</a><a class="headerlink" href="#some-prerequisite-set-theory" title="Link to this heading">#</a></h2>
+<p>To understand probability theory, we first want an understanding of the three main operation in set theory.</p>
+<div class="admonition-definition-set admonition">
+<p class="admonition-title">Definition — Set</p>
+<p>A <strong>set</strong> is a collection of elements, such as numbers, points in space, shapes, variables, or other sets. A set does not contain duplicate elements.</p>
+<p>The set with no elements is a special set called the <strong>empty set</strong>, denoted <span class="math notranslate nohighlight">\(\emptyset\)</span>.</p>
+</div>
+<div class="admonition-definition-set-union-intersection-and-subtraction admonition">
+<p class="admonition-title">Definition — Set union, intersection, and subtraction</p>
+<p>The <strong>set union</strong> <span class="math notranslate nohighlight">\(A \cup B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in either set <span class="math notranslate nohighlight">\(A\)</span> or in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a \mid a \in A \lor a \in B\}\)</span>.</p>
+<p>The <strong>set intersection</strong> <span class="math notranslate nohighlight">\(A \cap B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in both set <span class="math notranslate nohighlight">\(A\)</span> and set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a \mid a \in A \land a \in B\}\)</span>.</p>
+<p>The <strong>set subtraction</strong> <span class="math notranslate nohighlight">\(A - B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in  set <span class="math notranslate nohighlight">\(A\)</span> but not in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a  \mid a \in A \land a \notin B\}\)</span>.</p>
+<img alt="../_images/03afd14a7316f113099a9373ad5d70e51a84027095e45936a4174bed07372df1.png" src="../_images/03afd14a7316f113099a9373ad5d70e51a84027095e45936a4174bed07372df1.png" />
+<p>Like any set, <span class="math notranslate nohighlight">\(A \cup B\)</span>, <span class="math notranslate nohighlight">\(A\cap B\)</span>, and <span class="math notranslate nohighlight">\(A - B\)</span> do not contain duplicate elements. If an element <span class="math notranslate nohighlight">\(a\)</span> is in <span class="math notranslate nohighlight">\(A\)</span> and in <span class="math notranslate nohighlight">\(B\)</span>, it is represented just once in <span class="math notranslate nohighlight">\(A \cup B\)</span>, in <span class="math notranslate nohighlight">\(A \cap B\)</span>, and in <span class="math notranslate nohighlight">\(A - B\)</span>.</p>
+</div>
+</section>
+<section id="sample-spaces-and-outcomes">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Sample spaces and outcomes</a><a class="headerlink" href="#sample-spaces-and-outcomes" title="Link to this heading">#</a></h2>
+<div class="admonition-definition-sample-space-and-outcomes admonition">
+<p class="admonition-title">Definition – Sample space and outcomes</p>
+<p>The <em>sample space</em> <span class="math notranslate nohighlight">\(\Omega\)</span> is the set of all possible outcomes that might be observed for an experiment.</p>
+<p>A set of outcomes <span class="math notranslate nohighlight">\(A \subseteq \Omega\)</span> is called an <em>event</em>. An event is said to have <em>occurred</em> if any one of its elements is the outcome observed in an experiment.</p>
+</div>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<ul class="simple">
+<li><p>An experiment involving the flipping of a coin has two possible outcomes: heads or tails. The sample space is thus <span class="math notranslate nohighlight">\(S = \{heads, tails\}\)</span>.</p></li>
+<li><p>An experiment involving testing a software system and counting the number of failures experienced after T = 1 hour has many possible outcomes: we may experience no failures, 1 failure, 2 failures, 3 failures, …. The sample space is <span class="math notranslate nohighlight">\(S = \{0, ~1, ~2, ~3, \ldots\}\)</span> (the set of positive integers).</p></li>
+<li><p>An experiment involving connecting to a web server may have several outcomes, such as successfully connecting, receiving a 404 error, etc. The sample space is the set of possible return values from the web sever.</p></li>
+</ul>
+</div>
+<div class="admonition-definition-independence admonition">
+<p class="admonition-title">Definition – Independence</p>
+<p>Two events are said to be <strong>independent</strong> if the occurrence of one event does not depend on the other and vice versa. For example, if we have two dice, the probability of one falling on the outcome <span class="math notranslate nohighlight">\(6\)</span> is independent of the outcome of the other dice. However, if we throw both dice, but one falls on the floor out of sight, while the other shows a <span class="math notranslate nohighlight">\(3\)</span>, then the probability of the sum of the two dice equaling <span class="math notranslate nohighlight">\(7\)</span> is dependent on the probability of the second dice.</p>
+</div>
+</section>
+<section id="probability">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Probability</a><a class="headerlink" href="#probability" title="Link to this heading">#</a></h2>
+<p>Probabilities are usually assigned to events.</p>
+<div class="admonition-definition-probability admonition">
+<p class="admonition-title">Definition – Probability</p>
+<p>The probability <span class="math notranslate nohighlight">\(P(A)\)</span> of an event <span class="math notranslate nohighlight">\(A \subseteq \Omega\)</span> is a non-negative real number that relates to the number of times we observe an outcome in <span class="math notranslate nohighlight">\(A\)</span>. This can be defined as the fraction of times that we observe an outcome in <span class="math notranslate nohighlight">\(A\)</span> over the total number of possible outcomes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}P\{A\} = \lim\begin{array}[c]{c} m \\\hline n \end{array}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(m\)</span> is the number of outcomes in <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(n\)</span> is the total number of possible outcomes, that is, the number of elements in <span class="math notranslate nohighlight">\(S\)</span>.</p>
+<p>We say that <span class="math notranslate nohighlight">\(P(A)\)</span> is the <em>probability measure</em>, and this measures how likely it is that the actual outcome of the experiment will be a member of the set <span class="math notranslate nohighlight">\(A\)</span>.</p>
+</div>
+<div class="admonition-the-three-axioms-of-probability-theory admonition">
+<p class="admonition-title">The three axioms of probability theory</p>
+<p>Probabilities must satisfy certain <em>axioms</em>  to be meaningful measures of likelihood. The following probability laws hold for any event <span class="math notranslate nohighlight">\(A\)</span> and any state space <span class="math notranslate nohighlight">\(\Omega\)</span>:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(0\leq P(A) \leq 1\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(\Omega) = 1\)</span>; and</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(A \cup B)  = P(A) + P(B)\)</span> for disjoint events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> (that is,  <span class="math notranslate nohighlight">\(A \cap B = \emptyset\)</span>).</p></li>
+</ol>
+<p>That is: (1) the probability of an event occurring is between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span> inclusive; (2) the probability of the event being part of the sample space is 1, so no events outside the sample space are possible; and (3) the probability of the event <span class="math notranslate nohighlight">\(A \cup B\)</span> is the sum of the probabilities of <span class="math notranslate nohighlight">\(A\)</span> and of <span class="math notranslate nohighlight">\(B\)</span>, assuming that <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are disjoint.</p>
+</div>
+<p>There are some important consequences of these three axioms:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(P(A) = 1 - P(\Omega - A)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(\emptyset) = 0\)</span>, where <span class="math notranslate nohighlight">\(\emptyset\)</span> is the empty set.</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(A \subseteq B\)</span> then <span class="math notranslate nohighlight">\(P(A) \leq P(B)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(A \cup B) = P(A) + P(B) - P(A \cap B)\)</span>, even if <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are not disjoint.</p></li>
+</ol>
+<div class="admonition-definition-conditional-probability admonition">
+<p class="admonition-title">Definition – Conditional probability</p>
+<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B)\)</span> then the <strong>conditional probability</strong> of <span class="math notranslate nohighlight">\(A\)</span> <em>given</em> <span class="math notranslate nohighlight">\(B\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}
+\]</div>
+<p>This says that the probability of <span class="math notranslate nohighlight">\(A\)</span> occurring, given that we have observed <span class="math notranslate nohighlight">\(B\)</span>, is the probability of observing both <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, divided by the probability of observing event <span class="math notranslate nohighlight">\(B\)</span>.</p>
+<p>Conditional probability provides us with the tools to reason about partial information, so that we can estimate the probability of an event <span class="math notranslate nohighlight">\(A\)</span> that depends on the outcome of event <span class="math notranslate nohighlight">\(B\)</span>,, event if we do not know the outcome of event <span class="math notranslate nohighlight">\(B\)</span> yet.</p>
+<p>We say that <span class="math notranslate nohighlight">\(P(A)\)</span> is the <em>prior probability</em> of <span class="math notranslate nohighlight">\(A\)</span> and that <span class="math notranslate nohighlight">\(P(A \mid B)\)</span> is the *posterior probability<span class="math notranslate nohighlight">\( of \)</span>A<span class="math notranslate nohighlight">\( given \)</span>B$.</p>
+</div>
+<div class="admonition-definition-the-product-rule admonition">
+<p class="admonition-title">Definition – The Product rule</p>
+<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B)\)</span> then the probability of both events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> occurring is defined by the <strong>product rule</strong>:</p>
+<div class="math notranslate nohighlight">
+\[
+P(A \cap B) = P(A)P(B \mid A)
+\]</div>
+</div>
+<p>The product rule can be useful, however, it is defined it terms of conditional probability, which itself uses the product rule. We can resolve this using Bayes’ theorem.</p>
+<div class="admonition-definition-bayes-theorem admonition">
+<p class="admonition-title">Definition – Bayes’ theorem</p>
+<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, the conditional probability of <span class="math notranslate nohighlight">\(A\)</span> <em>given</em> <span class="math notranslate nohighlight">\(B\)</span> can be calculated using:</p>
+<div class="math notranslate nohighlight">
+\[
+P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}
+\]</div>
+<p>Bayes’ theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event <span class="math notranslate nohighlight">\(A\)</span> represents a particular disease in a plant, and event <span class="math notranslate nohighlight">\(B\)</span> is the event describing a positive outcome of a test that can diagnose that disease, then <span class="math notranslate nohighlight">\(P(B \mid A)\)</span> define the casual relationship:  if the plant has disease <span class="math notranslate nohighlight">\(A\)</span>, then the probability of observing a positive diagnosis from test <span class="math notranslate nohighlight">\(B\)</span> is <span class="math notranslate nohighlight">\(P(B \mid A)\)</span>. Once we have the test result, we can determine the probability of <span class="math notranslate nohighlight">\(A\)</span> (the plant having the disease) provided we can estimate the prior probabilities <span class="math notranslate nohighlight">\(P(A)\)</span> and <span class="math notranslate nohighlight">\(P(B)\)</span>.</p>
+<p>Bayes’ theorem is named after <a class="reference external" href="https://en.wikipedia.org/wiki/Thomas_Bayes">Thomas Bayes</a>, the English statistician and philosopher who first defined it.</p>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./appendix"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../multi-agent/modelling-and-abstraction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Modelling and abstraction for multi-agent games</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-prerequisite-set-theory">Some prerequisite set theory</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-spaces-and-outcomes">Sample spaces and outcomes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#probability">Probability</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Tim Miller, The University of Queensland
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
