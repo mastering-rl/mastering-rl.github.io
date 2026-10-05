@@ -163,7 +163,7 @@ Stepping through the 100 iterations, we can see that using value iteration, the 
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="gridworld_value_function" src=https://gibberblot.github.io/rl-notes/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
+    <img id="gridworld_value_function" src=https://mastering-rl.github.io/gifs/value_iteration.gif width=360 height=303 rel:auto_play="0">
     <gif-player id="gridworld_value_function" width=500></gif-player>
 </div>
 <p>

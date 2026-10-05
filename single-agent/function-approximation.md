@@ -414,7 +414,7 @@ Below we see a comparison of how linear Q-functions update over time in Gridworl
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qtable_vs_linear_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="qtable_vs_linear_qlearning" src="https://mastering-rl.github.io/gifs/qtable_vs_linear_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="qtable_vs_linear_qlearning" width="900"></gif-player>
 </div>
 <p>
@@ -502,7 +502,7 @@ Below we see a comparison between deep Q-functions and linear Q-functions.
 
 ```{div} full-width
 <div id="container2" markdown="1" style="text-align: center;">
-    <img id="linear_qlearning_vs_deep_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="linear_qlearning_vs_deep_qlearning" src="https://mastering-rl.github.io/gifs/linear_qlearning_vs_deep_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="linear_qlearning_vs_deep_qlearning" width="900"></gif-player>
 </div>
 <p>

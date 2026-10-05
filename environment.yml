@@ -1,4 +1,4 @@
-name: rlnotes
+name: masteringrl
 channels:
   - conda-forge
   - defaults

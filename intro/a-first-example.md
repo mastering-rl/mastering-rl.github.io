@@ -83,10 +83,10 @@ The first line above simply imports `torch`, which is the Python package for the
 Next, we import a few other things that are part of the reinforcement learning framework written for this book:
 
 ```{code-cell} ipython3
-from experience_replay_learner import ExperienceReplayLearner
-from deep_q_function import DeepQFunction
-from multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
-from ale_wrapper import ALEWrapper
+from mastering_rl.learners.experience_replay_learner import ExperienceReplayLearner
+from mastering_rl.qfunctions.deep_q_function import DeepQFunction
+from mastering_rl.multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
+from mastering_rl.markov_decision_processes.ale_wrapper import ALEWrapper
 ```
 
 `ExperienceReplayLearner` is the reinforcement learning algorithm that we will be using for this example. It uses a `DeepQFunction` to learn the value of different actions in the game, depending on the context of the game. It is a variant of [deep Q learning](sec:function-approximation:deep-Q-learning). Effective, the way that `ExperienceReplayLearner` works is that it plays the game a number of times, then samples some of the moves from those games, and works out how good each move was, based on the score of the game that move was played in. It then uses machine learning to learn a predictor (`DeepQFunction` in this example) for how good other moves are in other contexts. Using the machine learning predictor, the experience replay learner plays the game a bunch of times again --- hopefully better this time because it knows something about the game. Then, it again samples moves and updates its machine learning predictor. It repeats this process until it has played a certain number of games. We will use 30 games for this example. 
@@ -133,7 +133,7 @@ We create the `ExperienceReplayLearner` by passing it the environment that it wi
 `policy_qfunction` will end up being the basis for our policy after we have finished learning. For now, it is just a deep learning model with random parameters, so it does not do anything useful. We can use this to construct a policy for our agent player to use:
 
 ```{code-cell} ipython3
-from q_policy import QPolicy 
+from mastering_rl.policies.q_policy import QPolicy 
 policy = QPolicy(policy_qfunction)
 ```
 
@@ -149,7 +149,7 @@ mdp.create_gif(policy, "../assets/gifs/freeway_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="0">
+    <img id="freeway_initial_deep_q_function" src="https://mastering-rl.github.io/gifs/freeway_initial_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -188,14 +188,14 @@ That's it! We now have a trained player that can play Freeway.
 Let's have a look at how it goes:
 
 ```{code-cell} ipython3
-policy_qfunction = DeepQFunction.load(policy_name, state_space, action_space)
+policy_qfunction = DeepQFunction.load(policy_name)
 policy = QPolicy(policy_qfunction)
 mdp.create_gif(policy, "../assets/gifs/freeway_trained_deep_q_function")
 ```
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="freeway_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="0">
+    <img id="freeway_trained_deep_q_function" src="https://mastering-rl.github.io/gifs/freeway_trained_deep_q_function_precalculated.gif" rel:auto_play="0">
     <gif-player id="freeway_trained_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -206,12 +206,19 @@ Much better!
 We can also study how well the algorithm was learning during the learning process. The following graph plots the number of rewards (number of times the chicken makes it to the other side of the road in this case) received, against the number of games that it has played:
 
 ```{code-cell} ipython3
-from tests.plot import Plot
+from mastering_rl.tests.plot import Plot
 
 label = "Deep Experience Replay Q learner"
-Plot.plot_cumulative_rewards([label], [rewards], smoothing_factor=0.0)
-
+Plot.plot_cumulative_rewards([label], [rewards], smoothing_factor=0.9)
 ```
+
+
+```{figure} ../single-agent/figs/freeway_training_curve.png
+---
+name: fig:freeway-training_curve
+---
+```
+
 
 ## Example: Playing Frogger
 
@@ -252,7 +259,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_initial_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_initial_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="0">
+    <img id="frogger_initial_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_initial_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_initial_deep_q_function" width=500></gif-player>
 </div>
 <p>
@@ -267,7 +274,6 @@ We can see that it does quite poorly.  But let's train this for 30 episodes:
 rewards = learner.execute(episodes=30)
 policy = QPolicy(policy_qfunction)
 policy_qfunction.save(policy_name)
-
 ```
 
 Let's look at how it goes:
@@ -281,7 +287,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="0">
+    <img id="frogger_trained_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_trained_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_deep_q_function" width=500></gif-player>
 
 </div>
@@ -308,7 +314,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_2000_deep_q_function")
 
 ```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="frogger_trained_2000_deep_q_function" src="https://gibberblot.github.io/rl-notes/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="0">
+    <img id="frogger_trained_2000_deep_q_function" src="https://mastering-rl.github.io/gifs/frogger_trained_2000_deep_q_function.gif" rel:auto_play="0">
     <gif-player id="frogger_trained_2000_deep_q_function" width=500></gif-player>
 </div>
 <p>

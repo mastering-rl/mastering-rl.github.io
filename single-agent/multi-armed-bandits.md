@@ -254,7 +254,7 @@ The following plot shows the average reward over our simulation, varying the val
 :load: "../mastering_rl/tests/_02_multi_armed_bandit_tests/plot_epsilon_decreasing.py"
 ```
 
-This indicates that for this particular problem, a value of 0.99 for alpha has a better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
+This indicates that for this particular problem, a value of 0.99 for alpha has a slightly better average return  than lower values. This is because a lower value, such as 0.9, will result in epsilon approaching zero before we have explored enough. However, the choice of alpha depends both on the particular problem, and also the expected length of each episode: for longer episodes, decreasing slower would be more beneficial so we do not stop exploring too early.
 
 ### Softmax strategy
 
@@ -380,7 +380,7 @@ Because UCB does not have parameters, there is no exploration to be done, howeve
 
 We can see from this that UCB1, on average, obtains the highest  reward for the simulation. If we extend the simulation episodes to be longer, we would see that eventually epsilon decreasing would start to achieve similar rewards to UCB1, but it takes longer to converge to this.
 
-From this, we may answer the question why softmax is considered a good strategy at all: it clearly does not perform well compared to the others. However, as noted already, softmax is able to adjust to drift more quickly, as is demonstrated when we suddenly change the probabilities as we did earlier:
+UCB1 is also remarkably good at adapting to drift, as demonstrated when we suddenly change the probabilities as we did earlier:
 
 ```{code-cell} ipython3
 plot_comparison(drift=True)
@@ -388,7 +388,7 @@ plot_comparison(drift=True)
 
 From this comparison, we can see that all of the bandit algorithms adapt quickly to changes in the environment, especially for UCB1. For UCB1, the Q-values for the actions that were previously good are no longer good, so this encourages exploration to other actions. But also, the actions that had poor Q-values previously but are now good actions would not have been visited as much previously, which also encourages exploration further, so it recovers quickly.
 
-While in this particular case, UCB1 has a higher average reward over the entire episode, this may not be the case---it depends on the specific context.
+While in this particular case, UCB1 has a higher average reward over the entire episode, this may not always be the case---it depends on the specific context.
 
 
 ````{margin}

@@ -128,6 +128,7 @@ Now, we can create a policy and Q-function using any differentiable policy and a
 
 ```{code-cell} ipython3
 :load: "../mastering_rl/tests/_10_actor_critic_methods/q_actor_critic_run.py"
+
 ```
 
 

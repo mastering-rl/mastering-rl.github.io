@@ -72,7 +72,7 @@ Consider the following interactive gif, which shows the update over an episode o
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="n_step_window" src="https://gibberblot.github.io/rl-notes/gifs/n-step-window.gif" width="900" height="400" rel:auto_play="0">
+    <img id="n_step_window" src="https://mastering-rl.github.io/gifs/n-step-window.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="n_step_window" width="900"></gif-player>
 </div>
 <p>
@@ -168,37 +168,6 @@ In the update rule above, we are using a SARSA update, but a Q-learning update i
 
 While conceptually this is not so difficult, an algorithm for doing n-step learning needs to store the rewards and observed states for $n$ steps, as well as keep track of which step to update. An algorithm for n-step SARSA is shown below.
 
-<!--
-:::{admonition} Algorithm -- n-step SARSA
-
-**Input:** MDP $M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle$, number of steps $n$\
-**Output:** Q-function $Q$
-
-Initialise $Q$ arbitrary; e.g., $Q(s,a)=0$ for all $s$ and $a$
-
-Repeat (for each episode)\
-$\quad\quad$ $T \leftarrow \infty$\
-$\quad\quad$ $t \leftarrow 0$  ($t$ is the current time step of this episode)\
-$\quad\quad$ $s \leftarrow$ the first state in episode $e$\
-$\quad\quad$ Select action $a$ to apply in $s$ using Q-values in $Q$ and\
-$\quad\quad\quad\quad$ a multi-armed bandit algorithm such as $\epsilon-$greedy\
-$\quad\quad$ Repeat (for each step in episode $e)$\
-$\quad\quad\quad\quad$ If $t < T$ then:\
-$\quad\quad\quad\quad\quad\quad$ Execute action $a_t$ in state $s_t$\
-$\quad\quad\quad\quad\quad\quad$ Observe and store reward $r_{t+1}$ and new state $s_{t+1}$\
-$\quad\quad\quad\quad\quad\quad$ If $s_{t+1}$ is a terminal state then:\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ $T \leftarrow t + 1$\
-$\quad\quad\quad\quad\quad\quad$ Else:\
-$\quad\quad\quad\quad\quad\quad\quad\quad$ Select & store action $a_{t+1}$ to apply in $s_{t+1}$ using $Q$ and a multi-armed bandit algorithm\
-$\quad\quad\quad\quad$ $\tau \leftarrow t - n + 1$  (calculate the index of the action to update)\
-$\quad\quad\quad\quad$ If $\tau \geq 0$ then:\
-$\quad\quad\quad\quad\quad\quad$ $G \leftarrow \sum^{\min(\tau+n, T)}_{i=\tau+1}\gamma^{i-\tau-1}r_i$\
-$\quad\quad\quad\quad\quad\quad$ If $\tau+n < T$ then: $G \leftarrow G + \gamma^n Q(s_{\tau+n}, a_{\tau+n})$\
-$\quad\quad\quad\quad\quad\quad$ $Q(s_{\tau}, a_{\tau}) \leftarrow  Q(s_{\tau}, a_{\tau}) + \alpha[G - Q(s_{\tau}, a_{\tau})]$\
-$\quad\quad\quad\quad$ $t \leftarrow t + 1$\
-$\quad\quad$ Until $\tau = T - 1$
-:::
--->
 
 
 ```{prf:algorithm} n-step SARSA
@@ -218,12 +187,11 @@ $
 \quad\quad\quad\quad\ \algif\ s\ \text{is not a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad \text{Execute action}\ a\ \text{in state}\ s\\
 \quad\quad\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
+\quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
+\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s} + \langle s' \rangle\\
+\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{s} + \langle a' \rangle\\
 \quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r} + \langle r\rangle\\
-\quad\quad\quad\quad\quad\quad \algif\ s'\ \text{is not a terminal state}\ \algthen\\
-\quad\quad\quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
-\quad\quad\quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s} + \langle s' \rangle\\
-\quad\quad\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{s} + \langle a' \rangle\\
-\quad\quad\quad\quad \algif\ |\vec{r}| = n\ \algor\ s\ \text{is a terminal state}\ \algif\\
+\quad\quad\quad\quad \algif\ |\vec{s}| \geq n\ \algor\ s\ \text{is a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|\vec{r}| - 1}_{i=0}\gamma^{i}\vec{r}_i\\
 \quad\quad\quad\quad\quad\quad \algif\ s\ \text{is not a terminal state}\ \algthen\\
  \quad\quad\quad\quad\quad\quad\quad\quad G \leftarrow G + \gamma^n Q(s', a')\\
@@ -341,7 +309,7 @@ Using the interactive graphic below, we compare 1-step vs. 5-step Q-learning ove
 
 ```{div} full-width
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="1_step_vs_5_step_qlearning" src="https://gibberblot.github.io/rl-notes/gifs/1_step_vs_5_step_qlearning.gif" width="900" height="400" rel:auto_play="0">
+    <img id="1_step_vs_5_step_qlearning" src="https://mastering-rl.github.io/gifs/1_step_vs_5_step_qlearning.gif" width="900" height="400" rel:auto_play="0">
     <gif-player id="1_step_vs_5_step_qlearning" width="900"></gif-player>
 </div>
 <p>

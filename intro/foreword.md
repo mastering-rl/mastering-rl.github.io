@@ -18,7 +18,7 @@ Each individual HTML page can be downloaded as a [Jupyter notebook](https://jupy
 
 ## About the code
 
-All code in this book is executable. You can download the code from [here](https://gibberblot.github.io/rl-notes/_static/code.zip). It is licensed under the MIT license; see details in the [Licenses section](sec:forward:licenses) at the end of this chapter.
+All code in this book is executable. You can download the code from [here](https://mastering-rl.github.io/_static/code.zip). It is licensed under the MIT license; see details in the [Licenses section](sec:forward:licenses) at the end of this chapter.
 
 ```{note}
 The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the [Keras RL](https://github.com/keras-rl/keras-rl) or the [Stable-Baselines3](https://stable-baselines3.readthedocs.io/) reinforcement learning packages.

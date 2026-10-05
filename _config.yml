@@ -18,6 +18,10 @@ execute:
    # - "single-agent/[a-dA-Z]*.md"
    # - "single-agent/[f-z]*.md"
 
+exclude_patterns:
+- .venv
+- "LICENSE*"
+
 # Define the name of the latex output file for PDF builds
 latex:
 #  use_jupyterbook_latex: false

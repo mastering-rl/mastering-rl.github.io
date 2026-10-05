@@ -131,7 +131,7 @@ $
 \alginput:\  \text{A differentiable policy}\ \pi_{\theta}(s,a),\ \text{an MDP}\ M = \langle S, s_0, A, P_a(s' \mid s), r(s,a,s')\rangle\\
 \algoutput:\  \text{Policy}\ \pi_{\theta}(s,a)\\[2mm]
 \text{Initialise parameters}\ \theta\ \text{arbitrarily}\\[2mm]
-\algrepeat\\
+\algrepeat\ \text{(for each episode}\ e \text{)}\\
 \quad\quad \text{Generate episode}\ (s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})\ \text{by following}\ \pi_{\theta}\\
 \quad\quad \algforeach\ (s_t, a_t)\ \text{in the episode}\\
 \quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k\\
@@ -248,13 +248,14 @@ The difference between value-based methods such as Q-learning and SARSA is demon
 
 If we step through the policy during training, we can see the gradient updates performing their role in policy improvement:
 
-```{div} full-width
+```{only} html
 <div id="container-logistic-regression-policy-gradient" markdown="1" style="text-align: center;">
-    <img id="logistic_regression_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
+    <img id="logistic_regression_policy_gradient" src=https://mastering-rl.github.io/gifs/logistic_regression_policy_gradient.gif rel:auto_play="0">
     <gif-player id="logistic_regression_policy_gradient" width="900"></gif-player>
 </div>
 <p>
 ```
+
 
 This policy only considers two actions, but it can be easily extended to support multiple actions using standard machine learning techniques like one-vs-rest classification. 
 
@@ -289,18 +290,20 @@ We can now use this implementation by creating a REINFORCE agent with a `DeepNeu
 
 ```{code-cell} ipython3
 :load: "../mastering_rl/tests/_09_policy_gradients/deep_reinforce_run.py"
+
 ```
 
 Again, we can see that this policy is stochastic: each action has a probability of being executed in a state. 
 
 Simulating the process of training the policy, we can see that initially, all four actions have (approximately) the same probability of being executed, but deep REINFORCE learns a good Q-function and therefore policy:
 
+```{only} html
 <div id="container-deep-nn" markdown="1" style="text-align: center;">
-    <img id="deep_policy_gradient" src=https://gibberblot.github.io/rl-notes/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
-    <gif-player id="deep_policy_gradient"></gif-player>
+    <img id="deep_policy_gradient" src=https://mastering-rl.github.io/gifs/deep_policy_gradient.gif width=360 rel:auto_play="0">
+    <gif-player id="deep_policy_gradient" width=500></gif-player>
 </div>
 <p>
-
+```
 
 ## Advantages and disadvantages of policy gradients (compared to value-based techniques)
 

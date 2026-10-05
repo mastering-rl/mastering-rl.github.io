@@ -137,7 +137,7 @@ There are many different techniques for model-free reinforcement learning, all w
 
 - Then, we select a new action and execute it in the environment.
     
-- We repeat this until either: (1) we run out of training time; (2) we think our policy has converged to an optimal policy; or (3) our policy is 'good enough' (for each new episode we see minimal improvement). In practice, it is difficult to know whether we have converged to an optimal policy.
+- We repeat this until either: (1) we run out of training time; (2) we have iterated over a fixed number of episodes or steps; (3) we think our policy has converged to an optimal policy; or (4) our policy is 'good enough' (for each new episode we see minimal improvement). In practice, it is difficult to know whether we have converged to an optimal policy.
 
 (sec:model-free:monte-carlo-learning)=
 ## Monte-Carlo reinforcement learning
@@ -472,11 +472,14 @@ gridworld.visualise_policy(policy)
 
 Below, we can explore how the Q-values for each state-action pair are learnt. If we play or step through the following visualisation, we can see that in early episodes, the Q-values that are learnt are not close to optimal because the initial episodes are quite long, so the discount factor means the rewards received are low. However, after just a few episodes, even these inaccurate Q-values give the multi-armed bandit some signal, and episodes start to become shorter, while the Q-values being learnt are updated to become more accurate:
 
+
+```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="qlearning" src=https://gibberblot.github.io/rl-notes/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
-    <gif-player id="qlearning"></gif-player>
+    <img id="qlearning" src=https://mastering-rl.github.io/gifs/qlearning.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="qlearning" width=500></gif-player>
 </div>
 <p>
+```
 
 (sec:model-free:sarsa)=
 ## SARSA: On-policy temporal difference learning
@@ -684,7 +687,7 @@ In the case of Contested Crossing, there are seven actions available (compared t
 
 The result of this is to considerably increase the amount of time taken to converge towards a good policy, for either Q-learning or SARSA. For $n=2000$, the policy found by Q-learning is usually -- but not always -- superior to that found by SARSA. This is insufficient training for either algorithm to converge on an optimal policy.
 
-At $n=20,000$, the optimal policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not converge on the optimal policy because of it's on-policy nature, but it is still quite good.
+At $n=20,000$, a good policy for Q-learning appears to have been found. There is still variation in the reward generated from implementing it, because of the high amount of chance in the Contested Crossing task. The SARSA policies at $n=20,000$ does not do so well because of it's on-policy nature, but it is still quite good.
 
 
 ```{code-cell} ipython3

@@ -437,11 +437,13 @@ After 0.03 seconds, the rewards are improving but are still quite noisy. This ma
 
 Next, we execute this MCTS algorithm on the GridWorld problem for 1 second and visualise  the corresponding Q-function every 0.01 second:
 
+```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="mcts" src=https://gibberblot.github.io/rl-notes/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
-    <gif-player id="mcts"></gif-player>
+    <img id="mcts" src=https://mastering-rl.github.io/gifs/mcts.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="mcts" width=500></gif-player>
 </div>
 <p>
+```
 
 The final values after 1 second are much closer to what we expect.
 

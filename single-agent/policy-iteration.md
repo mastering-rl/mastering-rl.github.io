@@ -186,13 +186,14 @@ We can see that this matches the optimal policy according to [value iteration](s
 
 Let's look at the policies that are generated after each iteration, noting that the initial policy is defined by taking a random action (left) and using that for every state:
 
-```{div} full-width
+```{only} html
 <div id="container" markdown="1" style="text-align: center;">
-    <img id="policy_iteration" src=https://gibberblot.github.io/rl-notes/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
-    <gif-player id="policy_iteration"></gif-player>
+    <img id="policy_iteration" src=https://mastering-rl.github.io/gifs/policy_iteration.gif width=360 height=303 rel:auto_play="0">
+    <gif-player id="policy_iteration" width=500></gif-player>
 </div>
 <p>
 ```
+
 
 We can see that this converges in just four iterations. Let's try on a larger state space of a 20 x 15 grid:
 
