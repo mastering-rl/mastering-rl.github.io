@@ -46,7 +46,7 @@ The Atari logo. Trademark of [Atari SA](https://atari.com/). (Source: [Wikipedia
 ````
 
 
-Before we start on the basic of reinforcement learning, let's build an example of a reinforcement learning agent. We will use reinforcement learning to play [Atari](https://atari.com/) games. Atari was a game consoles manufacturer in the 1990s -- their logo is shown in {numref}`fig:atari`.
+Before we start on the basics of reinforcement learning, let's build an example of a reinforcement learning agent. We will use reinforcement learning to play [Atari](https://atari.com/) games. Atari was a game consoles manufacturer in the 1990s -- their logo is shown in {numref}`fig:atari`.
 
 The [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Learning-Environment), built on the Atari 2600 emulator [Stella](https://stella-emu.github.io/),  is a framework for reinforcement learning that allows people to experiment with dozens of Atari games. It is built on the popular [Gymnasium](https://gymnasium.farama.org/) framework from OpenAI.
 
@@ -64,7 +64,7 @@ A screenshot of the game *Freeway*. Simulated via the [Arcade Learning Environme
 ```
 ````
 
-This is a simple game as far as video games go; and as far as reinforcement learner goes. However, let's train a reinforcement learning agent to play it.
+This is a simple game as far as video games go; and as far as reinforcement learning goes. However, let's train a reinforcement learning agent to play it.
 
 ### Import components from the reinforcement learning framework
 
@@ -78,7 +78,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.set_default_device(device)
 ```
 
-The first line above simply imports `torch`, which is the Python package for the [PyTorch deep learning framework](https://pytorch.org/). This is a not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which we use as part of our reinforcement learning solution. The rest set up the device to use. If our machine has a GPU (graphics processing unit), then using `cuda` will use that GPU for doing matrix calculations in our deep learning model. If our machine does NOT have a GPU, we use the CPU instead. A GPU will allow us to train more quickly, but otherwise, we get the same results.
+The first line above simply imports `torch`, which is the Python package for the [PyTorch deep learning framework](https://pytorch.org/). This is not a framework specifically for reinforcement learning --- it is a general deep learning framework for production code, which we use as part of our reinforcement learning solution. The rest set up the device to use. If our machine has a GPU (graphics processing unit), then using `cuda` will use that GPU for doing matrix calculations in our deep learning model. If our machine does NOT have a GPU, we use the CPU instead. A GPU will allow us to train more quickly, but otherwise, we get the same results.
 
 Next, we import a few other things that are part of the reinforcement learning framework written for this book:
 
@@ -89,7 +89,7 @@ from mastering_rl.multi_armed_bandit.epsilon_decreasing import EpsilonDecreasing
 from mastering_rl.markov_decision_processes.ale_wrapper import ALEWrapper
 ```
 
-`ExperienceReplayLearner` is the reinforcement learning algorithm that we will be using for this example. It uses a `DeepQFunction` to learn the value of different actions in the game, depending on the context of the game. It is a variant of [deep Q learning](sec:function-approximation:deep-Q-learning). Effective, the way that `ExperienceReplayLearner` works is that it plays the game a number of times, then samples some of the moves from those games, and works out how good each move was, based on the score of the game that move was played in. It then uses machine learning to learn a predictor (`DeepQFunction` in this example) for how good other moves are in other contexts. Using the machine learning predictor, the experience replay learner plays the game a bunch of times again --- hopefully better this time because it knows something about the game. Then, it again samples moves and updates its machine learning predictor. It repeats this process until it has played a certain number of games. We will use 30 games for this example. 
+`ExperienceReplayLearner` is the reinforcement learning algorithm that we will be using for this example. It uses a `DeepQFunction` to learn the value of different actions in the game, depending on the context of the game. It is a variant of [deep Q learning](sec:function-approximation:deep-Q-learning). Effectively, the way that `ExperienceReplayLearner` works is that it plays the game a number of times, then samples some of the moves from those games, and works out how good each move was, based on the score of the game that move was played in. It then uses machine learning to learn a predictor (`DeepQFunction` in this example) for how good other moves are in other contexts. Using the machine learning predictor, the experience replay learner plays the game a bunch of times again --- hopefully better this time because it knows something about the game. Then, it again samples moves and updates its machine learning predictor. It repeats this process until it has played a certain number of games. We will use 30 games for this example. 
 
 The term "experience replay" comes from the fact that the agent first plays the games, and then "replays" them back again to learn. You can learn more about this in [Experience Replay](sec:experience-replay).
 
@@ -171,7 +171,7 @@ rewards = learner.execute(episodes=30)
 
 The `execute` function is what runs the games, collects the experience, rates the quality of moves, and puts the right data into the deep Q functions. We need to specify how many episodes (games) it should play. In this case, we choose 30. It returns a list of **rewards** (in this case: points in the game) received at each step.
 
-Now, we can construct a new policy for our agent player to use. This is easy enough too. Remember that `policy_qfunction`? That has learnt a **Q function**, which simply tells us, at each step of the game, the estimated 'value' of each of the possible moves. Here, value is just saying: at this step, I think action 'Up' will, on average, give us a score of 10. 
+Now, we can construct a new policy for our agent player to use. This is easy enough too. Remember that `policy_qfunction`? That has learnt a **Q function**, which simply tells us, at each step of the game, the estimated 'value' of each of the possible moves. Here, value is just saying: at this step, I think action 'Up' will, on average, give us a total future score of 10. 
 
  We can now just put that inside a policy class, and we save the policy for future use:
 
@@ -181,7 +181,7 @@ policy_qfunction.save(policy_name)
 
 ```
 
-`QPolicy` provides a function called `select_action(state, actions)`, where `state` is the current step of the game and `actions` are the set of applicable actions. All `select_action` does it iterate over all actions in `actions` and return the one with the highest estimate.
+`QPolicy` provides a function called `select_action(state, actions)`, where `state` is the current step of the game and `actions` are the set of applicable actions. All `select_action` does is iterate over all actions in `actions` and return the one with the highest estimate.
 
 That's it! We now have a trained player that can play Freeway. 
 
@@ -222,7 +222,7 @@ name: fig:freeway-training_curve
 
 ## Example: Playing Frogger
 
-Let's build another one, but this time, to play the game [Frogger](https://atariage.com/software_page.php?SoftwareLabelID=194). This is a very similar game. Instead of a chicken, there is a frog. The frog has to get to the other side of a road and river. If the frog is struck by a vehicle, it loses a life and starts back at the begging. Once it gets to the river at the top, it needs to jump on the logs and other floating debris to get to the other side of the river. If it falls into the water, it loses a life and starts back at the begging. It has three lives in total. 
+Let's build another one, but this time, to play the game [Frogger](https://atariage.com/software_page.php?SoftwareLabelID=194). This is a very similar game. Instead of a chicken, there is a frog. The frog has to get to the other side of a road and river. If the frog is struck by a vehicle, it loses a life and starts back at the beginning. Once it gets to the river at the top, it needs to jump on the logs and other floating debris to get to the other side of the river. If it falls into the water, it loses a life and starts back at the beginning. It has three lives in total. 
 
 The first thing we do is create an MDP for the Frogger game:
 
@@ -296,7 +296,7 @@ mdp.create_gif(policy, "../assets/gifs/frogger_trained_deep_q_function")
 
 Hmmm... not much better. What is happening? Why does it not work for Frogger, but it works for Freeway?
 
-The answer is simple: Freeway has just three moves: Up, Down, or Stay. Frogger has give: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
+The answer is simple: Freeway has just three moves: Up, Down, or Stay. Frogger has five: Up, Down, Left, Right, or Stay. As such, running for only 30 episodes does not give the learner enough samples to learn good behaviour. 
 
 What if we train it for more episodes? 
 
@@ -329,7 +329,7 @@ We looked at training a couple of simple player agents to play two Atari games. 
 
 Depending on the properties of the application, some types of reinforcement learning algorithms work better than others.
 
-How do the algorithm learn what they do? Which learning algorithms are best for which type of application?
+How do the algorithms learn what they do? Which learning algorithms are best for which type of application?
 
 In the rest of these notes, we will learn more about this.
 

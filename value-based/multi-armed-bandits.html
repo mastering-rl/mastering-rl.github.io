@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -957,7 +957,7 @@ k \leftarrow 1\\
 \[\text{argmax}_{a}\left(Q(a)   +   \sqrt{\frac{2 \ln t}{N(a)}}\right)\]</div>
 <p>where <span class="math notranslate nohighlight">\(t\)</span> is the number of rounds so far, and <span class="math notranslate nohighlight">\(N(a)\)</span> is the number of times times <span class="math notranslate nohighlight">\(a\)</span> has been chosen in all previous rounds. The term inside the square root is undefined if <span class="math notranslate nohighlight">\(N(a) = 0\)</span>. The avoid this, the typical strategy is to spend the first <span class="math notranslate nohighlight">\(N\)</span> rounds to select each of the <span class="math notranslate nohighlight">\(N\)</span> bandits once. This is a simple exploration strategy to ensure all arms are sampled at least once, but this problem could be handled in different ways, such as assigning the value <span class="math notranslate nohighlight">\(\infty\)</span> when <span class="math notranslate nohighlight">\(N(a)=0\)</span>.</p>
 <p>The left–hand side encourages exploitation: the Q-value is high for actions that have had a high reward.</p>
-<p>The right–hand side encourages exploration: it is high for actions that have been explored less – that is, when <span class="math notranslate nohighlight">\(N(a)\)</span> relative to other actions. When <span class="math notranslate nohighlight">\(t\)</span> is small (not many pull so far), all actions will have a high exploration value. As <span class="math notranslate nohighlight">\(t\)</span> increases, if some actions have low <span class="math notranslate nohighlight">\(N(a)\)</span>, then the expression <span class="math notranslate nohighlight">\(\sqrt{\frac{2 \ln t}{N(a)}}\)</span> is large compared to actions with higher <span class="math notranslate nohighlight">\(N(a)\)</span>.</p>
+<p>The right–hand side encourages exploration: it is high for actions that have been explored less – that is, when <span class="math notranslate nohighlight">\(N(a)\)</span> is small relative to other actions. When <span class="math notranslate nohighlight">\(t\)</span> is small (not many pull so far), all actions will have a high exploration value. As <span class="math notranslate nohighlight">\(t\)</span> increases, if some actions have low <span class="math notranslate nohighlight">\(N(a)\)</span>, then the expression <span class="math notranslate nohighlight">\(\sqrt{\frac{2 \ln t}{N(a)}}\)</span> is large compared to actions with higher <span class="math notranslate nohighlight">\(N(a)\)</span>.</p>
 <p>Together, adding these two expressions helps to balance exploration and exploitation.</p>
 <p>Note that the UCB formula is not parameterised – that is, there is no parameter giving weight to the <span class="math notranslate nohighlight">\(Q(a)\)</span> or the square root expression to balance exploration vs. exploitation.</p>
 <p>So how does it work? We will not get into all the details, but instead just give some intuition.</p>

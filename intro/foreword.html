@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -455,12 +455,12 @@ document.write(`
 </section>
 <section id="about-the-code">
 <h2>About the code<a class="headerlink" href="#about-the-code" title="Link to this heading">#</a></h2>
-<p>All code in this book is executable. You can download the code from <a class="reference external" href="https://mastering-rl.github.io/_static/code.zip">here</a>. It is licensed under the MIT license; see details in the <a class="reference internal" href="#sec-forward-licenses"><span class="std std-ref">Licenses section</span></a> at the end of this chapter.</p>
+<p>All code in this book is executable. You can download the code from <a class="reference external" href="https://mastering-rl.github.io/_static/code.zip">here</a>. It is licensed under the MIT license; see details in the <a class="reference internal" href="#sec-foreword-licenses"><span class="std std-ref">Licenses section</span></a> at the end of this chapter.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the <a class="reference external" href="https://github.com/keras-rl/keras-rl">Keras RL</a> or the <a class="reference external" href="https://stable-baselines3.readthedocs.io/">Stable-Baselines3</a> reinforcement learning packages.</p>
 <p>If you understand the code in these notes, you will have little problem using production-level packages such as Keras RL and Stable-Baselines3.</p>
-<p>The code in this book is written with the attempt to use basic Python with very little Python-specific specific to enable those less familiar with Python to understand code snippets.</p>
+<p>The code in this book is written with the attempt to use basic Python with very little Python-specific syntax to enable those less familiar with Python to understand code snippets.</p>
 <p>The code in this book is written using as few external libraries as possible, to make this easy to download and run yourself.</p>
 </div>
 <p>Once you have downloaded, unzip the code and add the folder to your PYTHONPATH variable if you want to download the Jupyter notebooks.</p>
@@ -469,7 +469,7 @@ document.write(`
 <li><p>The <a class="reference external" href="https://matplotlib.org/">Matplotlib library</a> for plotting graphs. You can download from the website or install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">matplotlib</span></code>.</p></li>
 <li><p>The <a class="reference external" href="https://www.scipy.org/">Scipy library</a> for helping with the graph plotting. You can download from the website or install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">scipy</span></code>.</p></li>
 <li><p>The <a class="reference external" href="https://graphviz.readthedocs.io/en/stable/">Graphviz Python library</a> for drawing trees. You can download from the website or use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">graphviz</span></code>. To render the generated graphs, you will also need to install <a class="reference external" href="https://www.graphviz.org/download/">Graphviz the tool</a>, which is called by the Python package.</p></li>
-<li><p>The <a class="reference external" href="https://pytorch.org/">PyTorch deep learning framework</a> is used for all deep reinforcement learning code in the book. You can download from the website or use ``pip install torch’’.</p></li>
+<li><p>The <a class="reference external" href="https://pytorch.org/">PyTorch deep learning framework</a> is used for all deep reinforcement learning code in the book. You can download from the website or use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">torch</span></code>.</p></li>
 </ol>
 </section>
 <section id="about-the-author">
@@ -482,11 +482,11 @@ document.write(`
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading">#</a></h2>
 <p>Thanks to Alan Lewis for his excellent idea of demonstrating <a class="reference internal" href="../policy-based/policy-gradients.html#sec-policy-gradients-logistic-regression"><span class="std std-ref">policy gradients using a logistic regression policy</span></a>; and furthermore, for implementing the source for this and the <a class="reference internal" href="../policy-based/policy-gradients.html#sec-policy-gradient-deep-policy-gradients"><span class="std std-ref">deep policy gradient agent</span></a>. Thanks also to Alan for setting up the library for playing GIF files, which supports the interactive visualisations that are so useful in this book.</p>
 <p>Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.</p>
-<p>Thanks for <a class="reference external" href="http://www.wucathy.com/">Dr Cathy Wu</a> for the idea and code for the example of the <a class="reference internal" href="../scaling/reward-shaping.html#sec-reward-shaping-bad-potential-function"><span class="std std-ref">poorly-designed potential function</span></a>.</p>
-<p>Thanks for Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.</p>
+<p>Thanks to <a class="reference external" href="http://www.wucathy.com/">Dr Cathy Wu</a> for the idea and code for the example of the <a class="reference internal" href="../scaling/reward-shaping.html#sec-reward-shaping-bad-potential-function"><span class="std std-ref">poorly-designed potential function</span></a>.</p>
+<p>Thanks to Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.</p>
 </section>
 <section id="licenses">
-<span id="sec-forward-licenses"></span><h2>Licenses<a class="headerlink" href="#licenses" title="Link to this heading">#</a></h2>
+<span id="sec-foreword-licenses"></span><h2>Licenses<a class="headerlink" href="#licenses" title="Link to this heading">#</a></h2>
 <a class="reference internal image-reference" href="../_images/by-nc-sa.png"><img alt="../_images/by-nc-sa.png" src="../_images/by-nc-sa.png" style="width: 200px;" /></a>
 <p>This book is licensed under <a class="reference external" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">The Creative Commons 4.0 BY-NC-SA 4.0 license</a>.</p>
 <p>This means that you are free to <strong>share</strong> and <strong>adapt</strong> this material in any medium or format, and must give appropriate credit and <strong>share alike</strong> the new material under the same license. The material <strong>cannot be used for commercial purposes</strong>. The material can be used for <strong>educational purposes</strong>.</p>

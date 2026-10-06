@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -467,9 +467,9 @@ document.write(`
 </div>
 <div class="admonition-definition-set-union-intersection-and-subtraction admonition">
 <p class="admonition-title">Definition — Set union, intersection, and subtraction</p>
-<p>The <strong>set union</strong> <span class="math notranslate nohighlight">\(A \cup B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in either set <span class="math notranslate nohighlight">\(A\)</span> or in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a \mid a \in A \lor a \in B\}\)</span>.</p>
-<p>The <strong>set intersection</strong> <span class="math notranslate nohighlight">\(A \cap B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in both set <span class="math notranslate nohighlight">\(A\)</span> and set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a \mid a \in A \land a \in B\}\)</span>.</p>
-<p>The <strong>set subtraction</strong> <span class="math notranslate nohighlight">\(A - B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements in that are in  set <span class="math notranslate nohighlight">\(A\)</span> but not in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a  \mid a \in A \land a \notin B\}\)</span>.</p>
+<p>The <strong>set union</strong> <span class="math notranslate nohighlight">\(A \cup B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements that are in either set <span class="math notranslate nohighlight">\(A\)</span> or in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cup B = \{a \mid a \in A \lor a \in B\}\)</span>.</p>
+<p>The <strong>set intersection</strong> <span class="math notranslate nohighlight">\(A \cap B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements that are in both set <span class="math notranslate nohighlight">\(A\)</span> and set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A \cap B = \{a \mid a \in A \land a \in B\}\)</span>.</p>
+<p>The <strong>set subtraction</strong> <span class="math notranslate nohighlight">\(A - B\)</span> of two sets <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> is the set of all elements that are in set <span class="math notranslate nohighlight">\(A\)</span> but not in set <span class="math notranslate nohighlight">\(B\)</span>. Formally: <span class="math notranslate nohighlight">\(A - B = \{a \mid a \in A \land a \notin B\}\)</span>.</p>
 <img alt="../_images/03afd14a7316f113099a9373ad5d70e51a84027095e45936a4174bed07372df1.png" src="../_images/03afd14a7316f113099a9373ad5d70e51a84027095e45936a4174bed07372df1.png" />
 <p>Like any set, <span class="math notranslate nohighlight">\(A \cup B\)</span>, <span class="math notranslate nohighlight">\(A\cap B\)</span>, and <span class="math notranslate nohighlight">\(A - B\)</span> do not contain duplicate elements. If an element <span class="math notranslate nohighlight">\(a\)</span> is in <span class="math notranslate nohighlight">\(A\)</span> and in <span class="math notranslate nohighlight">\(B\)</span>, it is represented just once in <span class="math notranslate nohighlight">\(A \cup B\)</span>, in <span class="math notranslate nohighlight">\(A \cap B\)</span>, and in <span class="math notranslate nohighlight">\(A - B\)</span>.</p>
 </div>
@@ -501,7 +501,7 @@ document.write(`
 <p class="admonition-title">Definition – Probability</p>
 <p>The probability <span class="math notranslate nohighlight">\(P(A)\)</span> of an event <span class="math notranslate nohighlight">\(A \subseteq \Omega\)</span> is a non-negative real number that relates to the number of times we observe an outcome in <span class="math notranslate nohighlight">\(A\)</span>. This can be defined as the fraction of times that we observe an outcome in <span class="math notranslate nohighlight">\(A\)</span> over the total number of possible outcomes:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}P\{A\} = \lim\begin{array}[c]{c} m \\\hline n \end{array}\end{split}\]</div>
+\[P(A) = \frac{m}{n}\]</div>
 <p>where <span class="math notranslate nohighlight">\(m\)</span> is the number of outcomes in <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(n\)</span> is the total number of possible outcomes, that is, the number of elements in <span class="math notranslate nohighlight">\(S\)</span>.</p>
 <p>We say that <span class="math notranslate nohighlight">\(P(A)\)</span> is the <em>probability measure</em>, and this measures how likely it is that the actual outcome of the experiment will be a member of the set <span class="math notranslate nohighlight">\(A\)</span>.</p>
 </div>
@@ -524,24 +524,24 @@ document.write(`
 </ol>
 <div class="admonition-definition-conditional-probability admonition">
 <p class="admonition-title">Definition – Conditional probability</p>
-<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B)\)</span> then the <strong>conditional probability</strong> of <span class="math notranslate nohighlight">\(A\)</span> <em>given</em> <span class="math notranslate nohighlight">\(B\)</span> is defined as:</p>
+<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B) &gt; 0\)</span> then the <strong>conditional probability</strong> of <span class="math notranslate nohighlight">\(A\)</span> <em>given</em> <span class="math notranslate nohighlight">\(B\)</span> is defined as:</p>
 <div class="math notranslate nohighlight">
 \[
 P(A \mid B) = \frac{P(A \cap B)}{P(B)}
 \]</div>
 <p>This says that the probability of <span class="math notranslate nohighlight">\(A\)</span> occurring, given that we have observed <span class="math notranslate nohighlight">\(B\)</span>, is the probability of observing both <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, divided by the probability of observing event <span class="math notranslate nohighlight">\(B\)</span>.</p>
 <p>Conditional probability provides us with the tools to reason about partial information, so that we can estimate the probability of an event <span class="math notranslate nohighlight">\(A\)</span> that depends on the outcome of event <span class="math notranslate nohighlight">\(B\)</span>,, event if we do not know the outcome of event <span class="math notranslate nohighlight">\(B\)</span> yet.</p>
-<p>We say that <span class="math notranslate nohighlight">\(P(A)\)</span> is the <em>prior probability</em> of <span class="math notranslate nohighlight">\(A\)</span> and that <span class="math notranslate nohighlight">\(P(A \mid B)\)</span> is the *posterior probability<span class="math notranslate nohighlight">\( of \)</span>A<span class="math notranslate nohighlight">\( given \)</span>B$.</p>
+<p>We say that <span class="math notranslate nohighlight">\(P(A)\)</span> is the <em>prior probability</em> of <span class="math notranslate nohighlight">\(A\)</span> and that <span class="math notranslate nohighlight">\(P(A \mid B)\)</span> is the <em>posterior probability</em> of <span class="math notranslate nohighlight">\(A\)</span> given <span class="math notranslate nohighlight">\(B\)</span>.</p>
 </div>
 <div class="admonition-definition-the-product-rule admonition">
 <p class="admonition-title">Definition – The Product rule</p>
-<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B)\)</span> then the probability of both events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> occurring is defined by the <strong>product rule</strong>:</p>
+<p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, if <span class="math notranslate nohighlight">\(P(B) &gt; 0\)</span> then the probability of both events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> occurring is defined by the <strong>product rule</strong>:</p>
 <div class="math notranslate nohighlight">
 \[
 P(A \cap B) = P(A)P(B \mid A)
 \]</div>
 </div>
-<p>The product rule can be useful, however, it is defined it terms of conditional probability, which itself uses the product rule. We can resolve this using Bayes’ theorem.</p>
+<p>The product rule can be useful, however, it is defined in terms of conditional probability, which itself uses the product rule. We can resolve this using Bayes’ theorem.</p>
 <div class="admonition-definition-bayes-theorem admonition">
 <p class="admonition-title">Definition – Bayes’ theorem</p>
 <p>Given two events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, the conditional probability of <span class="math notranslate nohighlight">\(A\)</span> <em>given</em> <span class="math notranslate nohighlight">\(B\)</span> can be calculated using:</p>
@@ -549,7 +549,7 @@ P(A \cap B) = P(A)P(B \mid A)
 \[
 P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}
 \]</div>
-<p>Bayes’ theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event <span class="math notranslate nohighlight">\(A\)</span> represents a particular disease in a plant, and event <span class="math notranslate nohighlight">\(B\)</span> is the event describing a positive outcome of a test that can diagnose that disease, then <span class="math notranslate nohighlight">\(P(B \mid A)\)</span> define the casual relationship:  if the plant has disease <span class="math notranslate nohighlight">\(A\)</span>, then the probability of observing a positive diagnosis from test <span class="math notranslate nohighlight">\(B\)</span> is <span class="math notranslate nohighlight">\(P(B \mid A)\)</span>. Once we have the test result, we can determine the probability of <span class="math notranslate nohighlight">\(A\)</span> (the plant having the disease) provided we can estimate the prior probabilities <span class="math notranslate nohighlight">\(P(A)\)</span> and <span class="math notranslate nohighlight">\(P(B)\)</span>.</p>
+<p>Bayes’ theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event <span class="math notranslate nohighlight">\(A\)</span> represents a particular disease in a plant, and event <span class="math notranslate nohighlight">\(B\)</span> is the event describing a positive outcome of a test that can diagnose that disease, then <span class="math notranslate nohighlight">\(P(B \mid A)\)</span> defines the causal relationship:  if the plant has disease <span class="math notranslate nohighlight">\(A\)</span>, then the probability of observing a positive diagnosis from test <span class="math notranslate nohighlight">\(B\)</span> is <span class="math notranslate nohighlight">\(P(B \mid A)\)</span>. Once we have the test result, we can determine the probability of <span class="math notranslate nohighlight">\(A\)</span> (the plant having the disease) provided we can estimate the prior probabilities <span class="math notranslate nohighlight">\(P(A)\)</span> and <span class="math notranslate nohighlight">\(P(B)\)</span>.</p>
 <p>Bayes’ theorem is named after <a class="reference external" href="https://en.wikipedia.org/wiki/Thomas_Bayes">Thomas Bayes</a>, the English statistician and philosopher who first defined it.</p>
 </div>
 </section>

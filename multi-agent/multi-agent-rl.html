@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -493,7 +493,7 @@ document.write(`
 <li><p><span class="math notranslate nohighlight">\(S\)</span> is a set of states</p></li>
 <li><p><span class="math notranslate nohighlight">\(s_0\)</span> is the initial state</p></li>
 <li><p><span class="math notranslate nohighlight">\(A^j\)</span> is the set of actions for agent <span class="math notranslate nohighlight">\(j\)</span>,</p></li>
-<li><p><span class="math notranslate nohighlight">\(P: S \times A^1 \times \ldots A^n \rightarrow \Omega(S)\)</span> is a transition function that defines the probability of arriving in a state given a starting state and the actions chosen by all players</p></li>
+<li><p><span class="math notranslate nohighlight">\(P: S \times A^1 \times \ldots \times A^n \times S \rightarrow [0, 1]\)</span> is a transition function that defines the probability of arriving in a state given a starting state and the actions chosen by all players</p></li>
 <li><p><span class="math notranslate nohighlight">\(r^j : S \times A^1 \times \ldots A^n \times S \rightarrow \mathbb{R}\)</span> is the reward function for agent <span class="math notranslate nohighlight">\(j\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(\gamma\)</span> is the discount factor</p></li>
 </ul>
@@ -514,7 +514,7 @@ document.write(`
 <p>The objective for an agent is to maximise its own expected discounted accumulated reward:</p>
 <div class="math notranslate nohighlight">
 \[
-V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 = s, a = \pi(s_i)]
+V^{\pi^j}(s) = \mathbb{E}_{\pi}\left[\sum_{t=0}^\infty \gamma^t r^j(s_t, a_t, s_{t+1}) \;\middle|\; s_0 = s\right]
 \]</div>
 <p>Note that <span class="math notranslate nohighlight">\(a = \pi(s_i)\)</span> is the joint action of all agents. So, each agent’s objective is to maximise its own expected reward considering the possible actions of all other agents.</p>
 </section>
@@ -556,13 +556,13 @@ V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 
 \begin{array}{l}
 \quad\quad\quad\quad \text{Execute action}\ a^j\ \text{in state}\ s\\
 \quad\quad\quad\quad \text{Wait for other agents' actions (via simulation or via play)}\\
-\quad\quad\quad\quad \text{Observe rewards}\ r_t^j, \ldots, r_{t+n}^j\ \text{and new state}\ s_{t+n}\\
-\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j +  \ldots + r_{t+n}^j + \gamma \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]
+\quad\quad\quad\quad \text{Observe rewards}\ r_t^j, r_{t+1}^j, \ldots, r_{t+n-1}^j\ \text{and new state}\ s_{t+n}\\
+\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j + \gamma r_{t+1}^j + \ldots + \gamma^{n-1} r_{t+n-1}^j + \gamma^n \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]
 \end{array}
 \)</span></p>
 <p>This algorithm differs from the first  in two main ways:</p>
 <ol class="arabic simple">
-<li><p>After execution our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state <span class="math notranslate nohighlight">\(s_{t+n}\)</span>, where <span class="math notranslate nohighlight">\(n-1\)</span> moves have been made by other agents.</p></li>
+<li><p>After executing our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state <span class="math notranslate nohighlight">\(s_{t+n}\)</span>, where <span class="math notranslate nohighlight">\(n-1\)</span> moves have been made by other agents.</p></li>
 <li><p>We observe <strong>all rewards</strong> that we have received over that sequence, including from other agents.</p></li>
 </ol>
 <p>These two algorithms are equivalent for an extensive form game,  however, rather than simulating “null” actions for an agent when it is not their turn, it is often simpler and less computationally expensive to instead use the latter.</p>

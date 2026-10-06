@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -465,7 +465,7 @@ document.write(`
 <figure class="align-default" id="fig-actor-critic-loop">
 <img alt="An abstract illustration of an actor critic algorithm. There are four boxes: environment, sample action, update actor, and update critic. From sample action to update actor  is an arrow labelled with the letter a-prime, representing the action that will be executed by the agent in the environment. The update actor uses a-prime to update the policy; that is, the actor. From update actor to update critic is an arrow labelled lower-case delta, representing the amount to update the critic. From the critic to the environment is the action a-prime again. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime." src="../_images/actor_critic_loop.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 13 </span><span class="caption-text">An abstraction illustration of the actor-critic framework.</span><a class="headerlink" href="#fig-actor-critic-loop" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">An abstract illustration of the actor-critic framework.</span><a class="headerlink" href="#fig-actor-critic-loop" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p><a class="reference internal" href="#fig-actor-critic-loop"><span class="std std-numref">Fig. 13</span></a> gives an abstract overview of actor-critic frameworks — in this case, Q actor-critic. As with REINFORCE, actions are samples from the stochastic policy <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span>. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.</p>
@@ -498,7 +498,7 @@ document.write(`
 \quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s', a')\\
 \quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)\\
 \quad\quad\quad\quad w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)\\
-\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a) \cdot Q_w(s,a)\\
 \quad\quad\quad\quad s \leftarrow s'; a \leftarrow a'\\
 \quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
 \alguntil\ \pi_{\theta}\ \text{converges}
@@ -507,9 +507,9 @@ document.write(`
 </section>
 </div><p>Note that we have two different learning rates <span class="math notranslate nohighlight">\(\alpha_w\)</span> and <span class="math notranslate nohighlight">\(\alpha_{\theta}\)</span> for the Q-function and policy respectively.</p>
 <p>Let’s analyse the key parts in more detail. The line that updates <span class="math notranslate nohighlight">\(\delta\)</span> is the same as the <span class="math notranslate nohighlight">\(\delta\)</span> calculation in SARSA:  it is temporal difference value for executing action <span class="math notranslate nohighlight">\(a\)</span> in state <span class="math notranslate nohighlight">\(s\)</span>, with the estimate of the future discount reward being <span class="math notranslate nohighlight">\(Q_w(s',a')\)</span>.</p>
-<p>Once the <span class="math notranslate nohighlight">\(\delta\)</span> value is calculated, we update both the actor and the critic.  The weights of the critic <span class="math notranslate nohighlight">\(Q_w\)</span> are updated by following the gradient <span class="math notranslate nohighlight">\(\nabla Q_w(s,a)\)</span> of the critic Q-function at <span class="math notranslate nohighlight">\(s,a\)</span>, and then the parameters of the actor <span class="math notranslate nohighlight">\(\theta\)</span> are updated the same way as in REINFORCE, except that the value of <span class="math notranslate nohighlight">\(\delta\)</span> uses the temporal difference estimate based on <span class="math notranslate nohighlight">\(Q_w(s,a)\)</span> instead of using <span class="math notranslate nohighlight">\(G\)</span>.</p>
+<p>Once the <span class="math notranslate nohighlight">\(\delta\)</span> value is calculated, we update both the actor and the critic.  The weights of the critic <span class="math notranslate nohighlight">\(Q_w\)</span> are updated by following the gradient <span class="math notranslate nohighlight">\(\nabla Q_w(s,a)\)</span> of the critic Q-function at <span class="math notranslate nohighlight">\(s,a\)</span>, and then the parameters of the actor <span class="math notranslate nohighlight">\(\theta\)</span> are updated the same way as in REINFORCE, except that it uses the critic’s estimate <span class="math notranslate nohighlight">\(Q_w(s,a)\)</span> instead of the full episodic return <span class="math notranslate nohighlight">\(G\)</span>.</p>
 <p>So, this simultaneously learns the policy (actor) <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span> and a critic (Q-function) <span class="math notranslate nohighlight">\(Q_w\)</span>, but the critic is learnt only to provide the temporal difference update, not to extract the policy.</p>
-<p><strong>But wait!</strong> Didn’t we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven’t we now gone backwards by including a Q-function? Why not just use the Q-function directly?</p>
+<p><strong>But wait!</strong> Didn’t we say earlier that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven’t we now gone backwards by including a Q-function? Why not just use the Q-function directly?</p>
 <aside class="margin sidebar">
 <p class="sidebar-title"></p>
 <div class="admonition-video-byte-summary-of-policy-gradients admonition">
@@ -659,11 +659,11 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6e7a37327b3b9869cf23a2f9c93f0b5ef5740b833b7fc0c8c0f0eac7431c8087.png" src="../_images/6e7a37327b3b9869cf23a2f9c93f0b5ef5740b833b7fc0c8c0f0eac7431c8087.png" />
-<img alt="../_images/723160061a5521e80aeef9a0d6b45d36569ac83fc0f6e4bd30d178e066f2ef7a.png" src="../_images/723160061a5521e80aeef9a0d6b45d36569ac83fc0f6e4bd30d178e066f2ef7a.png" />
+<img alt="../_images/b42c007c19a5476a2ac86b56adedaadee85bafc4fe21cc2f35e95868dd2ec9ca.png" src="../_images/b42c007c19a5476a2ac86b56adedaadee85bafc4fe21cc2f35e95868dd2ec9ca.png" />
+<img alt="../_images/9c1b795f517140c31cc8a310fa5ca3402b8c16a4cd31d475948f9a6877626488.png" src="../_images/9c1b795f517140c31cc8a310fa5ca3402b8c16a4cd31d475948f9a6877626488.png" />
 </div>
 </div>
-<p>We can see that the actor critic agent has learnt both a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.</p>
+<p>We can see that the actor critic agent has learnt not only a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.</p>
 </section>
 </section>
 <section id="takeaways">

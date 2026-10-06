@@ -339,7 +339,7 @@ class GridWorld(MDP):
         if x >= 0 and x < self.width and y >= 0 and y < self.height:
             return [((x, y), probability)]
 
-        # If off the grid, state in the same state
+        # If off the grid, stay in the same state
         return [(state, probability)]
 
     def get_reward(self, state, action, new_state):

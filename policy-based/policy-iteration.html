@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -473,7 +473,7 @@ document.write(`
 </aside>
 <p>The other common way that MDPs are solved is using <strong>policy iteration</strong> – an approach that is similar to value iteration. While value iteration iterates over value functions, policy iteration iterates over policies themselves, creating a strictly improved policy in each iteration (except if the iterated policy is already optimal).</p>
 <p>Policy iteration first starts with some (non-optimal) policy, such as a random policy, and then calculates the value of each state of the MDP given that policy — this step is called  <strong>policy evaluation</strong>. It then updates the policy itself for every state by calculating the expected reward of each action applicable from that state.</p>
-<p>The basic idea here is that policy evaluation is easier to computer than value iteration because the set of actions to consider is fixed by the policy that we have so far.</p>
+<p>The basic idea here is that policy evaluation is easier to compute than value iteration because the set of actions to consider is fixed by the policy that we have so far.</p>
 </section>
 <section id="policy-evaluation">
 <h2>Policy evaluation<a class="headerlink" href="#policy-evaluation" title="Link to this heading">#</a></h2>
@@ -490,7 +490,7 @@ document.write(`
 <p class="admonition-title">Definition – Policy evaluation</p>
 <p><em>Policy evaluation</em> can be characterised as <span class="math notranslate nohighlight">\(V^{\pi}(s)\)</span> as defined by  the following equation:</p>
 <div class="math notranslate nohighlight">
-\[V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]\]</div>
+\[V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,\pi(s),s') +  \gamma\ V^\pi(s') ]\]</div>
 <p>where <span class="math notranslate nohighlight">\(V^\pi(s)=0\)</span> for terminal states.</p>
 </div>
 <p>Note that this is very similar to the <a class="reference internal" href="../value-based/MDPs.html#sec-mdps-bellman-equation"><span class="std std-ref">Bellman equation</span></a>, except <span class="math notranslate nohighlight">\(V^\pi(s)\)</span> is not the value of the best action, but instead just as the value for <span class="math notranslate nohighlight">\(\pi(s)\)</span>, the action that would be chosen in <span class="math notranslate nohighlight">\(s\)</span> by the policy <span class="math notranslate nohighlight">\(\pi\)</span>. Note the expression <span class="math notranslate nohighlight">\(P_{\pi(s)}(s' \mid s)\)</span> instead of <span class="math notranslate nohighlight">\(P_a(s' \mid s)\)</span>, which means we only evaluate the action that the policy defines.</p>
@@ -506,7 +506,7 @@ document.write(`
 \algrepeat\\
 \quad\quad \Delta \leftarrow 0\\
 \quad\quad \algforeach\ s \in S\\
-\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
+\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,\pi(s),s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
 \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'^\pi(s) - V^\pi(s)|)\\
 \quad\quad V^\pi \leftarrow V'^\pi\\
 \alguntil\ \Delta \leq \theta

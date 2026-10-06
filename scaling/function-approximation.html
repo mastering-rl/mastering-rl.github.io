@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -614,7 +614,7 @@ f_{2,a_3}(s,a) \\
          &amp; = &amp; \sum_{i=0}^{n} f_i(s,a) w^a_i
 \end{array}
 \end{split}\]</div>
-<p>In practice, we also multiple the feature vector for weights <span class="math notranslate nohighlight">\(w^b_n\)</span> for all actions <span class="math notranslate nohighlight">\(b \neq a\)</span>, but as the feature values will be 0, we know that it does not influence the result.</p>
+<p>In practice, we also multiply the feature vector by weights <span class="math notranslate nohighlight">\(w^b_i\)</span> for all actions <span class="math notranslate nohighlight">\(b \neq a\)</span>, but as the feature values will be 0, we know that it does not influence the result.</p>
 <div class="admonition-example-approximate-q-function-computation-for-freeway admonition">
 <p class="admonition-title">Example — Approximate Q-function computation for Freeway</p>
 <p>For the Freeway example, we would assume that moving up would give a better score than moving down, all else equal (that is, if the closest car in the next row up is the same distance away than the closest in the next row down). So, for state <span class="math notranslate nohighlight">\(s\)</span> where the chicken is in row 1:</p>
@@ -641,11 +641,11 @@ f_{2,a_3}(s,a) \\
 <p><span class="math notranslate nohighlight">\(\quad\quad\)</span> For each state-action feature <span class="math notranslate nohighlight">\(i\)</span><br />
 <span class="math notranslate nohighlight">\(\quad\quad\quad\quad w^a_i \leftarrow w^a_i + \alpha \cdot \delta \cdot \ f_i(s,a)\)</span></p>
 <p>where <span class="math notranslate nohighlight">\(\delta\)</span> depends on which algorithm we are using; e.g. Q-learning, SARSA.</p>
-<p>As this is linear, it is therefore convex, so the weights will converge.</p>
+<p>For on-policy methods like SARSA, linear function approximation is guaranteed to converge. However, off-policy methods like Q-learning with linear function approximation can diverge.</p>
 <div class="admonition-note-q-value-propagation admonition">
 <p class="admonition-title">Note — Q-value propagation</p>
 <p>Note that this has the effect of updating Q-values to states that have never been visited!</p>
-<p>In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from <em>any</em> position on the final row.</p>
+<p>In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weights of all features for Up, and now we have a Q-value for going Up from <em>any</em> position on the final row.</p>
 </div>
 <aside class="margin sidebar">
 <p class="sidebar-title"></p>
@@ -725,7 +725,7 @@ we have:</p>
 </div>
 </div>
 </div>
-<p>A linear Q-function is initialised with either some given weights or with a default weight for all weights. The <code class="docutils literal notranslate"><span class="pre">update</span></code> method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding <span class="math notranslate nohighlight">\(\delta \cdot f_i(s,a)\)</span>. Computing the Q-value implements the weighted sum outlined <a class="reference internal" href="#sec-single-agent-q-function-approximation-linear-update"><span class="std std-ref">above</span></a>.</p>
+<p>A linear Q-function is initialised with either some given weights or with a default weight for all weights. The <code class="docutils literal notranslate"><span class="pre">update</span></code> method does as outlined <a class="reference internal" href="#sec-single-agent-q-function-approximation-linear-q-values"><span class="std std-ref">above</span></a>: updates each weight by adding <span class="math notranslate nohighlight">\(\delta \cdot f_i(s,a)\)</span>. Computing the Q-value implements the weighted sum outlined <a class="reference internal" href="#sec-single-agent-q-function-approximation-linear-update"><span class="std std-ref">above</span></a>.</p>
 </section>
 <section id="example-linear-q-function-approximation-on-gridworld">
 <h3>Example: Linear Q-function approximation on Gridworld<a class="headerlink" href="#example-linear-q-function-approximation-on-gridworld" title="Link to this heading">#</a></h3>
@@ -980,7 +980,7 @@ we have:</p>
 <section id="challenges-and-tips">
 <h3>Challenges and tips<a class="headerlink" href="#challenges-and-tips" title="Link to this heading">#</a></h3>
 <p>The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.</p>
-<p><strong>Tip:</strong> Note that to make analysis and debugging easier, our feature values can be <strong>normalised</strong> using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.</p>
+<p><strong>Tip:</strong> Note that to make analysis and debugging easier, our feature values can be <strong>normalised</strong> using e.g. min-max normalisation or mean normalisation. This ensures that each feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.</p>
 </section>
 </section>
 <section id="deep-q-learning">
@@ -1197,8 +1197,8 @@ This is a not a framework specifically for reinforcement learning — it is a ge
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2bea0bf3358eccff7e8c957a960db39546d8801be01626ceb9b9a1040ede3928.png" src="../_images/2bea0bf3358eccff7e8c957a960db39546d8801be01626ceb9b9a1040ede3928.png" />
-<img alt="../_images/fe2b73720ea91f3f97fb303e36190be5397c6adfe6b14faa6ff75f8fa364064c.png" src="../_images/fe2b73720ea91f3f97fb303e36190be5397c6adfe6b14faa6ff75f8fa364064c.png" />
+<img alt="../_images/84fc961c0ea0b7a8b9d25b9ff60ec7b35816b7edbdeac8d35750d15b332dbf5c.png" src="../_images/84fc961c0ea0b7a8b9d25b9ff60ec7b35816b7edbdeac8d35750d15b332dbf5c.png" />
+<img alt="../_images/da272c390f346e57ca43e24bda443936d38a1f7e76d458c8482377e01d515bd1.png" src="../_images/da272c390f346e57ca43e24bda443936d38a1f7e76d458c8482377e01d515bd1.png" />
 </div>
 </div>
 <p>Note the value of the learning rate <span class="math notranslate nohighlight">\(\alpha=1.0\)</span>. This is because the optimiser (called ADAM) that is used  in the PyTorch implementation handles the learning rate in the <code class="docutils literal notranslate"><span class="pre">update</span></code> method of the <code class="docutils literal notranslate"><span class="pre">DeepQFunction</span></code> implementation. Therefore, we do not need to multiply the TD value by the learning rate <span class="math notranslate nohighlight">\(\alpha\)</span> as the ADAM optimiser already does this. By setting <span class="math notranslate nohighlight">\(\alpha=1.0\)</span>, this means that the learning rate is not used in the <code class="docutils literal notranslate"><span class="pre">update</span></code> method, except implicitly by the call to the optimiser.</p>
@@ -1219,7 +1219,7 @@ This is a not a framework specifically for reinforcement learning — it is a ge
 </div>
 <p>We can see that because parameters in the deep Q-function are randomly initialised, the Q-values are random, whereas we initialise linear weights to 0, so Q-values are all 0.</p>
 <p>There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus under fitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.</p>
-<p>The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.</p>
+<p>While linear Q-function approximation has stronger convergence guarantees for on-policy learning, off-policy linear Q-learning can still diverge. Deep Q-function approximation, being highly non-linear, has no such convergence guarantees even for on-policy learning.</p>
 </section>
 <section id="advantages-and-disadvantages">
 <h3>Advantages and disadvantages<a class="headerlink" href="#advantages-and-disadvantages" title="Link to this heading">#</a></h3>

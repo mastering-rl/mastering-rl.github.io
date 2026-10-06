@@ -63,7 +63,7 @@ A **stochastic game** is a tuple $G = (S, s_0, A^1, \ldots A^n, r^1, \ldots, r^n
 - $S$ is a set of states                                     
 - $s_0$ is the initial state
 - $A^j$ is the set of actions for agent $j$, 
-- $P: S \times A^1 \times \ldots A^n \rightarrow \Omega(S)$ is a transition function that defines the probability of arriving in a state given a starting state and the actions chosen by all players
+- $P: S \times A^1 \times \ldots \times A^n \times S \rightarrow [0, 1]$ is a transition function that defines the probability of arriving in a state given a starting state and the actions chosen by all players
 - $r^j : S \times A^1 \times \ldots A^n \times S \rightarrow \mathbb{R}$ is the reward function for agent $j$
 - $\gamma$ is the discount factor
 :::
@@ -83,7 +83,7 @@ $$
 The objective for an agent is to maximise its own expected discounted accumulated reward:
 
 $$
-V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 = s, a = \pi(s_i)]
+V^{\pi^j}(s) = \mathbb{E}_{\pi}\left[\sum_{t=0}^\infty \gamma^t r^j(s_t, a_t, s_{t+1}) \;\middle|\; s_0 = s\right]
 $$
 
 Note that $a = \pi(s_i)$ is the joint action of all agents. So, each agent's objective is to maximise its own expected reward considering the possible actions of all other agents.
@@ -132,13 +132,13 @@ $
 \begin{array}{l}
 \quad\quad\quad\quad \text{Execute action}\ a^j\ \text{in state}\ s\\
 \quad\quad\quad\quad \text{Wait for other agents' actions (via simulation or via play)}\\
-\quad\quad\quad\quad \text{Observe rewards}\ r_t^j, \ldots, r_{t+n}^j\ \text{and new state}\ s_{t+n}\\
-\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j +  \ldots + r_{t+n}^j + \gamma \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]
+\quad\quad\quad\quad \text{Observe rewards}\ r_t^j, r_{t+1}^j, \ldots, r_{t+n-1}^j\ \text{and new state}\ s_{t+n}\\
+\quad\quad\quad\quad Q^j(s,a) \leftarrow Q^j(s,a) + \alpha\cdot [r_t^j + \gamma r_{t+1}^j + \ldots + \gamma^{n-1} r_{t+n-1}^j + \gamma^n \cdot \max_{a'} Q^j(s_{t+n},a') - Q^j(s,a)]
 \end{array}
 $
 
 This algorithm differs from the first  in two main ways:
-1. After execution our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state $s_{t+n}$, where $n-1$ moves have been made by other agents. 
+1. After executing our action, we do not observe the next state immediately, but instead we wait until it is our turn again, and observe state $s_{t+n}$, where $n-1$ moves have been made by other agents. 
 2. We observe **all rewards** that we have received over that sequence, including from other agents.
 
 These two algorithms are equivalent for an extensive form game,  however, rather than simulating "null" actions for an agent when it is not their turn, it is often simpler and less computationally expensive to instead use the latter.

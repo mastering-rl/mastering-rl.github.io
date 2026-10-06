@@ -37,7 +37,7 @@ Experience replay is a reinforcement learning technique in which, instead of exe
 
 ## Why use experience replay?
 
-**Why re-use old traces?** This seems like a strange idea. The reason is really because of the **Independent and Identical Distribution (i.i.d.)** assumption of machine learning. 
+**Why re-use old traces?** This seems like a strange idea. The reason is really because of the **Independent and Identically Distributed (i.i.d.)** assumption of machine learning. 
 
 ```{admonition} Definition -- Independent and Identical Distribution (i.i.d.)
 Machine learning algorithms typically assume that training data is:
@@ -64,7 +64,7 @@ $$\delta \leftarrow r + \gamma \cdot \overbrace{\max_{a'} Q_{target}(s',a')}^{\t
 
 **Why do this?** Doesn't this just basically copy values over so now both functions estimate the same thing? 
 
-Yes! But the trick is that we only update the target Q-function, $Q_{target}$ intermittently at fixed intervals, or update it slowly compared to the policy. For examlpe, we update the target function every 1000 steps by coping over the parameters to the target Q-function, or we update it every step, but with a smoothing factor.
+Yes! But the trick is that we only update the target Q-function, $Q_{target}$ intermittently at fixed intervals, or update it slowly compared to the policy. For example, we update the target function every 1000 steps by copying over the parameters to the target Q-function, or we update it every step, but with a smoothing factor.
 
 The issue with using [Q-function approximation techniques](sec:qfunction-approximation) such as [deep Q-learning](sec:function-approximation:deep-Q-learning) is that when a Q-function is updated, this actually updates many state-action values at the same time, because of the approximation techniques that help this scale. So, this means that if we do an update of the form $\delta \leftarrow r + \gamma \cdot \max_{a'} Q_{policy}(s',a') - Q_{policy}(s,a)$, where $Q_{policy}$ is both used to estimate future reward using $\max_{a'} Q_{policy}(s',a')$, then the actual value of $\max_{a'} Q_{policy}(s',a')$ may in fact be a **different value after the update**, so the estimate can be quite wrong. This leads to instability in the learning.
 
@@ -131,7 +131,7 @@ Typically, we either update every $U > 1$ steps (e.g. $U=100$) using a hard upda
 
 ## Implementation
 
-Below is a Python implementation for experience replay. First, we need to setup of the replay buffer, which is defined in the class ``ReplayBuffer``. This keeps experiences of the form ``("state", "action", "next_state", "reward", "done")``, and allows us to sample random batches.
+Below is a Python implementation for experience replay. First, we need to set up the replay buffer, which is defined in the class ``ReplayBuffer``. This keeps experiences of the form ``("state", "action", "next_state", "reward", "done")``, and allows us to sample random batches.
 
 The ``ExperienceReplayLearner`` class looks quite similar to standard Q-learning, except for: (1) storing and then sampling experiences for replay; and (2) doing a soft update every time ``step % self.update_period == 0``.
 
@@ -141,7 +141,7 @@ The ``ExperienceReplayLearner`` class looks quite similar to standard Q-learning
 
 ```
 
-In our framework, the soft update is encapsulated in the implemention of the Q-function. For example, this is the update for a [deep Q-function](sec:function-approximation:deep-Q-learning) with parameters:
+In our framework, the soft update is encapsulated in the implementation of the Q-function. For example, this is the update for a [deep Q-function](sec:function-approximation:deep-Q-learning) with parameters:
 
 ```{code-cell} ipython3
 :tags: [remove-input]

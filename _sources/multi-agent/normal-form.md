@@ -27,7 +27,7 @@ In the following chapters, we will look at **games**. By  "games", we do not onl
 
 The standard definition of an MDP is for a single agent, who controls all of the actions. In a multi-agent system, we face further challenges: the effects of actions and the rewards we receive are dependent also on the actions of the agents. In fact, the other agents can even be our adversaries, so they may be working to minimise our rewards.
 
-First, we look at **normal form games**, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or **payoff** that they receive is dependent on the moves of the other agents.
+First, we look at **normal form games**, which are single-shot (non-sequential) games where a group of agents each has to play a move (execute an action) at the same time as all others, but the reward (or **payoff**) that they receive is dependent on the moves of the other agents.
 
 
 Then, we look at **extensive form games**, which are sequential games, meaning that there are multiple actions played in sequence.
@@ -68,7 +68,7 @@ Consider the following (hopefully fictional) scenario. You and your partner in c
 
 You and your partner in crime are placed in separate cells, unable to communicate with each other. The police offer you each the following deal:
 - If neither of you admit your guilt, you will be charged with carrying illegal weapons, and receive 1 year each in prison.
-- - If one of you admits both are guilty, while the other does not, the prisoner that admitted will get off free in exchange for the confession, while the other prisoner will receive 4 years in prison.
+- If one of you admits both are guilty, while the other does not, the prisoner that admitted will get off free in exchange for the confession, while the other prisoner will receive 4 years in prison.
 - If both of you admit you are guilty, you will each receive 2 years in prison --- the length is reduced from 4 years in exchange for your confession.
 
 What do you do: admit or deny?
@@ -131,7 +131,7 @@ A **normal form game** is a tuple $G = (N, A, u)$
 
 - $N$ is a set of $n$ number of players
 - $A = A_1 \times \ldots \times A_n$ is an **action profile**, where $A_i$ is the set of actions for player $i$. Thus, an action profile $a = (a_1,\ldots,a_n)$ describes the simultaneous moves by all players.
-- $u : A \rightarrow \mathbb{R}^N$ is a reward function that returns an $N$-tuple specifying the payoff each player receives in state $S$. This is called the **utility** for an action.
+- $u : A \rightarrow \mathbb{R}^n$ is a reward function that returns an $n$-tuple specifying the payoff each player receives for the action profile $a$. This is called the **utility** for an action.
 :::
 
 Normal game games can be visualised as matrices, as shown above for the prisoner's dilemma, with each agent representing one dimension of the matrix, each row represents an action for a player, and each cell represents the utility received when the players each take the action.
@@ -193,7 +193,7 @@ Then, we look at solutions at the concept of **equilibria**, which captures solu
 Informally, the concept of a best response refers to the best strategy that an agent  could select *if* it know how all of the other agents in the game were going to play.
 
 :::{admonition} Definition -- Best response
-The **best response** for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_(s^*_i, s_{-i}) \geq u_(s'_i, s_{-i})$ for all strategies $s'_i \in S_i$
+The **best response** for an agent $i$ if its opponents play strategy profile $s_{-i} \in S_{-i}$ is a mixed  strategy $s^*_i \in S_i$ such that $u_i(s^*_i, s_{-i}) \geq u_i(s'_i, s_{-i})$ for all strategies $s'_i \in S_i$
 :::
 
 Note that for many problems, there can be multiple best responses.
@@ -486,7 +486,7 @@ It is clear that having a uniform strategy is not the best strategy, but we can 
 
 If $Y$ is the probability that the adversary will attack Terminal 1, then the expected utility of the defender's two pure strategies are:
 
-$\quad\quad U_D(T1) = 5Y + -1(1 - Y) = 6Y - 1$
+$\quad\quad U_D(T1) = 1Y + -5(1 - Y) = 6Y - 5$
 
 $\quad\quad U_D(T2) = -5Y + 2(1 - Y) = 2 - 7Y$
 
@@ -495,31 +495,32 @@ If the adversary wants to make the defender indifferent between its two pure str
 $$
  \begin{array}{rcl}
   U_D(T1) & = & U_D(T2)\\
-  6Y - 1  & = & 2 - 7Y\\
-  3       & = & 13Y\\
-  Y       & = & \frac{3}{13}
+  6Y - 5  & = & 2 - 7Y\\
+  13Y     & = & 7\\
+  Y       & = & \frac{7}{13}
  \end{array}
 $$
 
 
-So, the adversary should target Terminal 1 with probability $\frac{3}{13}$ and Terminal 2 with probability $\frac{10}{13}$.
+So, the adversary should target Terminal 1 with probability $\frac{7}{13}$ and Terminal 2 with probability $\frac{6}{13}$.
 
 If $X$ is the probability that the defender will defend Terminal 1, then the expected utility of the adversary's two pure strategies are:
 
-$\quad\quad U_A(T1) = -3X + 5(1-X) = 5 - 8X$
+$\quad\quad U_A(T1) = -1X + 5(1-X) = 5 - 6X$
 
-$\quad\quad U_A(T2) = 1X + -1(1-X) = 2X - 1$
+$\quad\quad U_A(T2) = 3X + -1(1-X) = 4X - 1$
 
 If the defender wants to make the adversary indifferent between its two pure strategies, then the utility for the adversary's two pure strategies must be the same:
 
 $$
  \begin{array}{rcl}
   U_A(T1) & = & U_A(T2)\\
-  5 - 8X  & = & 2X - 1\\
+  5 - 6X  & = & 4X - 1\\
        6  & = & 10X\\
        X  & = & \frac{6}{10}
  \end{array}
 $$
+
 
 So, the defender should choose to defend Terminal 1 with the probability $\frac{3}{5}$ and Terminal 2 with $\frac{2}{5}$.
 ````

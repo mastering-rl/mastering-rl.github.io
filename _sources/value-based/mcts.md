@@ -108,7 +108,7 @@ The algorithm is online, which means the action selection is interleaved with ac
 
 Fundamental features:
 
-1.  The Q-value $Q(s,a)$ for each is approximated using **random simulation**.
+1.  The Q-value $Q(s,a)$ for each action is approximated using **random simulation**.
 
 2.  For a single-agent problem, an ExpectiMax **search tree** is built incrementally
 
@@ -126,7 +126,7 @@ Fundamental features:
 ```
 ````
 
-The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is **incrementally** built be iterating over the following four steps:
+The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is **incrementally** built by iterating over the following four steps:
 
 -   **Select**: Select a single node in the tree that is **not fully expanded**. By this, we mean at least one of its children is not yet explored.
     
@@ -521,7 +521,7 @@ A simple overview:
 
 3.  At each move, AlphaZero:
 
-    1.  Executes an MCTS search using UCB-like selection: $Q(s,a) + P(s,a)/(1+N(s,a))$,
+    1.  Executes an MCTS search using UCB-like selection: $Q(s,a) + U(s,a)$, where $U(s,a) \propto \frac{P(s,a)}{1+N(s,a)}$,
         which returns the probabilities of playing each move.
 
     2.  The neural network is used to guide the MCTS by influencing

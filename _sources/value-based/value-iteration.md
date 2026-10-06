@@ -113,7 +113,7 @@ Value iteration **converges** to the optimal value function $V^*$ asymptotically
 
 A policy can now be easily defined: in a state $s$, given $V$, choose the action with the highest expected reward using [policy extraction](sec:mdps:policy-extraction). 
 
-The loss of the result greedy policy terminating after $k$ iterations is bounded by $\frac{2 \gamma  \delta_{max}}{1-\gamma}$, where $\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|$.
+The loss of the resulting greedy policy terminating after $k$ iterations is bounded by $\frac{2 \gamma  \delta_{max}}{1-\gamma}$, where $\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|$.
 
 Note that we do not need an optimal value function $V$ to obtain an optimal policy. A value function that is "close enough" can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not *know* whether a policy is optimal unless we know the value function is optimal.
 

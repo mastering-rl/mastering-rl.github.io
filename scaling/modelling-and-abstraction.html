@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -485,7 +485,7 @@ document.write(`
 <section id="state-abstraction">
 <h2>State abstraction<a class="headerlink" href="#state-abstraction" title="Link to this heading">#</a></h2>
 <p>In some cases, the size of the state space can be abstracted by combining some states that are different, but are either equivalent from a semantic view, or are similar enough that they will lead to the same action most of the time.</p>
-<p>AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then <em>which</em> corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information</p>
+<p>AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then <em>which</em> corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information.</p>
 <p>Other abstraction techniques may lose information, but still be useful. For example, the state abstraction in GridWorld from precise coordinates into a simple grid.</p>
 </section>
 <section id="action-abstraction">
@@ -493,7 +493,7 @@ document.write(`
 <p>Similar to state abstraction, we can abstract actions. There are two main ways:</p>
 <ol class="arabic simple">
 <li><p>Abstract sequences of smaller actions into single higher-level actions, such as in the GridWorld domain where we abstract  physical navigation actions to just <code class="docutils literal notranslate"><span class="pre">Left</span></code>, <code class="docutils literal notranslate"><span class="pre">Right</span></code>, <code class="docutils literal notranslate"><span class="pre">Up</span></code>, and <code class="docutils literal notranslate"><span class="pre">Down</span></code>.</p></li>
-<li><p>We can also <strong>group similar actions</strong> into a single action. For example, in the GridWorld domain, if we have lower-level actions like <code class="docutils literal notranslate"><span class="pre">Rotate</span></code>, which rotates by a given number of degrees, instead of reasoning about 360 different version of <code class="docutils literal notranslate"><span class="pre">Rotate</span></code> (one for each degree), we could group actions into buckets: one abstract action for turning 0-15, one for 16-30, etc. We <strong>lose information/precision</strong>, but in may cases, the solution may be good enough, and the problem is much easier to solve.</p></li>
+<li><p>We can also <strong>group similar actions</strong> into a single action. For example, in the GridWorld domain, if we have lower-level actions like <code class="docutils literal notranslate"><span class="pre">Rotate</span></code>, which rotates by a given number of degrees, instead of reasoning about 360 different versions of <code class="docutils literal notranslate"><span class="pre">Rotate</span></code> (one for each degree), we could group actions into buckets: one abstract action for turning 0-15, one for 16-30, etc. We <strong>lose information/precision</strong>, but in many cases, the solution may be good enough, and the problem is much easier to solve.</p></li>
 </ol>
 </section>
 <section id="rewarding-sub-goals">
@@ -510,7 +510,7 @@ document.write(`
 </ol>
 <p>For example, consider the single-agent card game <em>Solitaire</em>. The aim of the game is to win by having all cards placed in four piles, with various rules for when you can move a card to the pile. Each pile must be in order from ace to king, all of the same suit.</p>
 <p>Imagine we are given a  simulator for Solitaire and the only reward received  for winning the game by arriving in one of the terminal states where the cards are in the correct piles. This reward would only be given in that terminal state, and requires perhaps a few hundred actions to arrive at.</p>
-<p>Simulations of a game like this would have to be long because there are no rewards until the end of the game, and we would spend a LOT of random actions before we first won the game By re-distributed sub-goals that give a reward whenever a correct card is place on one of the piles, we feed rewards forward much earlier and give information for our reinforcement learning algorithm to exploit.</p>
+<p>Simulations of a game like this would have to be long because there are no rewards until the end of the game, and we would spend a LOT of random actions before we first won the game. By re-distributing sub-goals that give a reward whenever a correct card is place on one of the piles, we feed rewards forward much earlier and give information for our reinforcement learning algorithm to exploit.</p>
 <p>This idea can be implemented using <a class="reference internal" href="reward-shaping.html#sec-single-agent-reward-shaping"><span class="std std-ref">reward shaping</span></a>. In these notes, we focused on potential-based reward shaping, which gives small “fake” rewards. This effectively asks that you define a heuristic for states that guide the agent towards promising actions early during learning when there is not much information to exploit. By using sub-goals, we can give a shaped reward <span class="math notranslate nohighlight">\(\Phi(s)\)</span> to any state that is a sub-goal, and assign <span class="math notranslate nohighlight">\(\Phi(s)=0\)</span> for any state that does not. Thinking about reward shaping as sub-goals can often be conceptually simpler to implement than considering it as an heuristic.</p>
 <p>Alternatively, we can just “intercept” the real reward function with our new reward function and not use reward shaping, but reward shaping is a more principled way of doing this and offers convergence guarantees when using Q-tables and linear approximation.</p>
 </section>

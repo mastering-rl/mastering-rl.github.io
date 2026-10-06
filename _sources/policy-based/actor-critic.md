@@ -45,7 +45,7 @@ The sample efficiency problem in REINFORCE leads to issues with policy convergen
 name: fig:actor_critic_loop
 alt: "An abstract illustration of an actor critic algorithm. There are four boxes: environment, sample action, update actor, and update critic. From sample action to update actor  is an arrow labelled with the letter a-prime, representing the action that will be executed by the agent in the environment. The update actor uses a-prime to update the policy; that is, the actor. From update actor to update critic is an arrow labelled lower-case delta, representing the amount to update the critic. From the critic to the environment is the action a-prime again. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime."
 ---
-An abstraction illustration of the actor-critic framework.
+An abstract illustration of the actor-critic framework.
 ```
 
 {numref}`fig:actor_critic_loop` gives an abstract overview of actor-critic frameworks --- in this case, Q actor-critic. As with REINFORCE, actions are samples from the stochastic policy $\pi_{\theta}$. Given the next action, we update the actor (the policy) and then the critic (the value function or Q function). The selected action is executed in the environment, and the agent receives the reward and next state observation.
@@ -80,7 +80,7 @@ $
 \quad\quad\quad\quad \text{Select action}\ a' \sim \pi_\theta(s', a')\\
 \quad\quad\quad\quad \delta \leftarrow r + \gamma \cdot  Q_w(s',a') - Q_w(s,a)\\
 \quad\quad\quad\quad w  \leftarrow w + \alpha_w \cdot \delta \cdot \nabla Q_w(s,a)\\
-\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \delta \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha_{\theta} \cdot \nabla \textrm{ln}\ \pi_{\theta}(s,a) \cdot Q_w(s,a)\\
 \quad\quad\quad\quad s \leftarrow s'; a \leftarrow a'\\
 \quad\quad \alguntil\ s\ \text{is the last state of episode}\ e\ \text{(a terminal state)}\\
 \alguntil\ \pi_{\theta}\ \text{converges}
@@ -92,11 +92,11 @@ Note that we have two different learning rates $\alpha_w$ and $\alpha_{\theta}$ 
 
 Let's analyse the key parts in more detail. The line that updates $\delta$ is the same as the $\delta$ calculation in SARSA:  it is temporal difference value for executing action $a$ in state $s$, with the estimate of the future discount reward being $Q_w(s',a')$. 
 
-Once the $\delta$ value is calculated, we update both the actor and the critic.  The weights of the critic $Q_w$ are updated by following the gradient $\nabla Q_w(s,a)$ of the critic Q-function at $s,a$, and then the parameters of the actor $\theta$ are updated the same way as in REINFORCE, except that the value of $\delta$ uses the temporal difference estimate based on $Q_w(s,a)$ instead of using $G$.
+Once the $\delta$ value is calculated, we update both the actor and the critic.  The weights of the critic $Q_w$ are updated by following the gradient $\nabla Q_w(s,a)$ of the critic Q-function at $s,a$, and then the parameters of the actor $\theta$ are updated the same way as in REINFORCE, except that it uses the critic's estimate $Q_w(s,a)$ instead of the full episodic return $G$.
 
 So, this simultaneously learns the policy (actor) $\pi_{\theta}$ and a critic (Q-function) $Q_w$, but the critic is learnt only to provide the temporal difference update, not to extract the policy.
 
-**But wait!** Didn't we say early that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven't we now gone backwards by including a Q-function? Why not just use the Q-function directly?
+**But wait!** Didn't we say earlier that the weakness of value-based methods was that they could not extend to continuous action spaces? Haven't we now gone backwards by including a Q-function? Why not just use the Q-function directly?
 
 ````{margin}
 ```{admonition} Video byte: Summary of policy gradients
@@ -132,7 +132,7 @@ Now, we can create a policy and Q-function using any differentiable policy and a
 ```
 
 
-We can see that the actor critic agent has learnt both a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
+We can see that the actor critic agent has learnt not only a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.
 
 
 ## Takeaways

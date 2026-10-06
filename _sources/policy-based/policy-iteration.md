@@ -49,7 +49,7 @@ The other common way that MDPs are solved is using **policy iteration** -- an ap
 
 Policy iteration first starts with some (non-optimal) policy, such as a random policy, and then calculates the value of each state of the MDP given that policy --- this step is called  **policy evaluation**. It then updates the policy itself for every state by calculating the expected reward of each action applicable from that state.
 
-The basic idea here is that policy evaluation is easier to computer than value iteration because the set of actions to consider is fixed by the policy that we have so far.
+The basic idea here is that policy evaluation is easier to compute than value iteration because the set of actions to consider is fixed by the policy that we have so far.
 
 ## Policy evaluation
 
@@ -66,7 +66,7 @@ The **expected reward** of policy $\pi$ from $s$, $V^\pi(s)$, is the weighted av
 :::{admonition} Definition -- Policy evaluation
 *Policy evaluation* can be characterised as $V^{\pi}(s)$ as defined by  the following equation:
 
-$$V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]$$
+$$V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,\pi(s),s') +  \gamma\ V^\pi(s') ]$$
 
 where $V^\pi(s)=0$ for terminal states.
 :::
@@ -86,7 +86,7 @@ $
 \algrepeat\\
 \quad\quad \Delta \leftarrow 0\\
 \quad\quad \algforeach\ s \in S\\
-\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
+\quad\quad\quad\quad \underbrace{V'^{\pi}(s) \leftarrow \sum_{s' \in S}  P_{\pi(s)}(s' \mid s)\ [r(s,\pi(s),s') +  \gamma\ V^\pi(s') ]}_{\text{Policy evaluation equation}}\\
 \quad\quad\quad\quad \Delta \leftarrow \max(\Delta, |V'^\pi(s) - V^\pi(s)|)\\
 \quad\quad V^\pi \leftarrow V'^\pi\\
 \alguntil\ \Delta \leq \theta

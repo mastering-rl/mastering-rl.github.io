@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -467,8 +467,8 @@ document.write(`
 <p>We look at three main ways to solve extensive form games:</p>
 <ol class="arabic simple">
 <li><p>In a model-based game, we can use <strong>backward induction</strong>, which is where we calculate an equilibrium for every subgame of the game, and these to decide our moves.</p></li>
-<li><p>In a model-free game, we can use <strong>model-free reinforcement learning</strong>. These are very similar to techniques such as Q-learning or policy gradient methods, except that there are other players that can effect our rewards, rather than just ourselves and the environment.</p></li>
-<li><p>If we have a simulation, we can use model-free techniques or <strong>multi-agent Monte-Carlo tree search</strong> (MCTS), which is similar to single-agent MCTS, except again there are other players that can effect our rewards, rather than just ourselves and the environment.</p></li>
+<li><p>In a model-free game, we can use <strong>model-free reinforcement learning</strong>. These are very similar to techniques such as Q-learning or policy gradient methods, except that there are other players that can affect our rewards, rather than just ourselves and the environment.</p></li>
+<li><p>If we have a simulation, we can use model-free techniques or <strong>multi-agent Monte-Carlo tree search</strong> (MCTS), which is similar to single-agent MCTS, except again there are other players that can affect our rewards, rather than just ourselves and the environment.</p></li>
 </ol>
 <p>In these notes, we will look only at <strong>perfect information</strong> extensive form games, which means that the game state is <strong>fully observable to all players</strong>.</p>
 </section>
@@ -485,13 +485,13 @@ document.write(`
 <p class="admonition-title">Definition – Perfect information extensive form game</p>
 <p>A perfect information extensive form game is a tuple <span class="math notranslate nohighlight">\(G = (N, S, s_0, A, P, T, r)\)</span></p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(N\)</span> is a set of <span class="math notranslate nohighlight">\(n\)</span> <strong>number of players</strong></p></li>
+<li><p><span class="math notranslate nohighlight">\(N\)</span> is a set of <span class="math notranslate nohighlight">\(n\)</span> <strong>players</strong></p></li>
 <li><p><span class="math notranslate nohighlight">\(S\)</span> is a set of <strong>states</strong> (or <strong>node</strong>)</p></li>
 <li><p><span class="math notranslate nohighlight">\(s_0\)</span> is the <strong>initial state</strong></p></li>
 <li><p><span class="math notranslate nohighlight">\(A: S \rightarrow 2^A\)</span> is a function that specifies the allowed actions from each state <span class="math notranslate nohighlight">\(s  \in S\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(P: S \rightarrow N\)</span> is a  function that specifies which player chooses the action at a node (whose turn it is)</p></li>
 <li><p><span class="math notranslate nohighlight">\(T : S \times A \rightarrow S\)</span> is a <strong>transition function</strong> that specifies the successor state for choosing an action in a state</p></li>
-<li><p><span class="math notranslate nohighlight">\(r : S \rightarrow \mathbb{R}^N\)</span> is a <strong>reward function</strong> that returns an <span class="math notranslate nohighlight">\(N\)</span>-tuple specifying the payoff each player receives in state <span class="math notranslate nohighlight">\(S\)</span>. In some texts, this may be called <span class="math notranslate nohighlight">\(u\)</span> instead of <span class="math notranslate nohighlight">\(r\)</span>, to represent <strong>utility</strong>, but we will use <span class="math notranslate nohighlight">\(r\)</span> in these notes.</p></li>
+<li><p><span class="math notranslate nohighlight">\(r : S \rightarrow \mathbb{R}^n\)</span> is a <strong>reward function</strong> that returns an <span class="math notranslate nohighlight">\(n\)</span>-tuple specifying the payoff each player receives in state <span class="math notranslate nohighlight">\(S\)</span>. In some texts, this may be called <span class="math notranslate nohighlight">\(u\)</span> instead of <span class="math notranslate nohighlight">\(r\)</span>, to represent <strong>utility</strong>, but we will use <span class="math notranslate nohighlight">\(r\)</span> in these notes.</p></li>
 </ul>
 </div>
 <p>An extensive form game forms a tree, due to its sequential nature.</p>
@@ -692,7 +692,7 @@ document.write(`
 <p>For an extensive form game <span class="math notranslate nohighlight">\(G\)</span>, the set of <strong>pure strategies</strong> for a player <span class="math notranslate nohighlight">\(i\)</span> is the Cartesian product <span class="math notranslate nohighlight">\(\Pi_{s\in S,P(s)=i}A(s)\)</span>.</p>
 </div>
 <p>Therefore, a pure strategy for player <span class="math notranslate nohighlight">\(i\)</span> tells them what move to take in each state where it is their turn.</p>
-<p>An optimal solution for an extensive form game is called the <strong>subgame-perfect equilibrium</strong> for that game.  Before we define what subgame-perfect equilibria are, we first need to define what sub-games are..</p>
+<p>An optimal solution for an extensive form game is called the <strong>subgame-perfect equilibrium</strong> for that game.  Before we define what subgame-perfect equilibria are, we first need to define what sub-games are.</p>
 <div class="admonition-definition-sub-game admonition">
 <p class="admonition-title">Definition – Sub-game</p>
 <p>Given an extensive form game <span class="math notranslate nohighlight">\(G\)</span>, the <strong>sub-game</strong> of <span class="math notranslate nohighlight">\(G\)</span> rooted at the node <span class="math notranslate nohighlight">\(s_g \in S\)</span> is the game <span class="math notranslate nohighlight">\(G_{s_g}=  (N, S, s_{g}, A, T, r)\)</span>; that is, the part of the game tree in which <span class="math notranslate nohighlight">\(s_g\)</span> is the root node and its descendants are the same as its descendants in <span class="math notranslate nohighlight">\(G\)</span>.</p>
@@ -703,7 +703,7 @@ document.write(`
 <p>The <strong>subgame-perfect equilibria</strong> (SPE) of a game <span class="math notranslate nohighlight">\(G\)</span> consists of all strategy profiles for the N agents such that for any subgame <span class="math notranslate nohighlight">\(G_{s_g}\)</span> of <span class="math notranslate nohighlight">\(G\)</span>, the strategy for player <span class="math notranslate nohighlight">\(P(s_g)\)</span> is the best response for that player at <span class="math notranslate nohighlight">\(s_g\)</span>.</p>
 </div>
 <p>Therefore, a sub-game perfect equilibria is the best response for every agent in the game when it is their turn.</p>
-<p>As an example, consider the sharing game. In this case, the same game on the left and middle have two equilibria because the payoffs for each of the moves are zero for the sister. In such a case, ties can be broken randomly or we can take all best responses. We can represent the subgame-perfect equilibria for the sharing game as follows, where the thicker arcs specify the move that the player should make (where the ties are broken randomly):</p>
+<p>As an example, consider the sharing game. In this case, the sub-game on the left and middle have two equilibria because the payoffs for each of the moves are zero for the sister. In such a case, ties can be broken randomly or we can take all best responses. We can represent the subgame-perfect equilibria for the sharing game as follows, where the thicker arcs specify the move that the player should make (where the ties are broken randomly):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mastering_rl.extensive_form_games.sharing_game</span> <span class="kn">import</span> <span class="n">SharingGame</span>

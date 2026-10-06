@@ -39,7 +39,7 @@ In the previous sections on of this chapter, we looked at two fundamental tempor
 
 These two methods have some weaknesses in this basic format:
 
-1.  Unlike Monte-Carlo methods, which reach a reward and then backpropagate this reward, TD methods use bootstrapping (they estimate the future discounted reward using $Q(s,a)$), which means  that for problems with sparse rewards, it can take a long time to for rewards to propagate throughout a Q-function.
+1.  Unlike Monte-Carlo methods, which reach a reward and then backpropagate this reward, TD methods use bootstrapping (they estimate the future discounted reward using $Q(s,a)$), which means  that for problems with sparse rewards, it can take a long time for rewards to propagate throughout a Q-function.
 2.  Rewards can be sparse, meaning that there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. 
 3.  Both methods estimate a Q-function $Q(s,a)$, and the simplest way to model this is via a Q-table. However, this requires us to maintain a table of size $|A| \times |S|$, which is prohibitively large for any non-trivial problem.
 4.  Using a Q-table requires that we visit every reachable state many times and apply every action many times to get a good estimate of  $Q(s,a)$. Thus, if we never visit a state $s$, we have no estimate  of $Q(s,a)$, even if we have visited states that are very similar to $s$.
@@ -189,7 +189,7 @@ $
 \quad\quad\quad\quad\quad\quad \text{Observe reward}\ r\ \text{and new state}\ s'\\
 \quad\quad\quad\quad\quad\quad \text{Select action}\ a'\ \text{to apply in}\ s'\ \text{using}\ Q\ \text{and a multi-armed bandit algorithm}\\
 \quad\quad\quad\quad\quad\quad \vec{s} \leftarrow \vec{s} + \langle s' \rangle\\
-\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{s} + \langle a' \rangle\\
+\quad\quad\quad\quad\quad\quad \vec{a} \leftarrow \vec{a} + \langle a' \rangle\\
 \quad\quad\quad\quad\quad\quad \vec{r} \leftarrow \vec{r} + \langle r\rangle\\
 \quad\quad\quad\quad \algif\ |\vec{s}| \geq n\ \algor\ s\ \text{is a terminal state}\ \algthen\\
 \quad\quad\quad\quad\quad\quad G \leftarrow \sum^{|\vec{r}| - 1}_{i=0}\gamma^{i}\vec{r}_i\\
@@ -210,7 +210,7 @@ This is similar to standard SARSA, except that we are storing the last $n$ state
 
 As with SARSA and Q-learning, we iterate over each step in the episode. The first branch simply executes the selected action, selects a new action to apply, and stores the state, action, and reward.
 
-It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $\vec{r}$, but remembering that they must be discounted based on their position in $\vec{r}$. The next line  adds the TD-estimate $y^n Q(s',a')$ to $G$, but only is the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiple this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $\vec{s}_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(\vec{s}_0, \vec{a}_0)$ that is $n$-steps back.
+It is the second branch where the actual learning happens. Instead of just updating with the 1-step reward $r$,  we use  the $n$-step reward $G$. This requires a bit of "book-keeping". The first thing we do is calculate $G$. This simply sums up the elements in the reward sequence $\vec{r}$, but remembering that they must be discounted based on their position in $\vec{r}$. The next line  adds the TD-estimate $\gamma^n Q(s',a')$ to $G$, but only if the most recent state is not a terminal state. If we have already reached the end of the episode, then we must exclude the TD-estimate of the future reward, because there will be no such future reward. Of importance, also note that we multiply this by $\gamma^n$ instead of $\gamma$. Why? This because the future estimated reward is $n$ steps from state $\vec{s}_0$. The $n-step$ reward in $G$ comes first. Then we do the actual update, which updates the state-action pair $(\vec{s}_0, \vec{a}_0)$ that is $n$-steps back.
 
 The final part of this branch removes the first element from the list of states, actions, and rewards, and moves on to the next state.
 
@@ -281,7 +281,7 @@ $
 &       & Q((2,1), Up) = 0 + 0.5[0.9 - 0] = 0.45\\[1mm]
 & \text{Step 11} & \vec{r} = \langle 1\rangle\\
 &      & G = \gamma^0 \vec{r}_0 = 0.9^0 \cdot 1 = 1\\
-&      & Q((2,2, Right) = 0 + 0.5[1  \cdot 1 - 0] = 0.5
+&      & Q((2,2), Right) = 0 + 0.5[1  \cdot 1 - 0] = 0.5
 \end{array}
 $
 

@@ -18,14 +18,14 @@ Each individual HTML page can be downloaded as a [Jupyter notebook](https://jupy
 
 ## About the code
 
-All code in this book is executable. You can download the code from [here](https://mastering-rl.github.io/_static/code.zip). It is licensed under the MIT license; see details in the [Licenses section](sec:forward:licenses) at the end of this chapter.
+All code in this book is executable. You can download the code from [here](https://mastering-rl.github.io/_static/code.zip). It is licensed under the MIT license; see details in the [Licenses section](sec:foreword:licenses) at the end of this chapter.
 
 ```{note}
 The code in this book is written for understandability rather than efficiency. It is not intended to be production-level code, such as the [Keras RL](https://github.com/keras-rl/keras-rl) or the [Stable-Baselines3](https://stable-baselines3.readthedocs.io/) reinforcement learning packages.
 
 If you understand the code in these notes, you will have little problem using production-level packages such as Keras RL and Stable-Baselines3.
 
-The code in this book is written with the attempt to use basic Python with very little Python-specific specific to enable those less familiar with Python to understand code snippets.
+The code in this book is written with the attempt to use basic Python with very little Python-specific syntax to enable those less familiar with Python to understand code snippets.
 
 The code in this book is written using as few external libraries as possible, to make this easy to download and run yourself.
 ```
@@ -40,7 +40,7 @@ Most files in the code have a ``main`` function that can be run using just ``pyt
 
 3. The [Graphviz Python library](https://graphviz.readthedocs.io/en/stable/) for drawing trees. You can download from the website or use ``pip install graphviz``. To render the generated graphs, you will also need to install [Graphviz the tool](https://www.graphviz.org/download/), which is called by the Python package.
 
-4. The [PyTorch deep learning framework](https://pytorch.org/) is used for all deep reinforcement learning code in the book. You can download from the website or use ``pip install torch''.
+4. The [PyTorch deep learning framework](https://pytorch.org/) is used for all deep reinforcement learning code in the book. You can download from the website or use `pip install torch`.
 
 ## About the author
 
@@ -56,11 +56,11 @@ Thanks to Alan Lewis for his excellent idea of demonstrating [policy gradients u
 
 Thanks to Emma Baillie for the idea and implementation of the Contested Crossing examples, and for writing the code to run these examples on the various algorithms.
 
-Thanks for [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the example of the [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
+Thanks to [Dr Cathy Wu](http://www.wucathy.com/) for the idea and code for the example of the [poorly-designed potential function](sec:reward_shaping:bad_potential_function).
 
-Thanks for Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.
+Thanks to Antoine Basseto for so much excellent work in refactoring code, and the many minor fixes he made to the book.
 
-(sec:forward:licenses)=
+(sec:foreword:licenses)=
 ## Licenses
 
 ```{image} ../assets/by-nc-sa.png

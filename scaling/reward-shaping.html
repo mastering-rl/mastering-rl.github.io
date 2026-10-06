@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -495,8 +495,8 @@ problems automatically.</p></li>
 <iframe width="248" height="141" src="https://www.youtube.com/embed/S6X7Kb7v3II?start=90" title="Reward shaping" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </aside>
-<div class="admonition-definition-reward-sharping admonition">
-<p class="admonition-title">Definition – Reward sharping</p>
+<div class="admonition-definition-reward-shaping admonition">
+<p class="admonition-title">Definition – Reward shaping</p>
 <p><strong>Reward shaping</strong> is the use of small intermediate ‘fake’ rewards given to the learning agent that help it converge more quickly.</p>
 </div>
 <p>In many applications, you will have some idea of what a good solution should look like. For example, in our simple navigation task, it is clear that moving towards the reward of +1 and away from the reward of -1 are likely to be good solutions.</p>
@@ -835,7 +835,7 @@ at any arbitrary Q-function. The closer our Q-values is to the optimal Q-values,
 <li><p>A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.</p></li>
 <li><p><strong>Reward shaping</strong> takes in some domain knowledge that “nudges” the learning algorithm towards more positive actions.</p></li>
 <li><p><strong>Q-value initialisation</strong> is a “guess” of the initial Q-values to guide early exploration</p></li>
-<li><p>Reward sharping and Q-value initialisation are equivalent if our potential function is static.</p></li>
+<li><p>Reward shaping and Q-value initialisation are equivalent if our potential function is static.</p></li>
 <li><p><strong>Potential-based reward shaping</strong> guarantees that the policy will converge to the same policy without reward shaping.</p></li>
 </ul>
 </div>

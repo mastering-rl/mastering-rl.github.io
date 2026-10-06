@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -871,7 +871,7 @@ Q((2,2),Up) &amp; \leftarrow &amp; Q((2,2),Up) + \alpha [r + \gamma \max_{a'} Q(
 </div>
 <p>Note a slight difference in the update from <a class="reference internal" href="#algorithm:q-learning">Algorithm 4</a> and the update in the code:</p>
 <p><code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">=</span> <span class="pre">reward</span> <span class="pre">+</span> <span class="pre">(self.mdp.discount_factor</span> <span class="pre">*</span> <span class="pre">next_state_value</span> <span class="pre">*</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">done))</span> <span class="pre">-</span> <span class="pre">q_value</span></code></p>
-<p>The expression <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">done</span></code> will equal 0 if the episode has not finished, and 1 otherwise. Therefore, this update calculates that <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">=</span> <span class="pre">reward</span> <span class="pre">-</span> <span class="pre">q_value</span></code> at a terminal state – we do not need to estimate the value of the next state because there is no next state for a terminal state.</p>
+<p>The expression <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">done</span></code> will equal 1 if the episode has not finished, and 0 otherwise. Therefore, this update calculates that <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">=</span> <span class="pre">reward</span> <span class="pre">-</span> <span class="pre">q_value</span></code> at a terminal state – we do not need to estimate the value of the next state because there is no next state for a terminal state.</p>
 <p>We will see later that we inherit from <code class="docutils literal notranslate"><span class="pre">TemporalDifferenceLearner</span></code> for other algorithms that are very similar to Q-learning.</p>
 <p>We inherit from this class to implement the Q-learning algorithm:</p>
 <div class="cell docutils container">
@@ -945,7 +945,7 @@ Q((2,2),Up) &amp; \leftarrow &amp; Q((2,2),Up) + \alpha [r + \gamma \max_{a'} Q(
 <iframe width="248" height="141" src="https://www.youtube.com/embed/lNxIB8jGWmI?start=1766" title="Temporal difference learning" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </aside>
-<p>SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using <span class="math notranslate nohighlight">\(\max{a \in A(s)} Q(s',a)\)</span>, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as <strong>on-policy reinforcement learning</strong>. Later in this section, we’ll discuss why this matters, but for now, let’s look at the SARSA algorithm and on-policy learning a bit more.</p>
+<p>SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimating the future discounted reward using <span class="math notranslate nohighlight">\(\max_{a' \in A(s')} Q(s',a')\)</span>, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as <strong>on-policy reinforcement learning</strong>. Later in this section, we’ll discuss why this matters, but for now, let’s look at the SARSA algorithm and on-policy learning a bit more.</p>
 <div class="admonition-definition-on-policy-and-off-policy-reinforcement-learning admonition">
 <p class="admonition-title">Definition – On-policy and off-policy reinforcement learning</p>
 <p>Instead of estimating <span class="math notranslate nohighlight">\(Q(s',a')\)</span> for the best estimated future state during update, <strong>on-policy reinforcement learning</strong> uses the actual next action to update.</p>

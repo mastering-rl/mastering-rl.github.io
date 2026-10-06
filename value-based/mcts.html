@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -541,7 +541,7 @@ document.write(`
 <p>The algorithm is online, which means the action selection is interleaved with action execution. Thus, MCTS is invoked every time an agent visits a new state.</p>
 <p>Fundamental features:</p>
 <ol class="arabic simple">
-<li><p>The Q-value <span class="math notranslate nohighlight">\(Q(s,a)\)</span> for each is approximated using <strong>random simulation</strong>.</p></li>
+<li><p>The Q-value <span class="math notranslate nohighlight">\(Q(s,a)\)</span> for each action is approximated using <strong>random simulation</strong>.</p></li>
 <li><p>For a single-agent problem, an ExpectiMax <strong>search tree</strong> is built incrementally</p></li>
 <li><p>The search terminates when some pre-defined computational budget is used up, such as a time limit or a number of expanded nodes. Therefore, it is an <strong>anytime</strong> algorithm, as it can be terminated at any time and still give an answer.</p></li>
 <li><p>The best performing action is returned.</p>
@@ -562,7 +562,7 @@ document.write(`
 <iframe width="248" height="141" src="https://www.youtube.com/embed/SP4ryWK3Tj0?start=558" title="Monte-Carlo tree search" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </aside>
-<p>The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is <strong>incrementally</strong> built be iterating over the following four steps:</p>
+<p>The basic framework is to build up a tree using simulation. The states that have been evaluated are stored in a search tree. The set of evaluated states is <strong>incrementally</strong> built by iterating over the following four steps:</p>
 <ul class="simple">
 <li><p><strong>Select</strong>: Select a single node in the tree that is <strong>not fully expanded</strong>. By this, we mean at least one of its children is not yet explored.</p></li>
 <li><p><strong>Expand</strong>: Expand this node by applying one available action (as defined by the MDP) from the node.</p></li>
@@ -1041,7 +1041,7 @@ N(t,f) &amp; \leftarrow &amp; N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5b9679398da04461d2410821bb2c5848489389fbf21163b43fd0ce96e72e9f9e.svg" src="../_images/5b9679398da04461d2410821bb2c5848489389fbf21163b43fd0ce96e72e9f9e.svg" /></div>
+<img alt="../_images/bb344b99f1a2c1499c68ed64fa1a13c831d02c2970ee4a7c00fe69b2fd19749e.svg" src="../_images/bb344b99f1a2c1499c68ed64fa1a13c831d02c2970ee4a7c00fe69b2fd19749e.svg" /></div>
 </div>
 <p>The MCTS tree here demonstrates a  weakness of this implementation: the same state expanded multiple times along a path, and will continue to be expanded. We can work around this by not expanding states that have already been visited, returning <span class="math notranslate nohighlight">\(V(s)\)</span> as the reward for any expanded state, and not expanding it any more. For systems where repeated states are not an issue; e.g. some games, this problem does not arise.</p>
 <p>If we visualise the Q-function, we can see that only the actions that occur early in episodes have any informed Q-values:</p>
@@ -1052,7 +1052,7 @@ N(t,f) &amp; \leftarrow &amp; N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5368dce49397360c7e4b4365826cc1c424a1f7531e4c0dfc1c7c7a985711af1d.png" src="../_images/5368dce49397360c7e4b4365826cc1c424a1f7531e4c0dfc1c7c7a985711af1d.png" />
+<img alt="../_images/a28129719000125e0d404f5ba53fea690b6526f2551a20a8436b086828b12d06.png" src="../_images/a28129719000125e0d404f5ba53fea690b6526f2551a20a8436b086828b12d06.png" />
 </div>
 </div>
 <p>Therefore, the extracted policy is not yet very good:</p>
@@ -1064,7 +1064,7 @@ N(t,f) &amp; \leftarrow &amp; N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/120603e92749d961f5efbcc2ead5944eb933dcb692072541174b358f2a6f2c01.png" src="../_images/120603e92749d961f5efbcc2ead5944eb933dcb692072541174b358f2a6f2c01.png" />
+<img alt="../_images/8e50daf689f6b1cc8042f98635338cb3b3985bf76dc9580dc9c82525ee1ca530.png" src="../_images/8e50daf689f6b1cc8042f98635338cb3b3985bf76dc9580dc9c82525ee1ca530.png" />
 </div>
 </div>
 <p>After 0.03 seconds, the rewards are improving but are still quite noisy. This makes sense. First, early random simulations are (a bit) more likely to terminate in the -1 state because it is four actions away from the initial state, while the +1 goal state is five actions away. Second, because the an agent can go back to previous states, the random simulations are often long sequences of actions and so they received a small discounted reward. Finally, there is actually  little difference from the start node between going left, up, and down: moving down or left from the initial state transitions back to the initial state with probability 0.9, so the difference between the three actions on average is just the discount factor.</p>
@@ -1160,7 +1160,7 @@ N(t,f) &amp; \leftarrow &amp; N(t,f) + 1 = N(y) + N(y') + N(y'') + 1 = 2
 <li><p>It is trained via <strong>self-play</strong>*. Self-play is when the same policy is used to generate the moves of both the learning agent and any of its opponents. In  AlphaZero, this means that initially, both players make random moves, but both also learn the same policy and use it to select subsequent moves.</p></li>
 <li><p>At each move, AlphaZero:</p>
 <ol class="arabic simple">
-<li><p>Executes an MCTS search using UCB-like selection: <span class="math notranslate nohighlight">\(Q(s,a) + P(s,a)/(1+N(s,a))\)</span>,
+<li><p>Executes an MCTS search using UCB-like selection: <span class="math notranslate nohighlight">\(Q(s,a) + U(s,a)\)</span>, where <span class="math notranslate nohighlight">\(U(s,a) \propto \frac{P(s,a)}{1+N(s,a)}\)</span>,
 which returns the probabilities of playing each move.</p></li>
 <li><p>The neural network is used to guide the MCTS by influencing
 <span class="math notranslate nohighlight">\(Q(s,a)\)</span>.</p></li>

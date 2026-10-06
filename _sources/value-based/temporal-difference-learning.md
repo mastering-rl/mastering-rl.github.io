@@ -425,7 +425,7 @@ Note a slight difference in the update from {prf:ref}`algorithm:q-learning` and 
 
 `delta = reward + (self.mdp.discount_factor * next_state_value * (1 - done)) - q_value`
 
-The expression `1 - done` will equal 0 if the episode has not finished, and 1 otherwise. Therefore, this update calculates that `delta = reward - q_value` at a terminal state -- we do not need to estimate the value of the next state because there is no next state for a terminal state.
+The expression `1 - done` will equal 1 if the episode has not finished, and 0 otherwise. Therefore, this update calculates that `delta = reward - q_value` at a terminal state -- we do not need to estimate the value of the next state because there is no next state for a terminal state.
 
 We will see later that we inherit from `TemporalDifferenceLearner` for other algorithms that are very similar to Q-learning.
 
@@ -490,7 +490,7 @@ Below, we can explore how the Q-values for each state-action pair are learnt. If
 ```
 ````
 
-SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimate the future discount reward using $\max{a \in A(s)} Q(s',a)$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as **on-policy reinforcement learning**. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
+SARSA (State-action-reward-state-action) is an on-policy reinforcement learning algorithm. It is very similar to Q-learning, except that in its update rule, instead of estimating the future discounted reward using $\max_{a' \in A(s')} Q(s',a')$, it actually selects the next action that it will execute, and updates using that instead. Taking this approach is known as **on-policy reinforcement learning**. Later in this section, we'll discuss why this matters, but for now, let's look at the SARSA algorithm and on-policy learning a bit more.
 
 :::{admonition} Definition -- On-policy and off-policy reinforcement learning
 

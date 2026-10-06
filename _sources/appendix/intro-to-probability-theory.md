@@ -110,11 +110,11 @@ The set with no elements is a special set called the **empty set**, denoted $\em
 :::
 
 :::{admonition} Definition --- Set union, intersection, and subtraction
-The **set union** $A \cup B$ of two sets $A$ and $B$ is the set of all elements in that are in either set $A$ or in set $B$. Formally: $A \cup B = \{a \mid a \in A \lor a \in B\}$.
+The **set union** $A \cup B$ of two sets $A$ and $B$ is the set of all elements that are in either set $A$ or in set $B$. Formally: $A \cup B = \{a \mid a \in A \lor a \in B\}$.
 
-The **set intersection** $A \cap B$ of two sets $A$ and $B$ is the set of all elements in that are in both set $A$ and set $B$. Formally: $A \cup B = \{a \mid a \in A \land a \in B\}$.
+The **set intersection** $A \cap B$ of two sets $A$ and $B$ is the set of all elements that are in both set $A$ and set $B$. Formally: $A \cap B = \{a \mid a \in A \land a \in B\}$.
 
-The **set subtraction** $A - B$ of two sets $A$ and $B$ is the set of all elements in that are in  set $A$ but not in set $B$. Formally: $A \cup B = \{a  \mid a \in A \land a \notin B\}$.
+The **set subtraction** $A - B$ of two sets $A$ and $B$ is the set of all elements that are in set $A$ but not in set $B$. Formally: $A - B = \{a \mid a \in A \land a \notin B\}$.
 
 ```{glue:} set_union_intersection_minus
 
@@ -151,7 +151,7 @@ Probabilities are usually assigned to events.
 :::{admonition} Definition -- Probability
 The probability $P(A)$ of an event $A \subseteq \Omega$ is a non-negative real number that relates to the number of times we observe an outcome in $A$. This can be defined as the fraction of times that we observe an outcome in $A$ over the total number of possible outcomes:
 
-$$P\{A\} = \lim\begin{array}[c]{c} m \\\hline n \end{array}$$ 
+$$P(A) = \frac{m}{n}$$ 
 
 where $m$ is the number of outcomes in $A$ and $n$ is the total number of possible outcomes, that is, the number of elements in $S$. 
 
@@ -178,7 +178,7 @@ There are some important consequences of these three axioms:
 4. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$, even if $A$ and $B$ are not disjoint.
 
 :::{admonition} Definition -- Conditional probability
-Given two events $A$ and $B$, if $P(B)$ then the **conditional probability** of $A$ *given* $B$ is defined as:
+Given two events $A$ and $B$, if $P(B) > 0$ then the **conditional probability** of $A$ *given* $B$ is defined as:
 
 $$
 P(A \mid B) = \frac{P(A \cap B)}{P(B)}
@@ -188,19 +188,19 @@ This says that the probability of $A$ occurring, given that we have observed $B$
 
 Conditional probability provides us with the tools to reason about partial information, so that we can estimate the probability of an event $A$ that depends on the outcome of event $B$,, event if we do not know the outcome of event $B$ yet.
 
-We say that $P(A)$ is the *prior probability* of $A$ and that $P(A \mid B)$ is the *posterior probability$ of $A$ given $B$.
+We say that $P(A)$ is the *prior probability* of $A$ and that $P(A \mid B)$ is the *posterior probability* of $A$ given $B$.
 :::
 
 
 :::{admonition} Definition -- The Product rule
-Given two events $A$ and $B$, if $P(B)$ then the probability of both events $A$ and $B$ occurring is defined by the **product rule**:
+Given two events $A$ and $B$, if $P(B) > 0$ then the probability of both events $A$ and $B$ occurring is defined by the **product rule**:
 
 $$
 P(A \cap B) = P(A)P(B \mid A)
 $$
 :::
 
-The product rule can be useful, however, it is defined it terms of conditional probability, which itself uses the product rule. We can resolve this using Bayes' theorem.
+The product rule can be useful, however, it is defined in terms of conditional probability, which itself uses the product rule. We can resolve this using Bayes' theorem.
 
 :::{admonition} Definition -- Bayes' theorem
 Given two events $A$ and $B$, the conditional probability of $A$ *given* $B$ can be calculated using:
@@ -209,7 +209,7 @@ $$
 P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}
 $$
 
-Bayes' theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event $A$ represents a particular disease in a plant, and event $B$ is the event describing a positive outcome of a test that can diagnose that disease, then $P(B \mid A)$ define the casual relationship:  if the plant has disease $A$, then the probability of observing a positive diagnosis from test $B$ is $P(B \mid A)$. Once we have the test result, we can determine the probability of $A$ (the plant having the disease) provided we can estimate the prior probabilities $P(A)$ and $P(B)$.
+Bayes' theorem allows us to translate causal knowledge about events into diagnostic knowledge. For example, if event $A$ represents a particular disease in a plant, and event $B$ is the event describing a positive outcome of a test that can diagnose that disease, then $P(B \mid A)$ defines the causal relationship:  if the plant has disease $A$, then the probability of observing a positive diagnosis from test $B$ is $P(B \mid A)$. Once we have the test result, we can determine the probability of $A$ (the plant having the disease) provided we can estimate the prior probabilities $P(A)$ and $P(B)$.
 
 Bayes' theorem is named after [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes), the English statistician and philosopher who first defined it.
 :::

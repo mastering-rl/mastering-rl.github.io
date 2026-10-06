@@ -120,7 +120,7 @@ alt: "An abstract illustration of the policy gradient algorithm REINFORCE. There
 An abstraction illustration of the policy gradient algorithm REINFORCE.
 ```
 
-{numref}`fig:policy_gradient_loop` gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the rewards and states is used to update the policy, showing that the policy is only updated at the end of each episode.
+{numref}`fig:policy_gradient_loop` gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the states, actions, and rewards is used to update the policy, showing that the policy is only updated at the end of each episode.
 
 
 ```{prf:algorithm} REINFORCE
@@ -135,15 +135,15 @@ $
 \quad\quad \text{Generate episode}\ (s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})\ \text{by following}\ \pi_{\theta}\\
 \quad\quad \algforeach\ (s_t, a_t)\ \text{in the episode}\\
 \quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k\\
-\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s_t,a_t)\\
 \alguntil\ \pi_{\theta}\ \text{converges}
 \end{array}
 $
 ```
 
-REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy $\pi_{\theta}$. It samples actions because on their probabilities; that is, $a \sim \pi_{\theta}(s,a)$.
+REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy $\pi_{\theta}$. It samples actions based on their probabilities; that is, $a \sim \pi_{\theta}(s,a)$.
 
-It then steps through each action in the episode, a calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$. Therefore, it generates better and better policies as $\pi$ is improved. 
+It then steps through each action in the episode, and calculates $G$, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient $\pi$ and multiples this in the direction of $G$. Therefore, it generates better and better policies as $\pi$ is improved. 
 
 ````{margin}
 ```{admonition} Video byte: Convergence
@@ -156,7 +156,7 @@ Comparing to value-based techniques, we can see that REINFORCE (and other policy
 This has the advantage that policy-gradient approaches can be applied when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-gradient approaches are often more efficient than value-based approaches when there are a large number of actions.
 
 :::{note}
-From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-free:on-policy-vs-off-policy) approach. The sample trajectories from directly from $\pi_{\theta}$ and the update happens
+From the algorithm above, we can see that REINFORCE is an [on policy](sec:model-free:on-policy-vs-off-policy) approach. The sample trajectories are drawn directly from $\pi_{\theta}$ and the policy is updated at the end of the episode.
 :::
 
 (sec:policy-gradients:logistic-regression)=

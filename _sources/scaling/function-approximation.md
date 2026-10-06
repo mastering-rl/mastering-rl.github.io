@@ -190,7 +190,7 @@ $$
 \end{array}
 $$
 
-In practice, we also multiple the feature vector for weights $w^b_n$ for all actions $b \neq a$, but as the feature values will be 0, we know that it does not influence the result.
+In practice, we also multiply the feature vector by weights $w^b_i$ for all actions $b \neq a$, but as the feature values will be 0, we know that it does not influence the result.
 
 :::{admonition} Example --- Approximate Q-function computation for Freeway
 
@@ -223,12 +223,12 @@ $\quad\quad\quad\quad w^a_i \leftarrow w^a_i + \alpha \cdot \delta \cdot \ f_i(s
 
 where $\delta$ depends on which algorithm we are using; e.g. Q-learning, SARSA.
 
-As this is linear, it is therefore convex, so the weights will converge.
+For on-policy methods like SARSA, linear function approximation is guaranteed to converge. However, off-policy methods like Q-learning with linear function approximation can diverge.
 
 ```{admonition} Note --- Q-value propagation
 Note that this has the effect of updating Q-values to states that have never been visited! 
 
-In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weight all features for Up, and now we have a Q-value for going Up from *any* position on the final row.
+In Freeway, for example, if we receive our first reward by crossing the road (going Up from the final row), this will update the weights of all features for Up, and now we have a Q-value for going Up from *any* position on the final row.
 ```
 
 ````{margin}
@@ -260,7 +260,7 @@ To implement linear function approximation, we implement a new class that inheri
 :load: '../mastering_rl/qfunctions/linear_qfunction.py'
 ```
 
-A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above]((sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
+A linear Q-function is initialised with either some given weights or with a default weight for all weights. The `update` method does as outlined [above](sec:single-agent:q-function-approximation:linear-q-values): updates each weight by adding $\delta \cdot f_i(s,a)$. Computing the Q-value implements the weighted sum outlined [above](sec:single-agent:q-function-approximation:linear-update).
 
 ### Example: Linear Q-function approximation on Gridworld
 
@@ -427,7 +427,7 @@ We can see that, even after a single update after episode 1, the values of the U
 
 The key challenge in linear function approximation for Q-learning is the feature engineering: selecting features that are meaningful and helpful in learning a good Q function. As well as estimating the Q-values of each action in a state, it also has to estimate the value of future states. As with any machine learning problem, feature engineering requires some experimentation and a careful combination of art and science.
 
-**Tip:** Note that to make analysis and debugging easier, our feature values can be **normalised** using e.g. min-max normalisation or mean normalisation. This ensures that was feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.
+**Tip:** Note that to make analysis and debugging easier, our feature values can be **normalised** using e.g. min-max normalisation or mean normalisation. This ensures that each feature weight is of the same magnitude, which makes it easier to understand the relative effect between features.
 
 
 (sec:function-approximation:deep-Q-learning)=
@@ -512,7 +512,7 @@ We can see that because parameters in the deep Q-function are randomly initialis
 
 There is minimal difference between the two policies. Note though that even though the deep Q-function does not assume linearity, it still learns a poor policy in parts of the Q-function, such as in the bottom right state, in which it recommends going up instead of left. This is likely due to the neural network being too simple for this problem, and thus under fitting. We could improve this by adding an additional layer or adding more hidden parameters to the layers.
 
-The main difference between the two is the linear Q-function approximation is guaranteed to converge to a global optima due to its convex loss function, whereas deep Q-function approximation has no such guarantees.
+While linear Q-function approximation has stronger convergence guarantees for on-policy learning, off-policy linear Q-learning can still diverge. Deep Q-function approximation, being highly non-linear, has no such convergence guarantees even for on-policy learning.
 
 ### Advantages and disadvantages
 

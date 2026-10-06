@@ -16,7 +16,7 @@ It differs from traditional supervised machine learning in a few ways, primarily
 
 In Part II of these notes, we introduce  *Markov Decision Processes* (MDPs). MDPs provide a flexible framework that allows us to model many different reinforcement learning problems. 
 
-We look at *value-based* techniques for solving MDPs, which solve MDPs by estimating the value of different states of the environment, and then moving towards high-value states. There are two broad types of value-based method: 1. *model-based* techniques, where the entire MDP model is known to us; and 2. *model-free* techniques, which are flexible enough that when some information is not provide explicitly, but can be sampled enough times, we can still learn good behaviour. We will look at foundational techniques, some more advanced techniques, and will pay particular attention to how to scale reinforcement learning so we can use it solve real problems.
+We look at *value-based* techniques for solving MDPs, which solve MDPs by estimating the value of different states of the environment, and then moving towards high-value states. There are two broad types of value-based method: 1. *model-based* techniques, where the entire MDP model is known to us; and 2. *model-free* techniques, which are flexible enough that when some information is not provided explicitly, but can be sampled enough times, we can still learn good behaviour. We will look at foundational techniques, some more advanced techniques, and will pay particular attention to how to scale reinforcement learning so we can use it to solve real problems.
 
 ## Part III: Policy-based methods
 

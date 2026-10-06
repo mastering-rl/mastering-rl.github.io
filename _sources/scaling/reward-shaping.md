@@ -61,7 +61,7 @@ In this section, we look at two simple approaches that can improve temporal diff
 ```
 ````
 
-```{admonition} Definition -- Reward sharping
+```{admonition} Definition -- Reward shaping
 
 **Reward shaping** is the use of small intermediate 'fake' rewards given to the learning agent that help it converge more quickly.
 
@@ -365,7 +365,7 @@ Once we start learning over episodes, we will select those actions with a higher
 - A weakness of model-free methods is that they spend a lot of time exploring at the start of the learning. It is not until they find some rewards that the learning begins. This is particularly problematic when rewards are sparse.
 - **Reward shaping** takes in some domain knowledge that "nudges" the learning algorithm towards more positive actions.
 - **Q-value initialisation** is a "guess" of the initial Q-values to guide early exploration
-- Reward sharping and Q-value initialisation are equivalent if our potential function is static.
+- Reward shaping and Q-value initialisation are equivalent if our potential function is static.
 - **Potential-based reward shaping** guarantees that the policy will converge to the same policy without reward shaping.
 ```
 ### Related Reading

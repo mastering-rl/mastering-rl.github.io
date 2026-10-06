@@ -51,7 +51,7 @@ In reality, most of the techniques in this section are abstraction techniques of
 
 In some cases, the size of the state space can be abstracted by combining some states that are different, but are either equivalent from a semantic view, or are similar enough that they will lead to the same action most of the time.
 
-AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then *which* corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information
+AlphaGoZero, the famous Go-playing agent, used state abstraction by noting that the state of the game is symmetric: it is a 19x19 grid and if the first move is to  e.g. place a stone in one of the corners, then *which* corner is not relevant: placing a stone in all four corners corresponds to the same abstract state. This reduces the size of the state space to a quarter of its original size, and does not lose any information.
 
 Other abstraction techniques may lose information, but still be useful. For example, the state abstraction in GridWorld from precise coordinates into a simple grid. 
 
@@ -60,7 +60,7 @@ Other abstraction techniques may lose information, but still be useful. For exam
 Similar to state abstraction, we can abstract actions. There are two main ways:
 
 1. Abstract sequences of smaller actions into single higher-level actions, such as in the GridWorld domain where we abstract  physical navigation actions to just `Left`, `Right`, `Up`, and `Down`.
-2. We can also **group similar actions** into a single action. For example, in the GridWorld domain, if we have lower-level actions like `Rotate`, which rotates by a given number of degrees, instead of reasoning about 360 different version of `Rotate` (one for each degree), we could group actions into buckets: one abstract action for turning 0-15, one for 16-30, etc. We **lose information/precision**, but in may cases, the solution may be good enough, and the problem is much easier to solve.
+2. We can also **group similar actions** into a single action. For example, in the GridWorld domain, if we have lower-level actions like `Rotate`, which rotates by a given number of degrees, instead of reasoning about 360 different versions of `Rotate` (one for each degree), we could group actions into buckets: one abstract action for turning 0-15, one for 16-30, etc. We **lose information/precision**, but in many cases, the solution may be good enough, and the problem is much easier to solve.
 
 (sec:single-agent:modelling-and-abstraction:sub-goals)=
 ## Rewarding sub-goals
@@ -82,7 +82,7 @@ For example, consider the single-agent card game *Solitaire*. The aim of the gam
 
 Imagine we are given a  simulator for Solitaire and the only reward received  for winning the game by arriving in one of the terminal states where the cards are in the correct piles. This reward would only be given in that terminal state, and requires perhaps a few hundred actions to arrive at.
 
-Simulations of a game like this would have to be long because there are no rewards until the end of the game, and we would spend a LOT of random actions before we first won the game By re-distributed sub-goals that give a reward whenever a correct card is place on one of the piles, we feed rewards forward much earlier and give information for our reinforcement learning algorithm to exploit.
+Simulations of a game like this would have to be long because there are no rewards until the end of the game, and we would spend a LOT of random actions before we first won the game. By re-distributing sub-goals that give a reward whenever a correct card is place on one of the piles, we feed rewards forward much earlier and give information for our reinforcement learning algorithm to exploit.
 
 This idea can be implemented using [reward shaping](sec:single-agent:reward-shaping). In these notes, we focused on potential-based reward shaping, which gives small "fake" rewards. This effectively asks that you define a heuristic for states that guide the agent towards promising actions early during learning when there is not much information to exploit. By using sub-goals, we can give a shaped reward $\Phi(s)$ to any state that is a sub-goal, and assign $\Phi(s)=0$ for any state that does not. Thinking about reward shaping as sub-goals can often be conceptually simpler to implement than considering it as an heuristic. 
 

@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -531,7 +531,7 @@ document.write(`
 <p>Value iteration converges to the optimal policy as iterations continue: <span class="math notranslate nohighlight">\(V \mapsto V^*\)</span> as <span class="math notranslate nohighlight">\(i \mapsto \infty\)</span>, where <span class="math notranslate nohighlight">\(i\)</span> is the number of iterations. So, given an infinite amount of iterations, it will be optimal.</p>
 <p>Value iteration <strong>converges</strong> to the optimal value function <span class="math notranslate nohighlight">\(V^*\)</span> asymptotically, but in practice, the algorithm terminates when the <strong>residual</strong>  <span class="math notranslate nohighlight">\(\Delta\)</span> reaches some pre-determined threshold <span class="math notranslate nohighlight">\(\theta\)</span> – that is, when the largest change in the values between iterations is “small enough”.</p>
 <p>A policy can now be easily defined: in a state <span class="math notranslate nohighlight">\(s\)</span>, given <span class="math notranslate nohighlight">\(V\)</span>, choose the action with the highest expected reward using <a class="reference internal" href="MDPs.html#sec-mdps-policy-extraction"><span class="std std-ref">policy extraction</span></a>.</p>
-<p>The loss of the result greedy policy terminating after <span class="math notranslate nohighlight">\(k\)</span> iterations is bounded by <span class="math notranslate nohighlight">\(\frac{2 \gamma  \delta_{max}}{1-\gamma}\)</span>, where <span class="math notranslate nohighlight">\(\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|\)</span>.</p>
+<p>The loss of the resulting greedy policy terminating after <span class="math notranslate nohighlight">\(k\)</span> iterations is bounded by <span class="math notranslate nohighlight">\(\frac{2 \gamma  \delta_{max}}{1-\gamma}\)</span>, where <span class="math notranslate nohighlight">\(\delta_{max}= \max_{s}|V^{*}(s) - V_k(s)|\)</span>.</p>
 <p>Note that we do not need an optimal value function <span class="math notranslate nohighlight">\(V\)</span> to obtain an optimal policy. A value function that is “close enough” can still give an optimal policy because the small values do not change the resulting policy. Of course, we would not <em>know</em> whether a policy is optimal unless we know the value function is optimal.</p>
 </section>
 <section id="implementation">

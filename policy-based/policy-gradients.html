@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -540,7 +540,7 @@ So, this is the expected return of taking action <span class="math notranslate n
 <p><span class="caption-number">Fig. 12 </span><span class="caption-text">An abstraction illustration of the policy gradient algorithm REINFORCE.</span><a class="headerlink" href="#fig-policy-gradient-loop" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p><a class="reference internal" href="#fig-policy-gradient-loop"><span class="std std-numref">Fig. 12</span></a> gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the rewards and states is used to update the policy, showing that the policy is only updated at the end of each episode.</p>
+<p><a class="reference internal" href="#fig-policy-gradient-loop"><span class="std std-numref">Fig. 12</span></a> gives an abstract overview of REINFORCE. The algorithm iteratively generates new actions by sampling from its policy and executes these. Once an episode terminates, a list of the states, actions, and rewards is used to update the policy, showing that the policy is only updated at the end of each episode.</p>
 <div class="proof algorithm admonition" id="algorithm:reinforce">
 <p class="admonition-title"><span class="caption-number">Algorithm 12 </span> (REINFORCE)</p>
 <section class="algorithm-content" id="proof-content">
@@ -553,13 +553,13 @@ So, this is the expected return of taking action <span class="math notranslate n
 \quad\quad \text{Generate episode}\ (s_0, a_0, r_1, \ldots s_{T-1}, a_{T-1}, r_{T})\ \text{by following}\ \pi_{\theta}\\
 \quad\quad \algforeach\ (s_t, a_t)\ \text{in the episode}\\
 \quad\quad\quad\quad G \leftarrow \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k\\
-\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s,a)\\
+\quad\quad\quad\quad \theta \leftarrow \theta + \alpha \gamma^{t} G\ \nabla\ \textrm{ln}\ \pi_{\theta}(s_t,a_t)\\
 \alguntil\ \pi_{\theta}\ \text{converges}
 \end{array}
 \)</span></p>
 </section>
-</div><p>REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span>. It samples actions because on their probabilities; that is, <span class="math notranslate nohighlight">\(a \sim \pi_{\theta}(s,a)\)</span>.</p>
-<p>It then steps through each action in the episode, a calculates <span class="math notranslate nohighlight">\(G\)</span>, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient <span class="math notranslate nohighlight">\(\pi\)</span> and multiples this in the direction of <span class="math notranslate nohighlight">\(G\)</span>. Therefore, it generates better and better policies as <span class="math notranslate nohighlight">\(\pi\)</span> is improved.</p>
+</div><p>REINFORCE  generates an entire episode using Monte-Carlo simulation by following the policy so far by sampling actions using the stochastic policy <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span>. It samples actions based on their probabilities; that is, <span class="math notranslate nohighlight">\(a \sim \pi_{\theta}(s,a)\)</span>.</p>
+<p>It then steps through each action in the episode, and calculates <span class="math notranslate nohighlight">\(G\)</span>, the total future discounted reward of the trajectory. Using this reward, it calculates the gradient <span class="math notranslate nohighlight">\(\pi\)</span> and multiples this in the direction of <span class="math notranslate nohighlight">\(G\)</span>. Therefore, it generates better and better policies as <span class="math notranslate nohighlight">\(\pi\)</span> is improved.</p>
 <aside class="margin sidebar">
 <p class="sidebar-title"></p>
 <div class="admonition-video-byte-convergence admonition">
@@ -571,7 +571,7 @@ So, this is the expected return of taking action <span class="math notranslate n
 <p>This has the advantage that policy-gradient approaches can be applied when the action space or state space are  continuous; e.g. there are one or more actions with a parameter that takes a continuous value. This is because it uses the gradient instead of doing the policy improvement explicitly. For the same reason, policy-gradient approaches are often more efficient than value-based approaches when there are a large number of actions.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>From the algorithm above, we can see that REINFORCE is an <a class="reference internal" href="../value-based/temporal-difference-learning.html#sec-model-free-on-policy-vs-off-policy"><span class="std std-ref">on policy</span></a> approach. The sample trajectories from directly from <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span> and the update happens</p>
+<p>From the algorithm above, we can see that REINFORCE is an <a class="reference internal" href="../value-based/temporal-difference-learning.html#sec-model-free-on-policy-vs-off-policy"><span class="std std-ref">on policy</span></a> approach. The sample trajectories are drawn directly from <span class="math notranslate nohighlight">\(\pi_{\theta}\)</span> and the policy is updated at the end of the episode.</p>
 </div>
 </section>
 <section id="implementation-logistic-regression-based-reinforce">
@@ -1016,8 +1016,8 @@ So, this is the expected return of taking action <span class="math notranslate n
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/22fd334ba8922b1733b225d88772d20d761411d9628cbdb162a2d7743014dc37.png" src="../_images/22fd334ba8922b1733b225d88772d20d761411d9628cbdb162a2d7743014dc37.png" />
-<img alt="../_images/302f380737cfbd3344f07cf9649c194ee639ae58e18f034ad04a8f36535d3814.png" src="../_images/302f380737cfbd3344f07cf9649c194ee639ae58e18f034ad04a8f36535d3814.png" />
-<img alt="../_images/ace00dc9a595386a85e7cbbe6ebb98373b506e1cc81997b75b7b8ecab4f55d02.png" src="../_images/ace00dc9a595386a85e7cbbe6ebb98373b506e1cc81997b75b7b8ecab4f55d02.png" />
+<img alt="../_images/e6b4af7c902569e98b6c70a5bdfd233fef4a06e0776c9bb2d7dbc79d184ee8f0.png" src="../_images/e6b4af7c902569e98b6c70a5bdfd233fef4a06e0776c9bb2d7dbc79d184ee8f0.png" />
+<img alt="../_images/48bf1fe338385e991218f0c4b1e9a3e9014a20a3056e533e0414712716215f8a.png" src="../_images/48bf1fe338385e991218f0c4b1e9a3e9014a20a3056e533e0414712716215f8a.png" />
 </div>
 </div>
 <p>Again, we can see that this policy is stochastic: each action has a probability of being executed in a state.</p>

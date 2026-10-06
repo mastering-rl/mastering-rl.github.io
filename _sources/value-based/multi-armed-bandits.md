@@ -321,7 +321,7 @@ where $t$ is the number of rounds so far, and $N(a)$ is the number of times time
 
 The left--hand side encourages exploitation: the Q-value is high for actions that have had a high reward.
 
-The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ relative to other actions. When $t$ is small (not many pull so far), all actions will have a high exploration value. As $t$ increases, if some actions have low $N(a)$, then the expression $\sqrt{\frac{2 \ln t}{N(a)}}$ is large compared to actions with higher $N(a)$. 
+The right--hand side encourages exploration: it is high for actions that have been explored less -- that is, when $N(a)$ is small relative to other actions. When $t$ is small (not many pull so far), all actions will have a high exploration value. As $t$ increases, if some actions have low $N(a)$, then the expression $\sqrt{\frac{2 \ln t}{N(a)}}$ is large compared to actions with higher $N(a)$. 
 
 Together, adding these two expressions helps to balance exploration and exploitation.
 

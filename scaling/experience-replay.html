@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/mystery_game_style.css?v=68c7c1a4" />
   
@@ -460,7 +460,7 @@ document.write(`
 <p>Experience replay is a reinforcement learning technique in which, instead of executing a transition and then updating a Q-function immediately, such as in Q-learning and SARSA, instead, the <strong>experiences</strong> (state, reward, next state) are stored in a buffer of transitions. Then, intermittently, a set of experiences from the buffer are randomly sampled and <strong>replayed</strong> to update the Q-function.</p>
 <section id="why-use-experience-replay">
 <h2>Why use experience replay?<a class="headerlink" href="#why-use-experience-replay" title="Link to this heading">#</a></h2>
-<p><strong>Why re-use old traces?</strong> This seems like a strange idea. The reason is really because of the <strong>Independent and Identical Distribution (i.i.d.)</strong> assumption of machine learning.</p>
+<p><strong>Why re-use old traces?</strong> This seems like a strange idea. The reason is really because of the <strong>Independent and Identically Distributed (i.i.d.)</strong> assumption of machine learning.</p>
 <div class="admonition-definition-independent-and-identical-distribution-i-i-d admonition">
 <p class="admonition-title">Definition – Independent and Identical Distribution (i.i.d.)</p>
 <p>Machine learning algorithms typically assume that training data is:</p>
@@ -482,7 +482,7 @@ document.write(`
 <div class="math notranslate nohighlight">
 \[\delta \leftarrow r + \gamma \cdot \overbrace{\max_{a'} Q_{target}(s',a')}^{\text{target estimate}}- \overbrace{Q_{policy}(s,a)}^{\text{policy estimate}}\]</div>
 <p><strong>Why do this?</strong> Doesn’t this just basically copy values over so now both functions estimate the same thing?</p>
-<p>Yes! But the trick is that we only update the target Q-function, <span class="math notranslate nohighlight">\(Q_{target}\)</span> intermittently at fixed intervals, or update it slowly compared to the policy. For examlpe, we update the target function every 1000 steps by coping over the parameters to the target Q-function, or we update it every step, but with a smoothing factor.</p>
+<p>Yes! But the trick is that we only update the target Q-function, <span class="math notranslate nohighlight">\(Q_{target}\)</span> intermittently at fixed intervals, or update it slowly compared to the policy. For example, we update the target function every 1000 steps by copying over the parameters to the target Q-function, or we update it every step, but with a smoothing factor.</p>
 <p>The issue with using <a class="reference internal" href="function-approximation.html#sec-qfunction-approximation"><span class="std std-ref">Q-function approximation techniques</span></a> such as <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-learning</span></a> is that when a Q-function is updated, this actually updates many state-action values at the same time, because of the approximation techniques that help this scale. So, this means that if we do an update of the form <span class="math notranslate nohighlight">\(\delta \leftarrow r + \gamma \cdot \max_{a'} Q_{policy}(s',a') - Q_{policy}(s,a)\)</span>, where <span class="math notranslate nohighlight">\(Q_{policy}\)</span> is both used to estimate future reward using <span class="math notranslate nohighlight">\(\max_{a'} Q_{policy}(s',a')\)</span>, then the actual value of <span class="math notranslate nohighlight">\(\max_{a'} Q_{policy}(s',a')\)</span> may in fact be a <strong>different value after the update</strong>, so the estimate can be quite wrong. This leads to instability in the learning.</p>
 <p>An analogy to this would be if you were learning how to play a new game, and your friend with experience was giving you feedback. You can see when you are getting points (the reward), but your friend’s feedback tells you whether each move would be good in the future (the <span class="math notranslate nohighlight">\(\max_{a'} Q(s',a')\)</span>). Now imagine that your friend changes their mind about how to play the game each time you make a move! It would be difficult to determine how well you were playing. By updating the target network periodically, effectively, your friend gives you consistent feedback for a while, but then improves the feedback periodically, leading to more stable learning.</p>
 </section>
@@ -539,7 +539,7 @@ document.write(`
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
-<p>Below is a Python implementation for experience replay. First, we need to setup of the replay buffer, which is defined in the class <code class="docutils literal notranslate"><span class="pre">ReplayBuffer</span></code>. This keeps experiences of the form <code class="docutils literal notranslate"><span class="pre">(&quot;state&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;next_state&quot;,</span> <span class="pre">&quot;reward&quot;,</span> <span class="pre">&quot;done&quot;)</span></code>, and allows us to sample random batches.</p>
+<p>Below is a Python implementation for experience replay. First, we need to set up the replay buffer, which is defined in the class <code class="docutils literal notranslate"><span class="pre">ReplayBuffer</span></code>. This keeps experiences of the form <code class="docutils literal notranslate"><span class="pre">(&quot;state&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;next_state&quot;,</span> <span class="pre">&quot;reward&quot;,</span> <span class="pre">&quot;done&quot;)</span></code>, and allows us to sample random batches.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">ExperienceReplayLearner</span></code> class looks quite similar to standard Q-learning, except for: (1) storing and then sampling experiences for replay; and (2) doing a soft update every time <code class="docutils literal notranslate"><span class="pre">step</span> <span class="pre">%</span> <span class="pre">self.update_period</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -696,7 +696,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>In our framework, the soft update is encapsulated in the implemention of the Q-function. For example, this is the update for a <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-function</span></a> with parameters:</p>
+<p>In our framework, the soft update is encapsulated in the implementation of the Q-function. For example, this is the update for a <a class="reference internal" href="function-approximation.html#sec-function-approximation-deep-q-learning"><span class="std std-ref">deep Q-function</span></a> with parameters:</p>
 <div class="cell tag_remove-input docutils container">
 </div>
 <p>Here is Python code to run this on the <code class="docutils literal notranslate"><span class="pre">GridWorld</span></code> example, with an update period of 1 step:</p>
@@ -732,8 +732,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/238a934eb4604db21a2524e494e1d7da7883dce449831624189f6c7a823bedc5.png" src="../_images/238a934eb4604db21a2524e494e1d7da7883dce449831624189f6c7a823bedc5.png" />
-<img alt="../_images/fbd539c0f9b8e1d1dbab47c558f505d5fa99945e8dc87230fe72de5c3733fbfc.png" src="../_images/fbd539c0f9b8e1d1dbab47c558f505d5fa99945e8dc87230fe72de5c3733fbfc.png" />
+<img alt="../_images/dfbc893d1a9def8500ef0b32250ea5c8109af72ae2fd935dd99893ce5897ee83.png" src="../_images/dfbc893d1a9def8500ef0b32250ea5c8109af72ae2fd935dd99893ce5897ee83.png" />
+<img alt="../_images/49c940e54773d8888eb4b8e2d3798efd730b37720224ade1b14b9b86760e6fde.png" src="../_images/49c940e54773d8888eb4b8e2d3798efd730b37720224ade1b14b9b86760e6fde.png" />
 </div>
 </div>
 </section>
