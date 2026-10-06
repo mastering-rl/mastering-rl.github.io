@@ -74,7 +74,7 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/reward-shaping';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'scaling/reward-shaping';</script>
     <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
     <script src="../_static/rubbable.js?v=43a8f1f6"></script>
     <script src="../_static/js/libgif.js?v=b9910099"></script>
@@ -199,19 +199,19 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="policy-based.html">Introduction to policy-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/actor-critic.html">Actor-critic methods</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
 <ul class="current nav bd-sidenav">
@@ -286,7 +286,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+      <li><a href="https://github.com/mastering-rl/book" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -303,7 +303,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/reward-shaping.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/mastering-rl/book/issues/new?title=Issue%20on%20page%20%2Fscaling/reward-shaping.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -333,7 +333,7 @@
       
       
       
-      <li><a href="../_sources/single-agent/reward-shaping.md" target="_blank"
+      <li><a href="../_sources/scaling/reward-shaping.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -479,7 +479,7 @@ problems automatically.</p></li>
 </div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes <strong>sparse</strong>. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a <a class="reference internal" href="mcts.html#sec-mcts-demo"><span class="std std-ref">UCT algorithm playing Freeway</span></a>.</p>
+<p>In the previous chapters, we looked at fundamental temporal difference (TD) methods for reinforcement learning. As noted, these methods have some weaknesses, including that rewards are sometimes <strong>sparse</strong>. This means that  there are few state/actions that lead to non-zero rewards. This is problematic because initially, reinforcement learning algorithms behave entirely randomly and will struggle to find good rewards. Remember the example of a <a class="reference internal" href="../value-based/mcts.html#sec-mcts-demo"><span class="std std-ref">UCT algorithm playing Freeway</span></a>.</p>
 <p>In this section, we look at two simple approaches that can improve temporal difference methods:</p>
 <ol class="arabic simple">
 <li><p><strong>Reward shaping</strong>: If rewards are sparse, we can modify/augment our reward function to reward behaviour that we think moves us closer to the solution.</p></li>
@@ -868,7 +868,7 @@ at any arbitrary Q-function. The closer our Q-values is to the optimal Q-values,
         },
         kernelOptions: {
             name: "python3",
-            path: "./single-agent"
+            path: "./scaling"
         },
         predefinedOutput: true
     }

@@ -22,7 +22,15 @@ We look at *value-based* techniques for solving MDPs, which solve MDPs by estima
 
 In Part III of these notes, we introduce *policy-based methods*, which are techniques that learn a policy directly without trying to calculate the value of states. Such techniques are important for e.g. applications with an infinite state space.
 
-## Part IV: Multi-agent reinforcement learning
+## Part IV: Scaling
 
-In Part IV of these notes, we look at *multi-agent MDPs* (sometimes called *games*), in which there are multiple (possibly adversarial) agents in a problem, and we need to plan our decisions while also considering what the other actors in the environment will do. Again, we look at both model-based and model-free techniques.
+In Part IV of these notes, we explore techniques for scaling reinforcement learning to large and complex problems, including function approximation, reward shaping, n-step methods, experience replay, and abstraction.
+
+## Part V: Multi-agent reinforcement learning
+
+In Part V of these notes, we look at *multi-agent MDPs* (sometimes called *games*), in which there are multiple (possibly adversarial) agents in a problem, and we need to plan our decisions while also considering what the other actors in the environment will do. Again, we look at both model-based and model-free techniques.
+
+## Part VI: Appendix
+
+In the appendix, we provide foundational background material, such as an introduction to basic probability theory.
 

@@ -32,7 +32,7 @@ The learning outcomes for this chapter are:
 
 Recall the idea of [ExpectiMax trees](sec:mcts:expectimax-trees) which we first encountered in the section on [Monte-Carlo tree search](sec:mcts). ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:
 
-```{figure} ../single-agent/latex/mcts_expectimax.png
+```{figure} ../value-based/latex/mcts_expectimax.png
 :name: expectimax-duplicate
 Abstract example of an ExpectiMax Tree
 ```

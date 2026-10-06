@@ -199,27 +199,27 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-based.html">Introduction to value-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/MDPs.html">Markov Decision Processes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/value-iteration.html">Value Iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/multi-armed-bandits.html">Multi-armed bandits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-based.html">Introduction to policy-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-iteration.html">Policy iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/policy-gradients.html">Policy gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/actor-critic.html">Actor-critic methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/actor-critic.html">Actor-critic methods</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/function-approximation.html">Q-function approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/reward-shaping.html">Reward shaping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/n-step.html">n-step reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/experience-replay.html">Experience replay</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../single-agent/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
 <ul class="current nav bd-sidenav">
@@ -286,7 +286,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+      <li><a href="https://github.com/mastering-rl/book" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -303,7 +303,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fmulti-agent/multi-agent-rl.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/mastering-rl/book/issues/new?title=Issue%20on%20page%20%2Fmulti-agent/multi-agent-rl.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -460,7 +460,7 @@ document.write(`
 </div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>Recall the idea of <a class="reference internal" href="../single-agent/mcts.html#sec-mcts-expectimax-trees"><span class="std std-ref">ExpectiMax trees</span></a> which we first encountered in the section on <a class="reference internal" href="../single-agent/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a>. ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:</p>
+<p>Recall the idea of <a class="reference internal" href="../value-based/mcts.html#sec-mcts-expectimax-trees"><span class="std std-ref">ExpectiMax trees</span></a> which we first encountered in the section on <a class="reference internal" href="../value-based/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a>. ExpectiMax trees are representations of MDPs. Recall that the white nodes are states and the black nodes are what we consider choices by the environment:</p>
 <figure class="align-default" id="expectimax-duplicate">
 <img alt="../_images/mcts_expectimax.png" src="../_images/mcts_expectimax.png" />
 <figcaption>
@@ -596,7 +596,7 @@ V^{\pi^j}(s) = E_{\pi^j}[\, \sum_{i} \gamma^i \, r^j(s_i, a, s_{i+1}) \ | \ s_0 
 <iframe width="248" height="141" src="https://www.youtube.com/embed/BDAZOvLuMLI?start=1820" title="Extensive form games" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </aside>
-<p>Just as we extend Q-learning to a multi-agent case, we can extend <a class="reference internal" href="../single-agent/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a> to the multi-agent case with just a small change in our algorithms.</p>
+<p>Just as we extend Q-learning to a multi-agent case, we can extend <a class="reference internal" href="../value-based/mcts.html#sec-mcts"><span class="std std-ref">Monte-Carlo tree search</span></a> to the multi-agent case with just a small change in our algorithms.</p>
 <p>Multi-agent MCTS  is  similar to single-agent MCTS. We simply modify the basic MCTS algorithm as follows:</p>
 <aside class="margin sidebar">
 <p class="sidebar-title"></p>

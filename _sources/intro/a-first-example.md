@@ -56,7 +56,7 @@ The [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Le
 [Freeway](https://atariage.com/manual_html_page.php?SoftwareLabelID=192) is the Atari 2600 game that we will begin with. In Freeway, a chicken needs to cross several lanes on a freeway without being run over by a car. A screenshot of the game is shown in {numref}`fig:freeway-screenshot`.  Each time the chicken crosses to the top, we gain one point. If the chicken is struck by a vehicle, it goes back a few spaces, slowing it down. The aim is to cross the road as many times as possible in the allocated time.
 
 ````{sidebar}
-```{figure} ../single-agent/figs/freeway_screenshot.png
+```{figure} ../scaling/figs/freeway_screenshot.png
 ---
 name: fig:freeway-screenshot
 ---
@@ -213,7 +213,7 @@ Plot.plot_cumulative_rewards([label], [rewards], smoothing_factor=0.9)
 ```
 
 
-```{figure} ../single-agent/figs/freeway_training_curve.png
+```{figure} ../intro/figs/freeway_training_curve.png
 ---
 name: fig:freeway-training_curve
 ---

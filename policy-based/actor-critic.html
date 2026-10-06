@@ -74,13 +74,13 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>window.MathJax = {"SVG": true, "tex": {"macros": {"alginput": "\\mathbf{Input}", "algoutput": "\\mathbf{Output}", "algwhile": "\\mathbf{while}", "algfor": "\\mathbf{for}", "algforeach": "\\mathbf{for~each}", "algdo": "\\mathbf{do}", "algif": "\\mathbf{if}", "algthen": "\\mathbf{then}", "algelse": "\\mathbf{else}", "algelsif": "\\mathbf{elsif}", "algrepeat": "\\mathbf{repeat}", "alguntil": "\\mathbf{until}", "algreturn": "\\mathbf{return}", "algfunction": "\\mathbf{function}", "algprocedure": "\\mathbf{procedure}", "algand": "\\mathbf{and}", "algor": "\\mathbf{or}", "algnot": "\\mathbf{not}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/actor-critic';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'policy-based/actor-critic';</script>
     <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
     <script src="../_static/rubbable.js?v=43a8f1f6"></script>
     <script src="../_static/js/libgif.js?v=b9910099"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Q-function approximation" href="function-approximation.html" />
+    <link rel="next" title="Q-function approximation" href="../scaling/function-approximation.html" />
     <link rel="prev" title="Policy gradients" href="policy-gradients.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -199,12 +199,12 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-based.html">Introduction to value-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/MDPs.html">Markov Decision Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/value-iteration.html">Value Iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/multi-armed-bandits.html">Multi-armed bandits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/temporal-difference-learning.html">Temporal difference reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../value-based/mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
 <ul class="current nav bd-sidenav">
@@ -215,11 +215,11 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
 <ul class="nav bd-sidenav">
@@ -286,7 +286,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+      <li><a href="https://github.com/mastering-rl/book" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -303,7 +303,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/actor-critic.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/mastering-rl/book/issues/new?title=Issue%20on%20page%20%2Fpolicy-based/actor-critic.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -333,7 +333,7 @@
       
       
       
-      <li><a href="../_sources/single-agent/actor-critic.md" target="_blank"
+      <li><a href="../_sources/policy-based/actor-critic.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -461,7 +461,7 @@ document.write(`
 </div>
 </aside>
 <p>The sample efficiency problem in REINFORCE leads to issues with policy convergence. As with Monte-Carlo simulation, the high variance in the cumulative rewards <span class="math notranslate nohighlight">\(G\)</span> over episodes leads to instability.</p>
-<p><strong>Actor critic</strong> methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the <strong>actor</strong> and the  value function is called the <strong>critic</strong>. The primary idea is that the actor produces actions, and as in <a class="reference internal" href="temporal-difference-learning.html#sec-model-free-td-learning"><span class="std std-ref">temporal difference learning</span></a>, the  value function (the critic) provides feedback or “criticism” about these actions as a way of bootstrapping.</p>
+<p><strong>Actor critic</strong> methods aim to mitigate this problem. The idea is that instead of learning a value function or a policy, we learn both. The policy is called the <strong>actor</strong> and the  value function is called the <strong>critic</strong>. The primary idea is that the actor produces actions, and as in <a class="reference internal" href="../value-based/temporal-difference-learning.html#sec-model-free-td-learning"><span class="std std-ref">temporal difference learning</span></a>, the  value function (the critic) provides feedback or “criticism” about these actions as a way of bootstrapping.</p>
 <figure class="align-default" id="fig-actor-critic-loop">
 <img alt="An abstract illustration of an actor critic algorithm. There are four boxes: environment, sample action, update actor, and update critic. From sample action to update actor  is an arrow labelled with the letter a-prime, representing the action that will be executed by the agent in the environment. The update actor uses a-prime to update the policy; that is, the actor. From update actor to update critic is an arrow labelled lower-case delta, representing the amount to update the critic. From the critic to the environment is the action a-prime again. From the environment to update Q-function box are two arrows labelled with r and s-prime respectively, indicating the agent receiving the reward r and observing the new state s-prime." src="../_images/actor_critic_loop.png" />
 <figcaption>
@@ -659,8 +659,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ac8e919c364d7c35acafc5ef25d71f504852e79d0dcb0dfba98d5df5e78c4f3b.png" src="../_images/ac8e919c364d7c35acafc5ef25d71f504852e79d0dcb0dfba98d5df5e78c4f3b.png" />
-<img alt="../_images/66124995a7f4ca26973f5547cf9263f374fbb4cfd4e9ba596716cb5c53fb7c58.png" src="../_images/66124995a7f4ca26973f5547cf9263f374fbb4cfd4e9ba596716cb5c53fb7c58.png" />
+<img alt="../_images/6e7a37327b3b9869cf23a2f9c93f0b5ef5740b833b7fc0c8c0f0eac7431c8087.png" src="../_images/6e7a37327b3b9869cf23a2f9c93f0b5ef5740b833b7fc0c8c0f0eac7431c8087.png" />
+<img alt="../_images/723160061a5521e80aeef9a0d6b45d36569ac83fc0f6e4bd30d178e066f2ef7a.png" src="../_images/723160061a5521e80aeef9a0d6b45d36569ac83fc0f6e4bd30d178e066f2ef7a.png" />
 </div>
 </div>
 <p>We can see that the actor critic agent has learnt both a policy that is quite good, but also a Q-function critic that could be used as a policy (because our action space is finite and very small). In a continuous state space, we would be able to learn the critic, but not use it as a policy because we cannot iterate over the possible actions.</p>
@@ -691,7 +691,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./single-agent"
+            path: "./policy-based"
         },
         predefinedOutput: true
     }
@@ -718,7 +718,7 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="function-approximation.html"
+       href="../scaling/function-approximation.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Introduction to policy-based methods &#8212; Mastering Reinforcement Learning</title>
+    <title>Introduction to value-based methods &#8212; Mastering Reinforcement Learning</title>
   
   
   
@@ -72,14 +72,14 @@
                 gtag('config', 'G-MJY0T8BLG8');
             </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'single-agent/policy-based';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'value-based/value-based';</script>
     <script src="../_static/mystery_game.js?v=7dbf1e2c"></script>
     <script src="../_static/rubbable.js?v=43a8f1f6"></script>
     <script src="../_static/js/libgif.js?v=b9910099"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Policy iteration" href="policy-iteration.html" />
-    <link rel="prev" title="Monte-Carlo Tree Search (MCTS)" href="mcts.html" />
+    <link rel="next" title="Markov Decision Processes" href="MDPs.html" />
+    <link rel="prev" title="Getting started with a first example" href="../intro/a-first-example.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -196,8 +196,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/a-first-example.html">Getting started with a first example</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">II: VALUE-BASED METHODS</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="value-based.html">Introduction to value-based methods</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to value-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MDPs.html">Markov Decision Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="value-iteration.html">Value Iteration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi-armed-bandits.html">Multi-armed bandits</a></li>
@@ -205,19 +205,19 @@
 <li class="toctree-l1"><a class="reference internal" href="mcts.html">Monte-Carlo Tree Search (MCTS)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">III: POLICY-BASED METHODS</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to policy-based methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="policy-iteration.html">Policy iteration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="policy-gradients.html">Policy gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="actor-critic.html">Actor-critic methods</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-based.html">Introduction to policy-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-iteration.html">Policy iteration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/policy-gradients.html">Policy gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy-based/actor-critic.html">Actor-critic methods</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">IV: SCALING</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="function-approximation.html">Q-function approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reward-shaping.html">Reward shaping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="n-step.html">n-step reinforcement learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experience-replay.html">Experience replay</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/function-approximation.html">Q-function approximation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/reward-shaping.html">Reward shaping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/n-step.html">n-step reinforcement learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/experience-replay.html">Experience replay</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scaling/modelling-and-abstraction.html">Modelling and abstraction for MDPs</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">V: MULTI-AGENT REINFORCEMENT LEARNING</span></p>
 <ul class="nav bd-sidenav">
@@ -284,7 +284,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html" target="_blank"
+      <li><a href="https://github.com/mastering-rl/book" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -301,7 +301,7 @@
       
       
       
-      <li><a href="https://gibberblot.github.io/rl-notes/intro.html/issues/new?title=Issue%20on%20page%20%2Fsingle-agent/policy-based.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/mastering-rl/book/issues/new?title=Issue%20on%20page%20%2Fvalue-based/value-based.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -331,7 +331,7 @@
       
       
       
-      <li><a href="../_sources/single-agent/policy-based.md" target="_blank"
+      <li><a href="../_sources/value-based/value-based.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -411,7 +411,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to policy-based methods</h1>
+    <h1>Introduction to value-based methods</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -425,15 +425,15 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-policy-based-methods">
-<h1>Introduction to policy-based methods<a class="headerlink" href="#introduction-to-policy-based-methods" title="Link to this heading">#</a></h1>
-<p>In this chapter, we cover <strong>policy-based</strong> methods for reinforcement learning. Policy-based methods learn a policy directly, rather than learning the value of states and actions.</p>
-<p>As noted earlier, learning a policy directly has advantages, particularly for applications where the state space or the action space are massive or infinite. If the action space is infinite, then we cannot do <a class="reference internal" href="MDPs.html#sec-mdps-policy-extraction"><span class="std std-ref">policy extraction</span></a> because that requires us to iterate over all actions and extract the one that maximises the reward. Learning the policy directly mitigates this.</p>
-<p>In Part III, we will introduce two policy-based methods:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-value-based-methods">
+<h1>Introduction to value-based methods<a class="headerlink" href="#introduction-to-value-based-methods" title="Link to this heading">#</a></h1>
+<p>Techniques for solving MDPs (and POMDPs) can be separated into three categories:</p>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="policy-iteration.html#sec-policy-iteration"><span class="std std-ref"><strong>Policy iteration</strong></span></a>: Like value iteration, this is a dynamic programming-based method for model-based MDPs.</p></li>
-<li><p><a class="reference internal" href="policy-gradients.html#sec-policy-based-policy-gradients"><span class="std std-ref"><strong>Policy gradients</strong></span></a>: This is a model-free technique that performs gradient ascent, which is the same as the well-known gradient descent technique, but which maximises rewards instead of minimising error. We also cover more effective extensions to this, such as actor-critic approaches, which combine policy-based methods with value-based methods.</p></li>
+<li><p><strong>Value-based</strong> techniques aim to learn the value of states (or learn an estimate for value of states) and actions: that is, they learn value functions or Q functions. We then use policy extraction to get a policy for deciding actions.</p></li>
+<li><p><strong>Policy-based</strong> techniques learn a policy directly, which completely by-passes learning values of states or actions all together. This is important if for example, the state space or the action space are massive or infinite. If the action space is infinite, then using policy extraction as defined in Part I is not possible because we must iterate over all actions to find the optimal one. If we learn the policy directly, we do not need this.</p></li>
+<li><p><strong>Hybrid</strong> techniques that combine value- and policy-based techniques.</p></li>
 </ol>
+<p>In Part II, we investigate some of the foundational techniques for value-based reinforcement learning, and follow up with policy-based and hybrid techniques in the follow chapters.</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -449,7 +449,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./single-agent"
+            path: "./value-based"
         },
         predefinedOutput: true
     }
@@ -467,20 +467,20 @@ document.write(`
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mcts.html"
+       href="../intro/a-first-example.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Monte-Carlo Tree Search (MCTS)</p>
+        <p class="prev-next-title">Getting started with a first example</p>
       </div>
     </a>
     <a class="right-next"
-       href="policy-iteration.html"
+       href="MDPs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Policy iteration</p>
+        <p class="prev-next-title">Markov Decision Processes</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
